@@ -1,0 +1,51 @@
+{
+  "bankAccounts":[
+    {
+      "name":"bankAccountName",
+      "balance":100000,
+      "primaryAccount":false,
+      "creationDate":142589845734869,
+      "balanceChanges":[
+        {
+          "date":321895728954385
+        }
+      ],
+      "bills":[
+        {
+          "amount":10000,
+          "description":"Present for someone",
+          "subCategory":"Presents",
+          "creationDate":1235421532153
+        }
+      ]
+    }
+  ],
+
+  "primaryCategories":[
+    {
+      "name":"School",
+      "goalAmount":100000,
+      "subcategories":[
+        {
+          "name":"Books",
+          "goalAmount":124124124,
+          "favoured":true
+        }
+      ]
+    }
+  ],
+
+  "autoPays":[
+    {
+      "bill":{
+        "amount":10000,
+        "description":"Present for someone",
+        "subCategory":"Presents",
+        "creationDate":1235421532153
+      },
+      "type":0,
+      "name":"Taxes",
+      "creationDate":12423325
+    }
+  ]
+}

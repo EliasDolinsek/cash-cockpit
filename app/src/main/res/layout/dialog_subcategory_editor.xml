@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="horizontal">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_item_subcategory_editor_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="10">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edt_item_subcategory_editor_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/hint_subcategory_name"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:maxLength="20"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/imv_item_subcategory_editor_favored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="4dp"
+            android:layout_marginStart="4dp"
+            app:srcCompat="@drawable/ic_not_favorite" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_item_subcategory_editor_goal_amount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+             android:layout_weight="10">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/edt_item_subcategory_editor_goal_amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:inputType="number"
+                android:textAlignment="center"
+                android:singleLine="true"
+                android:maxLength="15"
+                android:hint="@string/hint_goal_amount"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/chb_item_subcategory_editor_goal_enabled"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+</LinearLayout>
