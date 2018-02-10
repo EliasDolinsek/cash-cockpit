@@ -11,9 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.dolinsek.elias.cashcockpit.model.Database;
-import com.dolinsek.elias.cashcockpit.model.Goal;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Goal;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
 /**
  * Created by elias on 23.01.2018.

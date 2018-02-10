@@ -1,20 +1,49 @@
-package com.dolinsek.elias.cashcockpit.model;
+package com.dolinsek.elias.cashcockpit.components;
 
 /**
+ * Represents a bill what usually get added to a bank account
  * Created by elias on 06.01.2018.
  */
 
 public class Bill {
 
-    public static final int TPYE_OUTPUT = 0;
+    /**
+     * This constants determine the type of the bill.
+     * @param TYPE_OUTPUT amount get removed from bank account
+     * @param TYPE_INPUT amount get added to the bank account
+     * @param TYPE_TRANSFER amount get removed from the bank account and get added to another bank account
+     */
+    public static final int TYPE_OUTPUT = 0;
     public static final int TYPE_INPUT = 1;
     public static final int TYPE_TRANSFER = 2;
 
-    private long amount; //In cents
+    /**
+     * Amount what get removed or added in cents
+     */
+    private long amount;
+
+    /**
+     * Contains a little description what helps the user to remember what this bill was for
+     */
     private String description;
+
+    /**
+     * Subcategory what helps the app to make better statistics
+     */
     private Subcategory subcategory;
+
+    /**
+     * Creation date of the bill
+     */
     private long creationDate;
 
+    /**
+     * Creates a new Bill
+     * @param amount amount what get added or removed from the bank account
+     * @param description a short description what can help the user to remember what this bill was for
+     * @param subcategory subcategory
+     * @param creationDate creation date of the bill
+     */
     public Bill(long amount, String description, Subcategory subcategory, long creationDate) {
         this.amount = amount;
         this.description = description;
@@ -22,6 +51,12 @@ public class Bill {
         this.creationDate = creationDate;
     }
 
+    /**
+     * Creates a new Bill and sets the creation date to the current date
+     * @param amount amount what get added or removed from the bank account
+     * @param description a short description what can help the user to remember what this bill was for
+     * @param subcategory subcategory
+     */
     public Bill(long amount, String description, Subcategory subcategory) {
         this.amount = amount;
         this.description = description;

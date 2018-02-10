@@ -1,26 +1,23 @@
-package com.dolinsek.elias.cashcockpit.model;
+package com.dolinsek.elias.cashcockpit.components;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-
-import com.dolinsek.elias.cashcockpit.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Locale;
 
 /**
+ * This class has only static methods to read and write data
  * Created by elias on 08.01.2018.
  */
 

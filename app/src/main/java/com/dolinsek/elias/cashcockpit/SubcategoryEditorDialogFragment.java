@@ -15,9 +15,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.dolinsek.elias.cashcockpit.model.Goal;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
-import com.dolinsek.elias.cashcockpit.model.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Goal;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 /**
  * Created by elias on 24.01.2018.

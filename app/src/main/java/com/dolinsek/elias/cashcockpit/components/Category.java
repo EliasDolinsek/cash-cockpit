@@ -1,14 +1,27 @@
-package com.dolinsek.elias.cashcockpit.model;
+package com.dolinsek.elias.cashcockpit.components;
 
 /**
+ * Represents a category
  * Created by elias on 06.01.2018.
  */
 
 public abstract class Category {
 
+    /**
+     * Name of the category what helps the user to identify it
+     */
     private String name;
+
+    /**
+     * Goal for the category
+     */
     private Goal goal;
 
+    /**
+     * Creates a new Category
+     * @param name name of the category
+     * @param goal goal of the category
+     */
     public Category(String name, Goal goal) {
         this.name = name;
         if(goal == null)
@@ -17,6 +30,10 @@ public abstract class Category {
             this.goal = goal;
     }
 
+    /**
+     * Creates a new Category and sets a new goal
+     * @param name name of the category
+     */
     public Category(String name) {
         this.name = name;
         goal = new Goal(0);

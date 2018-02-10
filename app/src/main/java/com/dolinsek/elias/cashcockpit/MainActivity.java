@@ -13,12 +13,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.dolinsek.elias.cashcockpit.model.Database;
+import com.dolinsek.elias.cashcockpit.components.Database;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 

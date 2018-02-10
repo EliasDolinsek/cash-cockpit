@@ -2,11 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,10 +13,9 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.model.Database;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 /**

@@ -1,4 +1,4 @@
-package com.dolinsek.elias.cashcockpit.model;
+package com.dolinsek.elias.cashcockpit.components;
 
 /**
  * Created by elias on 10.01.2018.

@@ -8,8 +8,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.dolinsek.elias.cashcockpit.model.Subcategory;
-
 /**
  * Created by elias on 05.02.2018.
  */

@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.model.AutoPay;
-import com.dolinsek.elias.cashcockpit.model.Database;
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
 

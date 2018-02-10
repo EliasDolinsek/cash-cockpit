@@ -9,9 +9,9 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.model.Database;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
-import com.dolinsek.elias.cashcockpit.model.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import java.util.ArrayList;
 

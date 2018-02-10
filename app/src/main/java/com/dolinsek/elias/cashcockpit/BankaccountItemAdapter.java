@@ -8,13 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.model.BankAccount;
-import com.dolinsek.elias.cashcockpit.model.Currencies;
-import com.dolinsek.elias.cashcockpit.model.Database;
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Currencies;
+import com.dolinsek.elias.cashcockpit.components.Database;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 
 /**
  * Created by elias on 13.01.2018.

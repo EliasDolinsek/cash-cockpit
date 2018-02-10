@@ -1,6 +1,5 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.content.res.ColorStateList;
@@ -12,18 +11,13 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.model.BankAccount;
-import com.dolinsek.elias.cashcockpit.model.Bill;
-import com.dolinsek.elias.cashcockpit.model.Database;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
-import com.dolinsek.elias.cashcockpit.model.Subcategory;
-
-import org.json.JSONException;
-
-import java.io.IOException;
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 /**
  * Created by elias on 20.01.2018.

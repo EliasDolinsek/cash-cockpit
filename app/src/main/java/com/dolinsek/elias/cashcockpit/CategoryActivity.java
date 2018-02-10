@@ -1,6 +1,5 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
@@ -12,14 +11,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.dolinsek.elias.cashcockpit.model.AutoPay;
-import com.dolinsek.elias.cashcockpit.model.Database;
-import com.dolinsek.elias.cashcockpit.model.PrimaryCategory;
-import com.dolinsek.elias.cashcockpit.model.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
 import org.json.JSONException;
 

@@ -13,9 +13,9 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.dolinsek.elias.cashcockpit.model.AutoPay;
-import com.dolinsek.elias.cashcockpit.model.BankAccount;
-import com.dolinsek.elias.cashcockpit.model.Database;
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
 
