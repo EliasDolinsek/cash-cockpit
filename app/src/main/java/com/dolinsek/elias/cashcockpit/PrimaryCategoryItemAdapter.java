@@ -19,13 +19,20 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import java.util.ArrayList;
 
 /**
+ * Adapter for primary accounts
  * Created by elias on 20.01.2018.
  */
 
 public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCategoryItemAdapter.PrimaryCategoryViewHolder>{
 
+    /**
+     * Contains all primary categories
+     */
     private ArrayList<PrimaryCategory> primaryCategories;
 
+    /**
+     * Creates a new adapter and sets categories from the database
+     */
     public PrimaryCategoryItemAdapter(){
         primaryCategories = Database.getPrimaryCategories();
     }
@@ -40,9 +47,12 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     public void onBindViewHolder(final PrimaryCategoryViewHolder holder, final int position) {
         PrimaryCategory primaryCategory = primaryCategories.get(position);
 
+        //Displays the amount of the goal for the primary category if it's set and zero if not
         if(primaryCategory.getGoal().getAmount() == 0){
             holder.mTxvCategoryGoalStatus.setText("0/0€");
         } else {
+
+            //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
             long amount = 0;
             for(int i = 0; i<Database.getBankAccounts().size(); i++){
                 for(int x = 0; x<Database.getBankAccounts().get(i).getBills().size(); x++){
@@ -53,13 +63,16 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
                 }
             }
 
+            //Displays informations
             holder.mTxvCategoryGoalStatus.setText(((amount / 100) + "/" + (primaryCategory.getGoal().getAmount() / 100) + "€"));
             holder.mPgbCategoryGoalStatus.setProgress((int)(100.0 /(primaryCategory.getGoal().getAmount() / 100.0) * (amount / 100.0)));
 
+            //Enables a ProgressBar if there is a goal
             if(amount > primaryCategory.getGoal().getAmount()){
                 holder.mTxvCategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
                 holder.mPgbCategoryGoalStatus.setProgressTintList(ColorStateList.valueOf(Color.RED));
-            } else{
+            } else {
+                //Colors the text to read if the user has exceeded the specified goal
                 holder.mTxvCategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
             }
         }
@@ -67,23 +80,27 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //Starts CategoryActivity
                 Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
                 intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, position);
                 holder.itemView.getContext().startActivity(intent);
             }
         });
 
+        //Loads the image for this category
         try{
             holder.mImvCategoryIcon.setBackgroundResource(holder.itemView.getContext().getResources().getIdentifier(primaryCategory.getIconName(), "drawable", holder.itemView.getContext().getPackageName()));
         } catch (Exception e) {
             holder.mImvCategoryIcon.setBackgroundResource(R.drawable.ic_default_category_image);
         }
 
+        //Sets up the RecyclerView
         holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false));
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 
+        //Displays informations
         holder.mTxvCategoryName.setText(primaryCategory.getName());
-        //TODO Add icon
     }
 
     @Override

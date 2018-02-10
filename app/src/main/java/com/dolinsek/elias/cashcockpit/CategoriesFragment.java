@@ -24,9 +24,29 @@ import java.io.IOException;
  */
 public class CategoriesFragment extends Fragment{
 
+    /**
+     * Displays a list of all categories
+     */
     private RecyclerView mRvCategories;
-    private Button mBtnCreateCategory, mBtnRestoreDefaultCategories;
+
+    /**
+     * Button to create a new category
+     */
+    private Button mBtnCreateCategory;
+
+    /**
+     * Button to restore all default categories
+     */
+    private Button mBtnRestoreDefaultCategories;
+
+    /**
+     * FloatingActionButton to create a new category
+     */
     private FloatingActionButton mFbtnAdd;
+
+    /**
+     * Adapter what displays primary categories
+     */
     private PrimaryCategoryItemAdapter mPrimaryCategoryItemAdapter;
 
     @Override
@@ -49,6 +69,7 @@ public class CategoriesFragment extends Fragment{
         mFbtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Start CategoryActivity
                 Intent intent = new Intent(container.getContext(), CategoryActivity.class);
                 startActivity(intent);
@@ -58,6 +79,7 @@ public class CategoriesFragment extends Fragment{
         mBtnCreateCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Start CategoryActivity
                 Intent intent = new Intent(container.getContext(), CategoryActivity.class);
                 startActivity(intent);
@@ -67,21 +89,23 @@ public class CategoriesFragment extends Fragment{
         mBtnRestoreDefaultCategories.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Add default categories to categories
                 for(int i = 0; i<Database.getDefaultPrimaryCategories().size(); i++){
                     Database.getPrimaryCategories().add(Database.getDefaultPrimaryCategories().get(i));
                 }
 
-                //Save Data
-                Database.save(getContext());
                 try {
+                    //Save data
+                    Database.save(getContext());
+
+                    //Reload data
                     Database.load(getContext());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
+                //Reset Button-visibilities
                 setVisibilities();
 
                 //Load categories
@@ -96,6 +120,7 @@ public class CategoriesFragment extends Fragment{
     public void onResume() {
         super.onResume();
 
+        //Reset Button-visibilities
         setVisibilities();
 
         //Load bank accounts
@@ -103,6 +128,10 @@ public class CategoriesFragment extends Fragment{
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
     }
 
+    /**
+     * Displays all Buttons and hides FloatingActionButton when there are zero categories,
+     * hides all Buttons and shows FloatingActionButton when there are more than zero categories
+     */
     private void setVisibilities(){
         if(Database.getPrimaryCategories().size() != 0){
             mBtnCreateCategory.setVisibility(View.GONE);
@@ -119,7 +148,7 @@ public class CategoriesFragment extends Fragment{
     public void onPause() {
         super.onPause();
 
-        //To save subcategory favored state
+        //Saves data to save categories-favored states
         Database.save(getContext());
     }
 }

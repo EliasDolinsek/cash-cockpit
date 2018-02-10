@@ -47,6 +47,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
         mBtnDelete = (Button) findViewById(R.id.btn_bank_account_delete);
 
+        //When there is a bank account to edit it turns into edit mode
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
             bankAccount = Database.getBankAccounts().get(getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0));
             mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
@@ -54,6 +55,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             mBtnDelete.setVisibility(View.GONE);
         }
 
+        //Displays data if it is in edit mode
         if(bankAccount != null){
             mEdtAccountName.setText(bankAccount.getName());
             mEdtAccountEuros.setText(String.valueOf(bankAccount.getBalance() / 100));
@@ -65,6 +67,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             mBtnCreate.setText(getResources().getString(R.string.btn_save));
         }
 
+        //Disables the button what determines if the bank account is the primary account or not when there are zero bank account
         if(Database.getBankAccounts().size() == 0){
             mSwPrimaryAccount.setChecked(true);
             mSwPrimaryAccount.setEnabled(false);
@@ -75,10 +78,12 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             @Override
             public void onClick(View view) {
 
+                //Reset errors
                 mTilAccountName.setError(null);
                 mTilAccountEuros.setError(null);
                 mTilAccountCents.setError(null);
 
+                //Checks if the account-name already exists
                 boolean accountNameAlreadyExists = false;
                 for(int i = 0; i<Database.getBankAccounts().size(); i++){
                     if(Database.getBankAccounts().get(i).getName().equals(mEdtAccountName.getText().toString()))
@@ -94,27 +99,32 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                     mTilAccountName.setError(getResources().getString(R.string.label_bank_account_already_exits));
                 } else {
 
-                    //Read balance
+                    //Reads balance
                     long balance = 0;
                     if(!mEdtAccountEuros.getText().toString().equals(""))
                         balance = Long.valueOf(mEdtAccountEuros.getText().toString()) * 100;
                     if(!mEdtAccountCents.getText().toString().equals(""))
                         balance += Long.valueOf(mEdtAccountCents.getText().toString());
 
+                    //When it's not in edit mode it creates a new bank account and saves it
                     if(bankAccount == null){
-                        //Create and save new bank account
+
+                        //Create and save it
                         Database.getBankAccounts().add(new BankAccount(mEdtAccountName.getText().toString(), balance, mSwPrimaryAccount.isChecked()));
                         Database.save(getApplicationContext());
 
+                        //Displays that everything went ok
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_created), Toast.LENGTH_LONG).show();
 
                         //Go back to MainActivity
                         finish();
                     } else {
-                        //Save bank account changes
+
+                        //Saves bank account changes
                         bankAccount.setName(mEdtAccountName.getText().toString());
                         bankAccount.setBalance(balance);
 
+                        //Sets this account as primary account it the user wants it
                         if(mSwPrimaryAccount.isChecked()){
                             for(int i = 0; i<Database.getBankAccounts().size(); i++){
                                 Database.getBankAccounts().get(i).setPrimaryAccount(false);
@@ -123,9 +133,10 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                             bankAccount.setPrimaryAccount(true);
                         }
 
+                        //Displays that everything went ok
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_changed), Toast.LENGTH_LONG).show();
 
-                        //Save changes into file
+                        //Saves changes into file
                         Database.save(getApplicationContext());
 
                         //Go back to MainActivity
@@ -137,6 +148,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         });
 
+        //Displays a DeleteBankAccountDialogFragment
         mBtnDelete.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -149,6 +161,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     /**
+     * Returns a ArrayList of all AutoPays what belong to this account
      * @return associated AutoPays
      */
     private ArrayList<AutoPay> getAutoPays(){
@@ -168,20 +181,25 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         if(actionBar != null)
             actionBar.setDisplayHomeAsUpEnabled(true);
 
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         //Go back to MainActivity
         if(item.getItemId() == android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Gets called when the user clicks "delete" in DeleteBankAccountDialogFragment
+     * @param dialog what is currently shown
+     */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
+
         //Deletes AutoPays
         ArrayList<AutoPay> autoPays = getAutoPays();
         for(int i = 0; i<getAutoPays().size(); i++){
@@ -192,6 +210,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         Database.getBankAccounts().remove(bankAccount);
         Database.save(getApplicationContext());
 
+        //Displays that the bank account got deleted successfully
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_deleted), Toast.LENGTH_LONG).show();
 
         //Go back to MainActivity

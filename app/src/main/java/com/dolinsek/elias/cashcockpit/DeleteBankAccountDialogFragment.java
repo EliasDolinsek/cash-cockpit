@@ -8,11 +8,13 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
+ * This gets displayed when the user wants to delete a account
  * Created by elias on 23.01.2018.
  */
 
 public class DeleteBankAccountDialogFragment extends DialogFragment{
 
+    //Listener for a positive click
     public interface DeleteBankAccountDialogListener{
         public void onDialogPositiveClick(DialogFragment dialog);
     }
@@ -42,6 +44,7 @@ public class DeleteBankAccountDialogFragment extends DialogFragment{
         super.onAttach(context);
 
         try {
+            //Calls listener
             mListener = (DeleteBankAccountDialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()

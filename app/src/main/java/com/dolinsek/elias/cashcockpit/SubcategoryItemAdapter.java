@@ -25,7 +25,14 @@ import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItemAdapter.SubcategoryItemViewHolder>{
 
+    /**
+     * PrimaryCategory what the Subcategory belongs to
+     */
     private PrimaryCategory primaryCategory;
+
+    /**
+     * If a click shows SubcategoryEditorDialogFragment
+     */
     private boolean allowDirectEdit;
 
     public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit){
@@ -43,16 +50,20 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     public void onBindViewHolder(final SubcategoryItemViewHolder holder, final int position) {
         final Subcategory subcategory = primaryCategory.getSubcategories().get(position);
 
+        //Sets name of the subcategory
         holder.mTxvSubcategoryName.setText(subcategory.getName());
 
+        //Displays a specified icon when the subcategory is favored and another when not
         if(subcategory.isFavoured())
             holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
         else
             holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
 
+        //Displays the goal-amount
         if(subcategory.getGoal().getAmount() == 0)
             holder.mTxvSubcategoryGoalStatus.setText("0/0€");
         else {
+            //Reads how much bills have this as subcategory and adds its amount into the variable amount
             long amount = 0;
             for(BankAccount bankAccount: Database.getBankAccounts()){
                 for(Bill bill:bankAccount.getBills()){
@@ -63,13 +74,16 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                     }
                 }}
 
+            //Displays informations
             holder.mTxvSubcategoryGoalStatus.setText((amount + "/" + (subcategory.getGoal().getAmount() / 100) + "€"));
             holder.mPgbSubcategoryGoalStatus.setProgress((int)(100 / (double)(subcategory.getGoal().getAmount() / 100) * (double)(amount / 100)));
 
+            //Enables a ProgressBar if there is a goal
             if(amount > subcategory.getGoal().getAmount()){
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
                 holder.mPgbSubcategoryGoalStatus.setProgressTintList(ColorStateList.valueOf(Color.RED));
             } else{
+                //Colors text color red if the user has exceeded the amount of the goal
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
             }
         }
@@ -77,6 +91,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    //Changes the favored state of the subcategory
                     if(subcategory.isFavoured())
                         holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
                     else
@@ -87,6 +102,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         });
 
 
+        //Displays SubcategoryEditorDialogFragment if it's allowed
         if(allowDirectEdit){
             holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -100,12 +116,15 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                    //Gets the index of the primary category in the Database
                     int primaryCategoryIndex = 0;
                     for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
                         if(primaryCategory.equals(Database.getPrimaryCategories()))
                             primaryCategoryIndex = 0;
                     }
 
+                    //Starts CategoryActivity
                     Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
                     intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndex);
                     holder.itemView.getContext().startActivity(intent);
