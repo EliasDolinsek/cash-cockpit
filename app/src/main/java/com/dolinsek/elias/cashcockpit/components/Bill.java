@@ -9,9 +9,9 @@ public class Bill {
 
     /**
      * This constants determine the type of the bill.
-     * @param TYPE_OUTPUT amount get removed from bank account
-     * @param TYPE_INPUT amount get added to the bank account
-     * @param TYPE_TRANSFER amount get removed from the bank account and get added to another bank account
+     * TYPE_OUTPUT = amount get removed from bank account
+     * TYPE_INPUT = amount get added to the bank account
+     * TYPE_TRANSFER = amount get removed from the bank account and get added to another bank account
      */
     public static final int TYPE_OUTPUT = 0;
     public static final int TYPE_INPUT = 1;

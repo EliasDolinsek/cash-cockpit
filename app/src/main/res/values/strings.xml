@@ -83,6 +83,9 @@
     <string name="btn_select">Select</string>
     <string name="label_enter_name">Please enter a name!</string>
     <string name="label_none">None</string>
+    <string name="label_bills">Bills</string>
+    <string name="label_primary_account">Primary Account</string>
+
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>
     <string name="label_bank_account_cents">Cents</string>

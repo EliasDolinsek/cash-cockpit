@@ -17,7 +17,7 @@
         android:title="@string/title_statistics" />
 
     <item
-        android:id="@+id/navigation_options"
+        android:id="@+id/navigation_database"
         android:icon="@drawable/ic_database"
         android:title="@string/title_database"/>
 

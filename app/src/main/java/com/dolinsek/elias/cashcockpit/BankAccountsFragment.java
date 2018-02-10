@@ -20,13 +20,28 @@ import com.dolinsek.elias.cashcockpit.components.Database;
  */
 public class BankAccountsFragment extends Fragment {
 
+    /**
+     * Displays a list of all bank accounts
+     */
     private RecyclerView mRecyclerView;
-    private BankaccountItemAdapter mBankaccountItemAdapter;
+
+    /**
+     * Adapter for bank accounts
+     */
+    private BankAccountItemAdapter mBankAccountItemAdapter;
+
+    /**
+     * Button to create a new bank account. This Button get hidden when there aren't zero bank accounts
+     */
     private Button mBtnCreateAccount;
+
+    /**
+     * FloatingActionButton to create a new bank account
+     */
     private FloatingActionButton mFbtnAdd;
 
     public BankAccountsFragment() {
-        mBankaccountItemAdapter = new BankaccountItemAdapter();
+        mBankAccountItemAdapter = new BankAccountItemAdapter();
     }
 
     @Override
@@ -35,24 +50,29 @@ public class BankAccountsFragment extends Fragment {
         // Inflate the layout for this fragment
         final View inflatedView = inflater.inflate(R.layout.fragment_bank_accounts, container, false);
 
+        //Setup RecyclerView
         mRecyclerView = (RecyclerView) inflatedView.findViewById(R.id.rv_bank_accounts);
-        mRecyclerView.setAdapter(mBankaccountItemAdapter);
+        mRecyclerView.setAdapter(mBankAccountItemAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        //Setup FloatingActionButton
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_bank_accounts_add);
         mFbtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Start CreateBankAccountsActivity
                 Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
                 startActivity(intent);
             }
         });
 
+        //Setup Button
         mBtnCreateAccount = (Button) inflatedView.findViewById(R.id.btn_bank_accounts_create);
         mBtnCreateAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 //Start CreateBankAccountsActivity
                 Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
                 startActivity(intent);
@@ -66,6 +86,7 @@ public class BankAccountsFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
+        //Hides mFbtnAdd when there are zero bank accounts and hides mBtnCreateAccount if not
         if(Database.getBankAccounts().size() != 0){
             mBtnCreateAccount.setVisibility(View.GONE);
             mFbtnAdd.setVisibility(View.VISIBLE);
@@ -73,7 +94,7 @@ public class BankAccountsFragment extends Fragment {
             mFbtnAdd.setVisibility(View.GONE);
 
         //Load bank accounts
-        mBankaccountItemAdapter = new BankaccountItemAdapter();
-        mRecyclerView.setAdapter(mBankaccountItemAdapter);
+        mBankAccountItemAdapter = new BankAccountItemAdapter();
+        mRecyclerView.setAdapter(mBankAccountItemAdapter);
     }
 }

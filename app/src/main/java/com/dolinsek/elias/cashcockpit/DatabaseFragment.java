@@ -13,7 +13,14 @@ import android.view.ViewGroup;
 
 public class DatabaseFragment extends Fragment {
 
+    /**
+     * Tab layout for tab-navigation
+     */
     private TabLayout mTabLayout;
+
+    /**
+     * ViewPager what contains fragments for navigation
+     */
     private ViewPager mViewPager;
 
     @Override
@@ -25,12 +32,13 @@ public class DatabaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        //Infaltes View
+        //Inflates View
         View inflatedView = inflater.inflate(R.layout.fragment_database, container, false);
 
         mViewPager = (ViewPager) inflatedView.findViewById(R.id.vp_options);
         mViewPager.setAdapter(new Adapter(getChildFragmentManager()));
 
+        //Sets ViewPager
         mTabLayout = (TabLayout) inflatedView.findViewById(R.id.tab_layout_options);
         mTabLayout.setupWithViewPager(mViewPager);
 
@@ -50,6 +58,7 @@ public class DatabaseFragment extends Fragment {
 
     private class Adapter extends FragmentPagerAdapter {
 
+        //Number of fragments/tabs
         private static final int TABS = 3;
 
         public Adapter(FragmentManager fm) {

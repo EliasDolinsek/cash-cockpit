@@ -43,7 +43,7 @@
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
                 android:textColor="@android:color/white"
-                android:background="@drawable/border_orange"/>
+                android:background="@drawable/border_red"/>
 
             <TextView
                 android:id="@+id/txv_item_auto_pays_category"
@@ -55,7 +55,7 @@
                 android:paddingStart="6dp"
                 android:paddingEnd="6dp"
                 android:textColor="@android:color/white"
-                android:background="@drawable/border_orange" />
+                android:background="@drawable/border_red" />
 
         </LinearLayout>
 

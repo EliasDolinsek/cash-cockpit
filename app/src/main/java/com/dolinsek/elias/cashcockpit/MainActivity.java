@@ -23,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    /**
+     * BottomNavigationView for navigating
+     */
     private BottomNavigationView mBottomNavigationView;
 
     @Override
@@ -34,21 +37,22 @@ public class MainActivity extends AppCompatActivity {
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                //Switch between fragments
                 switch (item.getItemId()){
-                    case R.id.navigation_options:
+                    case R.id.navigation_database:
                             replaceFragment(new DatabaseFragment());
                         return true;
                 }
+
                 return false;
             }
         });
 
-        //Loads database from json
         try {
+            //Loads database from json
             Database.load(getApplicationContext());
-        } catch (IOException e) {
-            Log.e(MainActivity.TAG, "", e);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Log.e(MainActivity.TAG, "", e);
         }
 
@@ -79,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == R.id.action_settings){
+
             //Start SettingsActivity
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
