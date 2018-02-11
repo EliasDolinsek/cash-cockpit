@@ -2,7 +2,9 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginTop="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -10,54 +12,19 @@
         android:orientation="vertical"
         android:layout_margin="5dp">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/txv_item_auto_pays_name"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:textColor="@color/colorPrimaryTextColor"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/txv_item_auto_pays_name"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textColor="@color/colorPrimaryTextColor"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:layout_marginStart="5dp" />
 
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/txv_item_auto_pays_details"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="3dp">
-
-            <TextView
-                android:id="@+id/txv_item_auto_pays_bank_account"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:textColor="@android:color/white"
-                android:background="@drawable/border_red"/>
-
-            <TextView
-                android:id="@+id/txv_item_auto_pays_category"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:textColor="@android:color/white"
-                android:background="@drawable/border_red" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -23,6 +25,8 @@ public class AutoPayActivity extends AppCompatActivity {
     private TextInputEditText mEdtAutoPayName, mEdtAmountEuros, mEdtAmountCents;
     private Button mBtnSelectBankAccount, mBtnSelectSubcategory, mBtnCreate;
     private TextView mTxvSelectedBankAccount, mTxvSelectedCategory;
+    private RadioGroup mRgAutoPayType;
+    private RadioButton mRbWeekly, mRbMonthly, mRbYearly;
 
     private AutoPay autoPay;
 
@@ -46,10 +50,16 @@ public class AutoPayActivity extends AppCompatActivity {
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
 
+        mRbWeekly = (RadioButton) findViewById(R.id.rb_auto_pay_weekly);
+        mRbMonthly = (RadioButton) findViewById(R.id.rb_auto_pay_monthly);
+        mRbYearly = (RadioButton) findViewById(R.id.rb_auto_pay_yearly);
+        mRgAutoPayType = (RadioGroup) findViewById(R.id.rg_auto_pay_types);
+
         //TODO
         if(true)
             autoPay = new AutoPay(new Bill(0, "", null), AutoPay.TYPE_MONTHLY, "", null);
 
+        //Shows dialog what allows the user to select a bank account
         mBtnSelectBankAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -66,6 +76,7 @@ public class AutoPayActivity extends AppCompatActivity {
             }
         });
 
+        //Shows dialog what allows the user to select a subcategory
         mBtnSelectSubcategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -85,6 +96,8 @@ public class AutoPayActivity extends AppCompatActivity {
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                //Removes errors
                 mTilAutoPayName.setError(null);
                 mTilAmountEuros.setError(null);
                 mTilAmountCents.setError(null);
@@ -102,17 +115,32 @@ public class AutoPayActivity extends AppCompatActivity {
                     mTxvSelectedCategory.setTextColor(getResources().getColor(android.R.color.holo_red_light));
                 } else {
 
+                    //Gets amount
                     long euros = 0, cents = 0;
                     if(!mEdtAmountEuros.getText().toString().equals(""))
                         euros = Long.valueOf(mEdtAmountEuros.getText().toString()) * 100;
                     if(!mEdtAmountCents.getText().toString().equals(""))
                         cents = Long.valueOf(mEdtAmountCents.getText().toString());
 
+                    //Gets type
+                    int type = AutoPay.TYPE_MONTHLY;
+                    if(mRgAutoPayType.getCheckedRadioButtonId() != -1){
+                        if(mRbWeekly.getId() == mRgAutoPayType.getCheckedRadioButtonId())
+                            type = AutoPay.TYPE_WEEKLY;
+                        else if(mRbMonthly.getId() == mRgAutoPayType.getCheckedRadioButtonId())
+                            type = AutoPay.TYPE_MONTHLY;
+                    }
+
+                    //Sets changes
                     autoPay.setName(mEdtAutoPayName.getText().toString());
                     autoPay.getBill().setAmount(euros + cents);
+                    autoPay.setType(type);
 
+                    //Creates a new AutoPay
                     Database.getAutoPays().add(autoPay);
                     Database.save(getApplicationContext());
+
+                    //Go back to MainActivity
                     finish();
                 }
             }

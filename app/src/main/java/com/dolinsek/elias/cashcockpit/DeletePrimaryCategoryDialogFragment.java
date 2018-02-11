@@ -13,6 +13,7 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import java.util.ArrayList;
 
 /**
+ * DialogFragment for confirming that the user wants to delete a specified primary category including all it's subcategories
  * Created by elias on 27.01.2018.
  */
 

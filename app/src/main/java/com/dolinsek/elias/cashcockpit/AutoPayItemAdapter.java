@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.Currencies;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
@@ -33,9 +34,20 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
     public void onBindViewHolder(AutoPayItemViewHolder holder, int position) {
         AutoPay autoPay = autoPays.get(position);
 
+        //Converts the type of the AutoPay to a string
+        String type = holder.itemView.getContext().getResources().getString(R.string.label_none);
+        switch (autoPay.getType()){
+            case AutoPay.TYPE_WEEKLY: type = holder.itemView.getContext().getResources().getString(R.string.label_weekly);
+                break;
+            case AutoPay.TYPE_MONTHLY: type = holder.itemView.getContext().getResources().getString(R.string.label_monthly);
+                break;
+            case AutoPay.TYPE_YEARLY: type = holder.itemView.getContext().getResources().getString(R.string.label_yearly);
+                break;
+        }
+
+        //Displays data
         holder.mTxvName.setText(autoPay.getName());
-        holder.mTxvBankAccount.setText(autoPay.getBankAccount().getName());
-        holder.mTxvCategory.setText(autoPay.getBill().getSubcategory().getName());
+        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + Currencies.EURO.getCurrency().format(autoPay.getBill().getAmount()) + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
     }
 
     @Override
@@ -45,14 +57,13 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
     public class AutoPayItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvName, mTxvBankAccount, mTxvCategory;
+        public TextView mTxvName, mTxvDetails;
 
         public AutoPayItemViewHolder(View itemView) {
             super(itemView);
 
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_name);
-            mTxvBankAccount = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_bank_account);
-            mTxvCategory = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_category);
+            mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_details);
         }
     }
 }

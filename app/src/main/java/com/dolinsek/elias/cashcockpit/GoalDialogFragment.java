@@ -16,6 +16,7 @@ import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
 /**
+ * DialogFragment for creating, editing and deleting goals
  * Created by elias on 23.01.2018.
  */
 

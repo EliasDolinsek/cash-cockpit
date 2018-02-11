@@ -67,6 +67,41 @@
         </android.support.design.widget.TextInputLayout>
     </LinearLayout>
 
+    <RadioGroup
+        android:id="@+id/rg_auto_pay_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:weightSum="9">
+
+        <RadioButton
+            android:id="@+id/rb_auto_pay_weekly"
+            android:text="@string/label_weekly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textAlignment="center" />
+
+        <RadioButton
+            android:id="@+id/rb_auto_pay_monthly"
+            android:text="@string/label_monthly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textAlignment="center"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/rb_auto_pay_yearly"
+            android:text="@string/label_yearly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:textAlignment="center"/>
+    </RadioGroup>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

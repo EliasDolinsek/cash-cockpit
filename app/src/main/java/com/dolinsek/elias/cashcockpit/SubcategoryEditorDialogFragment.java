@@ -20,6 +20,7 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 /**
+ * DialogFragment for creating, editing and deleting subcategory
  * Created by elias on 24.01.2018.
  */
 
@@ -34,6 +35,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     private CheckBox mChbGoalEnabled;
     private ImageView mImvFavored;
 
+    //Interface what gets called when the dialog dismisses
     private DialogInterface.OnDismissListener mOnDismissListener;
 
     @Override
@@ -56,6 +58,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         mImvFavored = (ImageView) inflatedView.findViewById(R.id.imv_item_subcategory_editor_favored);
         setupImage(mSubcategory.isFavoured());
 
+        //Enable/Disable goal
         mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
@@ -63,6 +66,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             }
         });
 
+        //Changes favored state on click
         mImvFavored.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,6 +75,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             }
         });
 
+        //If edit mode is active it displays details
         if(mEditMode){
             mEdtSubcategoryName.setText(mSubcategory.getName());
             if(mSubcategory.getGoal().getAmount() != 0){
@@ -81,7 +86,10 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
 
         }
 
+        //Sets View
         builder.setView(inflatedView);
+
+        //Setups buttons depending if the edit mode is active
         if(mEditMode){
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
             builder.setNegativeButton(getResources().getString(R.string.dialog_action_delete), null);
@@ -91,6 +99,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
         }
 
+        //Sets up button clicks
         final AlertDialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -102,6 +111,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                         //Remove error
                         mEdtSubcategoryName.setError(null);
 
+                        //Checks if name already exists
                         boolean nameAlreadyExits = false;
                         if(!mEditMode){
                             for(int i = 0; i<mPrimaryCategory.getSubcategories().size(); i++){
@@ -117,12 +127,16 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                         } else if(mChbGoalEnabled.isChecked() && mEdtGoalAmount.getText().toString().equals("")){
                             mTilGoalAmount.setError(getResources().getString(R.string.label_enter_euros));
                         } else {
+                            //Saves name
                             mSubcategory.setName(mEdtSubcategoryName.getText().toString());
+
+                            //Saves goal-status
                             if(mChbGoalEnabled.isChecked())
                                 mSubcategory.setGoal(new Goal(Long.valueOf(mEdtGoalAmount.getText().toString()) * 100));
                             else
                                 mSubcategory.setGoal(new Goal(0));
 
+                            //Saves goal-amount
                             if(mPrimaryCategory.getGoal().getAmount() < mSubcategory.getGoal().getAmount()){
                                 long difference = mSubcategory.getGoal().getAmount() - mPrimaryCategory.getGoal().getAmount();
 
@@ -132,6 +146,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                                     mPrimaryCategory.setGoal(new Goal(difference));
                             }
 
+                            //Adds a new Subcategory if it isn't in edit mode
                             if(!mEditMode)
                                 mPrimaryCategory.addSubcategory(mSubcategory);
 
@@ -145,6 +160,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                     mBtnNegative.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
+                            //Deletes Subcategory
                             mPrimaryCategory.getSubcategories().remove(mSubcategory);
 
                             dialog.dismiss();
@@ -162,12 +178,18 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+
+        //Calls interface in activity if it implements the right inteface
         final Activity activity = getActivity();
         if (activity instanceof DialogInterface.OnDismissListener) {
             ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
         }
     }
 
+    /**
+     * Sets up the icons what display if the subcategory is favored or not
+     * @param favored if the subcategory is favored or not
+     */
     private void setupImage(boolean favored){
         if(favored)
             mImvFavored.setImageResource(R.drawable.ic_favorite);
@@ -175,6 +197,11 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             mImvFavored.setImageResource(R.drawable.ic_not_favorite);
     }
 
+    /**
+     * Sets primary category including subcategory to edit and enables edit mode
+     * @param primaryCategory primary category
+     * @param subcategoryIndex index in array for subcategories in primary category
+     */
     public void setPrimaryCategory(PrimaryCategory primaryCategory, int subcategoryIndex){
         mSubcategory = primaryCategory.getSubcategories().get(subcategoryIndex);
         mPrimaryCategory = primaryCategory;
@@ -182,6 +209,10 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         mEditMode = true;
     }
 
+    /**
+     * Sets primary category and edit mode keeps disabled
+     * @param primaryCategory primary category
+     */
     public void setPrimaryCategory(PrimaryCategory primaryCategory){
         mSubcategory = new Subcategory("", new Goal(0), primaryCategory, false);
         mPrimaryCategory = primaryCategory;
