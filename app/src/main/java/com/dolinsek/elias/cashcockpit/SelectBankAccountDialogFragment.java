@@ -3,6 +3,7 @@ package com.dolinsek.elias.cashcockpit;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -29,14 +30,27 @@ public class SelectBankAccountDialogFragment extends DialogFragment {
             bankAccountNames[i] = Database.getBankAccounts().get(i).getName();
         }
 
-        alertBuilder.setItems(bankAccountNames, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                selectedBankAccount = i;
-                if(onClickListener != null)
-                    onClickListener.onClick(dialogInterface, i);
-            }
-        });
+        if(bankAccountNames.length == 0){
+            alertBuilder.setMessage(getResources().getString(R.string.label_no_bank_accounts));
+            alertBuilder.setPositiveButton(getResources().getString(R.string.dialog_action_create), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+
+                    //Start BankAccountActivity
+                    Intent intent = new Intent(getContext(), BankAccountActivity.class);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            alertBuilder.setItems(bankAccountNames, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    selectedBankAccount = i;
+                    if(onClickListener != null)
+                        onClickListener.onClick(dialogInterface, i);
+                }
+            });
+        }
 
         return alertBuilder.create();
     }

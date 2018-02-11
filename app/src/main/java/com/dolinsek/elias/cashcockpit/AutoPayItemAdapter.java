@@ -1,5 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Intent;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +33,7 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
     }
 
     @Override
-    public void onBindViewHolder(AutoPayItemViewHolder holder, int position) {
+    public void onBindViewHolder(final AutoPayItemViewHolder holder, final int position) {
         AutoPay autoPay = autoPays.get(position);
 
         //Converts the type of the AutoPay to a string
@@ -48,6 +50,16 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
         //Displays data
         holder.mTxvName.setText(autoPay.getName());
         holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + Currencies.EURO.getCurrency().format(autoPay.getBill().getAmount()) + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
+        holder.mCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                //Start AutoPayActivity
+                Intent intent = new Intent(holder.itemView.getContext(), AutoPayActivity.class);
+                intent.putExtra(AutoPayActivity.EXTRA_AUTO_PAY_INDEX, position);
+                holder.itemView.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -58,12 +70,14 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
     public class AutoPayItemViewHolder extends RecyclerView.ViewHolder{
 
         public TextView mTxvName, mTxvDetails;
+        public CardView mCardView;
 
         public AutoPayItemViewHolder(View itemView) {
             super(itemView);
 
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_name);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_details);
+            mCardView = (CardView) itemView.findViewById(R.id.cv_item_auto_pay);
         }
     }
 }

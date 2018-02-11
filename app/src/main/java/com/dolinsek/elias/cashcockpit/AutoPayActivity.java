@@ -1,8 +1,11 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,14 +24,17 @@ import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 public class AutoPayActivity extends AppCompatActivity {
 
+    public static final String EXTRA_AUTO_PAY_INDEX = "auto_pay";
+
     private TextInputLayout mTilAutoPayName, mTilAmountEuros, mTilAmountCents;
     private TextInputEditText mEdtAutoPayName, mEdtAmountEuros, mEdtAmountCents;
-    private Button mBtnSelectBankAccount, mBtnSelectSubcategory, mBtnCreate;
+    private Button mBtnSelectBankAccount, mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
     private TextView mTxvSelectedBankAccount, mTxvSelectedCategory;
     private RadioGroup mRgAutoPayType;
     private RadioButton mRbWeekly, mRbMonthly, mRbYearly;
 
     private AutoPay autoPay;
+    private boolean editMode;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -49,15 +55,36 @@ public class AutoPayActivity extends AppCompatActivity {
         mBtnSelectBankAccount = (Button) findViewById(R.id.btn_auto_pay_select_bank_account);
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
+        mBtnDelete = (Button) findViewById(R.id.btn_auto_pay_delete);
 
         mRbWeekly = (RadioButton) findViewById(R.id.rb_auto_pay_weekly);
         mRbMonthly = (RadioButton) findViewById(R.id.rb_auto_pay_monthly);
         mRbYearly = (RadioButton) findViewById(R.id.rb_auto_pay_yearly);
         mRgAutoPayType = (RadioGroup) findViewById(R.id.rg_auto_pay_types);
 
-        //TODO
-        if(true)
+        if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
+            autoPay = Database.getAutoPays().get(getIntent().getIntExtra(EXTRA_AUTO_PAY_INDEX, 0));
+            editMode = true;
+
+            mEdtAutoPayName.setText(autoPay.getName());
+            mEdtAmountEuros.setText(String.valueOf(autoPay.getBill().getAmount() / 100));
+            mEdtAmountCents.setText(String.valueOf(autoPay.getBill().getAmount() % 100));
+
+            mTxvSelectedBankAccount.setText(autoPay.getBankAccount().getName());
+            mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
+
+            mBtnCreate.setText(getResources().getString(R.string.btn_save));
+            mBtnDelete.setVisibility(View.VISIBLE);
+
+            if(autoPay.getType() == AutoPay.TYPE_MONTHLY)
+                mRgAutoPayType.check(mRbMonthly.getId());
+            else if(autoPay.getType() == AutoPay.TYPE_WEEKLY)
+                mRgAutoPayType.check(mRbWeekly.getId());
+            else
+                mRgAutoPayType.check(mRbYearly.getId());
+        } else {
             autoPay = new AutoPay(new Bill(0, "", null), AutoPay.TYPE_MONTHLY, "", null);
+        }
 
         //Shows dialog what allows the user to select a bank account
         mBtnSelectBankAccount.setOnClickListener(new View.OnClickListener() {
@@ -136,13 +163,25 @@ public class AutoPayActivity extends AppCompatActivity {
                     autoPay.getBill().setAmount(euros + cents);
                     autoPay.setType(type);
 
-                    //Creates a new AutoPay
-                    Database.getAutoPays().add(autoPay);
+                    if(!editMode)
+                        //Creates a new AutoPay
+                        Database.getAutoPays().add(autoPay);
+
+                    //Saves changes
                     Database.save(getApplicationContext());
 
                     //Go back to MainActivity
                     finish();
                 }
+            }
+        });
+
+        mBtnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DeleteAutoPayDialogFragment deleteAutoPayDialogFragment = new DeleteAutoPayDialogFragment();
+                deleteAutoPayDialogFragment.setAutoPay(autoPay);
+                deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
             }
         });
     }
@@ -164,5 +203,32 @@ public class AutoPayActivity extends AppCompatActivity {
         if(item.getItemId() == android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
+    }
+
+    public static class DeleteAutoPayDialogFragment extends DialogFragment {
+
+        private AutoPay autoPay;
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage(getResources().getString(R.string.dialog_msg_delete_auto_pay));
+            builder.setPositiveButton(getResources().getString(R.string.dialog_action_delete), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    if(autoPay != null){
+                        Database.getAutoPays().remove(autoPay);
+                        Database.save(getActivity());
+                        getActivity().finish();
+                    }
+                }
+            });
+
+            return builder.create();
+        }
+
+        public void setAutoPay(AutoPay autoPay){
+            this.autoPay = autoPay;
+        }
     }
 }

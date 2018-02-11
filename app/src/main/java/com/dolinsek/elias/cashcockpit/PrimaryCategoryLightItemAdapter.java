@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.provider.ContactsContract;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -85,12 +86,21 @@ public class PrimaryCategoryLightItemAdapter extends RecyclerView.Adapter<Primar
         }
 
         @Override
-        public void onBindViewHolder(SubcategoryLightItemViewHolder holder, final int position) {
+        public void onBindViewHolder(final SubcategoryLightItemViewHolder holder, final int position) {
             holder.mTxvSubcategoryName.setText(primaryCategory.getSubcategories().get(position).getName());
             holder.mBtnSelectSubcategory.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     subcategorySelectionListener.onSubcategorySelected(primaryCategory.getSubcategories().get(position));
+                }
+            });
+
+            setupImage(primaryCategory.getSubcategories().get(position).isFavoured(), holder.mImvSubcategoryFavored);
+            holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    primaryCategory.getSubcategories().get(position).setFavoured(!primaryCategory.getSubcategories().get(position).isFavoured());
+                    setupImage(primaryCategory.getSubcategories().get(position).isFavoured(), holder.mImvSubcategoryFavored);
                 }
             });
         }
@@ -100,9 +110,16 @@ public class PrimaryCategoryLightItemAdapter extends RecyclerView.Adapter<Primar
             return primaryCategory.getSubcategories().size();
         }
 
+        private void setupImage(boolean favored, ImageView imageView){
+            if(favored)
+                imageView.setImageResource(R.drawable.ic_favorite);
+            else
+                imageView.setImageResource(R.drawable.ic_not_favorite);
+        }
 
         class SubcategoryLightItemViewHolder extends RecyclerView.ViewHolder{
 
+            public ImageView mImvSubcategoryFavored;
             public TextView mTxvSubcategoryName;
             public Button mBtnSelectSubcategory;
 
@@ -111,6 +128,7 @@ public class PrimaryCategoryLightItemAdapter extends RecyclerView.Adapter<Primar
 
                 mTxvSubcategoryName = (TextView) itemView.findViewById(R.id.txv_item_subcategory_light_name);
                 mBtnSelectSubcategory = (Button) itemView.findViewById(R.id.btn_item_subcategory_light_select);
+                mImvSubcategoryFavored = (ImageView) itemView.findViewById(R.id.imv_item_subcategory_light_favored);
             }
         }
     }

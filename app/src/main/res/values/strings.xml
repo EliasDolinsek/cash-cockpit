@@ -85,6 +85,10 @@
     <string name="label_none">None</string>
     <string name="label_bills">Bills</string>
     <string name="label_primary_account">Primary Account</string>
+    <string name="label_no_bank_accounts">There are no bank accounts!</string>
+    <string name="label_no_categories">There are no categories!</string>
+    <string name="dialog_action_restore">Restore</string>
+    <string name="dialog_msg_delete_auto_pay">Delete AutoPay?</string>
 
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>

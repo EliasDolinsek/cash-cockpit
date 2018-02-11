@@ -51,15 +51,9 @@ public class AutoPaysFragment extends Fragment {
         mBtnCreateAutoPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Database.getAutoPays().add(new AutoPay(new Bill(10000, "description", Database.getPrimaryCategories().get(0).getSubcategories().get(0)), 0, "Name", Database.getBankAccounts().get(0))); //TODO delte
-                Database.save(getContext());
-                try {
-                    Database.load(getContext());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                //Start AutoPayActivity
+                Intent intent = new Intent(getContext(), AutoPayActivity.class);
+                startActivity(intent);
             }
         });
         return inflatedView;

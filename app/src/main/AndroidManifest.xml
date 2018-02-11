@@ -21,7 +21,7 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".BankAccountActivity" />
         <activity android:name=".CategoryActivity" />
-        <activity android:name=".AutoPayActivity"></activity>
+        <activity android:name=".AutoPayActivity" android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
     </application>
 
 </manifest>
