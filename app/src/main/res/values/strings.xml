@@ -89,6 +89,8 @@
     <string name="label_no_categories">There are no categories!</string>
     <string name="dialog_action_restore">Restore</string>
     <string name="dialog_msg_delete_auto_pay">Delete AutoPay?</string>
+    <string name="label_subcategory_delete_information">When deleting, all AutoPays and bills are also removed!</string>
+    <string name="dialog_action_confirm_deletion">Confirm deletion</string>
 
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>

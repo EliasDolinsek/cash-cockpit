@@ -14,10 +14,15 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
+import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+
+import java.util.ArrayList;
 
 /**
  * DialogFragment for creating, editing and deleting subcategory
@@ -26,6 +31,7 @@ import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 public class SubcategoryEditorDialogFragment extends DialogFragment{
 
+    private LinearLayout mLlDeleteInformations;
     private PrimaryCategory mPrimaryCategory;
     private Subcategory mSubcategory;
     private boolean mEditMode = false;
@@ -48,6 +54,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View inflatedView = inflater.inflate(R.layout.dialog_subcategory_editor, null);
 
+        mLlDeleteInformations = (LinearLayout) inflatedView.findViewById(R.id.ll_item_subcategory_deletion_informations);
         mTilSubcategoryName = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_name);
         mTilGoalAmount = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_goal_amount);
 
@@ -155,15 +162,38 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                     }
                 });
 
-                Button mBtnNegative = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                final Button mBtnNegative = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
                 if(mBtnNegative != null){
                     mBtnNegative.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            //Deletes Subcategory
-                            mPrimaryCategory.getSubcategories().remove(mSubcategory);
+                            mLlDeleteInformations.setVisibility(View.VISIBLE);
+                            mBtnNegative.setText(getResources().getString(R.string.dialog_action_confirm_deletion));
 
-                            dialog.dismiss();
+                            mBtnNegative.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+
+                                    //Deletes Bills
+                                    for(int i = 0; i< Database.getBankAccounts().size(); i++){
+                                        for(int y = 0; y<Database.getBankAccounts().get(i).getBills().size(); y++){
+                                            if(Database.getBankAccounts().get(i).getBills().get(y).getSubcategory().equals(mSubcategory))
+                                                Database.getBankAccounts().get(i).getBills().remove(Database.getBankAccounts().get(i).getBills().get(y));
+                                        }
+                                    }
+
+                                    //Deletes AutoPays
+                                    for(int i = 0; i<Database.getAutoPays().size(); i++){
+                                        if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(mSubcategory))
+                                            Database.getAutoPays().remove(Database.getAutoPays().get(i));
+                                    }
+
+                                    //Deletes subcategory
+                                    mPrimaryCategory.getSubcategories().remove(mSubcategory);
+
+                                    dialog.dismiss();
+                                }
+                            });
                         }
                     });
                 }

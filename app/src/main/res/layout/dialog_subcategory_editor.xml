@@ -4,15 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingTop="10dp">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_item_subcategory_editor_name"
@@ -47,7 +49,10 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp">
+        android:layout_marginEnd="5dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_item_subcategory_editor_goal_amount"
@@ -74,6 +79,28 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical" />
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_item_subcategory_deletion_informations"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <ImageView
+            android:src="@drawable/ic_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="5dp"
+            android:layout_marginStart="15dp"/>
+
+        <TextView
+            android:text="@string/label_subcategory_delete_information"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
     </LinearLayout>
 
 </LinearLayout>

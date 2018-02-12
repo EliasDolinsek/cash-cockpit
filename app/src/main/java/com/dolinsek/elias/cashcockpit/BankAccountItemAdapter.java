@@ -55,7 +55,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
         //Displays if the current bank account is the primary bank account
         if(bankAccount.isPrimaryAccount()){
-            holder.mTxvName.append(" " + Character.toString((char)0x00B7) + " ");
+            holder.mTxvDetails.append(" " + Character.toString((char)0x00B7) + " ");
             holder.mTxvPrimaryAccount.setText(holder.itemView.getContext().getResources().getString(R.string.label_primary_account));
         }
 

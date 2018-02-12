@@ -36,6 +36,11 @@ public class AutoPayActivity extends AppCompatActivity {
     private AutoPay autoPay;
     private boolean editMode;
 
+    /**
+     * Is a placeholder for a new selected subcategory if it's in edit mode
+     */
+    private Subcategory subcategoryPlaceholder;
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +116,11 @@ public class AutoPayActivity extends AppCompatActivity {
                 selectSubcategoryDialogFragment.setOnSubcategorySelected(new PrimaryCategoryLightItemAdapter.SubcategorySelectionListener() {
                     @Override
                     public void onSubcategorySelected(Subcategory subcategory) {
-                        autoPay.getBill().setSubcategory(subcategory);
+                        if(editMode)
+                            subcategoryPlaceholder = subcategory;
+                        else
+                            autoPay.getBill().setSubcategory(subcategory);
+
                         mTxvSelectedCategory.setText(subcategory.getName());
                         selectSubcategoryDialogFragment.dismiss();
                     }
@@ -163,9 +172,12 @@ public class AutoPayActivity extends AppCompatActivity {
                     autoPay.getBill().setAmount(euros + cents);
                     autoPay.setType(type);
 
-                    if(!editMode)
+                    if(editMode){
+                        autoPay.getBill().setSubcategory(subcategoryPlaceholder);
+                    } else {
                         //Creates a new AutoPay
                         Database.getAutoPays().add(autoPay);
+                    }
 
                     //Saves changes
                     Database.save(getApplicationContext());

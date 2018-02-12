@@ -482,9 +482,10 @@ public class DataHelper {
             //Gets subcategory
             for(int p = 0; p< Database.getPrimaryCategories().size(); p++){
                 for(int s = 0; s< Database.getPrimaryCategories().get(p).getSubcategories().size(); s++){
-                    if(Database.getPrimaryCategories().get(p).getName().equals(currentAutoPayJSON.getString(AUTO_PAY_BILL_PRIMARY_CATEGORY)))
-                        if(Database.getPrimaryCategories().get(p).getSubcategories().get(s).getName().equals(subcategoryName));
+                    if(Database.getPrimaryCategories().get(p).getName().equals(currentAutoPayJSON.getString(AUTO_PAY_BILL_PRIMARY_CATEGORY))){
+                        if(Database.getPrimaryCategories().get(p).getSubcategories().get(s).getName().equals(subcategoryName))
                             subcategory = Database.getPrimaryCategories().get(p).getSubcategories().get(s);
+                    }
                 }
             }
 
