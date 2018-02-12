@@ -46,6 +46,7 @@ public class DataHelper {
     private static final String BILL_DESCRIPTION_JSON = "description";
     private static final String BILL_SUB_CATEGORY_JSON = "subCategory";
     private static final String BILL_CREATION_DATE_JSON = "creationDate";
+    private static final String BILL_PRIMARY_CATEGORY_NAME = "primaryCategory";
 
     //PrimaryCategory
     private static final String PRIMARY_CATEGORY_NAME = "name";
@@ -165,10 +166,13 @@ public class DataHelper {
                 //Adds description
                 currentBillJSON.put(BILL_DESCRIPTION_JSON, bill.getDescription());
 
-                //Adds name
+                //Adds primary category
+                currentBillJSON.put(BILL_PRIMARY_CATEGORY_NAME, bill.getSubcategory().getPrimaryCategory().getName());
+
+                //Adds subcategory
                 currentBillJSON.put(BILL_SUB_CATEGORY_JSON, bill.getSubcategory().getName());
 
-                //Adds cration date
+                //Adds creation date
                 currentBillJSON.put(BILL_CREATION_DATE_JSON, bill.getCreationDate());
             }
         }
@@ -300,7 +304,7 @@ public class DataHelper {
         //Main JSON-Object
         JSONObject jsonObject = new JSONObject(file);
 
-        //TODO add javadoc
+        //Array of bank accounts
         JSONArray bankAccountsJSON = jsonObject.getJSONArray(BANK_ACCOUNTS_JSON);
 
         for(int i = 0; i<bankAccountsJSON.length(); i++){
@@ -323,21 +327,33 @@ public class DataHelper {
             ArrayList<Bill> bills = new ArrayList<>();
 
             //Adds every bill
-            //TODO subcategory in BankAccountBill
             for(int y = 0; y<currentBankAccountJSON.getJSONArray(BILLS_JSON).length(); y++){
                 //Contains current bill
                 JSONObject currentBillJSON = currentBankAccountJSON.getJSONArray(BILLS_JSON).getJSONObject(y);
 
                 long billAmount, billCreationDate;
-                String billDescription, billSubCategory;
+                String billDescription, billSubCategory, billPrimaryCategory;
 
                 billCreationDate = currentBillJSON.getLong(BILL_CREATION_DATE_JSON);
                 billAmount = currentBillJSON.getLong(BILL_AMOUNT_JSON);
                 billDescription = currentBillJSON.getString(BILL_DESCRIPTION_JSON);
-                //TODO deal with billSubCategory
                 billSubCategory = currentBillJSON.getString(BILL_SUB_CATEGORY_JSON);
+                billPrimaryCategory = currentBillJSON.getString(BILL_PRIMARY_CATEGORY_NAME);
 
-                bills.add(new Bill(billAmount, billDescription, null, billCreationDate));
+                //Subcategory of bill
+                Subcategory subcategory = null;
+
+                //Gets subcategory
+                for(int p = 0; p< Database.getPrimaryCategories().size(); p++){
+                    for(int s = 0; s< Database.getPrimaryCategories().get(p).getSubcategories().size(); s++){
+                        if(Database.getPrimaryCategories().get(p).getName().equals(billPrimaryCategory)){
+                            if(Database.getPrimaryCategories().get(p).getSubcategories().get(s).getName().equals(billSubCategory))
+                                subcategory = Database.getPrimaryCategories().get(p).getSubcategories().get(s);
+                        }
+                    }
+                }
+
+                bills.add(new Bill(billAmount, billDescription, subcategory, billCreationDate));
             }
 
             //Adds name

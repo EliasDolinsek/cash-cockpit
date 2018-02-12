@@ -5,6 +5,11 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.Spanned;
+import android.text.TextWatcher;
+import android.text.method.DigitsKeyListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,29 +28,29 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
     public static final String EXTRA_BANK_ACCOUNT_INDEX = "bankAccountIndex";
 
-    private TextInputLayout mTilAccountName, mTilAccountEuros, mTilAccountCents;
-    private EditText mEdtAccountName, mEdtAccountEuros, mEdtAccountCents;
+    private TextInputLayout mTilAccountName, mTilAccountAmount;
+    private EditText mEdtAccountName, mEdtAccountAmount;
     private Switch mSwPrimaryAccount;
     private Button mBtnCreate, mBtnDelete;
 
     private BankAccount bankAccount = null;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_account);
 
         mTilAccountName = (TextInputLayout) findViewById(R.id.til_bank_account_name);
-        mTilAccountEuros = (TextInputLayout) findViewById(R.id.til_bank_account_euros);
-        mTilAccountCents = (TextInputLayout) findViewById(R.id.til_bank_account_cents);
+        mTilAccountAmount = (TextInputLayout) findViewById(R.id.til_bank_account_amount);
 
         mEdtAccountName = (EditText) findViewById(R.id.edt_bank_account_name);
-        mEdtAccountEuros = (EditText) findViewById(R.id.edt_bank_account_euros);
-        mEdtAccountCents = (EditText) findViewById(R.id.edt_bank_account_cents);
+        mEdtAccountAmount = (EditText) findViewById(R.id.edt_bank_account_amount);
 
         mSwPrimaryAccount = (Switch) findViewById(R.id.sw_bank_account_priamry_account);
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
         mBtnDelete = (Button) findViewById(R.id.btn_bank_account_delete);
+
+        mEdtAccountAmount.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(5,2)});
 
         //When there is a bank account to edit it turns into edit mode
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
@@ -58,8 +63,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         //Displays data if it is in edit mode
         if(bankAccount != null){
             mEdtAccountName.setText(bankAccount.getName());
-            mEdtAccountEuros.setText(String.valueOf(bankAccount.getBalance() / 100));
-            mEdtAccountCents.setText(String.valueOf(bankAccount.getBalance() % 100));
+
+            mEdtAccountAmount.setText(String.valueOf((double)bankAccount.getBalance() / 100));
 
             mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
             mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
@@ -80,8 +85,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
                 //Reset errors
                 mTilAccountName.setError(null);
-                mTilAccountEuros.setError(null);
-                mTilAccountCents.setError(null);
+                mTilAccountAmount.setError(null);
 
                 //Checks if the account-name already exists
                 boolean accountNameAlreadyExists = false;
@@ -92,19 +96,16 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
                 if(mEdtAccountName.getText().toString().trim().equals("")){
                     mTilAccountName.setError(getResources().getString(R.string.label_enter_bank_account_name));
-                } else if(mEdtAccountEuros.getText().toString().equals("") && mEdtAccountCents.getText().toString().equals("")){
-                    mTilAccountEuros.setError(getResources().getString(R.string.label_enter_euros));
-                    mTilAccountCents.setError(" ");
+                } else if(mEdtAccountAmount.getText().toString().equals("")){
+                    mTilAccountAmount.setError(getResources().getString(R.string.label_enter_euros));;
                 } else if(accountNameAlreadyExists && bankAccount == null){
                     mTilAccountName.setError(getResources().getString(R.string.label_bank_account_already_exits));
                 } else {
 
                     //Reads balance
-                    long balance = 0;
-                    if(!mEdtAccountEuros.getText().toString().equals(""))
-                        balance = Long.valueOf(mEdtAccountEuros.getText().toString()) * 100;
-                    if(!mEdtAccountCents.getText().toString().equals(""))
-                        balance += Long.valueOf(mEdtAccountCents.getText().toString());
+                    long balance = ((long) (Double.valueOf(mEdtAccountAmount.getText().toString()) * 100));
+                    System.out.println(balance);
+
 
                     //When it's not in edit mode it creates a new bank account and saves it
                     if(bankAccount == null){

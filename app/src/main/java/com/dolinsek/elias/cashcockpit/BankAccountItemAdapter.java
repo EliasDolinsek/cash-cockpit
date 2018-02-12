@@ -51,7 +51,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
         //Display data
         holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(Currencies.EURO.getCurrency().format(bankAccount.getBalance()) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
+        holder.mTxvDetails.setText(bankAccount.getBalance() / 100 + "." + Math.abs(bankAccount.getBalance() % 100) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
 
         //Displays if the current bank account is the primary bank account
         if(bankAccount.isPrimaryAccount()){
