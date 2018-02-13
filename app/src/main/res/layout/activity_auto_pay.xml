@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.dolinsek.elias.cashcockpit.AutoPayActivity"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:paddingTop="10dp"
+    android:paddingStart="10dp"
+    android:paddingEnd="10dp"
+    android:paddingBottom="5dp">
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_auto_pay_name"
@@ -23,49 +25,25 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_auto_pay_amount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_auto_pay_euros"
-            android:layout_width="0dp"
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edt_auto_pay_amount"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_weight="5">
+            android:hint="@string/label_amount"
+            android:inputType="numberSigned|numberDecimal"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:maxLength="15" />
 
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/edt_auto_pay_euros"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:hint="@string/label_bank_account_euros"
-                android:inputType="numberSigned"
-                android:textAlignment="center"
-                android:maxLength="15" />
+    </android.support.design.widget.TextInputLayout>
 
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/til_auto_pay_cents"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="5">
-
-            <android.support.design.widget.TextInputEditText
-                android:id="@+id/edt_auto_pay_cents"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:hint="@string/label_bank_account_cents"
-                android:inputType="number"
-                android:maxLength="2"
-                android:textAlignment="center" />
-
-        </android.support.design.widget.TextInputLayout>
-    </LinearLayout>
 
     <RadioGroup
         android:id="@+id/rg_auto_pay_types"
@@ -118,7 +96,7 @@
                 android:id="@+id/btn_auto_pay_select_bank_account"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:layout_marginStart="5dp"
                 android:text="@string/btn_select_bank_account" />
 
@@ -141,7 +119,7 @@
                 android:id="@+id/btn_auto_pay_select_subcategory"
                 style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:text="@string/btn_select_category"
                 android:layout_marginEnd="5dp"/>
 
@@ -155,7 +133,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
 
     <LinearLayout
         android:layout_width="match_parent"

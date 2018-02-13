@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
@@ -175,6 +176,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
 
     @Override
     public void onDismiss(DialogInterface dialogInterface) {
+        CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
         mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true)));
     }
 
@@ -195,9 +197,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
     private void discardChanges() {
         try {
             Database.load(getApplicationContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

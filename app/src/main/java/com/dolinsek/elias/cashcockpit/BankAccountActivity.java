@@ -50,8 +50,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
         mBtnDelete = (Button) findViewById(R.id.btn_bank_account_delete);
 
-        mEdtAccountAmount.setFilters(new InputFilter[] {new DecimalDigitsInputFilter(5,2)});
-
         //When there is a bank account to edit it turns into edit mode
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
             bankAccount = Database.getBankAccounts().get(getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0));
@@ -64,7 +62,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         if(bankAccount != null){
             mEdtAccountName.setText(bankAccount.getName());
 
-            mEdtAccountAmount.setText(String.valueOf((double)bankAccount.getBalance() / 100));
+            mEdtAccountAmount.setText(bankAccount.getBalance() / 100 + "." + Math.abs(bankAccount.getBalance() % 100));
 
             mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
             mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
@@ -104,8 +102,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
                     //Reads balance
                     long balance = ((long) (Double.valueOf(mEdtAccountAmount.getText().toString()) * 100));
-                    System.out.println(balance);
-
 
                     //When it's not in edit mode it creates a new bank account and saves it
                     if(bankAccount == null){
@@ -159,6 +155,24 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             }
 
         });
+
+        mEdtAccountAmount.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                String text = arg0.toString();
+                if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
+                    mEdtAccountAmount.setText(text.substring(0, text.length() - 1));
+                    mEdtAccountAmount.setSelection(mEdtAccountAmount.getText().length());
+                }
+            }
+
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+            }
+
+            public void afterTextChanged(Editable arg0) {
+            }
+        });
+
     }
 
     /**

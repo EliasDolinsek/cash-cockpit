@@ -9,6 +9,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,8 +28,8 @@ public class AutoPayActivity extends AppCompatActivity {
 
     public static final String EXTRA_AUTO_PAY_INDEX = "auto_pay";
 
-    private TextInputLayout mTilAutoPayName, mTilAmountEuros, mTilAmountCents;
-    private TextInputEditText mEdtAutoPayName, mEdtAmountEuros, mEdtAmountCents;
+    private TextInputLayout mTilAutoPayName, mTilAmount;
+    private TextInputEditText mEdtAutoPayName, mEdtAmount;
     private Button mBtnSelectBankAccount, mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
     private TextView mTxvSelectedBankAccount, mTxvSelectedCategory;
     private RadioGroup mRgAutoPayType;
@@ -47,12 +49,10 @@ public class AutoPayActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auto_pay);
 
         mTilAutoPayName = (TextInputLayout) findViewById(R.id.til_auto_pay_name);
-        mTilAmountEuros = (TextInputLayout) findViewById(R.id.til_auto_pay_euros);
-        mTilAmountCents = (TextInputLayout) findViewById(R.id.til_auto_pay_cents);
+        mTilAmount = (TextInputLayout) findViewById(R.id.til_auto_pay_amount);
 
         mEdtAutoPayName = (TextInputEditText) findViewById(R.id.edt_auto_pay_name);
-        mEdtAmountEuros = (TextInputEditText) findViewById(R.id.edt_auto_pay_euros);
-        mEdtAmountCents = (TextInputEditText) findViewById(R.id.edt_auto_pay_cents);
+        mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
 
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
         mTxvSelectedBankAccount = (TextView) findViewById(R.id.txv_auto_pay_selected_bank_account);
@@ -72,8 +72,7 @@ public class AutoPayActivity extends AppCompatActivity {
             editMode = true;
 
             mEdtAutoPayName.setText(autoPay.getName());
-            mEdtAmountEuros.setText(String.valueOf(autoPay.getBill().getAmount() / 100));
-            mEdtAmountCents.setText(String.valueOf(autoPay.getBill().getAmount() % 100));
+            mEdtAmount.setText(autoPay.getBill().getAmount() / 100 + "." + Math.abs(autoPay.getBill().getAmount() % 100));
 
             mTxvSelectedBankAccount.setText(autoPay.getBankAccount().getName());
             mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
@@ -135,28 +134,22 @@ public class AutoPayActivity extends AppCompatActivity {
 
                 //Removes errors
                 mTilAutoPayName.setError(null);
-                mTilAmountEuros.setError(null);
-                mTilAmountCents.setError(null);
+                mTilAmount.setError(null);
                 mTxvSelectedBankAccount.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
                 mTxvSelectedCategory.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
 
                 if(mEdtAutoPayName.getText().toString().trim().equals("")){
                     mTilAutoPayName.setError(getResources().getString(R.string.label_enter_category_name));
-                } else if(mEdtAmountEuros.getText().toString().equals("") && mEdtAmountCents.getText().toString().equals("")){
-                    mTilAmountEuros.setError(getResources().getString(R.string.label_enter_euros));
-                    mTilAmountCents.setError(" ");
+                } else if(mEdtAmount.getText().toString().equals("")){
+                    mEdtAmount.setError(getResources().getString(R.string.label_enter_euros));
                 } else if(autoPay.getBankAccount() == null){
-                    mTxvSelectedBankAccount.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+                    mTxvSelectedBankAccount.setText(getResources().getString(R.string.label_need_to_select_bank_account));
                 } else if(autoPay.getBill().getSubcategory() == null){
-                    mTxvSelectedCategory.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+                    mTxvSelectedCategory.setText(getResources().getString(R.string.label_need_to_select_category));
                 } else {
 
                     //Gets amount
-                    long euros = 0, cents = 0;
-                    if(!mEdtAmountEuros.getText().toString().equals(""))
-                        euros = Long.valueOf(mEdtAmountEuros.getText().toString()) * 100;
-                    if(!mEdtAmountCents.getText().toString().equals(""))
-                        cents = Long.valueOf(mEdtAmountCents.getText().toString());
+                    long amount = Long.valueOf(mEdtAmount.getText().toString());
 
                     //Gets type
                     int type = AutoPay.TYPE_MONTHLY;
@@ -169,7 +162,7 @@ public class AutoPayActivity extends AppCompatActivity {
 
                     //Sets changes
                     autoPay.setName(mEdtAutoPayName.getText().toString());
-                    autoPay.getBill().setAmount(euros + cents);
+                    autoPay.getBill().setAmount(amount * 100);
                     autoPay.setType(type);
 
                     if(editMode){
@@ -194,6 +187,23 @@ public class AutoPayActivity extends AppCompatActivity {
                 DeleteAutoPayDialogFragment deleteAutoPayDialogFragment = new DeleteAutoPayDialogFragment();
                 deleteAutoPayDialogFragment.setAutoPay(autoPay);
                 deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
+            }
+        });
+
+        mEdtAmount.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                String text = arg0.toString();
+                if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
+                    mEdtAmount.setText(text.substring(0, text.length() - 1));
+                    mEdtAmount.setSelection(mEdtAmount.getText().length());
+                }
+            }
+
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+            }
+
+            public void afterTextChanged(Editable arg0) {
             }
         });
     }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
@@ -98,6 +99,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                         holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
 
                     subcategory.setFavoured(!subcategory.isFavoured());
+                    CategoriesSorter.sortSubcategories(primaryCategory.getSubcategories());
                 }
         });
 

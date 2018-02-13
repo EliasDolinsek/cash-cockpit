@@ -67,6 +67,8 @@ public class Database {
         bankAccounts = dataHelper.readBankAccounts();
         defaultPrimaryCategories = dataHelper.readCategories(true);
         autoPays = dataHelper.readAutoPays();
+
+        CategoriesSorter.sortPrimaryCategories(primaryCategories);
     }
 
     /**
@@ -74,6 +76,8 @@ public class Database {
      * @param context context to get access to files
      */
     public static void save(Context context){
+        CategoriesSorter.sortPrimaryCategories(primaryCategories);
+
         if(dataHelper != null){
             try {
                 dataHelper.writeData(bankAccounts, primaryCategories, autoPays);

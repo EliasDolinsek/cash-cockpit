@@ -91,6 +91,8 @@
     <string name="dialog_msg_delete_auto_pay">Delete AutoPay?</string>
     <string name="label_subcategory_delete_information">When deleting, all AutoPays and bills are also removed!</string>
     <string name="dialog_action_confirm_deletion">Confirm deletion</string>
+    <string name="label_need_to_select_category">You need to select a category!</string>
+    <string name="label_need_to_select_bank_account">You need to select an account!</string>
 
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>

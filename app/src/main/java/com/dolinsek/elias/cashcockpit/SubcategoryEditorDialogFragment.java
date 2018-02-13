@@ -134,8 +134,18 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                         } else if(mChbGoalEnabled.isChecked() && mEdtGoalAmount.getText().toString().equals("")){
                             mTilGoalAmount.setError(getResources().getString(R.string.label_enter_euros));
                         } else {
+
+                            //If the name starts with a space it removes it so that the category-sorter works properly
+                            String name = mEdtSubcategoryName.getText().toString();
+                            while(true){
+                                if(name.startsWith(" "))
+                                    name = name.substring(1, name.length());
+                                else
+                                    break;
+                            }
+
                             //Saves name
-                            mSubcategory.setName(mEdtSubcategoryName.getText().toString());
+                            mSubcategory.setName(name);
 
                             //Saves goal-status
                             if(mChbGoalEnabled.isChecked())
