@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -86,7 +87,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         if(mEditMode){
             mEdtSubcategoryName.setText(mSubcategory.getName());
             if(mSubcategory.getGoal().getAmount() != 0){
-                mEdtGoalAmount.setText(String.valueOf(mSubcategory.getGoal().getAmount() / 100));
+                mEdtGoalAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(mSubcategory.getGoal().getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
                 mChbGoalEnabled.setChecked(true);
             }
 
@@ -105,6 +106,8 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_create), null);
             builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
         }
+
+        mEdtGoalAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtGoalAmount));
 
         //Sets up button clicks
         final AlertDialog dialog = builder.create();
@@ -149,7 +152,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
 
                             //Saves goal-status
                             if(mChbGoalEnabled.isChecked())
-                                mSubcategory.setGoal(new Goal(Long.valueOf(mEdtGoalAmount.getText().toString()) * 100));
+                                mSubcategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
                             else
                                 mSubcategory.setGoal(new Goal(0));
 

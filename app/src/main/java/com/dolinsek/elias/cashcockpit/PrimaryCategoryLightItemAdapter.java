@@ -27,6 +27,13 @@ public class PrimaryCategoryLightItemAdapter extends RecyclerView.Adapter<Primar
 
     public PrimaryCategoryLightItemAdapter(SubcategorySelectionListener subcategorySelectionListener){
         primaryCategories = Database.getPrimaryCategories();
+
+        //Remove primary categories what have no subcategories
+        for(int i = 0; i<primaryCategories.size(); i++){
+            if(primaryCategories.get(i).getSubcategories().size() == 0)
+                primaryCategories.remove(i);
+        }
+
         this.subcategorySelectionListener = subcategorySelectionListener;
     }
 

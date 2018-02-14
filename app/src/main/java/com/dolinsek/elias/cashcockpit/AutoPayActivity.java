@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
@@ -72,7 +73,7 @@ public class AutoPayActivity extends AppCompatActivity {
             editMode = true;
 
             mEdtAutoPayName.setText(autoPay.getName());
-            mEdtAmount.setText(autoPay.getBill().getAmount() / 100 + "." + Math.abs(autoPay.getBill().getAmount() % 100));
+            mEdtAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(autoPay.getBill().getAmount()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
 
             mTxvSelectedBankAccount.setText(autoPay.getBankAccount().getName());
             mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
@@ -149,7 +150,7 @@ public class AutoPayActivity extends AppCompatActivity {
                 } else {
 
                     //Gets amount
-                    long amount = Long.valueOf(mEdtAmount.getText().toString());
+                    long amount = ((long) (Double.valueOf(mEdtAmount.getText().toString()) * 100));
 
                     //Gets type
                     int type = AutoPay.TYPE_MONTHLY;
@@ -162,11 +163,11 @@ public class AutoPayActivity extends AppCompatActivity {
 
                     //Sets changes
                     autoPay.setName(mEdtAutoPayName.getText().toString());
-                    autoPay.getBill().setAmount(amount * 100);
+                    autoPay.getBill().setAmount(amount);
                     autoPay.setType(type);
 
                     if(editMode){
-                        autoPay.getBill().setSubcategory(subcategoryPlaceholder);
+                        autoPay.getBill().setSubcategory(subcategoryPlaceholder == null ? autoPay.getBill().getSubcategory() : subcategoryPlaceholder);
                     } else {
                         //Creates a new AutoPay
                         Database.getAutoPays().add(autoPay);
@@ -190,22 +191,7 @@ public class AutoPayActivity extends AppCompatActivity {
             }
         });
 
-        mEdtAmount.addTextChangedListener(new TextWatcher() {
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                String text = arg0.toString();
-                if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
-                    mEdtAmount.setText(text.substring(0, text.length() - 1));
-                    mEdtAmount.setSelection(mEdtAmount.getText().length());
-                }
-            }
-
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-
-            }
-
-            public void afterTextChanged(Editable arg0) {
-            }
-        });
+        mEdtAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtAmount));
     }
 
     @Override

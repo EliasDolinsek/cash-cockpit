@@ -93,6 +93,18 @@
     <string name="dialog_action_confirm_deletion">Confirm deletion</string>
     <string name="label_need_to_select_category">You need to select a category!</string>
     <string name="label_need_to_select_bank_account">You need to select an account!</string>
+    <string name="label_currency">Currency</string>
+    <string name="label_currency_preference_description">Currency what is used to display amounts and balances</string>
+
+    <string name="euro">Euro</string>
+    <string name="dollar">Dollar</string>
+    <string name="pounds">Pounds</string>
+
+    <array name="currencies_array">
+        <item>@string/euro</item>
+        <item>@string/dollar</item>
+        <item>@string/pounds</item>
+    </array>
 
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>

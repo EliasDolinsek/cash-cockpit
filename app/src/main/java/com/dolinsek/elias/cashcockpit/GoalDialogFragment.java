@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -44,7 +45,7 @@ public class GoalDialogFragment extends DialogFragment{
         mEdtGoalAmount = (EditText) inflatedView.findViewById(R.id.edt_dialog_goal_amount);
 
         if(primaryCategory.getGoal().getAmount() != 0){
-            mEdtGoalAmount.setText(String.valueOf(primaryCategory.getGoal().getAmount() / 100));
+            mEdtGoalAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(primaryCategory.getGoal().getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
 
             builder.setTitle(getResources().getString(R.string.dialog_title_edit_goal));
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
@@ -71,10 +72,10 @@ public class GoalDialogFragment extends DialogFragment{
                     public void onClick(View view) {
                         if(mEdtGoalAmount.getText().toString().trim().equals("") || mEdtGoalAmount.getText().toString().equals("0"))
                             mTextInputLayout.setError(getResources().getString(R.string.label_enter_valid_amount));
-                        else if(subcatgegoriesGoalAmount > Long.valueOf(mEdtGoalAmount.getText().toString()) * 100){
+                        else if(subcatgegoriesGoalAmount > ((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))){
                             mTextInputLayout.setError(getResources().getString(R.string.label_more_goal_amount));
                         } else {
-                            primaryCategory.setGoal(new Goal(Long.valueOf(mEdtGoalAmount.getText().toString()) * 100));
+                            primaryCategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
 
                             //Save data
                             Database.save(getContext());
@@ -102,6 +103,8 @@ public class GoalDialogFragment extends DialogFragment{
                 }
             }
         });
+
+        mEdtGoalAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtGoalAmount));
 
         return dialog;
     }

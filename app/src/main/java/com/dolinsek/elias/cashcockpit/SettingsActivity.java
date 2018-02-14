@@ -1,6 +1,5 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +18,8 @@ public class SettingsActivity extends AppCompatActivity {
             actionBar.setTitle(R.string.settings);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
 
     @Override

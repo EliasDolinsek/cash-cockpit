@@ -76,7 +76,6 @@ public class Database {
      * @param context context to get access to files
      */
     public static void save(Context context){
-        CategoriesSorter.sortPrimaryCategories(primaryCategories);
 
         if(dataHelper != null){
             try {

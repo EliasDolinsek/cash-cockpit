@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
-import com.dolinsek.elias.cashcockpit.components.Currencies;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
         //Displays data
         holder.mTxvName.setText(autoPay.getName());
-        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + Currencies.EURO.getCurrency().format(autoPay.getBill().getAmount()) + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
+        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(autoPay.getBill().getAmount()) + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

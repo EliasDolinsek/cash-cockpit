@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
-import com.dolinsek.elias.cashcockpit.components.Currencies;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
         //Display data
         holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(bankAccount.getBalance() / 100 + "." + Math.abs(bankAccount.getBalance() % 100) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
+        holder.mTxvDetails.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(bankAccount.getBalance()) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
 
         //Displays if the current bank account is the primary bank account
         if(bankAccount.isPrimaryAccount()){
@@ -62,7 +62,6 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 //Start CreateBankAccountActivity to edit the clicked bank account
                 Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
                 intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);

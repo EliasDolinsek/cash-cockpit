@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
@@ -46,7 +47,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
     @Override
     public void onBindViewHolder(final PrimaryCategoryViewHolder holder, final int position) {
-        PrimaryCategory primaryCategory = primaryCategories.get(position);
+        final PrimaryCategory primaryCategory = primaryCategories.get(position);
 
         //Displays the amount of the goal for the primary category if it's set and zero if not
         if(primaryCategory.getGoal().getAmount() == 0){
@@ -65,7 +66,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             }
 
             //Displays informations
-            holder.mTxvCategoryGoalStatus.setText(((amount / 100) + "/" + (primaryCategory.getGoal().getAmount() / 100) + "€"));
+            holder.mTxvCategoryGoalStatus.setText((Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount) + "/" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(primaryCategory.getGoal().getAmount())));
             holder.mPgbCategoryGoalStatus.setProgress((int)(100.0 /(primaryCategory.getGoal().getAmount() / 100.0) * (amount / 100.0)));
 
             //Enables a ProgressBar if there is a goal

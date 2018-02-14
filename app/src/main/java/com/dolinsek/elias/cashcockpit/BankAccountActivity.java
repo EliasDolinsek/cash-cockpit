@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         if(bankAccount != null){
             mEdtAccountName.setText(bankAccount.getName());
 
-            mEdtAccountAmount.setText(bankAccount.getBalance() / 100 + "." + Math.abs(bankAccount.getBalance() % 100));
+            mEdtAccountAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(bankAccount.getBalance()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
 
             mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
             mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
@@ -156,22 +157,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         });
 
-        mEdtAccountAmount.addTextChangedListener(new TextWatcher() {
-            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-                String text = arg0.toString();
-                if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
-                    mEdtAccountAmount.setText(text.substring(0, text.length() - 1));
-                    mEdtAccountAmount.setSelection(mEdtAccountAmount.getText().length());
-                }
-            }
-
-            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
-
-            }
-
-            public void afterTextChanged(Editable arg0) {
-            }
-        });
+        mEdtAccountAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtAccountAmount));
 
     }
 

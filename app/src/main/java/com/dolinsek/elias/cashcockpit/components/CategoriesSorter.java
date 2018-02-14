@@ -12,6 +12,13 @@ import java.util.Comparator;
 public class CategoriesSorter {
 
     public static void sortPrimaryCategories(ArrayList<PrimaryCategory> primaryCategories){
+        Collections.sort(primaryCategories, new Comparator<PrimaryCategory>() {
+            @Override
+            public int compare(PrimaryCategory primaryCategory, PrimaryCategory t1) {
+                return primaryCategory.getName().compareTo(t1.getName());
+            }
+        });
+
         for(int i = 0; i<primaryCategories.size(); i++){
             for(int y = 0; y<primaryCategories.get(i).getSubcategories().size(); y++){
                 if(primaryCategories.get(i).getSubcategories().get(y).isFavoured()){

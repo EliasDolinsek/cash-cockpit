@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
@@ -76,7 +77,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                 }}
 
             //Displays informations
-            holder.mTxvSubcategoryGoalStatus.setText((amount + "/" + (subcategory.getGoal().getAmount() / 100) + "€"));
+            holder.mTxvSubcategoryGoalStatus.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount) + "/" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(subcategory.getGoal().getAmount()));
             holder.mPgbSubcategoryGoalStatus.setProgress((int)(100 / (double)(subcategory.getGoal().getAmount() / 100) * (double)(amount / 100)));
 
             //Enables a ProgressBar if there is a goal
@@ -122,8 +123,10 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                     //Gets the index of the primary category in the Database
                     int primaryCategoryIndex = 0;
                     for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                        if(primaryCategory.equals(Database.getPrimaryCategories()))
-                            primaryCategoryIndex = 0;
+                        if(primaryCategory.equals(Database.getPrimaryCategories().get(i))){
+                            primaryCategoryIndex = i;
+                            System.out.println(i);
+                        }
                     }
 
                     //Starts CategoryActivity

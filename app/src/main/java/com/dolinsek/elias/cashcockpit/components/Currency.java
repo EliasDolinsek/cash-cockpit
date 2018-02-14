@@ -1,66 +1,127 @@
 package com.dolinsek.elias.cashcockpit.components;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v7.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
+
+import com.dolinsek.elias.cashcockpit.R;
+
 /**
  * Created by elias on 10.01.2018.
  */
 
-public class Currency {
+public abstract class Currency {
 
-    public static final int ALIGNMENT_RIGHT = 0;
-    public static final int ALIGHNMENT_LEFT = 1;
+    private static final String EURO_SYMBOL = "€";
+    private static final String DOLLAR_SYMBOL = "$";
+    private static final String POUND_SYMBOL = "£";
 
-    //Name of the currency
-    private String name;
-    //Symbol of the currency
     private String symbol;
-    //Alignment of the symbol of the currency
-    private int alignment;
-
-    public Currency(String name, String symbol, int alignment) {
-        this.name = name;
+    protected Currency(String symbol){
         this.symbol = symbol;
-        this.alignment = alignment;
     }
 
-    public String format(long amount){
-
-        int cents = (int) (amount % 100);
-        long euro = (amount / 100);
-
-        String centsString = String.valueOf(cents);
-        if(cents < 10){
-            centsString = centsString + "0";
-        }
-
-        if(alignment == ALIGHNMENT_LEFT){
-            return symbol + String.valueOf(euro) + "." + centsString;
-        } else {
-            return String.valueOf(euro) + "." + centsString + "€";
-        }
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public abstract String formatAmountToString(long amount);
 
     public String getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
+    public static class Factory {
 
-    public int getAlignment() {
-        return alignment;
-    }
+        public static Currency getActiveCurrency(Context context){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+            String currency = sharedPreferences.getString("preference_currency", context.getResources().getString(R.string.euro));
 
-    public void setAlignment(int alignment) {
-        this.alignment = alignment;
+            if(currency.equals(context.getResources().getString(R.string.euro)))
+                return getEuroCurrency();
+            else if(currency.equals(context.getResources().getString(R.string.dollar)))
+                return getDollarCurrency();
+            else
+                return getPoundCurrency();
+        }
+
+        public static Currency getEuroCurrency(){
+            Currency currency = new Currency(EURO_SYMBOL) {
+                @Override
+                public String formatAmountToString(long amount) {
+                    long euros = amount / 100, cents = amount % 100;
+
+                    String amountInString = String.valueOf(euros);
+                    amountInString = amountInString + "." + cents;
+
+                    if(cents % 10 == 0)
+                        amountInString = amountInString + "0";
+
+                    amountInString = amountInString + EURO_SYMBOL;
+                    return amountInString;
+                }
+            };
+
+            return currency;
+        }
+
+        public static Currency getDollarCurrency(){
+            Currency currency = new Currency(DOLLAR_SYMBOL) {
+                @Override
+                public String formatAmountToString(long amount) {
+                    long dollars = amount / 100, cents = amount % 100;
+
+                    String amountInString = String.valueOf(dollars);
+                    amountInString = amountInString + "." + cents;
+
+                    if(cents % 10 == 0)
+                        amountInString = amountInString + "0";
+
+                    amountInString = DOLLAR_SYMBOL + amountInString;
+                    return amountInString;
+                }
+            };
+
+            return currency;
+        }
+
+        public static Currency getPoundCurrency(){
+            Currency currency = new Currency(POUND_SYMBOL) {
+                @Override
+                public String formatAmountToString(long amount) {
+                    long pounds = amount / 100, cents = amount % 100;
+
+                    String amountInString = String.valueOf(pounds);
+                    amountInString = amountInString + "." + cents;
+
+                    if(cents % 10 == 0)
+                        amountInString = amountInString + "0";
+
+                    amountInString = POUND_SYMBOL + amountInString;
+                    return amountInString;
+                }
+            };
+
+            return currency;
+        }
+
+        public static TextWatcher getCurrencyTextWatcher(final EditText editText){
+            return new TextWatcher() {
+                public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+                    String text = arg0.toString();
+                    if (text.contains(".") && text.substring(text.indexOf(".") + 1).length() > 2) {
+                        editText.setText(text.substring(0, text.length() - 1));
+                        editText.setSelection(editText.getText().length());
+                    }
+                }
+
+                public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3) {
+
+                }
+
+                public void afterTextChanged(Editable arg0) {
+                }
+            };
+        }
     }
 }

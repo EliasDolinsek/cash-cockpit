@@ -51,8 +51,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp">
+        android:paddingEnd="10dp">
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_item_subcategory_editor_goal_amount"
@@ -65,7 +64,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:enabled="false"
-                android:inputType="number"
+                android:inputType="numberDecimal|numberSigned"
                 android:textAlignment="center"
                 android:singleLine="true"
                 android:maxLength="15"
