@@ -83,7 +83,7 @@
     <string name="btn_select">Select</string>
     <string name="label_enter_name">Please enter a name!</string>
     <string name="label_none">None</string>
-    <string name="label_bills">Bills</string>
+    <string name="label_bills">Bill(s)</string>
     <string name="label_primary_account">Primary Account</string>
     <string name="label_no_bank_accounts">There are no bank accounts!</string>
     <string name="label_no_categories">There are no categories!</string>
@@ -95,6 +95,13 @@
     <string name="label_need_to_select_bank_account">You need to select an account!</string>
     <string name="label_currency">Currency</string>
     <string name="label_currency_preference_description">Currency what is used to display amounts and balances</string>
+    <string name="label_description">Description</string>
+    <string name="label_enter_amount">Please enter an amount!</string>
+    <string name="btn_add_bill">Add Bill</string>
+
+    <string name="label_input">Input</string>
+    <string name="label_output">Output</string>
+    <string name="label_transfer">Transfer</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

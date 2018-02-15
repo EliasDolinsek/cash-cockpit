@@ -142,7 +142,7 @@ public class AutoPayActivity extends AppCompatActivity {
                 if(mEdtAutoPayName.getText().toString().trim().equals("")){
                     mTilAutoPayName.setError(getResources().getString(R.string.label_enter_category_name));
                 } else if(mEdtAmount.getText().toString().equals("")){
-                    mEdtAmount.setError(getResources().getString(R.string.label_enter_euros));
+                    mTilAmount.setError(getResources().getString(R.string.label_enter_amount));
                 } else if(autoPay.getBankAccount() == null){
                     mTxvSelectedBankAccount.setText(getResources().getString(R.string.label_need_to_select_bank_account));
                 } else if(autoPay.getBill().getSubcategory() == null){

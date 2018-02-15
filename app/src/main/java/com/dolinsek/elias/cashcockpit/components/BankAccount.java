@@ -75,6 +75,7 @@ public class BankAccount {
 
     public void addBill(Bill bill){
         bills.add(bill);
+        setBalance(getBalance() - bill.getAmount());
     }
 
     public void setName(String name) {

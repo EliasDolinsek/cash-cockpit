@@ -33,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Shows CockpitFragment
+        replaceFragment(new CockpitFragment());
+
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bnv_main);
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -42,7 +45,10 @@ public class MainActivity extends AppCompatActivity {
                 switch (item.getItemId()){
                     case R.id.navigation_database:
                             replaceFragment(new DatabaseFragment());
-                        return true;
+                            return true;
+                    case R.id.navigation_cockpit:
+                            replaceFragment(new CockpitFragment());
+                            return true;
                 }
 
                 return false;
@@ -66,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.add(R.id.ll_main, fragment);
+        fragmentTransaction.replace(R.id.ll_main, fragment);
 
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
