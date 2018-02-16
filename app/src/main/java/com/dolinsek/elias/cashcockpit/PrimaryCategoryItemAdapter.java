@@ -51,7 +51,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
         //Displays the amount of the goal for the primary category if it's set and zero if not
         if(primaryCategory.getGoal().getAmount() == 0){
-            holder.mTxvCategoryGoalStatus.setText("0/0€");
+            holder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
         } else {
 
             //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable

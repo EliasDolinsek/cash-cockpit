@@ -63,7 +63,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
         //Displays the goal-amount
         if(subcategory.getGoal().getAmount() == 0)
-            holder.mTxvSubcategoryGoalStatus.setText("0/0€");
+            holder.mTxvSubcategoryGoalStatus.setText("----");
         else {
             //Reads how much bills have this as subcategory and adds its amount into the variable amount
             long amount = 0;
@@ -74,7 +74,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                             amount += bill.getAmount();
                         }
                     }
-                }}
+                }
+            }
 
             //Displays informations
             holder.mTxvSubcategoryGoalStatus.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount) + "/" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(subcategory.getGoal().getAmount()));

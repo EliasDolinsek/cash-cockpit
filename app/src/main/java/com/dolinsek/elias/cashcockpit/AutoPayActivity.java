@@ -88,7 +88,7 @@ public class AutoPayActivity extends AppCompatActivity {
             else
                 mRgAutoPayType.check(mRbYearly.getId());
         } else {
-            autoPay = new AutoPay(new Bill(0, "", null), AutoPay.TYPE_MONTHLY, "", null);
+            autoPay = new AutoPay(new Bill(0, "", Bill.TYPE_OUTPUT, null), AutoPay.TYPE_MONTHLY, "", null);
         }
 
         //Shows dialog what allows the user to select a bank account

@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 
 /**
@@ -75,7 +76,10 @@ public class BankAccount {
 
     public void addBill(Bill bill){
         bills.add(bill);
-        setBalance(getBalance() - bill.getAmount());
+        if(bill.getType() == Bill.TYPE_INPUT)
+            setBalance(getBalance() + bill.getAmount());
+        else
+            setBalance(getBalance() - bill.getAmount());
     }
 
     public void setName(String name) {

@@ -38,29 +38,38 @@ public class Bill {
     private long creationDate;
 
     /**
+     * Type of the bill
+     */
+    private int type;
+
+    /**
      * Creates a new Bill
      * @param amount amount what get added or removed from the bank account
      * @param description a short description what can help the user to remember what this bill was for
+     * @param type type of the bill
      * @param subcategory subcategory
      * @param creationDate creation date of the bill
      */
-    public Bill(long amount, String description, Subcategory subcategory, long creationDate) {
+    public Bill(long amount, String description, Subcategory subcategory, int type, long creationDate) {
         this.amount = amount;
         this.description = description;
         this.subcategory = subcategory;
         this.creationDate = creationDate;
+        this.type = type;
     }
 
     /**
      * Creates a new Bill and sets the creation date to the current date
      * @param amount amount what get added or removed from the bank account
      * @param description a short description what can help the user to remember what this bill was for
+     * @param type type of the bill
      * @param subcategory subcategory
      */
-    public Bill(long amount, String description, Subcategory subcategory) {
+    public Bill(long amount, String description, int type, Subcategory subcategory) {
         this.amount = amount;
         this.description = description;
         this.subcategory = subcategory;
+        this.type = type;
         creationDate = System.currentTimeMillis();
     }
 
@@ -94,5 +103,13 @@ public class Bill {
 
     public void setCreationDate(long creationDate) {
         this.creationDate = creationDate;
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
     }
 }

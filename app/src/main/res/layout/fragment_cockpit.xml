@@ -35,95 +35,94 @@
             android:layout_height="wrap_content"
             android:hint="@string/label_description"
             android:lines="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textAlignment="center"/>
 
     </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_cockpit_select_category"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/btn_select_category"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+
+        <Button
+            android:id="@+id/btn_cockpit_select_bank_account"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/btn_select_bank_account"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
+
+    </LinearLayout>
 
     <RadioGroup
         android:id="@+id/rg_cockpit_bill_types"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center"
+        android:layout_gravity="center_vertical"
         android:layout_marginTop="5dp"
-        android:weightSum="9"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp">
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:weightSum="9">
 
         <RadioButton
             android:id="@+id/rb_cockpit_bill_type_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_input"
-            android:layout_weight="3"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_weight="3" />
 
         <RadioButton
             android:id="@+id/rb_cockpit_bill_type_output"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_output"
-            android:layout_weight="3"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_weight="3" />
 
         <RadioButton
             android:id="@+id/rb_cockpit_bill_type_transfer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_transfer"
-            android:layout_weight="3"
-            android:textAlignment="center"/>
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:layout_weight="3" />
 
     </RadioGroup>
 
     <LinearLayout
+        android:id="@+id/ll_cockpit_select_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
         android:layout_marginTop="5dp"
-        android:orientation="horizontal">
+        android:visibility="gone">
 
-        <LinearLayout
+        <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:orientation="vertical">
+            android:src="@drawable/ic_info"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="10dp"/>
 
-            <Button
-                android:id="@+id/btn_cockpit_select_bank_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_select_bank_account"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-
-            <TextView
-                android:id="@+id/txv_cockpit_bank_account"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"/>
-
-        </LinearLayout>
-
-        <LinearLayout
+        <TextView
+            android:id="@+id/txv_cockpit_select_info"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/btn_cockpit_select_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_select_category"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-
-            <TextView
-                android:id="@+id/txv_cockpit_category"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"/>
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 
     <Button
@@ -131,7 +130,7 @@
         style="@style/Widget.AppCompat.Button.Borderless.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:text="@string/btn_add_bill" />
+
 
 </LinearLayout>

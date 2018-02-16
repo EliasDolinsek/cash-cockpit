@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
@@ -29,12 +31,13 @@ import com.dolinsek.elias.cashcockpit.components.Subcategory;
  */
 public class CockpitFragment extends Fragment {
 
+    private LinearLayout mLlSelectInfo;
+    private TextView mTxvSelectInfo;
     private TextInputLayout mTilBillAmount, mTilBillDescription;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private RadioGroup mRgBillTypes;
     private RadioButton mRbTypeInput, mRbTypeOutput, mRbTypeTransfer;
     private Button mBtnSelectBankAccount, mBtnSelectCategory, mBtnAdd;
-    private TextView mTxvSelectedBankAccount, mTxvSelectedCategory;
 
     private BankAccount bankAccount;
     private Subcategory subcategory;
@@ -60,11 +63,11 @@ public class CockpitFragment extends Fragment {
         mBtnSelectCategory = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_category);
         mBtnAdd = (Button) inflatedView.findViewById(R.id.btn_cockpit_add);
 
-        mTxvSelectedBankAccount = (TextView) inflatedView.findViewById(R.id.txv_cockpit_bank_account);
-        mTxvSelectedCategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_category);
+        mLlSelectInfo = (LinearLayout) inflatedView.findViewById(R.id.ll_cockpit_select_info);
+        mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
 
         mEdtBillAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtBillAmount));
-        mRgBillTypes.check(mRbTypeInput.getId());
+        mRgBillTypes.check(mRbTypeOutput.getId());
 
         mBtnSelectBankAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,10 +77,12 @@ public class CockpitFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         bankAccount = Database.getBankAccounts().get(i);
-                        mTxvSelectedBankAccount.setText(bankAccount.getName());
+                        mBtnSelectBankAccount.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        mBtnSelectBankAccount.setText(bankAccount.getName());
                     }
                 });
 
+                hideKeyboard();
                 selectBankAccountDialogFragment.show(getFragmentManager(), "select_bank_account");
             }
         });
@@ -90,10 +95,14 @@ public class CockpitFragment extends Fragment {
                     @Override
                     public void onSubcategorySelected(Subcategory subcategory) {
                         CockpitFragment.this.subcategory = subcategory;
-                        mTxvSelectedCategory.setText(subcategory.getName());
+                        mBtnSelectCategory.setTextColor(getResources().getColor(R.color.colorPrimary));
+                        mBtnSelectCategory.setText(subcategory.getName());
+
                         selectSubcategoryDialogFragment.dismiss();
                     }
                 });
+
+                hideKeyboard();
                 selectSubcategoryDialogFragment.show(getFragmentManager(), "select_category");
             }
         });
@@ -103,14 +112,18 @@ public class CockpitFragment extends Fragment {
             public void onClick(View view) {
                 mTilBillAmount.setError(null);
                 mTilBillAmount.setErrorEnabled(false);
+                mTilBillDescription.setErrorEnabled(false);
+                mLlSelectInfo.setVisibility(View.GONE);
 
                 if(mEdtBillAmount.getText().toString().equals("")){
                     mTilBillDescription.setErrorEnabled(true);
                     mTilBillAmount.setError(getResources().getString(R.string.label_enter_amount));
                 } else if(bankAccount == null){
-                    mTxvSelectedBankAccount.setText(getResources().getString(R.string.label_need_to_select_bank_account));
+                    mLlSelectInfo.setVisibility(View.VISIBLE);
+                    mTxvSelectInfo.setText(getResources().getString(R.string.label_need_to_select_bank_account));
                 } else if(subcategory == null){
-                    mTxvSelectedCategory.setText(getResources().getString(R.string.label_need_to_select_category));
+                    mLlSelectInfo.setVisibility(View.VISIBLE);
+                    mTxvSelectInfo.setText(getResources().getString(R.string.label_need_to_select_category));
                 } else {
                     long amount = ((long) (Double.valueOf(mEdtBillAmount.getText().toString()) * 100));
                     String description = mEdtBillDescription.getText().toString();
@@ -118,35 +131,43 @@ public class CockpitFragment extends Fragment {
                     int type;
                     if(mRgBillTypes.getCheckedRadioButtonId() == mRbTypeInput.getId()) {
                         type = Bill.TYPE_INPUT;
-                    } else if(mRgBillTypes.getCheckedRadioButtonId() == mRbTypeOutput.getId()) {
+                    } else if(mRgBillTypes.getCheckedRadioButtonId() == mRbTypeOutput.getId()){
                         type = Bill.TYPE_OUTPUT;
-                    } else{
+                    } else {
                         type = Bill.TYPE_TRANSFER;
                     }
 
-                    bankAccount.addBill(new Bill(amount, description, subcategory));
+                    bankAccount.addBill(new Bill(amount, description, type, subcategory));
 
                     //Show message
-                    Snackbar snackbar = Snackbar.make(getView(), "Added successfully", Snackbar.LENGTH_SHORT);
-                    snackbar.show();
+                    Toast.makeText(getContext(), getResources().getString(R.string.toast_bill_added), Toast.LENGTH_SHORT).show();
 
                     //Clears all fields
                     mEdtBillAmount.setText("");
                     mEdtBillDescription.setText("");
-                    mTxvSelectedCategory.setText("");
-                    mTxvSelectedBankAccount.setText("");
 
                     bankAccount = null;
                     subcategory = null;
 
-                    //Hides keyboard
-                    InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                    mEdtBillAmount.requestFocus();
+
+                    mBtnSelectBankAccount.setText(getResources().getString(R.string.btn_select_bank_account));
+                    mBtnSelectCategory.setText(getResources().getString(R.string.btn_select_category));
+                    mBtnSelectBankAccount.setTextColor(getResources().getColor(R.color.colorAccent));
+                    mBtnSelectCategory.setTextColor(getResources().getColor(R.color.colorAccent));
+
+                    hideKeyboard();
+
                 }
             }
         });
 
         return inflatedView;
+    }
+
+    private void hideKeyboard(){
+        InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
     }
 
 }

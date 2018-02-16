@@ -47,6 +47,7 @@ public class DataHelper {
     private static final String BILL_SUB_CATEGORY_JSON = "subCategory";
     private static final String BILL_CREATION_DATE_JSON = "creationDate";
     private static final String BILL_PRIMARY_CATEGORY_NAME = "primaryCategory";
+    private static final String BILL_TYPE_JSON = "type";
 
     //PrimaryCategory
     private static final String PRIMARY_CATEGORY_NAME = "name";
@@ -174,6 +175,9 @@ public class DataHelper {
 
                 //Adds creation date
                 currentBillJSON.put(BILL_CREATION_DATE_JSON, bill.getCreationDate());
+
+                //Adds type
+                currentBillJSON.put(BILL_TYPE_JSON, bill.getType());
             }
         }
 
@@ -353,7 +357,7 @@ public class DataHelper {
                     }
                 }
 
-                bills.add(new Bill(billAmount, billDescription, subcategory, billCreationDate));
+                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), billCreationDate));
             }
 
             //Adds name
@@ -512,7 +516,7 @@ public class DataHelper {
             }
 
             //Adds current AutoPay
-            autoPays.add(new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate));
+            autoPays.add(new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, Bill.TYPE_OUTPUT, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate));
         }
 
         return autoPays;

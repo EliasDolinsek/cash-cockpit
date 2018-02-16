@@ -98,6 +98,7 @@
     <string name="label_description">Description</string>
     <string name="label_enter_amount">Please enter an amount!</string>
     <string name="btn_add_bill">Add Bill</string>
+    <string name="toast_bill_added">Bill added successfully!</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>
