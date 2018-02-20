@@ -62,9 +62,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
 
         //Displays the goal-amount
-        if(subcategory.getGoal().getAmount() == 0)
-            holder.mTxvSubcategoryGoalStatus.setText("----");
-        else {
+        if(subcategory.getGoal().getAmount() != 0) {
             //Reads how much bills have this as subcategory and adds its amount into the variable amount
             long amount = 0;
             for(BankAccount bankAccount: Database.getBankAccounts()){

@@ -69,6 +69,15 @@ public class Database {
         autoPays = dataHelper.readAutoPays();
 
         CategoriesSorter.sortPrimaryCategories(primaryCategories);
+
+        //Sorts the primary bank account to the first position
+        for(int i = 0; i<getBankAccounts().size(); i++){
+            if(getBankAccounts().get(i).isPrimaryAccount()){
+                BankAccount primaryBankAccount = getBankAccounts().get(i);
+                getBankAccounts().remove(i);
+                getBankAccounts().add(0, primaryBankAccount);
+            }
+        }
     }
 
     /**

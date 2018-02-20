@@ -24,45 +24,6 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/til_cockpit_bill_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/edt_cockpit_bill_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/label_description"
-            android:lines="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textAlignment="center"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btn_cockpit_select_category"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="@string/btn_select_category"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-
-        <Button
-            android:id="@+id/btn_cockpit_select_bank_account"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="@string/btn_select_bank_account"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-
-    </LinearLayout>
-
     <RadioGroup
         android:id="@+id/rg_cockpit_bill_types"
         android:layout_width="match_parent"
@@ -103,6 +64,23 @@
 
     </RadioGroup>
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_cockpit_bill_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edt_cockpit_bill_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/label_description"
+            android:lines="1"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textAlignment="center"/>
+
+    </android.support.design.widget.TextInputLayout>
+
     <LinearLayout
         android:id="@+id/ll_cockpit_select_info"
         android:layout_width="match_parent"
@@ -125,12 +103,42 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Spinner
+            android:id="@+id/spn_cockpit_select_bank_account"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_gravity="center_vertical"/>
+
+        <Button
+            android:id="@+id/btn_cockpit_create_bank_account"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/create_account"
+            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+            android:visibility="gone"/>
+
+        <Button
+            android:id="@+id/btn_cockpit_select_category"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/btn_select_category" />
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/btn_cockpit_add"
-        style="@style/Widget.AppCompat.Button.Borderless.Colored"
+        style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_add_bill" />
-
 
 </LinearLayout>

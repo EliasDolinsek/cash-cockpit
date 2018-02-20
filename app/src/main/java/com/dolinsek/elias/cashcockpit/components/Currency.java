@@ -49,12 +49,12 @@ public abstract class Currency {
             Currency currency = new Currency(EURO_SYMBOL) {
                 @Override
                 public String formatAmountToString(long amount) {
-                    long euros = amount / 100, cents = amount % 100;
+                    long euros = amount / 100, cents = Math.abs(amount % 100);
 
                     String amountInString = String.valueOf(euros);
                     amountInString = amountInString + "." + cents;
 
-                    if(cents % 10 == 0)
+                    if(cents / 10 == 0)
                         amountInString = amountInString + "0";
 
                     amountInString = amountInString + EURO_SYMBOL;
@@ -69,12 +69,12 @@ public abstract class Currency {
             Currency currency = new Currency(DOLLAR_SYMBOL) {
                 @Override
                 public String formatAmountToString(long amount) {
-                    long dollars = amount / 100, cents = amount % 100;
+                    long dollars = amount / 100, cents = Math.abs(amount % 100);
 
                     String amountInString = String.valueOf(dollars);
                     amountInString = amountInString + "." + cents;
 
-                    if(cents % 10 == 0)
+                    if(cents / 10 == 0)
                         amountInString = amountInString + "0";
 
                     amountInString = DOLLAR_SYMBOL + amountInString;
@@ -89,12 +89,12 @@ public abstract class Currency {
             Currency currency = new Currency(POUND_SYMBOL) {
                 @Override
                 public String formatAmountToString(long amount) {
-                    long pounds = amount / 100, cents = amount % 100;
+                    long pounds = amount / 100, cents = Math.abs(amount % 100);
 
                     String amountInString = String.valueOf(pounds);
                     amountInString = amountInString + "." + cents;
 
-                    if(cents % 10 == 0)
+                    if(cents / 10 == 0)
                         amountInString = amountInString + "0";
 
                     amountInString = POUND_SYMBOL + amountInString;

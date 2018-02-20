@@ -3,6 +3,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
@@ -11,11 +12,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +41,8 @@ public class CockpitFragment extends Fragment {
     private EditText mEdtBillAmount, mEdtBillDescription;
     private RadioGroup mRgBillTypes;
     private RadioButton mRbTypeInput, mRbTypeOutput, mRbTypeTransfer;
-    private Button mBtnSelectBankAccount, mBtnSelectCategory, mBtnAdd;
+    private Button mBtnSelectCategory, mBtnAdd, mBtnCreateBankAccount;
+    private Spinner mSpnSelectBankAccount;
 
     private BankAccount bankAccount;
     private Subcategory subcategory;
@@ -59,33 +64,17 @@ public class CockpitFragment extends Fragment {
         mRbTypeOutput = (RadioButton) inflatedView.findViewById(R.id.rb_cockpit_bill_type_output);
         mRbTypeTransfer = (RadioButton) inflatedView.findViewById(R.id.rb_cockpit_bill_type_transfer);
 
-        mBtnSelectBankAccount = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_bank_account);
         mBtnSelectCategory = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_category);
         mBtnAdd = (Button) inflatedView.findViewById(R.id.btn_cockpit_add);
+        mBtnCreateBankAccount = (Button) inflatedView.findViewById(R.id.btn_cockpit_create_bank_account);
 
         mLlSelectInfo = (LinearLayout) inflatedView.findViewById(R.id.ll_cockpit_select_info);
         mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
 
+        mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
+
         mEdtBillAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtBillAmount));
         mRgBillTypes.check(mRbTypeOutput.getId());
-
-        mBtnSelectBankAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SelectBankAccountDialogFragment selectBankAccountDialogFragment = new SelectBankAccountDialogFragment();
-                selectBankAccountDialogFragment.setOnSelectListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        bankAccount = Database.getBankAccounts().get(i);
-                        mBtnSelectBankAccount.setTextColor(getResources().getColor(R.color.colorPrimary));
-                        mBtnSelectBankAccount.setText(bankAccount.getName());
-                    }
-                });
-
-                hideKeyboard();
-                selectBankAccountDialogFragment.show(getFragmentManager(), "select_bank_account");
-            }
-        });
 
         mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,16 +134,7 @@ public class CockpitFragment extends Fragment {
                     //Clears all fields
                     mEdtBillAmount.setText("");
                     mEdtBillDescription.setText("");
-
-                    bankAccount = null;
-                    subcategory = null;
-
                     mEdtBillAmount.requestFocus();
-
-                    mBtnSelectBankAccount.setText(getResources().getString(R.string.btn_select_bank_account));
-                    mBtnSelectCategory.setText(getResources().getString(R.string.btn_select_category));
-                    mBtnSelectBankAccount.setTextColor(getResources().getColor(R.color.colorAccent));
-                    mBtnSelectCategory.setTextColor(getResources().getColor(R.color.colorAccent));
 
                     hideKeyboard();
 
@@ -162,7 +142,50 @@ public class CockpitFragment extends Fragment {
             }
         });
 
+        mBtnCreateBankAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Start BankAccountActivity
+                Intent intent = new Intent(getContext(), BankAccountActivity.class);
+                startActivity(intent);
+            }
+        });
+
         return inflatedView;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
+        selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        for(BankAccount bankAccount:Database.getBankAccounts()){
+            selectBankAccountAdapter.add(bankAccount.getName());
+        }
+
+        mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
+        mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                bankAccount = Database.getBankAccounts().get(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        if(Database.getBankAccounts().size() != 0){
+            bankAccount = Database.getBankAccounts().get(0);
+            mBtnCreateBankAccount.setVisibility(View.GONE);
+            mSpnSelectBankAccount.setVisibility(View.VISIBLE);
+        } else {
+            mBtnCreateBankAccount.setVisibility(View.VISIBLE);
+            mSpnSelectBankAccount.setVisibility(View.GONE);
+        }
     }
 
     private void hideKeyboard(){

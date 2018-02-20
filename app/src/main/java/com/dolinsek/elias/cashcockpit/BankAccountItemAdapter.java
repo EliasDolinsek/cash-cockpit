@@ -28,15 +28,6 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public BankAccountItemAdapter(){
         //Gets bank accounts from database
         mBankAccounts = Database.getBankAccounts();
-
-        //Sorts the primary bank account to the first position
-        for(int i = 0; i<mBankAccounts.size(); i++){
-            if(mBankAccounts.get(i).isPrimaryAccount()){
-                BankAccount primaryBankAccount = mBankAccounts.get(i);
-                mBankAccounts.remove(i);
-                mBankAccounts.add(0, primaryBankAccount);
-            }
-        }
     }
 
     @Override

@@ -78,8 +78,9 @@ public class BankAccount {
         bills.add(bill);
         if(bill.getType() == Bill.TYPE_INPUT)
             setBalance(getBalance() + bill.getAmount());
-        else
+        else if(bill.getType() == Bill.TYPE_OUTPUT)
             setBalance(getBalance() - bill.getAmount());
+
     }
 
     public void setName(String name) {

@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -14,10 +15,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
-
-import org.json.JSONException;
-
-import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -63,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(MainActivity.TAG, "", e);
         }
-
     }
 
     /**
