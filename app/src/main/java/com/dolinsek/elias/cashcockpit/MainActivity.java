@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private BottomNavigationView mBottomNavigationView;
 
+    private CockpitFragment cockpitFragment = new CockpitFragment();
+    private DatabaseFragment databaseFragment = new DatabaseFragment();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +46,10 @@ public class MainActivity extends AppCompatActivity {
                 //Switch between fragments
                 switch (item.getItemId()){
                     case R.id.navigation_database:
-                            replaceFragment(new DatabaseFragment());
+                            replaceFragment(databaseFragment);
                             return true;
                     case R.id.navigation_cockpit:
-                            replaceFragment(new CockpitFragment());
+                            replaceFragment(cockpitFragment);
                             return true;
                 }
 

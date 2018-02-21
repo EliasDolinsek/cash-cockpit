@@ -3,8 +3,9 @@
     android:id="@+id/cv_item_auto_pay"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="1dp"
-    android:layout_marginTop="1dp">
+    android:layout_marginTop="5dp"
+    android:layout_marginStart="5dp"
+    android:layout_marginEnd="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"

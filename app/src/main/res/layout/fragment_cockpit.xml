@@ -24,51 +24,10 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <RadioGroup
-        android:id="@+id/rg_cockpit_bill_types"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_gravity="center_vertical"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:weightSum="9">
-
-        <RadioButton
-            android:id="@+id/rb_cockpit_bill_type_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_input"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:layout_weight="3" />
-
-        <RadioButton
-            android:id="@+id/rb_cockpit_bill_type_output"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_output"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:layout_weight="3" />
-
-        <RadioButton
-            android:id="@+id/rb_cockpit_bill_type_transfer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_transfer"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:layout_weight="3" />
-
-    </RadioGroup>
-
     <android.support.design.widget.TextInputLayout
         android:id="@+id/til_cockpit_bill_description"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone">
+        android:layout_height="wrap_content">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edt_cockpit_bill_description"
@@ -76,26 +35,97 @@
             android:layout_height="wrap_content"
             android:hint="@string/label_description"
             android:lines="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textAlignment="center"/>
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
     </android.support.design.widget.TextInputLayout>
 
     <LinearLayout
-        android:id="@+id/ll_cockpit_select_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="3"
+        android:layout_marginTop="20dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/spn_cockpit_select_bank_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Spinner
+                android:id="@+id/spn_cockpit_select_bill_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/darker_gray"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="10dp">
+
+        <Button
+            android:id="@+id/btn_cockpit_select_category"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/btn_select_category" />
+
+        <TextView
+            android:id="@+id/txv_cockpit_selected_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_cockpit_select_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
         android:visibility="gone">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_info"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="10dp"/>
+            android:layout_gravity="top"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_info" />
 
         <TextView
             android:id="@+id/txv_cockpit_select_info"
@@ -106,39 +136,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="10"
         android:orientation="horizontal">
 
-        <Spinner
-            android:id="@+id/spn_cockpit_select_bank_account"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:layout_gravity="center_vertical"/>
-
         <Button
-            android:id="@+id/btn_cockpit_create_bank_account"
-            android:layout_width="0dp"
+            android:id="@+id/btn_cockpit_add"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="@string/create_account"
-            style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
-            android:visibility="gone"/>
-
-        <Button
-            android:id="@+id/btn_cockpit_select_category"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="5"
-            android:text="@string/btn_select_category" />
+            android:text="@string/btn_add_bill"
+            android:layout_gravity="bottom"/>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btn_cockpit_add"
-        style="@style/Widget.AppCompat.Button.Colored"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_add_bill" />
 
 </LinearLayout>
