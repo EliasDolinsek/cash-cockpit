@@ -100,6 +100,7 @@
     <string name="btn_add_bill">Add Bill</string>
     <string name="toast_bill_added">Bill added successfully!</string>
     <string name="label_no_category_selected">No category selected</string>
+    <string name="label_no_data_for_history">There is no data for a history!</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>
@@ -124,4 +125,7 @@
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>
     <string name="label_bank_account_cents">Cents</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

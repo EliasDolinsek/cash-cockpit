@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
 
     private CockpitFragment cockpitFragment = new CockpitFragment();
+    private HistoryFragment historyFragment = new HistoryFragment();
     private DatabaseFragment databaseFragment = new DatabaseFragment();
 
     @Override
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.navigation_cockpit:
                             replaceFragment(cockpitFragment);
                             return true;
+                    case R.id.navigation_history:
+                        replaceFragment(historyFragment);
+                        return true;
                 }
 
                 return false;
@@ -63,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(MainActivity.TAG, "", e);
         }
+
+        new HistoryItemAdapter();
     }
 
     /**

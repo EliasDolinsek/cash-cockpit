@@ -29,6 +29,9 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 
 
@@ -78,10 +81,17 @@ public class CockpitFragment extends Fragment {
         final ArrayAdapter<CharSequence> selectBillTypeAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
         selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
+        mSpnSelectBillType.setSelection(1);
         mSpnSelectBillType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                billType = i;
+                if(i == 0){
+                    billType = Bill.TYPE_INPUT;
+                } else if(i == 1){
+                    billType = Bill.TYPE_OUTPUT;
+                } else {
+                    billType = Bill.TYPE_TRANSFER;
+                }
             }
 
             @Override
@@ -91,10 +101,13 @@ public class CockpitFragment extends Fragment {
         });
 
         if(savedInstanceState != null){
-            billType = savedInstanceState.getInt(TYPE, 1);
-            subcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
-            mTxvSelectedCategory.setVisibility(View.VISIBLE);
-            mTxvSelectedCategory.setText(subcategory.getPrimaryCategory().getName() + " " + Character.toString((char)0x00B7) + " " + subcategory.getName());
+            billType = savedInstanceState.getInt(TYPE, 2);
+            mSpnSelectBillType.setSelection(billType);
+            if(savedInstanceState.getInt(PRIMARY_CATEGORY, -1) != -1){
+                subcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
+                mTxvSelectedCategory.setVisibility(View.VISIBLE);
+                mTxvSelectedCategory.setText(subcategory.getPrimaryCategory().getName() + " " + Character.toString((char)0x00B7) + " " + subcategory.getName());
+            }
         }
 
         if(Database.getBankAccounts().size() != 0) {
@@ -168,6 +181,12 @@ public class CockpitFragment extends Fragment {
                     String description = mEdtBillDescription.getText().toString();
 
                     bankAccount.addBill(new Bill(amount, description, billType, subcategory));
+                    try {
+                        Database.save(getContext());
+                        Database.load(getContext());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
 
                     //Show message
                     Toast.makeText(getContext(), getResources().getString(R.string.toast_bill_added), Toast.LENGTH_SHORT).show();
@@ -205,19 +224,23 @@ public class CockpitFragment extends Fragment {
         //Gets index of selected category index
         int categoryIndex = 0;
         int subcategoryIndex = 0;
-        for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
-            if(Database.getPrimaryCategories().get(i).equals(subcategory.getPrimaryCategory())){
-                categoryIndex = i;
-                for(int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
-                    if(Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory))
-                        subcategoryIndex = y;
+        if(subcategory != null){
+            for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
+                if(Database.getPrimaryCategories().get(i).equals(subcategory.getPrimaryCategory())){
+                    categoryIndex = i;
+                    for(int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
+                        if(Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory))
+                            subcategoryIndex = y;
+                    }
                 }
             }
+
+            outState.putInt(PRIMARY_CATEGORY, categoryIndex);
+            outState.putInt(SUBCATEGORY, subcategoryIndex);
+        } else if(bankAccount != null){
+            outState.putInt(ACCOUNT, bankAccountIndex);
         }
 
         outState.putInt(TYPE, billType);
-        outState.putInt(ACCOUNT, bankAccountIndex);
-        outState.putInt(PRIMARY_CATEGORY, categoryIndex);
-        outState.putInt(SUBCATEGORY, subcategoryIndex);
     }
 }

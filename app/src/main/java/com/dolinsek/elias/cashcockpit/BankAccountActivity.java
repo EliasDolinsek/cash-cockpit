@@ -107,6 +107,13 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                     //When it's not in edit mode it creates a new bank account and saves it
                     if(bankAccount == null){
 
+                        //Sets this account as primary account it the user wants it
+                        if(mSwPrimaryAccount.isChecked()){
+                            for(int i = 0; i<Database.getBankAccounts().size(); i++){
+                                Database.getBankAccounts().get(i).setPrimaryAccount(false);
+                            }
+                        }
+
                         //Create and save it
                         Database.getBankAccounts().add(new BankAccount(mEdtAccountName.getText().toString(), balance, mSwPrimaryAccount.isChecked()));
                         Database.save(getApplicationContext());

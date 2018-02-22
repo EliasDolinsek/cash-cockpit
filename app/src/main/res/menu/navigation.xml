@@ -7,7 +7,7 @@
         android:title="@string/title_cockpit" />
 
     <item
-        android:id="@+id/navigation_dashboard"
+        android:id="@+id/navigation_history"
         android:icon="@drawable/ic_dashboard_black_24dp"
         android:title="@string/title_history" />
 

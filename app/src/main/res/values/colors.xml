@@ -9,4 +9,6 @@
     <color name="colorPrimaryTextColor">#000000</color>
     <color name="colorAccentTextColor">#000000</color>
     <color name="colorLightGray">#E0E0E0</color>
+    <color name="colorGreen">#00b45c</color>
+    <color name="colorGray">#636363</color>
 </resources>
