@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     tools:context="com.dolinsek.elias.cashcockpit.HistoryFragment"
     android:orientation="vertical"
+    android:layout_marginTop="5dp"
     android:paddingBottom="5dp">
 
     <Spinner

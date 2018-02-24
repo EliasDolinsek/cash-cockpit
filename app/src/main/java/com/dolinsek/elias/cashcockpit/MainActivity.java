@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(MainActivity.TAG, "", e);
         }
-
-        new HistoryItemAdapter();
     }
 
     /**

@@ -122,6 +122,13 @@
         <item>@string/label_transfer</item>
     </array>
 
+    <array name="filters_array">
+        <item>Newest first</item>
+        <item>Oldest first</item>
+        <item>Lowest price first</item>
+        <item>Highest price first</item>
+    </array>
+
     <!--TODO delete-->
     <string name="label_bank_account_euros">Euros</string>
     <string name="label_bank_account_cents">Cents</string>

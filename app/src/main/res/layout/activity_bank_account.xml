@@ -43,25 +43,20 @@
 
     </android.support.design.widget.TextInputLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <Switch
+        android:text="@string/label_set_as_primary_account"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="10dp">
+        android:id="@+id/sw_bank_account_priamry_account"
+        android:layout_gravity="center"
+        android:layout_marginBottom="5dp"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_set_as_primary_account"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-            android:layout_gravity="center"/>
-
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/sw_bank_account_priamry_account"
-            android:layout_gravity="center"/>
-    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_bank_account_bills"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"/>
 
     <LinearLayout
         android:layout_width="match_parent"

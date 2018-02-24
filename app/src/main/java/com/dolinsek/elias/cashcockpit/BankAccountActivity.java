@@ -5,6 +5,8 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -30,6 +32,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     public static final String EXTRA_BANK_ACCOUNT_INDEX = "bankAccountIndex";
 
     private TextInputLayout mTilAccountName, mTilAccountAmount;
+    private RecyclerView mRvBills;
     private EditText mEdtAccountName, mEdtAccountAmount;
     private Switch mSwPrimaryAccount;
     private Button mBtnCreate, mBtnDelete;
@@ -51,6 +54,9 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
         mBtnDelete = (Button) findViewById(R.id.btn_bank_account_delete);
 
+        mRvBills = (RecyclerView) findViewById(R.id.rv_bank_account_bills);
+        mRvBills.setLayoutManager(new LinearLayoutManager(this));
+
         //When there is a bank account to edit it turns into edit mode
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
             bankAccount = Database.getBankAccounts().get(getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0));
@@ -58,6 +64,9 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         } else{
             mBtnDelete.setVisibility(View.GONE);
         }
+
+        //Sets adapter of recycler view what displays bills what belong to this bank account
+        mRvBills.setAdapter(new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount));
 
         //Displays data if it is in edit mode
         if(bankAccount != null){

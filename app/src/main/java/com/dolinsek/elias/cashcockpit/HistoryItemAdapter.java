@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,9 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 /**
@@ -23,30 +27,89 @@ import java.util.Date;
 
 public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.HistoryViewHolder> {
 
+    public static final int FILTER_NEWEST_ITEM_FIRST = 0;
+    public static final int FILTER_OLDEST_ITEM_FIRST = 1;
+    public static final int FILTER_HIGHEST_PRICE_FIRST = 2;
+    public static final int FILTER_LOWEST_PRICE_FIRST = 3;
+
     ArrayList<Bill> bills;
 
-    public HistoryItemAdapter(){
+    public HistoryItemAdapter(int filter, BankAccount bankAccount){
         bills = new ArrayList<>();
 
-        ArrayList<Long> times = new ArrayList<>();
-        for(int i = 0; i< Database.getBankAccounts().size(); i++){
-            for(Bill bill:Database.getBankAccounts().get(i).getBills())
-                times.add(bill.getCreationDate());
-        }
-
-        long allTimes[] = new long[times.size()];
-        for(int i = 0; i<times.size(); i++){
-            allTimes[i] = (long)times.toArray()[i];
-        }
-
-        Arrays.sort(allTimes);
-        for(int i = allTimes.length; i != 0; i--){
-            for(BankAccount bankAccount:Database.getBankAccounts()){
+        if(filter == FILTER_NEWEST_ITEM_FIRST || filter == FILTER_OLDEST_ITEM_FIRST){
+            ArrayList<Long> times = new ArrayList<>();
+            if(bankAccount == null){
+                for(int i = 0; i< Database.getBankAccounts().size(); i++){
+                    for(Bill bill:Database.getBankAccounts().get(i).getBills())
+                        times.add(bill.getCreationDate());
+                }
+            } else {
                 for(Bill bill:bankAccount.getBills()){
-                    if(bill.getCreationDate() == allTimes[i-1]){
-                        bills.add(bill);
+                    times.add(bill.getCreationDate());
+                }
+            }
+
+            long allTimes[] = new long[times.size()];
+            for(int i = 0; i<times.size(); i++){
+                allTimes[i] = (long)times.toArray()[i];
+            }
+
+            Arrays.sort(allTimes);
+            if(filter == FILTER_NEWEST_ITEM_FIRST){
+                for(int i = allTimes.length; i != 0; i--){
+                    if(bankAccount == null){
+                        for(BankAccount currentBankAccount:Database.getBankAccounts()){
+                            for(Bill bill:currentBankAccount.getBills()){
+                                if(bill.getCreationDate() == allTimes[i-1]){
+                                    bills.add(bill);
+                                }
+                            }
+                        }
+                    } else {
+                        for (Bill bill:bankAccount.getBills()){
+                            if(bill.getCreationDate() == allTimes[i-1]){
+                                bills.add(bill);
+                            }
+                        }
                     }
                 }
+            } else {
+                for(int i = 0; i < allTimes.length; i++){
+                    for(BankAccount currentBankAccount:Database.getBankAccounts()){
+                        for(Bill bill:currentBankAccount.getBills()){
+                            if(bill.getCreationDate() == allTimes[i]){
+                                bills.add(bill);
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if(bankAccount == null){
+                for(BankAccount currentBankAccount:Database.getBankAccounts()){
+                    for(Bill bill:currentBankAccount.getBills())
+                        bills.add(bill);
+                }
+            } else {
+                for(Bill bill:bankAccount.getBills())
+                    bills.add(bill);
+            }
+
+            if(filter == FILTER_LOWEST_PRICE_FIRST){
+                Collections.sort(bills, new Comparator<Bill>() {
+                    @Override
+                    public int compare(Bill bill, Bill t1) {
+                        return Long.valueOf(bill.getAmount()).compareTo(t1.getAmount());
+                    }
+                });
+            } else {
+                Collections.sort(bills, new Comparator<Bill>() {
+                    @Override
+                    public int compare(Bill bill, Bill t1) {
+                        return Long.valueOf(t1.getAmount()).compareTo(bill.getAmount());
+                    }
+                });
             }
         }
 
