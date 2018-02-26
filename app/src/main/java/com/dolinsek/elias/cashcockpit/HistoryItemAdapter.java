@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +17,6 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -33,9 +33,11 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     public static final int FILTER_LOWEST_PRICE_FIRST = 3;
 
     ArrayList<Bill> bills;
+    private boolean editMode;
 
-    public HistoryItemAdapter(int filter, BankAccount bankAccount){
+    public HistoryItemAdapter(int filter, BankAccount bankAccount, boolean editMode){
         bills = new ArrayList<>();
+        this.editMode = editMode;
 
         if(filter == FILTER_NEWEST_ITEM_FIRST || filter == FILTER_OLDEST_ITEM_FIRST){
             ArrayList<Long> times = new ArrayList<>();
@@ -122,9 +124,8 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     }
 
     @Override
-    public void onBindViewHolder(HistoryViewHolder holder, int position) {
-        Bill bill = bills.get(position);
-        System.out.println(bill.getType());
+    public void onBindViewHolder(final HistoryViewHolder holder, int position) {
+        final Bill bill = bills.get(position);
         if(bill.getType() == Bill.TYPE_INPUT){
             holder.mTxvTagOutput.setVisibility(View.GONE);
             holder.mTxvTagTransfer.setVisibility(View.GONE);
@@ -152,6 +153,32 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             holder.mTxvDetails.setText(new SimpleDateFormat("dd.MM HH:mm").format(new Date(bill.getCreationDate())));
         } else {
             holder.mTxvDetails.setText(new SimpleDateFormat("dd.MM HH:mm").format(new Date(bill.getCreationDate())) + " " + Character.toString((char)0x00B7) + " " + bill.getDescription());
+        }
+
+        if(editMode){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    //Gets position of bill and bank account in database
+                    int billPosition = 0;
+                    int bankAccountPosition = 0;
+                    for(int i = 0; i<Database.getBankAccounts().size(); i++){
+                        for(int y = 0; y<Database.getBankAccounts().get(i).getBills().size(); y++){
+                            if(Database.getBankAccounts().get(i).getBills().get(y).equals(bill)){
+                                billPosition = y;
+                                bankAccountPosition = i;
+                                break;
+                            }
+                        }
+                    }
+
+                    //Start BillEditorActivity
+                    Intent intent = new Intent(holder.itemView.getContext(), BillEditorActivity.class);
+                    intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
+                    intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountPosition);
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            });
         }
     }
 

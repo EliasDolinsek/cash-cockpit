@@ -13,8 +13,8 @@ public class Bill {
      * TYPE_INPUT = amount get added to the bank account
      * TYPE_TRANSFER = amount get removed from the bank account and get added to another bank account
      */
-    public static final int TYPE_OUTPUT = 0;
-    public static final int TYPE_INPUT = 1;
+    public static final int TYPE_OUTPUT = 1;
+    public static final int TYPE_INPUT = 0;
     public static final int TYPE_TRANSFER = 2;
 
     /**

@@ -34,19 +34,9 @@ public class HistoryFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_history, container, false);
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
-        mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, null)));
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mTxvNoDataForHistory = inflatedView.findViewById(R.id.txv_history_no_data_for_history);
-
-        //Gets size of bills
-        int bills = 0;
-        for(BankAccount bankAccount: Database.getBankAccounts()){
-            bills += bankAccount.getBills().size();
-        }
-
-        if(bills != 0)
-            mTxvNoDataForHistory.setVisibility(View.GONE);
 
         mSpnFilter = inflatedView.findViewById(R.id.spn_history_filter);
         ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.filters_array));
@@ -56,13 +46,13 @@ public class HistoryFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 switch (i){
-                    case 0: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, null)));
+                    case 0: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, null, true)));
                         break;
-                    case 1: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST, null)));
+                    case 1: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST, null, true)));
                         break;
-                    case 2: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST, null)));
+                    case 2: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST, null, true)));
                         break;
-                    default: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST, null)));
+                    default: mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST, null, true)));
                 }
             }
 
@@ -75,4 +65,21 @@ public class HistoryFragment extends Fragment {
         return inflatedView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mRvHistory.setAdapter((mHistoryItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, null, true)));
+
+        //Gets size of bills
+        int bills = 0;
+        for(BankAccount bankAccount: Database.getBankAccounts()){
+            bills += bankAccount.getBills().size();
+        }
+
+        if(bills != 0)
+            mTxvNoDataForHistory.setVisibility(View.GONE);
+        else
+            mTxvNoDataForHistory.setVisibility(View.VISIBLE);
+    }
 }

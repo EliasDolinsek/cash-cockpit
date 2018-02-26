@@ -50,9 +50,6 @@ public class SelectSubcategoryDialogFragment extends DialogFragment {
                     try {
                         //Save data
                         Database.save(getContext());
-
-                        //Reload data
-                        Database.load(getContext());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

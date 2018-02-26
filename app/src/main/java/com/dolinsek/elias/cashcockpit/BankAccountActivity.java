@@ -61,12 +61,12 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
             bankAccount = Database.getBankAccounts().get(getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0));
             mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
+
+            //Sets adapter of recycler view what displays bills what belong to this bank account
+            mRvBills.setAdapter(new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount, false));
         } else{
             mBtnDelete.setVisibility(View.GONE);
         }
-
-        //Sets adapter of recycler view what displays bills what belong to this bank account
-        mRvBills.setAdapter(new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount));
 
         //Displays data if it is in edit mode
         if(bankAccount != null){

@@ -135,18 +135,34 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
         android:layout_weight="10"
-        android:orientation="horizontal">
+        android:gravity="bottom">
 
         <Button
-            android:id="@+id/btn_cockpit_add"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:layout_width="match_parent"
+            android:id="@+id/btn_cockpit_save"
+            android:text="@string/btn_save"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/btn_add_bill"
-            android:layout_gravity="bottom"/>
+            android:layout_weight="5"
+            style="@style/Widget.AppCompat.Button.Colored"/>
 
+        <Button
+            android:id="@+id/btn_cockpit_delete"
+            android:text="@string/btn_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            style="@style/Widget.AppCompat.Button.Borderless"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_cockpit_add"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_add_bill"
+        android:layout_gravity="bottom"/>
 
 </LinearLayout>
