@@ -525,7 +525,7 @@ public class DataHelper {
     private String readFile(boolean standardData) throws IOException {
 
         AssetManager assetManager = context.getAssets();
-        FileInputStream fileInputStream = context.openFileInput(FILE_NAME);
+        FileInputStream fileInputStream = null;
         InputStreamReader inputStreamReader = null;
 
         if(standardData){
@@ -537,7 +537,7 @@ public class DataHelper {
                     inputStreamReader = new InputStreamReader(assetManager.open(FILE_NAME_STANDARD_DATA + "English" + ".json"));
             }
         } else {
-            inputStreamReader = new InputStreamReader(fileInputStream);
+            inputStreamReader = new InputStreamReader((fileInputStream = context.openFileInput(FILE_NAME)));
         }
 
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -552,7 +552,8 @@ public class DataHelper {
         //Closes streams
         bufferedReader.close();
         inputStreamReader.close();
-        fileInputStream.close();
+        if(fileInputStream != null)
+            fileInputStream.close();
 
         return stringBuilder.toString();
     }

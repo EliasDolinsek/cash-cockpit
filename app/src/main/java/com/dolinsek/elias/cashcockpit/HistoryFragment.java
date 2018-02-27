@@ -23,6 +23,8 @@ import com.dolinsek.elias.cashcockpit.components.Database;
  */
 public class HistoryFragment extends Fragment {
 
+    private static final String EXTRA_SELECTED_FILTER = "extra_selected_filter";
+
     private RecyclerView mRvHistory;
     private Spinner mSpnFilter;
     private TextView mTxvNoDataForHistory;
@@ -62,6 +64,9 @@ public class HistoryFragment extends Fragment {
             }
         });
 
+        if(savedInstanceState != null)
+            mSpnFilter.setSelection(savedInstanceState.getInt(EXTRA_SELECTED_FILTER, 0));
+
         return inflatedView;
     }
 
@@ -81,5 +86,11 @@ public class HistoryFragment extends Fragment {
             mTxvNoDataForHistory.setVisibility(View.GONE);
         else
             mTxvNoDataForHistory.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SELECTED_FILTER, mSpnFilter.getSelectedItemPosition());
     }
 }

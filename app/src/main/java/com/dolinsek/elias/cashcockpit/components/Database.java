@@ -63,9 +63,9 @@ public class Database {
      */
     public static void load(Context context) throws IOException, JSONException {
         dataHelper = new DataHelper(context);
+        defaultPrimaryCategories = dataHelper.readCategories(true);
         primaryCategories = dataHelper.readCategories(false);
         bankAccounts = dataHelper.readBankAccounts();
-        defaultPrimaryCategories = dataHelper.readCategories(true);
         autoPays = dataHelper.readAutoPays();
 
         CategoriesSorter.sortPrimaryCategories(primaryCategories);
@@ -96,5 +96,17 @@ public class Database {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void setBankAccounts(ArrayList<BankAccount> bankAccounts) {
+        Database.bankAccounts = bankAccounts;
+    }
+
+    public static void setPrimaryCategories(ArrayList<PrimaryCategory> primaryCategories) {
+        Database.primaryCategories = primaryCategories;
+    }
+
+    public static void setAutoPays(ArrayList<AutoPay> autoPays) {
+        Database.autoPays = autoPays;
     }
 }

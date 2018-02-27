@@ -3,12 +3,11 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
@@ -21,8 +20,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -176,6 +173,12 @@ public class CockpitFragment extends Fragment {
 
                 hideKeyboard();
                 selectSubcategoryDialogFragment.show(getFragmentManager(), "select_category");
+
+                //Reloads Fragment if there are no categories so that the bill get added correctly
+                if(Database.getPrimaryCategories().size() == 0){
+                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.detach(CockpitFragment.this).attach(CockpitFragment.this).commit();
+                }
             }
         });
 
@@ -187,6 +190,7 @@ public class CockpitFragment extends Fragment {
                     String description = mEdtBillDescription.getText().toString();
 
                     bankAccount.addBill(new Bill(amount, description, billType, subcategory));
+
                     try {
                         Database.save(getContext());
                         Database.load(getContext());

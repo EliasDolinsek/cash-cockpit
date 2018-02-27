@@ -43,9 +43,7 @@ public class SelectSubcategoryDialogFragment extends DialogFragment {
                 public void onClick(DialogInterface dialogInterface, int i) {
 
                     //Add default categories to categories
-                    for(int y = 0; y<Database.getDefaultPrimaryCategories().size(); y++){
-                        Database.getPrimaryCategories().add(Database.getDefaultPrimaryCategories().get(y));
-                    }
+                    Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
 
                     try {
                         //Save data

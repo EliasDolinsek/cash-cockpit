@@ -65,6 +65,12 @@ public class MainActivity extends AppCompatActivity {
             //Loads database from json
             Database.load(getApplicationContext());
         } catch (Exception e) {
+
+            //If there are no categories it restores them
+            if(Database.getPrimaryCategories().size() == 0){
+                Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
+            }
+
             Log.e(MainActivity.TAG, "", e);
         }
     }
