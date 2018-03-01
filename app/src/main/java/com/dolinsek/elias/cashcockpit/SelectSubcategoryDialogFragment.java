@@ -24,35 +24,11 @@ public class SelectSubcategoryDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
 
         if(Database.getPrimaryCategories().size() == 0){
-            alertBuilder.setMessage(getResources().getString(R.string.label_no_categories));
-            alertBuilder.setPositiveButton(getResources().getString(R.string.dialog_action_create), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                    //Start CategoryActivity
-                    Intent intent = new Intent(getContext(), CategoryActivity.class);
-                    startActivity(intent);
-                }
-            });
-
-            alertBuilder.setNeutralButton(getResources().getString(R.string.dialog_action_restore), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-
-                    //Add default categories to categories
-                    Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
-
-                    try {
-                        //Save data
-                        Database.save(getContext());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+            alertBuilder.setTitle(getResources().getString(R.string.label_no_categories));
+            alertBuilder.setMessage("Please create ore restore categories in the database page!");
         } else {
             RecyclerView recyclerView = new RecyclerView(getContext());
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -15,9 +15,12 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import org.json.JSONException;
 
@@ -182,10 +185,21 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
 
     @Override
     public void onDialogPositiveClick() {
-        //Delete AutoPay
+        //Deletes AutoPay
         ArrayList<AutoPay> autoPaysToDelete = getAutoPays();
         for(int i = 0; i<autoPaysToDelete.size(); i++)
             Database.getAutoPays().remove(autoPaysToDelete.get(i));
+
+        //Deletes associated bills
+        for(BankAccount bankAccount:Database.getBankAccounts()){
+            for(Bill bill:bankAccount.getBills()){
+                for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
+                    if(bill.getSubcategory().equals(primaryCategory.getSubcategories().get(y))){
+                        bankAccount.getBills().remove(bill);
+                    }
+                }
+            }
+        }
 
         Database.getPrimaryCategories().remove(primaryCategory);
         Database.save(getApplicationContext());

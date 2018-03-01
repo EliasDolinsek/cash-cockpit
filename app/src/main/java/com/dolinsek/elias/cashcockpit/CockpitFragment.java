@@ -173,12 +173,6 @@ public class CockpitFragment extends Fragment {
 
                 hideKeyboard();
                 selectSubcategoryDialogFragment.show(getFragmentManager(), "select_category");
-
-                //Reloads Fragment if there are no categories so that the bill get added correctly
-                if(Database.getPrimaryCategories().size() == 0){
-                    FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.detach(CockpitFragment.this).attach(CockpitFragment.this).commit();
-                }
             }
         });
 

@@ -14,12 +14,16 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -31,10 +35,10 @@ public class AutoPayActivity extends AppCompatActivity {
 
     private TextInputLayout mTilAutoPayName, mTilAmount;
     private TextInputEditText mEdtAutoPayName, mEdtAmount;
-    private Button mBtnSelectBankAccount, mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
-    private TextView mTxvSelectedBankAccount, mTxvSelectedCategory;
-    private RadioGroup mRgAutoPayType;
-    private RadioButton mRbWeekly, mRbMonthly, mRbYearly;
+    private Button mBtnSelectSubcategory, mBtnSelectDate, mBtnCreate, mBtnDelete;
+    private TextView mTxvSelectedDate, mTxvSelectedCategory;
+
+    private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType;
 
     private AutoPay autoPay;
     private boolean editMode;
@@ -56,17 +60,47 @@ public class AutoPayActivity extends AppCompatActivity {
         mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
 
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
-        mTxvSelectedBankAccount = (TextView) findViewById(R.id.txv_auto_pay_selected_bank_account);
+        mTxvSelectedDate = (TextView) findViewById(R.id.txv_auto_pay_selected_date);
 
-        mBtnSelectBankAccount = (Button) findViewById(R.id.btn_auto_pay_select_bank_account);
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
+        mBtnSelectDate = (Button) findViewById(R.id.btn_auto_pay_select_date);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
         mBtnDelete = (Button) findViewById(R.id.btn_auto_pay_delete);
 
-        mRbWeekly = (RadioButton) findViewById(R.id.rb_auto_pay_weekly);
-        mRbMonthly = (RadioButton) findViewById(R.id.rb_auto_pay_monthly);
-        mRbYearly = (RadioButton) findViewById(R.id.rb_auto_pay_yearly);
-        mRgAutoPayType = (RadioGroup) findViewById(R.id.rg_auto_pay_types);
+        mSpnSelectBankAccount = (Spinner) findViewById(R.id.spn_auto_pay_select_bank_account);
+        final ArrayAdapter<CharSequence> bankAccounts = new ArrayAdapter<CharSequence>(getApplicationContext(), android.R.layout.simple_spinner_item);
+        for(BankAccount bankAccount:Database.getBankAccounts()){
+            bankAccounts.add(bankAccount.getName());
+        }
+        bankAccounts.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpnSelectBankAccount.setAdapter(bankAccounts);
+        mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                autoPay.setBankAccount(Database.getBankAccounts().get(i));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        mSpnSelectAutoPayType = (Spinner) findViewById(R.id.spn_auto_pay_select_type);
+        final ArrayAdapter<CharSequence> autoPayTypes = new ArrayAdapter<CharSequence>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
+        autoPayTypes.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpnSelectAutoPayType.setAdapter(autoPayTypes);
+        mSpnSelectAutoPayType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                autoPay.setType(i);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
             autoPay = Database.getAutoPays().get(getIntent().getIntExtra(EXTRA_AUTO_PAY_INDEX, 0));
@@ -75,38 +109,16 @@ public class AutoPayActivity extends AppCompatActivity {
             mEdtAutoPayName.setText(autoPay.getName());
             mEdtAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(autoPay.getBill().getAmount()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
 
-            mTxvSelectedBankAccount.setText(autoPay.getBankAccount().getName());
+            mTxvSelectedDate.setText(autoPay.getBankAccount().getName());
             mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
 
             mBtnCreate.setText(getResources().getString(R.string.btn_save));
             mBtnDelete.setVisibility(View.VISIBLE);
 
-            if(autoPay.getType() == AutoPay.TYPE_MONTHLY)
-                mRgAutoPayType.check(mRbMonthly.getId());
-            else if(autoPay.getType() == AutoPay.TYPE_WEEKLY)
-                mRgAutoPayType.check(mRbWeekly.getId());
-            else
-                mRgAutoPayType.check(mRbYearly.getId());
+            mSpnSelectAutoPayType.setSelection(autoPay.getType());
         } else {
             autoPay = new AutoPay(new Bill(0, "", Bill.TYPE_OUTPUT, null), AutoPay.TYPE_MONTHLY, "", null);
         }
-
-        //Shows dialog what allows the user to select a bank account
-        mBtnSelectBankAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SelectBankAccountDialogFragment selectBankAccountDialogFragment = new SelectBankAccountDialogFragment();
-                selectBankAccountDialogFragment.setOnSelectListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        autoPay.setBankAccount(Database.getBankAccounts().get(i));
-                        mTxvSelectedBankAccount.setText(Database.getBankAccounts().get(i).getName());
-                    }
-                });
-
-                selectBankAccountDialogFragment.show(getSupportFragmentManager(), "select_autoPay");
-            }
-        });
 
         //Shows dialog what allows the user to select a subcategory
         mBtnSelectSubcategory.setOnClickListener(new View.OnClickListener() {
@@ -136,7 +148,7 @@ public class AutoPayActivity extends AppCompatActivity {
                 //Removes errors
                 mTilAutoPayName.setError(null);
                 mTilAmount.setError(null);
-                mTxvSelectedBankAccount.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+                mTxvSelectedDate.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
                 mTxvSelectedCategory.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
 
                 if(mEdtAutoPayName.getText().toString().trim().equals("")){
@@ -144,7 +156,7 @@ public class AutoPayActivity extends AppCompatActivity {
                 } else if(mEdtAmount.getText().toString().equals("")){
                     mTilAmount.setError(getResources().getString(R.string.label_enter_amount));
                 } else if(autoPay.getBankAccount() == null){
-                    mTxvSelectedBankAccount.setText(getResources().getString(R.string.label_need_to_select_bank_account));
+                    mTxvSelectedDate.setText(getResources().getString(R.string.label_need_to_select_bank_account));
                 } else if(autoPay.getBill().getSubcategory() == null){
                     mTxvSelectedCategory.setText(getResources().getString(R.string.label_need_to_select_category));
                 } else {
@@ -152,19 +164,9 @@ public class AutoPayActivity extends AppCompatActivity {
                     //Gets amount
                     long amount = ((long) (Double.valueOf(mEdtAmount.getText().toString()) * 100));
 
-                    //Gets type
-                    int type = AutoPay.TYPE_MONTHLY;
-                    if(mRgAutoPayType.getCheckedRadioButtonId() != -1){
-                        if(mRbWeekly.getId() == mRgAutoPayType.getCheckedRadioButtonId())
-                            type = AutoPay.TYPE_WEEKLY;
-                        else if(mRbMonthly.getId() == mRgAutoPayType.getCheckedRadioButtonId())
-                            type = AutoPay.TYPE_MONTHLY;
-                    }
-
                     //Sets changes
                     autoPay.setName(mEdtAutoPayName.getText().toString());
                     autoPay.getBill().setAmount(amount);
-                    autoPay.setType(type);
 
                     if(editMode){
                         autoPay.getBill().setSubcategory(subcategoryPlaceholder == null ? autoPay.getBill().getSubcategory() : subcategoryPlaceholder);
@@ -188,6 +190,13 @@ public class AutoPayActivity extends AppCompatActivity {
                 DeleteAutoPayDialogFragment deleteAutoPayDialogFragment = new DeleteAutoPayDialogFragment();
                 deleteAutoPayDialogFragment.setAutoPay(autoPay);
                 deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
+            }
+        });
+
+        mBtnSelectDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
