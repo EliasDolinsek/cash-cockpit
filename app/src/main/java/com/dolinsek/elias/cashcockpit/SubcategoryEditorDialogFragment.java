@@ -190,15 +190,17 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                                     //Deletes Bills
                                     for(int i = 0; i< Database.getBankAccounts().size(); i++){
                                         for(int y = 0; y<Database.getBankAccounts().get(i).getBills().size(); y++){
-                                            if(Database.getBankAccounts().get(i).getBills().get(y).getSubcategory().equals(mSubcategory))
-                                                Database.getBankAccounts().get(i).getBills().remove(Database.getBankAccounts().get(i).getBills().get(y));
+                                            if(Database.getBankAccounts().get(i).getBills().get(y).getSubcategory().equals(mSubcategory)){
+                                                Database.getBankAccounts().get(i).getBills().remove(y);
+                                            }
                                         }
                                     }
 
                                     //Deletes AutoPays
                                     for(int i = 0; i<Database.getAutoPays().size(); i++){
-                                        if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(mSubcategory))
+                                        if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(mSubcategory)){
                                             Database.getAutoPays().remove(Database.getAutoPays().get(i));
+                                        }
                                     }
 
                                     //Deletes subcategory

@@ -1,6 +1,13 @@
 package com.dolinsek.elias.cashcockpit.components;
 
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
 /**
  * This class represents an AutoPay what basically is an bill what duplicates itself on a specified day of the week/month/year
  * Created by elias on 06.01.2018.
@@ -41,6 +48,11 @@ public class AutoPay {
     private BankAccount bankAccount;
 
     /**
+     * Contains time-stamps when the AutoPay got payed
+     */
+    private ArrayList<Long> payments = new ArrayList<>();
+
+    /**
      * Creates a new AutoPay
      * @param bill bill what get duplicated
      * @param type if the bill get duplicated weekly, monthly or yearly
@@ -69,6 +81,10 @@ public class AutoPay {
         this.name = name;
         this.bankAccount = bankAccount;
         creationDate = System.currentTimeMillis();
+    }
+
+    public void managePayments(){
+        new PaymentManager(this).managePayments();
     }
 
     public Bill getBill() {
@@ -109,5 +125,73 @@ public class AutoPay {
 
     public void setBankAccount(BankAccount bankAccount) {
         this.bankAccount = bankAccount;
+    }
+
+    public ArrayList<Long> getPayments() {
+        return payments;
+    }
+
+    public void setPayments(ArrayList<Long> payments) {
+        this.payments = payments;
+    }
+
+    public class PaymentManager {
+
+        private AutoPay autoPay;
+
+        public PaymentManager(AutoPay autoPay){
+            this.autoPay = autoPay;
+        }
+
+        public void managePayments(){
+            if(autoPay.getPayments().size() != 0){
+                Calendar currentTimeCalender = Calendar.getInstance();
+                currentTimeCalender.setTimeInMillis(System.currentTimeMillis());
+
+                Calendar lastPaymentCalender = Calendar.getInstance();
+                lastPaymentCalender.setTimeInMillis((autoPay.getPayments().size() == 0 ? 0 : autoPay.getPayments().get(autoPay.getPayments().size() - 1)));
+
+                int yearsDifference = currentTimeCalender.get(Calendar.YEAR) - lastPaymentCalender.get(Calendar.YEAR);
+                int monthsDifference = currentTimeCalender.get(Calendar.MONTH) - lastPaymentCalender.get(Calendar.MONTH);
+                int weeksDifference = currentTimeCalender.get(Calendar.WEEK_OF_MONTH) - lastPaymentCalender.get(Calendar.WEEK_OF_MONTH);
+
+                autoPay.getBill().setCreationDate(getPaymentDate());
+                if(autoPay.getType() == TYPE_WEEKLY){
+                    for(int i = 0; i<=weeksDifference; i++){
+                        for(int y = 0; y<=monthsDifference; y++){
+                            for(int x = 0; y<=yearsDifference; x++){
+                                autoPay.getBankAccount().addBill(autoPay.getBill());
+                            }
+                        }
+                    }
+                } else if(autoPay.getType() == TYPE_MONTHLY){
+                    for(int i = 0; i<=monthsDifference; i++){
+                        for(int y = 0; y<=yearsDifference; y++){
+                            autoPay.getBankAccount().addBill(autoPay.getBill());
+                        }
+                    }
+                } else {
+                    for(int i = 0; i<=yearsDifference; i++){
+                        autoPay.getBankAccount().addBill(autoPay.getBill());
+                    }
+                }
+
+                autoPay.getPayments().add(getPaymentDate());
+            } else {
+                autoPay.getPayments().add(getPaymentDate());
+            }
+        }
+
+        private long getPaymentDate(){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            if(autoPay.getType() == TYPE_WEEKLY){
+                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.getActualMinimum(Calendar.DAY_OF_WEEK) + " 00:00:01.00").getTime();
+            } else if(autoPay.getType() == TYPE_MONTHLY){
+                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-01 00:00:01.00").getTime();
+            } else {
+               return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-01-01 00:00:01.00").getTime();
+            }
+        }
     }
 }

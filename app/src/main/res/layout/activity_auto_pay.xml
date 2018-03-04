@@ -95,54 +95,22 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_margin="5dp"
-        android:orientation="vertical">
+        android:gravity="center">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_auto_pay_select_subcategory"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:text="@string/btn_select_category"
+            android:layout_marginEnd="5dp"/>
 
-            <Button
-                android:id="@+id/btn_auto_pay_select_date"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_weight="5"
-                android:text="@string/btn_select_date" />
-
-            <TextView
-                android:id="@+id/txv_auto_pay_selected_date"
-                android:text="@string/label_none"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_auto_pay_select_subcategory"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="@string/btn_select_category"
-                android:layout_marginEnd="5dp"/>
-
-            <TextView
-                android:id="@+id/txv_auto_pay_selected_category"
-                android:text="@string/label_none"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/txv_auto_pay_selected_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

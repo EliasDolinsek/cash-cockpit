@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit.components;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.service.autofill.Dataset;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,7 +14,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -67,6 +72,7 @@ public class DataHelper {
     private static final String AUTO_PAY_BILL = "bill";
     private static final String AUTO_PAY_BILL_PRIMARY_CATEGORY = "primaryCategory";
     private static final String AUTO_PAY_BANK_ACCOUNT = "bankAccount";
+    private static final String AUTO_PAY_PAYMENTS = "payments";
 
     //Context to get access to app-files
     private Context context;
@@ -275,6 +281,17 @@ public class DataHelper {
             //Adds bank account
             currentAutoPay.put(AUTO_PAY_BANK_ACCOUNT, autoPay.getBankAccount().getName());
 
+
+            //Contains payments
+            JSONArray autoPayPaymentsJSON = new JSONArray();
+
+            //Adds payments
+            currentAutoPay.putOpt(AUTO_PAY_PAYMENTS, autoPayPaymentsJSON);
+
+            //Adds payments to json-object
+            for(int y = 0; y<autoPay.getPayments().size(); y++){
+                autoPayPaymentsJSON.put(autoPay.getPayments().get(y));
+            }
 
         }
 
@@ -515,8 +532,17 @@ public class DataHelper {
                     autoPayBankAccount = Database.getBankAccounts().get(y);
             }
 
+            //Reads payments
+            ArrayList<Long> payments = new ArrayList<>();
+            for(int y = 0; y<currentAutoPayJSON.getJSONArray(AUTO_PAY_PAYMENTS).length(); y++){
+                payments.add(((long) currentAutoPayJSON.getJSONArray(AUTO_PAY_PAYMENTS).get(y)));
+            }
+
             //Adds current AutoPay
-            autoPays.add(new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, Bill.TYPE_OUTPUT, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate));
+            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, Bill.TYPE_OUTPUT, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
+            autoPayToAdd.managePayments();
+            autoPayToAdd.setPayments(payments);
+            autoPays.add(autoPayToAdd);
         }
 
         return autoPays;

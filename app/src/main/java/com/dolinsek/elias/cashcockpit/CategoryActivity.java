@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
@@ -191,14 +192,8 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
             Database.getAutoPays().remove(autoPaysToDelete.get(i));
 
         //Deletes associated bills
-        for(BankAccount bankAccount:Database.getBankAccounts()){
-            for(Bill bill:bankAccount.getBills()){
-                for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
-                    if(bill.getSubcategory().equals(primaryCategory.getSubcategories().get(y))){
-                        bankAccount.getBills().remove(bill);
-                    }
-                }
-            }
+        for(int i = 0; i<Database.getBankAccounts().size(); i++){
+            Database.getBankAccounts().get(i).setBills(new ArrayList<Bill>());
         }
 
         Database.getPrimaryCategories().remove(primaryCategory);

@@ -35,8 +35,8 @@ public class AutoPayActivity extends AppCompatActivity {
 
     private TextInputLayout mTilAutoPayName, mTilAmount;
     private TextInputEditText mEdtAutoPayName, mEdtAmount;
-    private Button mBtnSelectSubcategory, mBtnSelectDate, mBtnCreate, mBtnDelete;
-    private TextView mTxvSelectedDate, mTxvSelectedCategory;
+    private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
+    private TextView mTxvSelectedCategory;
 
     private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType;
 
@@ -60,10 +60,8 @@ public class AutoPayActivity extends AppCompatActivity {
         mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
 
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
-        mTxvSelectedDate = (TextView) findViewById(R.id.txv_auto_pay_selected_date);
 
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
-        mBtnSelectDate = (Button) findViewById(R.id.btn_auto_pay_select_date);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
         mBtnDelete = (Button) findViewById(R.id.btn_auto_pay_delete);
 
@@ -109,13 +107,14 @@ public class AutoPayActivity extends AppCompatActivity {
             mEdtAutoPayName.setText(autoPay.getName());
             mEdtAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(autoPay.getBill().getAmount()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
 
-            mTxvSelectedDate.setText(autoPay.getBankAccount().getName());
             mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
 
             mBtnCreate.setText(getResources().getString(R.string.btn_save));
             mBtnDelete.setVisibility(View.VISIBLE);
 
             mSpnSelectAutoPayType.setSelection(autoPay.getType());
+            mSpnSelectAutoPayType.setEnabled(false);
+            mSpnSelectBankAccount.setEnabled(false);
         } else {
             autoPay = new AutoPay(new Bill(0, "", Bill.TYPE_OUTPUT, null), AutoPay.TYPE_MONTHLY, "", null);
         }
@@ -148,15 +147,12 @@ public class AutoPayActivity extends AppCompatActivity {
                 //Removes errors
                 mTilAutoPayName.setError(null);
                 mTilAmount.setError(null);
-                mTxvSelectedDate.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
                 mTxvSelectedCategory.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
 
                 if(mEdtAutoPayName.getText().toString().trim().equals("")){
                     mTilAutoPayName.setError(getResources().getString(R.string.label_enter_category_name));
                 } else if(mEdtAmount.getText().toString().equals("")){
                     mTilAmount.setError(getResources().getString(R.string.label_enter_amount));
-                } else if(autoPay.getBankAccount() == null){
-                    mTxvSelectedDate.setText(getResources().getString(R.string.label_need_to_select_bank_account));
                 } else if(autoPay.getBill().getSubcategory() == null){
                     mTxvSelectedCategory.setText(getResources().getString(R.string.label_need_to_select_category));
                 } else {
@@ -175,6 +171,8 @@ public class AutoPayActivity extends AppCompatActivity {
                         Database.getAutoPays().add(autoPay);
                     }
 
+                    autoPay.managePayments();
+
                     //Saves changes
                     Database.save(getApplicationContext());
 
@@ -190,13 +188,6 @@ public class AutoPayActivity extends AppCompatActivity {
                 DeleteAutoPayDialogFragment deleteAutoPayDialogFragment = new DeleteAutoPayDialogFragment();
                 deleteAutoPayDialogFragment.setAutoPay(autoPay);
                 deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
-            }
-        });
-
-        mBtnSelectDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
 
