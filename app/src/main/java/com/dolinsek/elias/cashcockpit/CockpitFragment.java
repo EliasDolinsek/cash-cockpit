@@ -93,6 +93,9 @@ public class CockpitFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 billType = i;
+                if (((TextView) view) != null){
+                    ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+                }
             }
 
             @Override
@@ -138,6 +141,9 @@ public class CockpitFragment extends Fragment {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     bankAccount = Database.getBankAccounts().get(i);
+                    if (((TextView) view) != null){
+                        ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+                    }
                 }
 
                 @Override

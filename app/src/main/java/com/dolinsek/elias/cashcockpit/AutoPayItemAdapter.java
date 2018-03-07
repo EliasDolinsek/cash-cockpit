@@ -49,7 +49,13 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
         //Displays data
         holder.mTxvName.setText(autoPay.getName());
-        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(autoPay.getBill().getAmount()) + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
+
+        String amount = Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(autoPay.getBill().getAmount());
+        if(amount.startsWith("-")){
+            amount.replace("-", "");
+        }
+
+        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + amount + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

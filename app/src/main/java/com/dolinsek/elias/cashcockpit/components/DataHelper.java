@@ -542,6 +542,12 @@ public class DataHelper {
             AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, Bill.TYPE_OUTPUT, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
             autoPayToAdd.managePayments();
             autoPayToAdd.setPayments(payments);
+
+            if(autoPayToAdd.getBill().getAmount() > 0){
+                autoPayToAdd.getBill().setType(Bill.TYPE_OUTPUT);
+            } else {
+                autoPayToAdd.getBill().setType(Bill.TYPE_INPUT);
+            }
             autoPays.add(autoPayToAdd);
         }
 

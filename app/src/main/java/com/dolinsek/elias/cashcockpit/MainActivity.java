@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CockpitFragment cockpitFragment = new CockpitFragment();
     private HistoryFragment historyFragment = new HistoryFragment();
+    private StatisticsFragment statisticsFragment = new StatisticsFragment();
     private DatabaseFragment databaseFragment = new DatabaseFragment();
 
     @Override
@@ -47,14 +48,17 @@ public class MainActivity extends AppCompatActivity {
                 //Switch between fragments
                 switch (item.getItemId()){
                     case R.id.navigation_database:
-                            replaceFragment(databaseFragment);
+                        replaceFragment(databaseFragment);
                             return true;
                     case R.id.navigation_cockpit:
-                            replaceFragment(cockpitFragment);
+                        replaceFragment(cockpitFragment);
                             return true;
                     case R.id.navigation_history:
                         replaceFragment(historyFragment);
-                        return true;
+                            return true;
+                    case R.id.navigation_statistics:
+                        replaceFragment(statisticsFragment);
+                            return true;
                 }
 
                 return false;

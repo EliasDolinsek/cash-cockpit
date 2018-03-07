@@ -58,6 +58,7 @@ public class AutoPayActivity extends AppCompatActivity {
 
         mEdtAutoPayName = (TextInputEditText) findViewById(R.id.edt_auto_pay_name);
         mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
+        mEdtAmount.setSelection(mEdtAmount.getText().length());
 
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
 
@@ -76,6 +77,9 @@ public class AutoPayActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 autoPay.setBankAccount(Database.getBankAccounts().get(i));
+                if (((TextView) view) != null){
+                    ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+                }
             }
 
             @Override
@@ -83,6 +87,7 @@ public class AutoPayActivity extends AppCompatActivity {
 
             }
         });
+        mSpnSelectBankAccount.setSelection(0);
 
         mSpnSelectAutoPayType = (Spinner) findViewById(R.id.spn_auto_pay_select_type);
         final ArrayAdapter<CharSequence> autoPayTypes = new ArrayAdapter<CharSequence>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
@@ -92,6 +97,9 @@ public class AutoPayActivity extends AppCompatActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 autoPay.setType(i);
+                if (((TextView) view) != null){
+                    ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+                }
             }
 
             @Override
@@ -99,6 +107,7 @@ public class AutoPayActivity extends AppCompatActivity {
 
             }
         });
+        mSpnSelectAutoPayType.setSelection(1);
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
             autoPay = Database.getAutoPays().get(getIntent().getIntExtra(EXTRA_AUTO_PAY_INDEX, 0));
@@ -163,6 +172,12 @@ public class AutoPayActivity extends AppCompatActivity {
                     //Sets changes
                     autoPay.setName(mEdtAutoPayName.getText().toString());
                     autoPay.getBill().setAmount(amount);
+                    autoPay.getBill().setDescription(autoPay.getName());
+                    if(amount > 0){
+                        autoPay.getBill().setType(Bill.TYPE_OUTPUT);
+                    } else {
+                        autoPay.getBill().setType(Bill.TYPE_INPUT);
+                    }
 
                     if(editMode){
                         autoPay.getBill().setSubcategory(subcategoryPlaceholder == null ? autoPay.getBill().getSubcategory() : subcategoryPlaceholder);

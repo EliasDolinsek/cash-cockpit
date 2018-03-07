@@ -186,9 +186,9 @@ public class AutoPay {
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
             if(autoPay.getType() == TYPE_WEEKLY){
-                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-" + calendar.getActualMinimum(Calendar.DAY_OF_WEEK) + " 00:00:01.00").getTime();
+                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + (String.valueOf(calendar.get(Calendar.MONTH)).length() != 2 ? "0" + String.valueOf(calendar.get(Calendar.MONTH)) : String.valueOf(calendar.get(Calendar.MONTH))) + "-" + (calendar.getActualMinimum(Calendar.DAY_OF_WEEK) != 2 ? "0" + calendar.getActualMinimum(Calendar.DAY_OF_WEEK) : calendar.getActualMinimum(Calendar.DAY_OF_WEEK)) + " 00:00:01.00").getTime();
             } else if(autoPay.getType() == TYPE_MONTHLY){
-                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + calendar.get(Calendar.MONTH) + "-01 00:00:01.00").getTime();
+                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + (String.valueOf(calendar.get(Calendar.MONTH)).length() != 2 ? "0" + String.valueOf(calendar.get(Calendar.MONTH)) : String.valueOf(calendar.get(Calendar.MONTH))) + "-01 00:00:01.00").getTime();
             } else {
                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-01-01 00:00:01.00").getTime();
             }

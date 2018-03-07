@@ -18,7 +18,11 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Adapter for primary accounts
@@ -59,8 +63,18 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             for(int i = 0; i<Database.getBankAccounts().size(); i++){
                 for(int x = 0; x<Database.getBankAccounts().get(i).getBills().size(); x++){
                     for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
-                        if(primaryCategory.getSubcategories().get(y).equals(Database.getBankAccounts().get(i).getBills().get(x).getSubcategory()))
-                            amount += Database.getBankAccounts().get(i).getBills().get(x).getAmount();
+                        if(primaryCategory.getSubcategories().get(y).equals(Database.getBankAccounts().get(i).getBills().get(x).getSubcategory())){
+                            Calendar calendar = Calendar.getInstance();
+
+                            calendar.setTimeInMillis(System.currentTimeMillis());
+                            int resultCurrentTime = calendar.get(Calendar.MONTH) + calendar.get(Calendar.YEAR);
+                            calendar.setTimeInMillis(Database.getBankAccounts().get(i).getBills().get(y).getCreationDate());
+                            int resultBill = calendar.get(Calendar.MONTH) + calendar.get(Calendar.YEAR);
+
+                            if(resultCurrentTime == resultBill){
+                                amount += Database.getBankAccounts().get(i).getBills().get(y).getAmount();
+                            }
+                        }
                     }
                 }
             }

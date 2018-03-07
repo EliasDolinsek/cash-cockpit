@@ -151,19 +151,13 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                             mSubcategory.setName(name);
 
                             //Saves goal-status
-                            if(mChbGoalEnabled.isChecked())
+                            if(mChbGoalEnabled.isChecked()){
+                                long goalBefore = mSubcategory.getGoal().getAmount();
                                 mSubcategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
-                            else
+                                mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() + mSubcategory.getGoal().getAmount() - goalBefore);
+                            } else {
+                                mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
                                 mSubcategory.setGoal(new Goal(0));
-
-                            //Saves goal-amount
-                            if(mPrimaryCategory.getGoal().getAmount() < mSubcategory.getGoal().getAmount()){
-                                long difference = mSubcategory.getGoal().getAmount() - mPrimaryCategory.getGoal().getAmount();
-
-                                if(mPrimaryCategory.getGoal() != null)
-                                    mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() + difference);
-                                else
-                                    mPrimaryCategory.setGoal(new Goal(difference));
                             }
 
                             //Adds a new Subcategory if it isn't in edit mode
@@ -206,6 +200,8 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                                     //Deletes subcategory
                                     mPrimaryCategory.getSubcategories().remove(mSubcategory);
 
+                                    //Sets goal
+                                    mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
                                     dialog.dismiss();
                                 }
                             });

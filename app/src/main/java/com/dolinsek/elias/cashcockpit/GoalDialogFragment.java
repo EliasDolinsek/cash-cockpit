@@ -63,16 +63,19 @@ public class GoalDialogFragment extends DialogFragment{
                 Button mBtnNegative = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
 
                 long amount = 0;
-                for(int i = 0; i<primaryCategory.getSubcategories().size(); i++)
+                for(int i = 0; i<primaryCategory.getSubcategories().size(); i++){
                     amount += primaryCategory.getSubcategories().get(i).getGoal().getAmount();
-                final long subcatgegoriesGoalAmount = amount;
+                }
+
+                final long subcategoriesGoalAmount = amount;
 
                 mBtnPositive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        System.out.println(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100)) + " " + subcategoriesGoalAmount);
                         if(mEdtGoalAmount.getText().toString().trim().equals("") || mEdtGoalAmount.getText().toString().equals("0"))
                             mTextInputLayout.setError(getResources().getString(R.string.label_enter_valid_amount));
-                        else if(subcatgegoriesGoalAmount > ((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))){
+                        else if(subcategoriesGoalAmount > ((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))){
                             mTextInputLayout.setError(getResources().getString(R.string.label_more_goal_amount));
                         } else {
                             primaryCategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
@@ -98,7 +101,7 @@ public class GoalDialogFragment extends DialogFragment{
                         }
                     });
 
-                    if(subcatgegoriesGoalAmount != 0)
+                    if(subcategoriesGoalAmount != 0)
                         mBtnNegative.setEnabled(false);
                 }
             }
