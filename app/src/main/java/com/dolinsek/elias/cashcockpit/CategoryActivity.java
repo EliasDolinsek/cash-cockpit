@@ -72,7 +72,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
             mBtnDelete.setVisibility(View.GONE);
         }
 
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true)));
+        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true, SubcategoryItemAdapter.TYPE_NORMAl)));
 
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +181,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
     @Override
     public void onDismiss(DialogInterface dialogInterface) {
         CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true)));
+        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true, SubcategoryItemAdapter.TYPE_NORMAl)));
     }
 
     @Override

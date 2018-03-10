@@ -17,6 +17,7 @@ import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -31,6 +32,9 @@ import java.util.Date;
 
 public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCategoryItemAdapter.PrimaryCategoryViewHolder>{
 
+    public static int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1;
+
+    private int type;
     /**
      * Contains all primary categories
      */
@@ -39,8 +43,9 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     /**
      * Creates a new adapter and sets categories from the database
      */
-    public PrimaryCategoryItemAdapter(){
-        primaryCategories = Database.getPrimaryCategories();
+    public PrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategories, int type){
+        this.primaryCategories = primaryCategories;
+        this.type = type;
     }
 
     @Override
@@ -80,7 +85,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             }
 
             //Displays informations
-            holder.mTxvCategoryGoalStatus.setText((Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount) + "/" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(primaryCategory.getGoal().getAmount())));
+            holder.mTxvCategoryGoalStatus.setText((Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount)));
+            holder.mTxvGoalStatusAmount.setText(" (" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(primaryCategory.getGoal().getAmount()) + ")");
             holder.mPgbCategoryGoalStatus.setProgress((int)(100.0 /(primaryCategory.getGoal().getAmount() / 100.0) * (amount / 100.0)));
 
             //Enables a ProgressBar if there is a goal
@@ -93,16 +99,18 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             }
         }
 
-        holder.mCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        if(type == TYPE_NORMAL){
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                //Starts CategoryActivity
-                Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
-                intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, position);
-                holder.itemView.getContext().startActivity(intent);
-            }
-        });
+                    //Starts CategoryActivity
+                    Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
+                    intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, position);
+                    holder.itemView.getContext().startActivity(intent);
+                }
+            });
+        }
 
         //Loads the image for this category
         try{
@@ -112,7 +120,11 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
 
         //Sets up the RecyclerView
-        holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false));
+        if(type == TYPE_NORMAL){
+            holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_NORMAl));
+        } else {
+            holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC));
+        }
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 
         //Displays informations
@@ -127,7 +139,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     public class PrimaryCategoryViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView mImvCategoryIcon;
-        public TextView mTxvCategoryName, mTxvCategoryGoalStatus;
+        public TextView mTxvCategoryName, mTxvCategoryGoalStatus, mTxvGoalStatusAmount;
         public ProgressBar mPgbCategoryGoalStatus;
         public RecyclerView mRvSubcategories;
         public CardView mCardView;
@@ -139,6 +151,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             mImvCategoryIcon = (ImageView) itemView.findViewById(R.id.imv_item_primary_category);
             mTxvCategoryName = (TextView) itemView.findViewById(R.id.txv_item_primary_category_name);
             mTxvCategoryGoalStatus = (TextView) itemView.findViewById(R.id.txv_item_primary_category_goal_status);
+            mTxvGoalStatusAmount = (TextView) itemView.findViewById(R.id.txv_item_primary_category_goal_status_amount);
             mPgbCategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_primary_category_goal_status);
             mRvSubcategories = (RecyclerView) itemView.findViewById(R.id.rv_item_primary_categories_subcategory);
         }

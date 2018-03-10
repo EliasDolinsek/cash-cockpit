@@ -32,13 +32,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:gravity="end"
+            android:orientation="horizontal">
+
             <TextView
                 android:id="@+id/txv_item_subcategory_goal_status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
                 android:textAlignment="center" />
+
+            <TextView
+                android:id="@+id/txv_item_subcategory_goal_status_amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:textColor="@color/colorPrimary"/>
+
         </LinearLayout>
 
     </LinearLayout>

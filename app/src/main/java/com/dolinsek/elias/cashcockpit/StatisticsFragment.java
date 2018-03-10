@@ -20,6 +20,8 @@ public class StatisticsFragment extends Fragment {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
+    private GoalsStatisticsFragment goalsStatisticsFragment = new GoalsStatisticsFragment();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,7 +48,10 @@ public class StatisticsFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            return new BankAccountsFragment();
+            switch (position){
+                case 3: return goalsStatisticsFragment;
+                default: return new BankAccountsFragment();
+            }
         }
 
         @Override

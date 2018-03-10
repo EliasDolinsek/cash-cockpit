@@ -21,12 +21,16 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
+import java.util.ArrayList;
+
 /**
  * Created by elias on 20.01.2018.
  */
 
 public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItemAdapter.SubcategoryItemViewHolder>{
 
+    public static final int TYPE_NORMAl = 0;
+    public static final int TYPE_GOAL_STATISTIC = 1;
     /**
      * PrimaryCategory what the Subcategory belongs to
      */
@@ -35,11 +39,15 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     /**
      * If a click shows SubcategoryEditorDialogFragment
      */
-    private boolean allowDirectEdit;
+    private boolean allowDirectEdit, showFavoredIcon;
 
-    public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit){
+    private int type;
+
+    public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit, int type){
         this.primaryCategory = primaryCategory;
         this.allowDirectEdit = allowDirectEdit;
+        this.showFavoredIcon = showFavoredIcon;
+        this.type = type;
     }
 
     @Override
@@ -50,16 +58,33 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     @Override
     public void onBindViewHolder(final SubcategoryItemViewHolder holder, final int position) {
-        final Subcategory subcategory = primaryCategory.getSubcategories().get(position);
+        final Subcategory subcategory;
+
+        if(type == TYPE_NORMAl){
+            subcategory = primaryCategory.getSubcategories().get(position);
+        } else {
+            ArrayList<Subcategory> subcategories = new ArrayList<>();
+            for(Subcategory currentSubcategory:primaryCategory.getSubcategories()){
+                if(currentSubcategory.getGoal().getAmount() != 0){
+                    subcategories.add(currentSubcategory);
+                }
+            }
+
+            subcategory = subcategories.get(position);
+        }
 
         //Sets name of the subcategory
         holder.mTxvSubcategoryName.setText(subcategory.getName());
 
         //Displays a specified icon when the subcategory is favored and another when not
-        if(subcategory.isFavoured())
-            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
-        else
-            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+        if(showFavoredIcon){
+            if(subcategory.isFavoured())
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
+            else
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+        } else {
+            holder.mImvSubcategoryFavored.setVisibility(View.GONE);
+        }
 
         //Displays the goal-amount
         if(subcategory.getGoal().getAmount() != 0) {
@@ -76,7 +101,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             }
 
             //Displays informations
-            holder.mTxvSubcategoryGoalStatus.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount) + "/" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(subcategory.getGoal().getAmount()));
+            holder.mTxvSubcategoryGoalStatus.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount));
+            holder.mTxvSubcategoryGoalStatusAmount.setText(" (" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(subcategory.getGoal().getAmount()) + ")");
             holder.mPgbSubcategoryGoalStatus.setProgress((int)(100 / (double)(subcategory.getGoal().getAmount() / 100) * (double)(amount / 100)));
 
             //Enables a ProgressBar if there is a goal
@@ -139,12 +165,22 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     @Override
     public int getItemCount() {
+        if(type == TYPE_GOAL_STATISTIC){
+            int itemCount = 0;
+            for(int i = 0; i<primaryCategory.getSubcategories().size(); i++){
+                if(primaryCategory.getSubcategories().get(i).getGoal().getAmount() != 0){
+                    itemCount++;
+                }
+            }
+            return itemCount;
+        }
+
         return primaryCategory.getSubcategories().size();
     }
 
     public class SubcategoryItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvSubcategoryName, mTxvSubcategoryGoalStatus;
+        public TextView mTxvSubcategoryName, mTxvSubcategoryGoalStatus, mTxvSubcategoryGoalStatusAmount;
         public ProgressBar mPgbSubcategoryGoalStatus;
         public ImageView mImvSubcategoryFavored;
         public LinearLayout mLlMaster;
@@ -154,6 +190,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
             mTxvSubcategoryName = (TextView) itemView.findViewById(R.id.txv_item_subcategory_name);
             mTxvSubcategoryGoalStatus = (TextView) itemView.findViewById(R.id.txv_item_subcategory_goal_status);
+            mTxvSubcategoryGoalStatusAmount = (TextView) itemView.findViewById(R.id.txv_item_subcategory_goal_status_amount);
             mPgbSubcategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_subcategory_goal_status);
             mImvSubcategoryFavored = (ImageView) itemView.findViewById(R.id.imv_item_subcategory_favored);
 
