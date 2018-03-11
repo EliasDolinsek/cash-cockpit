@@ -153,7 +153,11 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                             //Saves goal-status
                             if(mChbGoalEnabled.isChecked()){
                                 long goalBefore = mSubcategory.getGoal().getAmount();
-                                mSubcategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
+                                if (mSubcategory.getGoal().getAmount() == 0){
+                                    mSubcategory.setGoal(new Goal((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100)));
+                                } else {
+                                    mSubcategory.getGoal().setAmount((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100));
+                                }
                                 mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() + mSubcategory.getGoal().getAmount() - goalBefore);
                             } else {
                                 mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());

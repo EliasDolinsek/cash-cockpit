@@ -1,1 +1,53 @@
-{"bankAccounts":[],"primaryCategories":[{"name":"Wohnen","goalAmount":0,"icon":"ic_home_black_24dp","subcategories":[{"name":"Miete","goalAmount":0,"favoured":false},{"name":"Darlehns-Tilgung","goalAmount":0,"favoured":false},{"name":"Heizung","goalAmount":0,"favoured":false},{"name":"Wasser","goalAmount":0,"favoured":false},{"name":"Reparaturen","goalAmount":0,"favoured":false},{"name":"Gebühren","goalAmount":0,"favoured":false},{"name":"Telefon & Internet","goalAmount":0,"favoured":false}]}],"autoPays":[]}
+{
+  "bankAccounts": [],
+  "primaryCategories": [
+    {
+      "name": "Wohnen",
+      "goalAmount": 0,
+      "icon": "ic_home_black_24dp",
+      "subcategories": [
+        {
+          "name": "Miete",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Darlehns-Tilgung",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Heizung",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Wasser",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Reparaturen",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Gebühren",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Telefon & Internet",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Strom",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    }
+  ],
+  "autoPays": []
+}

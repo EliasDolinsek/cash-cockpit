@@ -88,8 +88,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         fragmentTransaction.replace(R.id.ll_main, fragment);
-
-        fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 

@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -63,22 +65,20 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             holder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
         } else {
 
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            int thisMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+
             //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
             long amount = 0;
-            for(int i = 0; i<Database.getBankAccounts().size(); i++){
-                for(int x = 0; x<Database.getBankAccounts().get(i).getBills().size(); x++){
-                    for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
-                        if(primaryCategory.getSubcategories().get(y).equals(Database.getBankAccounts().get(i).getBills().get(x).getSubcategory())){
-                            Calendar calendar = Calendar.getInstance();
+            for (BankAccount bankAccount:Database.getBankAccounts()){
+                for (Bill bill:bankAccount.getBills()){
+                    for (Subcategory subcategory:primaryCategory.getSubcategories()){
+                        calendar.setTimeInMillis(bill.getCreationDate());
+                        if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory) && calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) == thisMonth &&
+                                subcategory.getGoal().getCreationDate() < bill.getCreationDate()){
 
-                            calendar.setTimeInMillis(System.currentTimeMillis());
-                            int resultCurrentTime = calendar.get(Calendar.MONTH) + calendar.get(Calendar.YEAR);
-                            calendar.setTimeInMillis(Database.getBankAccounts().get(i).getBills().get(y).getCreationDate());
-                            int resultBill = calendar.get(Calendar.MONTH) + calendar.get(Calendar.YEAR);
-
-                            if(resultCurrentTime == resultBill){
-                                amount += Database.getBankAccounts().get(i).getBills().get(y).getAmount();
-                            }
+                            amount += bill.getAmount();
                         }
                     }
                 }

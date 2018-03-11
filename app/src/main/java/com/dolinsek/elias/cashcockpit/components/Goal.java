@@ -12,12 +12,20 @@ public class Goal {
      */
     private long amount;
 
+    private long creationDate;
+
     /**
      * Creates a new Goal
      * @param amount amount
      */
-    public Goal(long amount) {
+    public Goal(long amount, long creationDate) {
         this.amount = amount;
+        this.creationDate = creationDate;
+    }
+
+    public Goal(long amount){
+        this.amount = amount;
+        this.creationDate = System.currentTimeMillis();
     }
 
     public long getAmount() {
@@ -26,5 +34,13 @@ public class Goal {
 
     public void setAmount(long amount) {
         this.amount = amount;
+    }
+
+    public long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(long creationDate) {
+        this.creationDate = creationDate;
     }
 }

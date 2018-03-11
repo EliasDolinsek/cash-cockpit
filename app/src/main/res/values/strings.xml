@@ -104,6 +104,8 @@
     <string name="dialog_msg_delete_bill">Do you really want to delete this bill?</string>
     <string name="tab_overview">Overview</string>
     <string name="tab_goals">Goals</string>
+    <string name="label_this_month">This Month</string>
+    <string name="label_overall">Overall</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>
@@ -136,6 +138,21 @@
         <item>@string/label_weekly</item>
         <item>@string/label_monthly</item>
         <item>@string/label_yearly</item>
+    </array>
+
+    <array name="months_array">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
     </array>
 
     <!-- TODO: Remove or change this placeholder text -->

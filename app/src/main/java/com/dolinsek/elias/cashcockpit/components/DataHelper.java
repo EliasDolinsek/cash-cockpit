@@ -57,12 +57,14 @@ public class DataHelper {
     //PrimaryCategory
     private static final String PRIMARY_CATEGORY_NAME = "name";
     private static final String PRIMARY_CATEGORY_GOAL_AMOUNT = "goalAmount";
+    private static final String PRIMARY_CATEGORY_GOAL_CREATION_DATE = "creationDate";
     private static final String PRIMARY_CATEGORY_SUBCATEGORIES = "subcategories";
     private static final String PRIMARY_CATEGORY_ICON = "icon";
 
     //Subcategory
     private static final String SUBCATEGORY_NAME_JSON = "name";
     private static final String SUBCATEGORY_GOAL_AMOUNT = "goalAmount";
+    private static final String SUBCATEGORY_GOAL_CREATION_DATE = "creationDate";
     private static final String SUBCATEGORY_FAVOURED = "favoured";
 
     //AutoPays
@@ -205,6 +207,9 @@ public class DataHelper {
             //Adds goal-amount
             currentPrimaryCategoryJSON.put(PRIMARY_CATEGORY_GOAL_AMOUNT, primaryCategory.getGoal().getAmount());
 
+            //Adds creationDate
+            currentPrimaryCategoryJSON.put(PRIMARY_CATEGORY_GOAL_CREATION_DATE, primaryCategory.getGoal().getCreationDate());
+
             //Adds icon
             currentPrimaryCategoryJSON.put(PRIMARY_CATEGORY_ICON, primaryCategory.getIconName());
 
@@ -230,6 +235,9 @@ public class DataHelper {
 
                 //Adds goal-amount
                 currentSubcategoryJSON.put(SUBCATEGORY_GOAL_AMOUNT, subcategory.getGoal().getAmount());
+
+                //Adds goal-creation-date
+                currentSubcategoryJSON.put(SUBCATEGORY_GOAL_CREATION_DATE, subcategory.getGoal().getCreationDate());
 
                 //Sets if the current subcategory is favoured by the user
                 currentSubcategoryJSON.put(SUBCATEGORY_FAVOURED, subcategory.isFavoured());
@@ -422,7 +430,7 @@ public class DataHelper {
             JSONObject currentPrimaryCategoryJSON = primaryCategoriesJSON.getJSONObject(i);
 
             String primaryCategoryName, primaryCategoryIcon;
-            long primaryCategoryGoalAmount;
+            long primaryCategoryGoalAmount, primaryCategoryGoalCreationDate = System.currentTimeMillis();
 
             //Gets name of primary category
             primaryCategoryName = currentPrimaryCategoryJSON.getString(PRIMARY_CATEGORY_NAME);
@@ -430,11 +438,16 @@ public class DataHelper {
             //Gets goal-amount of primary category
             primaryCategoryGoalAmount = currentPrimaryCategoryJSON.getLong(PRIMARY_CATEGORY_GOAL_AMOUNT);
 
+            try {
+                //Gets goal-creation-date
+                primaryCategoryGoalCreationDate = currentPrimaryCategoryJSON.getLong(PRIMARY_CATEGORY_GOAL_CREATION_DATE);
+            } catch (JSONException e){}
+
             //Gets icon
             primaryCategoryIcon = currentPrimaryCategoryJSON.getString(PRIMARY_CATEGORY_ICON);
 
             //Current primary category to add
-            PrimaryCategory primaryCategoryToAdd = new PrimaryCategory(primaryCategoryName, new Goal(primaryCategoryGoalAmount));
+            PrimaryCategory primaryCategoryToAdd = new PrimaryCategory(primaryCategoryName, new Goal(primaryCategoryGoalAmount, primaryCategoryGoalCreationDate));
 
             //Sets icon
             primaryCategoryToAdd.setIconName(primaryCategoryIcon);
@@ -450,7 +463,7 @@ public class DataHelper {
                 JSONObject currentSubcategoryJSON = primaryCategoriesJSON.getJSONObject(i).getJSONArray(PRIMARY_CATEGORY_SUBCATEGORIES).getJSONObject(y);
 
                 String subcategoryName;
-                long subcategoryGoalAmount;
+                long subcategoryGoalAmount, subcategoryGoalCreationDate;
                 boolean subcategoryFavored;
 
                 //Gets name
@@ -459,11 +472,18 @@ public class DataHelper {
                 //Gets goal-amount
                 subcategoryGoalAmount = currentSubcategoryJSON.getLong(SUBCATEGORY_GOAL_AMOUNT);
 
+                try {
+                    //Gets goal-creation-date
+                    subcategoryGoalCreationDate = currentSubcategoryJSON.getLong(SUBCATEGORY_GOAL_CREATION_DATE);
+                } catch (JSONException e){
+                    subcategoryGoalCreationDate = System.currentTimeMillis();
+                }
+
                 //Gets if subcategory is favoured
                 subcategoryFavored = currentSubcategoryJSON.getBoolean(SUBCATEGORY_FAVOURED);
 
                 //Adds subcategory to array
-                subcategories.add(new Subcategory(subcategoryName, new Goal(subcategoryGoalAmount), primaryCategories.get(i), subcategoryFavored));
+                subcategories.add(new Subcategory(subcategoryName, new Goal(subcategoryGoalAmount, subcategoryGoalCreationDate), primaryCategories.get(i), subcategoryFavored));
             }
 
             //Adds subcategories to current primary category

@@ -22,6 +22,7 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by elias on 20.01.2018.
@@ -88,14 +89,20 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
         //Displays the goal-amount
         if(subcategory.getGoal().getAmount() != 0) {
+
             //Reads how much bills have this as subcategory and adds its amount into the variable amount
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            int thisMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+
+            //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
             long amount = 0;
-            for(BankAccount bankAccount: Database.getBankAccounts()){
-                for(Bill bill:bankAccount.getBills()){
-                    for(int i = 0; i<primaryCategory.getSubcategories().size(); i++){
-                        if(bill.getSubcategory() == primaryCategory.getSubcategories().get(i)){
-                            amount += bill.getAmount();
-                        }
+            for (BankAccount bankAccount:Database.getBankAccounts()){
+                for (Bill bill:bankAccount.getBills()){
+                    if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory) && calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) == thisMonth &&
+                            subcategory.getGoal().getCreationDate() < bill.getCreationDate()){
+
+                        amount += bill.getAmount();
                     }
                 }
             }
@@ -130,36 +137,38 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         });
 
 
-        //Displays SubcategoryEditorDialogFragment if it's allowed
-        if(allowDirectEdit){
-            holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-                    subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory, position);
-                    subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
-                }
-            });
-        } else {
-            holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    //Gets the index of the primary category in the Database
-                    int primaryCategoryIndex = 0;
-                    for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                        if(primaryCategory.equals(Database.getPrimaryCategories().get(i))){
-                            primaryCategoryIndex = i;
-                            System.out.println(i);
-                        }
+        if (type == TYPE_NORMAl){
+            //Displays SubcategoryEditorDialogFragment if it's allowed
+            if(allowDirectEdit){
+                holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
+                        subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory, position);
+                        subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
                     }
+                });
+            } else {
+                holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                    //Starts CategoryActivity
-                    Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
-                    intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndex);
-                    holder.itemView.getContext().startActivity(intent);
-                }
-            });
+                        //Gets the index of the primary category in the Database
+                        int primaryCategoryIndex = 0;
+                        for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
+                            if(primaryCategory.equals(Database.getPrimaryCategories().get(i))){
+                                primaryCategoryIndex = i;
+                                System.out.println(i);
+                            }
+                        }
+
+                        //Starts CategoryActivity
+                        Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
+                        intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndex);
+                        holder.itemView.getContext().startActivity(intent);
+                    }
+                });
+            }
         }
     }
 
