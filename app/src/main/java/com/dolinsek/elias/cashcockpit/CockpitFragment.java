@@ -3,6 +3,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Intent;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,19 +36,22 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
+
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CockpitFragment extends Fragment {
 
+    private static final int RQ_SELECT_CATEGORY = 35;
     private static final String PRIMARY_CATEGORY = "primary_category";
     private static final String SUBCATEGORY = "subcategory";
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
     private LinearLayout mLlSelectInfo;
-    private TextView mTxvSelectInfo, mTxvSelectedCategory;
+    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory;
     private TextInputLayout mTilBillAmount, mTilBillDescription;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
@@ -79,7 +83,8 @@ public class CockpitFragment extends Fragment {
 
         mLlSelectInfo = (LinearLayout) inflatedView.findViewById(R.id.ll_cockpit_select_info);
         mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
-        mTxvSelectedCategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_category);
+        mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
+        mTxvSelectedPrimaryCategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_primary_category);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
@@ -108,8 +113,7 @@ public class CockpitFragment extends Fragment {
             mEdtBillAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(bill.getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
             mEdtBillDescription.setText(bill.getDescription());
 
-            mTxvSelectedCategory.setText(subcategory.getPrimaryCategory().getName() + " " + Character.toString((char)0x00B7) + " " + subcategory.getName());
-            mTxvSelectedCategory.setVisibility(View.VISIBLE);
+            displaySelectedSubcategory();
 
             mBtnAdd.setVisibility(View.GONE);
             mSpnSelectBankAccount.setEnabled(false);
@@ -123,8 +127,7 @@ public class CockpitFragment extends Fragment {
             mSpnSelectBillType.setSelection(billType);
             if(savedInstanceState.getInt(PRIMARY_CATEGORY, -1) != -1){
                 subcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
-                mTxvSelectedCategory.setVisibility(View.VISIBLE);
-                mTxvSelectedCategory.setText(subcategory.getPrimaryCategory().getName() + " " + Character.toString((char)0x00B7) + " " + subcategory.getName());
+                displaySelectedSubcategory();
             }
         }
 
@@ -164,21 +167,19 @@ public class CockpitFragment extends Fragment {
         mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final SelectSubcategoryDialogFragment selectSubcategoryDialogFragment = new SelectSubcategoryDialogFragment();
-                selectSubcategoryDialogFragment.setOnSubcategorySelected(new PrimaryCategoryLightItemAdapter.SubcategorySelectionListener() {
-                    @Override
-                    public void onSubcategorySelected(Subcategory subcategory) {
-                        CockpitFragment.this.subcategory = subcategory;
-
-                        mLlSelectInfo.setVisibility(View.GONE);
-                        mTxvSelectedCategory.setVisibility(View.VISIBLE);
-                        mTxvSelectedCategory.setText(subcategory.getPrimaryCategory().getName() + " " + Character.toString((char)0x00B7) + " " + subcategory.getName());
-                        selectSubcategoryDialogFragment.dismiss();
+                Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
+                if (subcategory != null){
+                    for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+                        for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
+                            if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
+                                intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, i);
+                                intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, y);
+                                break;
+                            }
+                        }
                     }
-                });
-
-                hideKeyboard();
-                selectSubcategoryDialogFragment.show(getFragmentManager(), "select_category");
+                }
+                startActivityForResult(intent, RQ_SELECT_CATEGORY);
             }
         });
 
@@ -364,5 +365,21 @@ public class CockpitFragment extends Fragment {
         public void setBill(Bill bill){
             this.bill = bill;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RQ_SELECT_CATEGORY && resultCode == RESULT_OK){
+            subcategory = Database.getPrimaryCategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0));
+            displaySelectedSubcategory();
+        }
+    }
+
+    private void displaySelectedSubcategory(){
+        mTxvSelectedSubcategory.setVisibility(View.VISIBLE);
+        mTxvSelectedPrimaryCategory.setVisibility(View.VISIBLE);
+        mTxvSelectedSubcategory.setText(subcategory.getName());
+        mTxvSelectedPrimaryCategory.setText(" (" + subcategory.getPrimaryCategory().getName() + ")");
     }
 }

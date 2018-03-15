@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dolinsek.elias.cashcockpit.SelectCategoryActivity">
+    tools:context="com.dolinsek.elias.cashcockpit.SelectCategoryActivity"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        android:text="Please select a category..."
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textColor="@color/colorPrimary"
+        android:textStyle="italic"
+        android:textAlignment="center"
+        android:paddingTop="10dp"
+        android:paddingBottom="5dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_select_category"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/label_description"
             android:lines="1"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
     </android.support.design.widget.TextInputLayout>
 
@@ -103,10 +103,16 @@
             android:text="@string/btn_select_category" />
 
         <TextView
-            android:id="@+id/txv_cockpit_selected_category"
+            android:id="@+id/txv_cockpit_selected_subcategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAlignment="center"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/txv_cockpit_selected_primary_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorPrimary"
             android:visibility="gone"/>
 
     </LinearLayout>

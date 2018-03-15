@@ -35,7 +35,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private FloatingActionButton mFbtnBack, mFbtnForward;
     private TextView mTxvMonth, mTxvOverall, mTxvCurrentMonth;
     private Calendar calendar;
-    private ArrayList<Subcategory> subcategoriesToRestore = new ArrayList<>();
+    private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(getCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -70,6 +70,7 @@ public class GoalsStatisticsFragment extends Fragment {
                 mTxvMonth.setText(percent + "%");
                 mPgbMonth.setProgress(percent);
                 mTxvCurrentMonth.setText(getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR));
+                loadCategoriesAdaptersGoalsStatistics();
                 manageButtonStates();
             }
         });
@@ -83,6 +84,7 @@ public class GoalsStatisticsFragment extends Fragment {
                 mTxvMonth.setText(percent + "%");
                 mPgbMonth.setProgress(percent);
                 mTxvCurrentMonth.setText(getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR));
+                loadCategoriesAdaptersGoalsStatistics();
                 manageButtonStates();
             }
         });
@@ -114,18 +116,23 @@ public class GoalsStatisticsFragment extends Fragment {
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timeStamp);
-        int currentTime = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+        int time = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
 
         for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+                if (primaryCategory.getGoal().getAmount() != 0){
                     for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                        calendar.setTimeInMillis(bill.getCreationDate());
-                        ;
-                        if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory) && calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) == currentTime &&
-                                subcategory.getGoal().getCreationDate() < bill.getCreationDate()){
+                        if (subcategory.getGoal().getAmount() != 0){
+                            for (Bill bill:bankAccount.getBills()){
+                                calendar.setTimeInMillis(subcategory.getGoal().getCreationDate());
+                                int goalCreationDate = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
 
-                            amount += bill.getAmount();
+                                calendar.setTimeInMillis(bill.getCreationDate());
+                                int billCreationDate = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+                                if (time == billCreationDate && goalCreationDate >= billCreationDate){
+                                    amount += bill.getAmount();
+                                }
+                            }
                         }
                     }
                 }
@@ -176,7 +183,7 @@ public class GoalsStatisticsFragment extends Fragment {
             calendar.add(Calendar.MONTH, 1);
         }
 
-        return (int) (result / loops);
+        return (result / loops);
     }
 
     private ArrayList<PrimaryCategory> getCategories(){
@@ -191,6 +198,12 @@ public class GoalsStatisticsFragment extends Fragment {
         return primaryCategories;
     }
 
+    private void loadCategoriesAdaptersGoalsStatistics(){
+        primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(getCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
+        primaryCategoryItemAdapter.setGoalStatisticsTime(calendar.getTimeInMillis());
+        mRvCategories.setAdapter(primaryCategoryItemAdapter);
+    }
+
     @Override
     public void onStart() {
         super.onStart();
@@ -203,6 +216,6 @@ public class GoalsStatisticsFragment extends Fragment {
         mPgbOverall.setProgress(overall);
         mTxvOverall.setText(overall + "%");
 
-        mRvCategories.setAdapter(new PrimaryCategoryItemAdapter(getCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS));
+        mRvCategories.setAdapter(primaryCategoryItemAdapter);
     }
 }

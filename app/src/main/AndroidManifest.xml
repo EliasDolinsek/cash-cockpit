@@ -25,7 +25,10 @@
         <activity
             android:name=".AutoPayActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
-        <activity android:name=".BillEditorActivity" android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".BillEditorActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SelectCategoryActivity"></activity>
     </application>
 
 </manifest>

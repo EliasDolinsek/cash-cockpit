@@ -18,7 +18,6 @@ import com.dolinsek.elias.cashcockpit.components.Database;
  */
 
 public class SelectSubcategoryDialogFragment extends DialogFragment {
-
     private PrimaryCategoryLightItemAdapter.SubcategorySelectionListener subcategorySelectionListener;
 
     @NonNull

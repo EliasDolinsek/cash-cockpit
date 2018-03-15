@@ -15,17 +15,13 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
-import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Adapter for primary accounts
@@ -34,13 +30,17 @@ import java.util.Date;
 
 public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCategoryItemAdapter.PrimaryCategoryViewHolder>{
 
-    public static int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1;
+    public static int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1, TYPE_SELECT_CATEGORY = 2;
 
     private int type;
     /**
      * Contains all primary categories
      */
     private ArrayList<PrimaryCategory> primaryCategories;
+
+    private SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener;
+    private Subcategory selectedSubcategory;
+    private long goalStatisticsTime = System.currentTimeMillis();
 
     /**
      * Creates a new adapter and sets categories from the database
@@ -120,11 +120,20 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
 
         //Sets up the RecyclerView
+        SubcategoryItemAdapter subcategoryItemAdapter;
         if(type == TYPE_NORMAL){
-            holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_NORMAl));
+            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_NORMAl);
+        } else if (type == TYPE_GOAL_STATISTICS){
+            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
         } else {
-            holder.mRvSubcategories.setAdapter(new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC));
+            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
         }
+
+        subcategoryItemAdapter.setOnCategorySelectedListener(onCategorySelectedListener);
+        subcategoryItemAdapter.setSelectedSubcategory(selectedSubcategory);
+        subcategoryItemAdapter.setGoalStatisticsTime(goalStatisticsTime);
+        holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
+
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 
         //Displays informations
@@ -155,5 +164,17 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             mPgbCategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_primary_category_goal_status);
             mRvSubcategories = (RecyclerView) itemView.findViewById(R.id.rv_item_primary_categories_subcategory);
         }
+    }
+
+    public void setOnCategorySelectedListener(SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener) {
+        this.onCategorySelectedListener = onCategorySelectedListener;
+    }
+
+    public void setSelectedSubcategory(Subcategory selectedSubcategory){
+        this.selectedSubcategory = selectedSubcategory;
+    }
+
+    public void setGoalStatisticsTime(long goalStatisticsTime){
+        this.goalStatisticsTime = goalStatisticsTime;
     }
 }

@@ -68,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         try {
             //Loads database from json
             Database.load(getApplicationContext());
+            Database.getBankAccounts().get(0).getBills().get(0).setCreationDate(1518630120100L);
+            Database.getPrimaryCategories().get(0).getSubcategories().get(0).getGoal().setCreationDate(1518630120000L);
         } catch (Exception e) {
 
             //If there are no categories it restores them
