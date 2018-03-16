@@ -44,43 +44,6 @@
                 android:layout_marginTop="5dp"/>
 
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <RelativeLayout
-                android:layout_width="100dp"
-                android:layout_height="100dp">
-
-                <TextView
-                    android:id="@+id/txv_goals_statistics_overall"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
-
-                <ProgressBar
-                    android:id="@+id/pgb_goals_statistics_overall"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
-                    android:max="100"
-                    android:progress="1"
-                    android:progressDrawable="@drawable/circular"/>
-
-            </RelativeLayout>
-
-            <TextView
-                android:text="@string/label_overall"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"/>
-
-        </LinearLayout>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
