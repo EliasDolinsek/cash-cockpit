@@ -19,6 +19,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -66,18 +67,17 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         } else {
 
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.setTimeInMillis(goalStatisticsTime);
             int thisMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
 
             //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
             long amount = 0;
-            for (BankAccount bankAccount:Database.getBankAccounts()){
-                for (Bill bill:bankAccount.getBills()){
-                    for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                        calendar.setTimeInMillis(bill.getCreationDate());
-                        if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory) && calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) == thisMonth &&
-                                subcategory.getGoal().getCreationDate() < bill.getCreationDate()){
-
+            for (Bill bill: Toolbox.getBills(goalStatisticsTime, Toolbox.TYPE_MONTH)){
+                for (Subcategory subcategory:primaryCategory.getSubcategories()){
+                    if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory)){
+                        if (bill.getType() == Bill.TYPE_INPUT){
+                            amount -= bill.getAmount();
+                        } else {
                             amount += bill.getAmount();
                         }
                     }
@@ -132,6 +132,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         subcategoryItemAdapter.setOnCategorySelectedListener(onCategorySelectedListener);
         subcategoryItemAdapter.setSelectedSubcategory(selectedSubcategory);
         subcategoryItemAdapter.setGoalStatisticsTime(goalStatisticsTime);
+
         holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
 
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));

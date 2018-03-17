@@ -17,13 +17,13 @@ public class Toolbox {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(creationTime);
 
-        int time = 0;
+        int year = 0, month = 0, day = 0;
         switch (type){
-            case TYPE_DAY: time = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) + calendar.get(Calendar.DAY_OF_MONTH);
+            case TYPE_DAY: year = calendar.get(Calendar.YEAR); month = calendar.get(Calendar.MONTH); day = calendar.get(Calendar.DAY_OF_MONTH);
                 break;
-            case TYPE_MONTH: time = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+            case TYPE_MONTH: year = calendar.get(Calendar.YEAR); month = calendar.get(Calendar.MONTH);
                 break;
-            case TYPE_YEAR: time = calendar.get(Calendar.YEAR);
+            case TYPE_YEAR: year = calendar.get(Calendar.YEAR);
                 break;
         }
 
@@ -34,19 +34,19 @@ public class Toolbox {
 
                 switch (type){
                     case TYPE_DAY: {
-                        if (time == calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) + calendar.get(Calendar.DAY_OF_MONTH)){
+                        if (year == calendar.get(Calendar.YEAR) && month == calendar.get(Calendar.MONTH) && day == calendar.get(Calendar.DAY_OF_MONTH)){
                             bills.add(bill);
                         }
                     }
                         break;
                     case TYPE_MONTH:{
-                        if (time == calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH)){
+                        if (year == calendar.get(Calendar.YEAR) && month == calendar.get(Calendar.MONTH)){
                             bills.add(bill);
                         }
                     }
                         break;
                     case TYPE_YEAR:{
-                        if (time == calendar.get(Calendar.YEAR)){
+                        if (year == calendar.get(Calendar.YEAR)){
                             bills.add(bill);
                         }
                     }

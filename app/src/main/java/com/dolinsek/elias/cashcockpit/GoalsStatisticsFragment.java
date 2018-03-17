@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -32,10 +33,12 @@ import java.util.Calendar;
  */
 public class GoalsStatisticsFragment extends Fragment {
 
+    private static final String EXTRA_MONTH = "month";
+
     private RecyclerView mRvCategories;
     private ProgressBar mPgbMonth;
     private FloatingActionButton mFbtnBack, mFbtnForward;
-    private TextView mTxvMonth, mTxvCurrentMonth;
+    private TextView mTxvMonth, mTxvCurrentMonth, mTxvDetails;
     private Calendar calendar;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
 
@@ -51,58 +54,44 @@ public class GoalsStatisticsFragment extends Fragment {
 
         mTxvMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_month);
         mTxvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_current_month);
+        mTxvDetails = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_details);
 
         calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        mTxvCurrentMonth.setText(getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR));
+        if (savedInstanceState != null){
+            calendar.setTimeInMillis(Long.parseLong(savedInstanceState.getString(EXTRA_MONTH)));
+        } else {
+            calendar.setTimeInMillis(System.currentTimeMillis());
+        }
+        updateCurrentMonthTextView();
+
+        primaryCategoryItemAdapter.setGoalStatisticsTime(calendar.getTimeInMillis());
+        mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
         mFbtnBack = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_goals_statistics_back);
         mFbtnForward = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_goals_statistics_forward);
 
-        manageButtonStates();
         loadStatisticsMonth(calendar.getTimeInMillis());
 
         mFbtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manageButtonStates();
 
                 calendar.add(Calendar.MONTH, -1);
                 loadStatisticsMonth(calendar.getTimeInMillis());
+                updateCurrentMonthTextView();
             }
         });
 
         mFbtnForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                manageButtonStates();
 
                 calendar.add(Calendar.MONTH, 1);
                 loadStatisticsMonth(calendar.getTimeInMillis());
+                updateCurrentMonthTextView();
             }
         });
         return inflatedView;
-    }
-
-    /**
-     * Enables or disables @mFbtnForward or @mFbtnBack
-     */
-    private void manageButtonStates(){
-        calendar.add(Calendar.MONTH, 1);
-        if (calendar.getTimeInMillis() >= System.currentTimeMillis()){
-            mFbtnForward.setEnabled(false);
-        } else {
-            mFbtnBack.setEnabled(true);
-        }
-
-        calendar.add(Calendar.MONTH, -2);
-        if (calendar.getTimeInMillis() <= getFirstCreationDateOfGoals()){
-            mFbtnBack.setEnabled(false);
-        } else {
-            mFbtnBack.setEnabled(true);
-        }
-
-        calendar.add(Calendar.MONTH, 1);
     }
 
     /**
@@ -110,26 +99,47 @@ public class GoalsStatisticsFragment extends Fragment {
      * @param timeStamp of month
      */
     private void loadStatisticsMonth(long timeStamp) {
-        ArrayList<Bill> bills = Toolbox.getBills(timeStamp, Toolbox.TYPE_MONTH);
-        long monthAmount = 0;
 
-        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            if (primaryCategory.getGoal().getAmount() != 0){
-                for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                    if (subcategory.getGoal().getAmount() != 0){
-                        for (Bill bill:bills){
-                            if (bill.getSubcategory().equals(subcategory)){
-                                monthAmount += bill.getAmount();
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
+        primaryCategoryItemAdapter.setGoalStatisticsTime(calendar.getTimeInMillis());
+        mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
-        int percent =  (int) (100 / (double)getGoalsTotalAmount() * monthAmount);
+        int percent =  (int) (100 / (double)getGoalsTotalAmount() * getUsedMoneyOfMonth(timeStamp));
         mPgbMonth.setProgress(percent);
-        mTxvMonth.setText(percent + "%");
+
+        if (percent <= 0){
+            mTxvMonth.setText("0%");
+        } else {
+            mTxvMonth.setText(percent + "%");
+        }
+    }
+
+    /**
+     * @return sum of all goal-amounts
+     */
+    private long getGoalsTotalAmount(){
+       ArrayList<Goal> goals = Toolbox.getSubcategoriesGoals();
+
+       long goalsTotalAmount = 0;
+       for (Goal goal:goals){
+           goalsTotalAmount += goal.getAmount();
+       }
+
+       return goalsTotalAmount;
+    }
+
+    /**
+     * Displays date of current month of statistics
+     */
+    private void updateCurrentMonthTextView(){
+        String date = getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR);
+        mTxvCurrentMonth.setText(date);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(EXTRA_MONTH, String.valueOf(calendar.getTimeInMillis()));
     }
 
     /**
@@ -147,17 +157,28 @@ public class GoalsStatisticsFragment extends Fragment {
         return firstCreationDate;
     }
 
-    /**
-     * @return sum of all goal-amounts
-     */
-    private long getGoalsTotalAmount(){
-       ArrayList<Goal> goals = Toolbox.getSubcategoriesGoals();
+    private long getUsedMoneyOfMonth(long timeStamp){
+        ArrayList<Bill> bills = Toolbox.getBills(timeStamp, Toolbox.TYPE_MONTH);
+        long monthAmount = 0;
 
-       long goalsTotalAmount = 0;
-       for (Goal goal:goals){
-           goalsTotalAmount += goal.getAmount();
-       }
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            if (primaryCategory.getGoal().getAmount() != 0){
+                for (Subcategory subcategory:primaryCategory.getSubcategories()){
+                    if (subcategory.getGoal().getAmount() != 0){
+                        for (Bill bill:bills){
+                            if (bill.getSubcategory().equals(subcategory)){
+                                if (bill.getType() == Bill.TYPE_INPUT){
+                                    monthAmount -= bill.getAmount();
+                                } else {
+                                    monthAmount += bill.getAmount();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-       return goalsTotalAmount;
+        return monthAmount;
     }
 }

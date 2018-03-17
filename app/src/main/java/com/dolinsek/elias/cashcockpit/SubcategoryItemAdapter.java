@@ -21,6 +21,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,7 +59,6 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit, int type){
         this.primaryCategory = primaryCategory;
         this.allowDirectEdit = allowDirectEdit;
-        this.showFavoredIcon = showFavoredIcon;
         this.type = type;
     }
 
@@ -75,6 +75,12 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         if(type == TYPE_NORMAl){
             subcategory = primaryCategory.getSubcategories().get(position);
             holder.mBtnSelectCategory.setVisibility(View.GONE);
+
+            if(subcategory.isFavoured()){
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
+            } else {
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+            }
         } else if (type == TYPE_GOAL_STATISTIC){
             ArrayList<Subcategory> subcategories = new ArrayList<>();
             for(Subcategory currentSubcategory:primaryCategory.getSubcategories()){
@@ -84,8 +90,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             }
 
             subcategory = subcategories.get(position);
-
             holder.mBtnSelectCategory.setVisibility(View.GONE);
+            holder.mImvSubcategoryFavored.setVisibility(View.GONE);
         } else {
             subcategory = primaryCategory.getSubcategories().get(position);
             holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
@@ -110,6 +116,12 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                     onCategorySelectedListener.onSelected(primaryCategoryIndex, subcategoryIndex);
                 }
             });
+
+            if(subcategory.isFavoured()){
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
+            } else {
+                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+            }
         }
 
         if (selectedSubcategory != null && selectedSubcategory.equals(subcategory)){
@@ -119,18 +131,6 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
         //Sets name of the subcategory
         holder.mTxvSubcategoryName.setText(subcategory.getName());
-
-        //Displays a specified icon when the subcategory is favored and another when not
-        if(showFavoredIcon){
-            if(subcategory.isFavoured())
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
-            else
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
-        } else {
-            holder.mImvSubcategoryFavored.setVisibility(View.GONE);
-        }
-
-        loadGoalStatistics(holder, subcategory, System.currentTimeMillis());
 
         holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -180,6 +180,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
                 });
             }
         }
+
+        loadGoalStatistics(holder, subcategory);
     }
 
     @Override
@@ -239,24 +241,23 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         this.goalStatisticsTime = goalStatisticsTime;
     }
 
-    private void loadGoalStatistics(SubcategoryItemViewHolder holder, Subcategory subcategory, long time){
+    private void loadGoalStatistics(SubcategoryItemViewHolder holder, Subcategory subcategory){
 
         //Displays the goal-amount
         if(subcategory.getGoal().getAmount() != 0) {
 
             //Reads how much bills have this as subcategory and adds its amount into the variable amount
             Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(time);
+            calendar.setTimeInMillis(goalStatisticsTime);
             int currentMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
 
             //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
             long amount = 0;
-            for (BankAccount bankAccount:Database.getBankAccounts()){
-                for (Bill bill:bankAccount.getBills()){
-                    calendar.setTimeInMillis(bill.getCreationDate());
-                    if (bill.getSubcategory().equals(subcategory) && calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH) == currentMonth &&
-                            subcategory.getGoal().getCreationDate() < bill.getCreationDate()){
-
+            for (Bill bill: Toolbox.getBills(goalStatisticsTime, Toolbox.TYPE_MONTH)){
+                if (bill.getSubcategory().equals(subcategory)){
+                    if (bill.getType() == Bill.TYPE_INPUT){
+                        amount -= bill.getAmount();
+                    } else {
                         amount += bill.getAmount();
                     }
                 }
