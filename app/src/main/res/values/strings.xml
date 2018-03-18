@@ -106,6 +106,7 @@
     <string name="tab_goals">Goals</string>
     <string name="label_this_month">This Month</string>
     <string name="label_overall">Overall</string>
+    <string name="label_average">Average</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>

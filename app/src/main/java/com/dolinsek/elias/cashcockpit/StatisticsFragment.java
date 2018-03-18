@@ -32,7 +32,7 @@ public class StatisticsFragment extends Fragment {
         mTabLayout = (TabLayout) inflatedView.findViewById(R.id.tl_statistics);
         mViewPager = (ViewPager) inflatedView.findViewById(R.id.vp_statistics);
 
-        mViewPager.setAdapter(new Adapter(getFragmentManager()));
+        mViewPager.setAdapter(new Adapter(getChildFragmentManager()));
         mTabLayout.setupWithViewPager(mViewPager);
 
         return inflatedView;

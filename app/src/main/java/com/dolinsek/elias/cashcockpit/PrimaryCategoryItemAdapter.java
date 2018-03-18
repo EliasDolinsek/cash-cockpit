@@ -47,8 +47,20 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
      * Creates a new adapter and sets categories from the database
      */
     public PrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategories, int type){
-        this.primaryCategories = primaryCategories;
         this.type = type;
+
+        if (type == TYPE_GOAL_STATISTICS){
+            ArrayList<PrimaryCategory> editedPrimaryCategories = new ArrayList<>();
+            for (PrimaryCategory primaryCategory:primaryCategories){
+                if (primaryCategory.getGoal().getAmount() != 0){
+                    editedPrimaryCategories.add(primaryCategory);
+                }
+            }
+
+            this.primaryCategories = editedPrimaryCategories;
+        } else {
+            this.primaryCategories = primaryCategories;
+        }
     }
 
     @Override
