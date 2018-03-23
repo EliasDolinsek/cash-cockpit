@@ -27,7 +27,6 @@ public class SelectSubcategoryDialogFragment extends DialogFragment {
 
         if(Database.getPrimaryCategories().size() == 0){
             alertBuilder.setTitle(getResources().getString(R.string.label_no_categories));
-            alertBuilder.setMessage("Please create ore restore categories in the database page!");
         } else {
             RecyclerView recyclerView = new RecyclerView(getContext());
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

@@ -20,6 +20,10 @@ import android.view.ViewGroup;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -40,8 +44,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         if(savedInstanceState == null){
-            //Shows CockpitFragment
-            replaceFragment(new CockpitFragment());
+            //Show CockpitFragment
+            replaceFragment(cockpitFragment);
         }
 
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bnv_main);
@@ -71,20 +75,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        try {
-            //Loads database from json
-            Database.load(getApplicationContext());
-            Database.getBankAccounts().get(0).getBills().get(0).setCreationDate(1518630120100L);
-            Database.getPrimaryCategories().get(0).getSubcategories().get(0).getGoal().setCreationDate(1518630120000L);
-        } catch (Exception e) {
-
-            //If there are no categories it restores them
-            if(Database.getPrimaryCategories().size() == 0){
-                Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
-            }
-
-            Log.e(MainActivity.TAG, "", e);
-        }
+        initDatabase();
     }
 
     /**
@@ -114,8 +105,24 @@ public class MainActivity extends AppCompatActivity {
             //Start SettingsActivity
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
             startActivity(intent);
+
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void initDatabase(){
+        try {
+            Database.load(getApplicationContext());
+        } catch (Exception e) {
+            if (Database.getPrimaryCategories().size() == 0){
+                restorePrimaryCategories();
+            }
+        }
+    }
+
+    private void restorePrimaryCategories(){
+        Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
     }
 }

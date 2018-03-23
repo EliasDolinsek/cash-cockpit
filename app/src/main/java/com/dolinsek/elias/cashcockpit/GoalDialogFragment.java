@@ -45,7 +45,7 @@ public class GoalDialogFragment extends DialogFragment{
         mEdtGoalAmount = (EditText) inflatedView.findViewById(R.id.edt_dialog_goal_amount);
 
         if(primaryCategory.getGoal().getAmount() != 0){
-            mEdtGoalAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(primaryCategory.getGoal().getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
+            mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(primaryCategory.getGoal().getAmount()));
 
             builder.setTitle(getResources().getString(R.string.dialog_title_edit_goal));
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
@@ -107,7 +107,7 @@ public class GoalDialogFragment extends DialogFragment{
             }
         });
 
-        mEdtGoalAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtGoalAmount));
+        mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
 
         return dialog;
     }

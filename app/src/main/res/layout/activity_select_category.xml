@@ -6,19 +6,9 @@
     tools:context="com.dolinsek.elias.cashcockpit.SelectCategoryActivity"
     android:orientation="vertical">
 
-    <TextView
-        android:text="Please select a category..."
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="italic"
-        android:textAlignment="center"
-        android:paddingTop="10dp"
-        android:paddingBottom="5dp"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_select_category"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
 </LinearLayout>

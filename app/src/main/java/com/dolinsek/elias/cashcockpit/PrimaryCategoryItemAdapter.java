@@ -97,8 +97,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             }
 
             //Displays informations
-            holder.mTxvCategoryGoalStatus.setText((Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount)));
-            holder.mTxvGoalStatusAmount.setText(" (" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(primaryCategory.getGoal().getAmount()) + ")");
+            holder.mTxvCategoryGoalStatus.setText((Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(amount)));
+            holder.mTxvGoalStatusAmount.setText(" (" + Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(primaryCategory.getGoal().getAmount()) + ")");
             holder.mPgbCategoryGoalStatus.setProgress((int)(100.0 /(primaryCategory.getGoal().getAmount() / 100.0) * (amount / 100.0)));
 
             //Enables a ProgressBar if there is a goal

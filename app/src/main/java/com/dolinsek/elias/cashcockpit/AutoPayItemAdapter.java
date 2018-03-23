@@ -50,7 +50,7 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
         //Displays data
         holder.mTxvName.setText(autoPay.getName());
 
-        String amount = Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(autoPay.getBill().getAmount());
+        String amount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(autoPay.getBill().getAmount());
         if(amount.startsWith("-")){
             amount.replace("-", "");
         }

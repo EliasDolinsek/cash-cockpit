@@ -114,8 +114,7 @@ public class AutoPayActivity extends AppCompatActivity {
             editMode = true;
 
             mEdtAutoPayName.setText(autoPay.getName());
-            mEdtAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(autoPay.getBill().getAmount()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
-
+            mEdtAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableStringWithCurrencySymbol(autoPay.getBill().getAmount()));
             mTxvSelectedCategory.setText(autoPay.getBill().getSubcategory().getName());
 
             mBtnCreate.setText(getResources().getString(R.string.btn_save));
@@ -206,7 +205,7 @@ public class AutoPayActivity extends AppCompatActivity {
             }
         });
 
-        mEdtAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtAmount));
+        mEdtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAmount));
     }
 
     @Override

@@ -264,8 +264,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             }
 
             //Displays informations
-            holder.mTxvSubcategoryGoalStatus.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(amount));
-            holder.mTxvSubcategoryGoalStatusAmount.setText(" (" + Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(subcategory.getGoal().getAmount()) + ")");
+            holder.mTxvSubcategoryGoalStatus.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(amount));
+            holder.mTxvSubcategoryGoalStatusAmount.setText(" (" + Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(subcategory.getGoal().getAmount()) + ")");
             holder.mPgbSubcategoryGoalStatus.setProgress((int)(100 / (double)(subcategory.getGoal().getAmount() / 100) * (double)(amount / 100)));
 
             //Enables a ProgressBar if there is a goal

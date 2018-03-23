@@ -122,6 +122,12 @@
         <item>@string/pounds</item>
     </array>
 
+    <array name="currencies_values_array">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </array>
+
     <array name="bill_types_array">
         <item>@string/label_input</item>
         <item>@string/label_output</item>

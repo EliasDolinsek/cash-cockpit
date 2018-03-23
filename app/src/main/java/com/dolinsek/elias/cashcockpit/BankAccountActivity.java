@@ -72,7 +72,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         if(bankAccount != null){
             mEdtAccountName.setText(bankAccount.getName());
 
-            mEdtAccountAmount.setText(Currency.Factory.getActiveCurrency(getApplicationContext()).formatAmountToString(bankAccount.getBalance()).replace(Currency.Factory.getActiveCurrency(getApplicationContext()).getSymbol(), ""));
+            mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()));
 
             mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
             mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
@@ -173,7 +173,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         });
 
-        mEdtAccountAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtAccountAmount));
+        mEdtAccountAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAccountAmount));
 
     }
 

@@ -87,7 +87,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         if(mEditMode){
             mEdtSubcategoryName.setText(mSubcategory.getName());
             if(mSubcategory.getGoal().getAmount() != 0){
-                mEdtGoalAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(mSubcategory.getGoal().getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
+                mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(mSubcategory.getGoal().getAmount()));
                 mChbGoalEnabled.setChecked(true);
             }
 
@@ -107,7 +107,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
         }
 
-        mEdtGoalAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtGoalAmount));
+        mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
 
         //Sets up button clicks
         final AlertDialog dialog = builder.create();

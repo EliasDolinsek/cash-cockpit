@@ -137,7 +137,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             holder.mTxvTagOutput.setVisibility(View.GONE);
         }
 
-        holder.mTxvAmount.setText(Currency.Factory.getActiveCurrency(holder.itemView.getContext()).formatAmountToString(bill.getAmount()));
+        holder.mTxvAmount.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount()));
         holder.mTxvCategory.setText(bill.getSubcategory().getName());
 
         //Gets bank account-name

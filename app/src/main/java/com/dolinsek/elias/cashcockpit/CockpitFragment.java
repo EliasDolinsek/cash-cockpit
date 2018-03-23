@@ -4,6 +4,7 @@ package com.dolinsek.elias.cashcockpit;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -29,6 +30,7 @@ import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import org.json.JSONException;
@@ -44,7 +46,10 @@ import static android.app.Activity.RESULT_OK;
  */
 public class CockpitFragment extends Fragment {
 
+    private static final int NO_VALUE = 89;
+
     private static final int RQ_SELECT_CATEGORY = 35;
+
     private static final String PRIMARY_CATEGORY = "primary_category";
     private static final String SUBCATEGORY = "subcategory";
     private static final String ACCOUNT = "account";
@@ -57,11 +62,11 @@ public class CockpitFragment extends Fragment {
     private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
 
-    private BankAccount bankAccount;
-    private Subcategory subcategory;
-    private int billType = Bill.TYPE_OUTPUT;
+    private BankAccount bankAccountOfBill;
+    private Subcategory selectedSubcategory;
+    private int currentlySelectedBillType = Bill.TYPE_OUTPUT;
 
-    private boolean editMode;
+    private boolean editModeActive;
     private Bill bill;
 
     @Override
@@ -93,11 +98,11 @@ public class CockpitFragment extends Fragment {
         selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
-        mSpnSelectBillType.setSelection(billType);
+        mSpnSelectBillType.setSelection(currentlySelectedBillType);
         mSpnSelectBillType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                billType = i;
+                currentlySelectedBillType = i;
                 if (((TextView) view) != null){
                     ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
                 }
@@ -109,76 +114,33 @@ public class CockpitFragment extends Fragment {
             }
         });
 
-        if(editMode){
-            mEdtBillAmount.setText(Currency.Factory.getActiveCurrency(getContext()).formatAmountToString(bill.getAmount()).replace(Currency.Factory.getActiveCurrency(getContext()).getSymbol(), ""));
-            mEdtBillDescription.setText(bill.getDescription());
-
-            displaySelectedSubcategory();
-
-            mBtnAdd.setVisibility(View.GONE);
-            mSpnSelectBankAccount.setEnabled(false);
+        if(editModeActive){
+            setupForEditMode();
         } else {
             mBtnSave.setVisibility(View.GONE);
             mBtnDelete.setVisibility(View.GONE);
         }
 
         if(savedInstanceState != null){
-            billType = savedInstanceState.getInt(TYPE, 2);
-            mSpnSelectBillType.setSelection(billType);
-            if(savedInstanceState.getInt(PRIMARY_CATEGORY, -1) != -1){
-                subcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
-                displaySelectedSubcategory();
-            }
+            restoreFromSavedInstanceState(savedInstanceState);
         }
 
         if(Database.getBankAccounts().size() != 0) {
-            final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
-            selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-            for(BankAccount bankAccount:Database.getBankAccounts()){
-                selectBankAccountAdapter.add(bankAccount.getName());
-            }
-
-            mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
-            mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    bankAccount = Database.getBankAccounts().get(i);
-                    if (((TextView) view) != null){
-                        ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> adapterView) {
-
-                }
-            });
-
-            if(savedInstanceState != null) {
-                int index = savedInstanceState.getInt(ACCOUNT, 0);
-                mSpnSelectBankAccount.setSelection(index);
-                bankAccount = Database.getBankAccounts().get(index);
-            }
+            setupBankAccountSpinner();
         }
 
-        mEdtBillAmount.addTextChangedListener(Currency.Factory.getCurrencyTextWatcher(mEdtBillAmount));
+        mEdtBillAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtBillAmount));
 
         mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
-                if (subcategory != null){
-                    for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                        for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
-                            if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
-                                intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, i);
-                                intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, y);
-                                break;
-                            }
-                        }
-                    }
+
+                if (selectedSubcategory != null){
+                    intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
+                    intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInDatabase(selectedSubcategory));
                 }
+
                 startActivityForResult(intent, RQ_SELECT_CATEGORY);
             }
         });
@@ -186,27 +148,19 @@ public class CockpitFragment extends Fragment {
         mBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkEverythingCorrect()) {
-                    long amount = ((long) (Double.valueOf(mEdtBillAmount.getText().toString()) * 100));
+                if(everythingFilledCorrectly()) {
+                    long amount = formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString());
                     String description = mEdtBillDescription.getText().toString();
-
-                    bankAccount.addBill(new Bill(amount, description, billType, subcategory));
+                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, selectedSubcategory));
 
                     try {
                         Database.save(getContext());
-                        Database.load(getContext());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
 
-                    //Show message
                     Toast.makeText(getContext(), getResources().getString(R.string.toast_bill_added), Toast.LENGTH_SHORT).show();
-
-                    //Clears all fields
-                    mEdtBillAmount.setText("");
-                    mEdtBillDescription.setText("");
-                    mEdtBillAmount.requestFocus();
-
+                    clearFieldsFromUserInputs();
                     hideKeyboard();
 
                 }
@@ -216,27 +170,21 @@ public class CockpitFragment extends Fragment {
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkEverythingCorrect()){
-                    bill.setDescription(mEdtBillDescription.getText().toString());
-                    bill.setSubcategory(subcategory);
+                hideErrorsFromSelections();
+
+                if(everythingFilledCorrectly()){
 
                     //Checks if bill-type has changed
-                    if(billType != bill.getType()){
-                        int oldType = bill.getType(), newType = billType;
-                        long newAmount = ((long) (Double.valueOf(mEdtBillAmount.getText().toString()) * 100));
-
-                        if(oldType == Bill.TYPE_INPUT && newType != Bill.TYPE_INPUT){
-                            bankAccount.setBalance(bankAccount.getBalance() - newAmount);
-                        } else if((oldType == Bill.TYPE_OUTPUT || oldType == Bill.TYPE_TRANSFER) && newType == Bill.TYPE_INPUT){
-                            bankAccount.setBalance(bankAccount.getBalance() + newAmount);
-                        }
+                    if(hasBillTypeChanged(bill.getType(), currentlySelectedBillType)){
+                        updateBankAccountBalanceAfterBillTypeChanged();
                     }
 
-                    bill.setAmount(((long) (Double.valueOf(mEdtBillAmount.getText().toString()) * 100)));
-                    bill.setType(billType);
+                    updateBillWithUserInputs();
 
                     Database.save(getContext());
                     getActivity().finish();
+                } else {
+                    displayErrorOnSelectionsIfNecessary();
                 }
             }
         });
@@ -245,7 +193,12 @@ public class CockpitFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 DeleteBillDialogFragment deleteBillDialogFragment = new DeleteBillDialogFragment();
-                deleteBillDialogFragment.setBill(bill);
+                deleteBillDialogFragment.setOnPositiveClickListener(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        getAssociatedBankAccountOfBill(bill).getBills().remove(bill);
+                    }
+                });
                 deleteBillDialogFragment.show(getFragmentManager(), "delete_bill");
             }
         });
@@ -262,116 +215,87 @@ public class CockpitFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        //Gets index of selected account
-        int bankAccountIndex = 0;
-        for(int i = 0; i<Database.getBankAccounts().size(); i++){
-            if(Database.getBankAccounts().get(i).equals(this.bankAccount))
-                bankAccountIndex = i;
+        if(selectedSubcategory != null){
+
+            int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory());
+            int subcategoryIndexInDatabase = getIndexOfSubcategoryInDatabase(selectedSubcategory);
+
+            outState.putInt(PRIMARY_CATEGORY, primaryCategoryIndexInDatabase);
+            outState.putInt(SUBCATEGORY, subcategoryIndexInDatabase);
+
+        } else if(bankAccountOfBill != null){
+
+            int bankAccountIndexInDatabase = getIndexOfBankAccountInDatabase(bankAccountOfBill);
+            outState.putInt(ACCOUNT, bankAccountIndexInDatabase);
+
         }
 
-        //Gets index of selected category index
-        int categoryIndex = 0;
-        int subcategoryIndex = 0;
-        if(subcategory != null){
-            for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                if(Database.getPrimaryCategories().get(i).equals(subcategory.getPrimaryCategory())){
-                    categoryIndex = i;
-                    for(int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
-                        if(Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory))
-                            subcategoryIndex = y;
-                    }
-                }
-            }
-
-            outState.putInt(PRIMARY_CATEGORY, categoryIndex);
-            outState.putInt(SUBCATEGORY, subcategoryIndex);
-        } else if(bankAccount != null){
-            outState.putInt(ACCOUNT, bankAccountIndex);
-        }
-
-        outState.putInt(TYPE, billType);
+        outState.putInt(TYPE, currentlySelectedBillType);
     }
 
     public void setBillToEdit(Bill billToEdit){
-        bill = billToEdit;
-        editMode = true;
+        this.bill = billToEdit;
+        BankAccount bankAccount = getAssociatedBankAccountOfBill(billToEdit);
+        selectedSubcategory = bill.getSubcategory();
+        this.bankAccountOfBill = bankAccount;
 
-        billType = billToEdit.getType();
-
-        //Gets bank account
-        BankAccount bankAccount = null;
-        for(BankAccount currentBankAccount:Database.getBankAccounts()){
-            for(Bill bill:currentBankAccount.getBills()){
-                if(bill.equals(billToEdit)){
-                    bankAccount = currentBankAccount;
-                }
-            }
-        }
-
-        subcategory = bill.getSubcategory();
-        this.bankAccount = bankAccount;
+        editModeActive = true;
+        currentlySelectedBillType = billToEdit.getType();
     }
 
-    private boolean checkEverythingCorrect(){
-        mTilBillAmount.setError(null);
-        mTilBillAmount.setErrorEnabled(false);
-        mTilBillDescription.setErrorEnabled(false);
-        mLlSelectInfo.setVisibility(View.GONE);
+    private boolean everythingFilledCorrectly(){
+        if(mEdtBillAmount.getText().toString().equals("")){
+            return false;
+        } else if(selectedSubcategory == null){
+            return false;
+        } else {
+            return true;
+        }
+    }
 
+    private void displayErrorOnSelectionsIfNecessary(){
         if(mEdtBillAmount.getText().toString().equals("")){
             mTilBillDescription.setErrorEnabled(true);
             mTilBillAmount.setError(getResources().getString(R.string.label_enter_amount));
             mTilBillDescription.setErrorEnabled(false);
-        } else if(subcategory == null){
+        } else if(selectedSubcategory == null){
             mLlSelectInfo.setVisibility(View.VISIBLE);
             mTxvSelectInfo.setText(getResources().getString(R.string.label_need_to_select_category));
-        } else {
-            return true;
         }
+    }
 
-        return false;
+    private void hideErrorsFromSelections(){
+        mTilBillAmount.setError(null);
+        mTilBillAmount.setErrorEnabled(false);
+        mTilBillDescription.setErrorEnabled(false);
+        mLlSelectInfo.setVisibility(View.GONE);
     }
 
     public static class DeleteBillDialogFragment extends DialogFragment {
 
-        private Bill bill;
+        private DialogInterface.OnClickListener onClickListenerListener;
 
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
             alertBuilder.setMessage(R.string.dialog_msg_delete_bill);
-            alertBuilder.setPositiveButton(R.string.dialog_action_delete, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    //Removes bill
-                    for(BankAccount currentBankAccount:Database.getBankAccounts()){
-                        for (Bill currentBill:currentBankAccount.getBills()){
-                            if(bill.equals(currentBill)){
-                                currentBankAccount.getBills().remove(bill);
-                                break;
-                            }
-                        }
-                    }
-
-                    Database.save(getContext());
-                    getActivity().finish();
-                }
-            });
+            alertBuilder.setPositiveButton(R.string.dialog_action_delete, onClickListenerListener);
 
             return alertBuilder.create();
         }
 
-        public void setBill(Bill bill){
-            this.bill = bill;
+        public void setOnPositiveClickListener(DialogInterface.OnClickListener onPositiveClickListener){
+            this.onClickListenerListener = onPositiveClickListener;
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == RQ_SELECT_CATEGORY && resultCode == RESULT_OK){
-            subcategory = Database.getPrimaryCategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0));
+            selectedSubcategory = Database.getPrimaryCategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0));
             displaySelectedSubcategory();
         }
     }
@@ -379,7 +303,153 @@ public class CockpitFragment extends Fragment {
     private void displaySelectedSubcategory(){
         mTxvSelectedSubcategory.setVisibility(View.VISIBLE);
         mTxvSelectedPrimaryCategory.setVisibility(View.VISIBLE);
-        mTxvSelectedSubcategory.setText(subcategory.getName());
-        mTxvSelectedPrimaryCategory.setText(" (" + subcategory.getPrimaryCategory().getName() + ")");
+        mTxvSelectedSubcategory.setText(selectedSubcategory.getName());
+        mTxvSelectedPrimaryCategory.setText(" (" + selectedSubcategory.getPrimaryCategory().getName() + ")");
+    }
+
+    private void setupForEditMode(){
+        String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
+        mEdtBillAmount.setText(amountWithoutCurrencySymbol);
+        mEdtBillDescription.setText(bill.getDescription());
+
+        displaySelectedSubcategory();
+
+        mBtnAdd.setVisibility(View.GONE);
+        mSpnSelectBankAccount.setEnabled(false);
+    }
+
+    private void restoreFromSavedInstanceState(Bundle savedInstanceState){
+        currentlySelectedBillType = savedInstanceState.getInt(TYPE, Bill.TYPE_OUTPUT);
+        mSpnSelectBillType.setSelection(currentlySelectedBillType);
+
+        if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE){
+            selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
+            displaySelectedSubcategory();
+        }
+
+        if (savedInstanceState.getInt(ACCOUNT, NO_VALUE) != NO_VALUE){
+            int bankAccountIndex = savedInstanceState.getInt(ACCOUNT);
+
+            mSpnSelectBankAccount.setSelection(bankAccountIndex);
+            bankAccountOfBill = Database.getBankAccounts().get(bankAccountIndex);
+        } else {
+            mSpnSelectBankAccount.setSelection(0);
+            bankAccountOfBill = Database.getBankAccounts().get(0);
+        }
+    }
+
+    private void setupBankAccountSpinner(){
+        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
+        selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        selectBankAccountAdapter.addAll(getBankAccountsNames());
+
+        mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
+        mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                bankAccountOfBill = Database.getBankAccounts().get(i);
+                if (((TextView) view) != null){
+                    changeTextViewColorToSelectedMode((TextView) view);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+    }
+
+    private String[] getBankAccountsNames(){
+        String[] bankAccountsNames = new String[Database.getBankAccounts().size()];
+
+        for (int i = 0; i<Database.getBankAccounts().size(); i++){
+            bankAccountsNames[i] = Database.getBankAccounts().get(i).getName();
+        }
+
+        return bankAccountsNames;
+    }
+
+    private void changeTextViewColorToSelectedMode(TextView textView){
+        textView.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
+    }
+
+    private int getIndexOfSubcategoryInDatabase(Subcategory subcategory){
+        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+            for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
+                if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
+                    return y;
+                }
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find subcategory in database!");
+    }
+
+    private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
+        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+            if (primaryCategory.equals(Database.getPrimaryCategories().get(i))){
+                return i;
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find primary category in database!");
+    }
+
+    private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){
+        for (int i = 0; i<Database.getBankAccounts().size(); i++){
+            if (Database.getBankAccounts().get(i).equals(bankAccount)){
+                return i;
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find bank account in database!");
+    }
+
+    private void updateBillWithUserInputs(){
+        bill.setDescription(mEdtBillDescription.getText().toString());
+        bill.setSubcategory(selectedSubcategory);
+        bill.setAmount(formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString()));
+        bill.setType(currentlySelectedBillType);
+    }
+
+    private boolean hasBillTypeChanged(int oldType, int newType){
+        if (oldType != newType)
+            return true;
+        else
+            return false;
+    }
+
+    private long formatDisplayedAmountToUsableAmount(String displayAmount){
+        return ((long) (Double.valueOf(displayAmount) * 100));
+    }
+
+    private void updateBankAccountBalanceAfterBillTypeChanged(){
+        int oldBillType = bill.getType(), newBillType = currentlySelectedBillType;
+        long newAmount = formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString());
+
+        if(oldBillType == Bill.TYPE_INPUT && newBillType != Bill.TYPE_INPUT){
+            bankAccountOfBill.setBalance(bankAccountOfBill.getBalance() - newAmount);
+        } else if((oldBillType == Bill.TYPE_OUTPUT || oldBillType == Bill.TYPE_TRANSFER) && newBillType == Bill.TYPE_INPUT){
+            bankAccountOfBill.setBalance(bankAccountOfBill.getBalance() + newAmount);
+        }
+    }
+
+    private void clearFieldsFromUserInputs(){
+        mEdtBillAmount.setText("");
+        mEdtBillDescription.setText("");
+        mEdtBillAmount.requestFocus();
+    }
+
+    private BankAccount getAssociatedBankAccountOfBill(Bill bill){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill currentBill:bankAccount.getBills()){
+                if (currentBill.equals(bill)){
+                    return bankAccount;
+                }
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find associated bank account of bill!");
     }
 }

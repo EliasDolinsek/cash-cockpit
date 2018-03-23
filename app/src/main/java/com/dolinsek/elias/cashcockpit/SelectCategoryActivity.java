@@ -30,8 +30,11 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mRecyclerView.setHasFixedSize(false);
 
         primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_SELECT_CATEGORY);
+        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
+
         primaryCategoryItemAdapter.setOnCategorySelectedListener(new SubcategoryItemAdapter.OnCategorySelectedListener() {
             @Override
             public void onSelected(int primaryCategoryIndex, int subcategoryIndex) {
@@ -51,8 +54,5 @@ public class SelectCategoryActivity extends AppCompatActivity {
         if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
             primaryCategoryItemAdapter.setSelectedSubcategory(Database.getPrimaryCategories().get(intent.getIntExtra(SELECTED_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(intent.getIntExtra(SELECTED_SUBCATEGORY_INDEX, 0)));
         }
-
-        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
-        mRecyclerView.setHasFixedSize(false);
     }
 }

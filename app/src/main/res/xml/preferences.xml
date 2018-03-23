@@ -5,6 +5,6 @@
         android:key="preference_currency"
         android:summary="@string/label_currency_preference_description"
         android:entries="@array/currencies_array"
-        android:entryValues="@array/currencies_array"
+        android:entryValues="@array/currencies_values_array"
         android:title="@string/label_currency"/>
 </PreferenceScreen>
