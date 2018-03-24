@@ -57,7 +57,7 @@ public class CategoriesFragment extends Fragment{
 
         mRvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_fragment_categories);
 
-        mPrimaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_NORMAL);
+        mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
 
         mRvCategories.setLayoutManager(new LinearLayoutManager(inflatedView.getContext()));
@@ -109,7 +109,7 @@ public class CategoriesFragment extends Fragment{
                 setVisibilities();
 
                 //Load categories
-                mRvCategories.setAdapter((mPrimaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_NORMAL)));
+                mRvCategories.setAdapter((mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories())));
             }
         });
 
@@ -124,7 +124,7 @@ public class CategoriesFragment extends Fragment{
         setVisibilities();
 
         //Load bank accounts
-        mPrimaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_NORMAL);
+        mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
     }
 

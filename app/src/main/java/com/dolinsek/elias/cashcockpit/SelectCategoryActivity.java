@@ -32,7 +32,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setHasFixedSize(false);
 
-        primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_SELECT_CATEGORY);
+        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories());
         mRecyclerView.setAdapter(primaryCategoryItemAdapter);
 
         primaryCategoryItemAdapter.setOnCategorySelectedListener(new SubcategoryItemAdapter.OnCategorySelectedListener() {

@@ -174,7 +174,6 @@ public class CockpitFragment extends Fragment {
 
                 if(everythingFilledCorrectly()){
 
-                    //Checks if bill-type has changed
                     if(hasBillTypeChanged(bill.getType(), currentlySelectedBillType)){
                         updateBankAccountBalanceAfterBillTypeChanged();
                     }

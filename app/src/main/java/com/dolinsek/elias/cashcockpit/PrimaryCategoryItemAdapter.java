@@ -1,7 +1,9 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -24,43 +27,46 @@ import com.dolinsek.elias.cashcockpit.components.Toolbox;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-/**
- * Adapter for primary accounts
- * Created by elias on 20.01.2018.
- */
-
 public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCategoryItemAdapter.PrimaryCategoryViewHolder>{
 
-    public static int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1, TYPE_SELECT_CATEGORY = 2;
+    public static final int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1, TYPE_SELECT_CATEGORY = 2;
 
-    private int type;
-    /**
-     * Contains all primary categories
-     */
-    private ArrayList<PrimaryCategory> primaryCategories;
+    private int adapterType;
+    private ArrayList<PrimaryCategory> primaryCategoriesToDisplay;
 
     private SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener;
     private Subcategory selectedSubcategory;
-    private long goalStatisticsTime = System.currentTimeMillis();
+    private long timeStampOfMonthToLoadStatistics;
 
-    /**
-     * Creates a new adapter and sets categories from the database
-     */
-    public PrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategories, int type){
-        this.type = type;
+    private PrimaryCategoryItemAdapter(){
 
-        if (type == TYPE_GOAL_STATISTICS){
-            ArrayList<PrimaryCategory> editedPrimaryCategories = new ArrayList<>();
-            for (PrimaryCategory primaryCategory:primaryCategories){
-                if (primaryCategory.getGoal().getAmount() != 0){
-                    editedPrimaryCategories.add(primaryCategory);
-                }
-            }
+    }
 
-            this.primaryCategories = editedPrimaryCategories;
-        } else {
-            this.primaryCategories = primaryCategories;
-        }
+    public static PrimaryCategoryItemAdapter getNormalPrimaryCategoryAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
+        primaryCategoryItemAdapter.adapterType = TYPE_NORMAL;
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
+
+        return primaryCategoryItemAdapter;
+    }
+
+    public static PrimaryCategoryItemAdapter getGoalsStatisticsPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, long timeStampOfMonthToLoadStatistics){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
+        primaryCategoryItemAdapter.adapterType = TYPE_GOAL_STATISTICS;
+        primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+
+        ArrayList<PrimaryCategory> filteredPrimaryCategories = filterPrimaryCategoriesWithGoals(primaryCategoriesToDisplay);
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = filteredPrimaryCategories;
+
+        return primaryCategoryItemAdapter;
+    }
+
+    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
+        primaryCategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
+
+        return primaryCategoryItemAdapter;
     }
 
     @Override
@@ -71,91 +77,26 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
     @Override
     public void onBindViewHolder(final PrimaryCategoryViewHolder holder, final int position) {
-        final PrimaryCategory primaryCategory = primaryCategories.get(position);
+        final PrimaryCategory primaryCategory = primaryCategoriesToDisplay.get(position);
 
-        //Displays the amount of the goal for the primary category if it's set and zero if not
-        if(primaryCategory.getGoal().getAmount() == 0){
-            holder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
-        } else {
+        manageGoalViews(primaryCategory, holder);
+        loadPrimaryCategoryIcon(primaryCategory, holder);
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(goalStatisticsTime);
-            int thisMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
-
-            //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
-            long amount = 0;
-            for (Bill bill: Toolbox.getBills(goalStatisticsTime, Toolbox.TYPE_MONTH)){
-                for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                    if (subcategory.getGoal().getAmount() != 0 && bill.getSubcategory().equals(subcategory)){
-                        if (bill.getType() == Bill.TYPE_INPUT){
-                            amount -= bill.getAmount();
-                        } else {
-                            amount += bill.getAmount();
-                        }
-                    }
-                }
-            }
-
-            //Displays informations
-            holder.mTxvCategoryGoalStatus.setText((Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(amount)));
-            holder.mTxvGoalStatusAmount.setText(" (" + Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(primaryCategory.getGoal().getAmount()) + ")");
-            holder.mPgbCategoryGoalStatus.setProgress((int)(100.0 /(primaryCategory.getGoal().getAmount() / 100.0) * (amount / 100.0)));
-
-            //Enables a ProgressBar if there is a goal
-            if(amount > primaryCategory.getGoal().getAmount()){
-                holder.mTxvCategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
-                holder.mPgbCategoryGoalStatus.setProgressTintList(ColorStateList.valueOf(Color.RED));
-            } else {
-                //Colors the text to read if the user has exceeded the specified goal
-                holder.mTxvCategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
-            }
-        }
-
-        if(type == TYPE_NORMAL){
-            holder.mCardView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    //Starts CategoryActivity
-                    Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
-                    intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, position);
-                    holder.itemView.getContext().startActivity(intent);
-                }
-            });
-        }
-
-        //Loads the image for this category
-        try{
-            holder.mImvCategoryIcon.setBackgroundResource(holder.itemView.getContext().getResources().getIdentifier(primaryCategory.getIconName(), "drawable", holder.itemView.getContext().getPackageName()));
-        } catch (Exception e) {
-            holder.mImvCategoryIcon.setBackgroundResource(R.drawable.ic_default_category_image);
-        }
-
-        //Sets up the RecyclerView
-        SubcategoryItemAdapter subcategoryItemAdapter;
-        if(type == TYPE_NORMAL){
-            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_NORMAl);
-        } else if (type == TYPE_GOAL_STATISTICS){
-            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
-        } else {
-            subcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
-        }
-
-        subcategoryItemAdapter.setOnCategorySelectedListener(onCategorySelectedListener);
-        subcategoryItemAdapter.setSelectedSubcategory(selectedSubcategory);
-        subcategoryItemAdapter.setGoalStatisticsTime(goalStatisticsTime);
+        SubcategoryItemAdapter subcategoryItemAdapter = createSubcategoriesItemAdapter(primaryCategory);
+        setupSubcategoriesRecyclerView(subcategoryItemAdapter);
 
         holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
-
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
-
-        //Displays informations
         holder.mTxvCategoryName.setText(primaryCategory.getName());
+
+        if(adapterType == TYPE_NORMAL){
+            setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return primaryCategories.size();
+        return primaryCategoriesToDisplay.size();
     }
 
     public class PrimaryCategoryViewHolder extends RecyclerView.ViewHolder{
@@ -187,7 +128,141 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         this.selectedSubcategory = selectedSubcategory;
     }
 
-    public void setGoalStatisticsTime(long goalStatisticsTime){
-        this.goalStatisticsTime = goalStatisticsTime;
+    private long getAmountOfUsedMoneyOfPresetTimestamp(PrimaryCategory primaryCategory){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonthToLoadStatistics);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        long usedMoney = 0;
+
+        //TODO refactor this
+        for (Bill bill:getBillsWhatBelongToPrimaryCategory(primaryCategory)){
+            calendar.setTimeInMillis(bill.getCreationDate());
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+
+            if (year == currentYear && month == currentMonth){
+                usedMoney += bill.getAmount();
+            }
+        }
+
+        return usedMoney;
+    }
+
+    private ArrayList<Bill> getBillsWhatBelongToPrimaryCategory(PrimaryCategory primaryCategory){
+        ArrayList<Bill> bills = new ArrayList<>();
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                    bills.add(bill);
+                }
+            }
+        }
+
+        return bills;
+    }
+
+    private void displayGoalInformations(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
+        long usedMoney = getAmountOfUsedMoneyOfPresetTimestamp(primaryCategory);
+        long goalAmount = primaryCategory.getGoal().getAmount();
+        Context context = primaryCategoryViewHolder.itemView.getContext();
+
+        String formattedUsedMoney = formatToReadableAmountUsingActiveCurrency(usedMoney, context);
+        String formattedGoalAmount = formatToReadableAmountUsingActiveCurrency(goalAmount, context);
+
+        primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
+        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText(formattedGoalAmount);
+
+        manageGoalStatusTxvColor(primaryCategory, primaryCategoryViewHolder);
+    }
+
+    private String formatToReadableAmountUsingActiveCurrency(long amount, Context context){
+        Currency activeCurrency = Currency.getActiveCurrency(context);
+        return activeCurrency.formatAmountToReadableStringWithCurrencySymbol(amount);
+    }
+
+    private void loadPrimaryCategoryIcon(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
+        try{
+            Context context = primaryCategoryViewHolder.itemView.getContext();
+            String primaryCategoryIconName = primaryCategory.getIconName();
+            String packageName = context.getPackageName();
+
+            int resource = context.getResources().getIdentifier(primaryCategoryIconName, "drawable", packageName);
+            primaryCategoryViewHolder.mImvCategoryIcon.setBackgroundResource(resource);
+        } catch (Exception e) {
+            loadDefaultPrimaryCategoryIcon(primaryCategoryViewHolder);
+        }
+    }
+
+    private void loadDefaultPrimaryCategoryIcon(PrimaryCategoryViewHolder primaryCategoryViewHolder){
+        primaryCategoryViewHolder.mImvCategoryIcon.setBackgroundResource(R.drawable.ic_default_category_image);
+    }
+
+    private void manageGoalStatusTxvColor(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
+        long primaryCategoryGoalAmount = primaryCategory.getGoal().getAmount();
+        long usedMoney = getAmountOfUsedMoneyOfPresetTimestamp(primaryCategory);
+
+        Context context = primaryCategoryViewHolder.itemView.getContext();
+        if (usedMoney > primaryCategoryGoalAmount){
+            int redColor = context.getResources().getColor(android.R.color.holo_red_dark);
+            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setTextColor(redColor);
+        } else {
+            int colorAccent = context.getResources().getColor(R.color.colorAccent);
+            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setTextColor(colorAccent);
+        }
+    }
+
+    private void manageGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
+        long primaryCategoryGoalAmount = primaryCategory.getGoal().getAmount();
+
+        if(primaryCategoryGoalAmount == 0){
+            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
+        } else {
+            displayGoalInformations(primaryCategory, primaryCategoryViewHolder);
+        }
+    }
+
+    private void setupViewToStartCategoryActivityOnClick(View view, final int primaryCategoryIndexInDatabase){
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Context context = view.getContext();
+
+                Intent intent = new Intent(context, CategoryActivity.class);
+                intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndexInDatabase);
+                context.startActivity(intent);
+            }
+        });
+    }
+
+    private static ArrayList<PrimaryCategory> filterPrimaryCategoriesWithGoals(ArrayList<PrimaryCategory> primaryCategories){
+        ArrayList<PrimaryCategory> primaryCategoriesWithGoals = new ArrayList<>();
+
+        for (PrimaryCategory primaryCategory:primaryCategories){
+            if (primaryCategory.getGoal().getAmount() != 0){
+                primaryCategoriesWithGoals.add(primaryCategory);
+            }
+        }
+
+        return primaryCategoriesWithGoals;
+    }
+
+    private void setupSubcategoriesRecyclerView(SubcategoryItemAdapter subcategoryItemAdapter){
+        subcategoryItemAdapter.setOnCategorySelectedListener(onCategorySelectedListener);
+        subcategoryItemAdapter.setSelectedSubcategory(selectedSubcategory);
+        subcategoryItemAdapter.setGoalStatisticsTime(timeStampOfMonthToLoadStatistics);
+    }
+
+    private SubcategoryItemAdapter createSubcategoriesItemAdapter(PrimaryCategory primaryCategoryWhatContainsSubcategories){
+        switch (adapterType){
+            case TYPE_NORMAL: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_NORMAl);
+            case TYPE_GOAL_STATISTICS: new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
+            case TYPE_SELECT_CATEGORY: new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
+            default: throw new Resources.NotFoundException("Couldn't find following adapter-type: " + adapterType);
+        }
     }
 }

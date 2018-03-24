@@ -7,11 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.Spanned;
-import android.text.TextWatcher;
-import android.text.method.DigitsKeyListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,31 +52,18 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mRvBills = (RecyclerView) findViewById(R.id.rv_bank_account_bills);
         mRvBills.setLayoutManager(new LinearLayoutManager(this));
 
-        //When there is a bank account to edit it turns into edit mode
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
-            bankAccount = Database.getBankAccounts().get(getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0));
-            mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
-
-            //Sets adapter of recycler view what displays bills what belong to this bank account
-            mRvBills.setAdapter(new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount, false));
+            setupForEditMode();
         } else{
             mBtnDelete.setVisibility(View.GONE);
         }
 
-        //Displays data if it is in edit mode
         if(bankAccount != null){
-            mEdtAccountName.setText(bankAccount.getName());
-
-            mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()));
-
-            mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
-            mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
-
-            mBtnCreate.setText(getResources().getString(R.string.btn_save));
+            displayBankAccountDetails();
         }
 
-        //Disables the button what determines if the bank account is the primary account or not when there are zero bank account
         if(Database.getBankAccounts().size() == 0){
+            //Forces user to create a primary bank account
             mSwPrimaryAccount.setChecked(true);
             mSwPrimaryAccount.setEnabled(false);
         }
@@ -90,29 +72,18 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
             @Override
             public void onClick(View view) {
-
-                //Reset errors
-                mTilAccountName.setError(null);
-                mTilAccountAmount.setError(null);
-
-                //Checks if the account-name already exists
-                boolean accountNameAlreadyExists = false;
-                for(int i = 0; i<Database.getBankAccounts().size(); i++){
-                    if(Database.getBankAccounts().get(i).getName().equals(mEdtAccountName.getText().toString()))
-                        accountNameAlreadyExists = true;
-                }
+                boolean doesEnteredNameForAccountAlreadyExist = doesEnteredNameAlreadyExist();
+                hideErrors();
 
                 if(mEdtAccountName.getText().toString().trim().equals("")){
                     mTilAccountName.setError(getResources().getString(R.string.label_enter_bank_account_name));
                 } else if(mEdtAccountAmount.getText().toString().equals("")){
                     mTilAccountAmount.setError(getResources().getString(R.string.label_enter_euros));;
-                } else if(accountNameAlreadyExists && bankAccount == null){
+                } else if(doesEnteredNameForAccountAlreadyExist && bankAccount == null){
                     mTilAccountName.setError(getResources().getString(R.string.label_bank_account_already_exits));
                 } else {
-
-                    //Reads balance
-                    long balance = ((long) (Double.valueOf(mEdtAccountAmount.getText().toString()) * 100));
-
+                    long balance = formatDisplayedToUsableAmount(mEdtAccountAmount.getText().toString());
+                    //TODO continue here to refactor
                     //When it's not in edit mode it creates a new bank account and saves it
                     if(bankAccount == null){
 
@@ -232,5 +203,46 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         //Go back to MainActivity
         finish();
+    }
+
+    private void setupForEditMode(){
+        int bankAccountIndexInDatabase = getIntent().getIntExtra(EXTRA_BANK_ACCOUNT_INDEX, 0);
+        bankAccount = Database.getBankAccounts().get(bankAccountIndexInDatabase);
+
+        mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
+
+        boolean allowToEditBillsOfBankAccount = false;
+        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount, allowToEditBillsOfBankAccount);
+        mRvBills.setAdapter(historyItemAdapter);
+    }
+
+    private void displayBankAccountDetails(){
+        mEdtAccountName.setText(bankAccount.getName());
+        mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()));
+
+        mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
+        mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
+
+        mBtnCreate.setText(getResources().getString(R.string.btn_save));
+    }
+
+    private void hideErrors(){
+        mTilAccountName.setError(null);
+        mTilAccountAmount.setError(null);
+    }
+
+    private boolean doesEnteredNameAlreadyExist(){
+        String enteredNameForBankAccount = mEdtAccountName.getText().toString();
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            if (bankAccount.getName().equals(enteredNameForBankAccount)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private long formatDisplayedToUsableAmount(String displayedAmount){
+        return  (long) (Double.valueOf(displayedAmount) * 100);
     }
 }

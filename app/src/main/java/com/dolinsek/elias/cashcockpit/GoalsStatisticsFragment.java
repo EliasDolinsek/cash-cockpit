@@ -40,7 +40,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private FloatingActionButton mFbtnBack, mFbtnForward;
     private TextView mTxvMonth, mTxvCurrentMonth, mTxvAverage;
     private Calendar calendar;
-    private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
+    private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -66,7 +66,6 @@ public class GoalsStatisticsFragment extends Fragment {
 
         updateCurrentMonthTextView();
 
-        primaryCategoryItemAdapter.setGoalStatisticsTime(calendar.getTimeInMillis());
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
         mFbtnBack = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_goals_statistics_back);
@@ -102,8 +101,7 @@ public class GoalsStatisticsFragment extends Fragment {
      */
     private void loadStatisticsMonth(long timeStamp) {
 
-        primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter(Database.getPrimaryCategories(), PrimaryCategoryItemAdapter.TYPE_GOAL_STATISTICS);
-        primaryCategoryItemAdapter.setGoalStatisticsTime(calendar.getTimeInMillis());
+        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timeStamp);
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
         int percent = (int) (100 / (double) getGoalsTotalAmount() * getUsedMoneyOfMonth(timeStamp));
