@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 public class SelectCategoryActivity extends AppCompatActivity {
 
@@ -32,7 +33,12 @@ public class SelectCategoryActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setHasFixedSize(false);
 
-        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories());
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
+            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), Database.getPrimaryCategories().get(intent.getIntExtra(SELECTED_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(intent.getIntExtra(SELECTED_SUBCATEGORY_INDEX, 0)));
+        } else {
+            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories());
+        }
         mRecyclerView.setAdapter(primaryCategoryItemAdapter);
 
         primaryCategoryItemAdapter.setOnCategorySelectedListener(new SubcategoryItemAdapter.OnCategorySelectedListener() {
@@ -49,10 +55,5 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
-            primaryCategoryItemAdapter.setSelectedSubcategory(Database.getPrimaryCategories().get(intent.getIntExtra(SELECTED_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(intent.getIntExtra(SELECTED_SUBCATEGORY_INDEX, 0)));
-        }
     }
 }

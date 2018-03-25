@@ -23,6 +23,7 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -32,47 +33,55 @@ import java.util.Calendar;
 
 public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItemAdapter.SubcategoryItemViewHolder>{
 
-    public static final int TYPE_NORMAl = 0;
-    public static final int TYPE_GOAL_STATISTIC = 1;
-    public static final int TYPE_SELECT_CATEGORY = 2;
+    private static final int TYPE_NORMAl = 0;
+    private static final int TYPE_GOAL_STATISTIC = 1;
+    private static final int TYPE_SELECT_CATEGORY = 2;
 
-    /**
-     * PrimaryCategory what the Subcategory belongs to
-     */
-    private PrimaryCategory primaryCategory;
+    public static final int ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR = 3;
+    public static final int ON_SUBCATEGORY_CLICK_ACTION_OPEN_CATEGORY_ACTIVITY_FIRST = 4;
 
+    private PrimaryCategory primaryCategoryOfSubcategories;
+    private ArrayList<Subcategory> subcategories;
     private OnCategorySelectedListener onCategorySelectedListener;
     private Subcategory selectedSubcategory;
+    private long timeStampOfMonthToLoadStatistics;
+    private int adapterType, onSubcategoryClickAction;
 
-    /**
-     * Timestamp for loading goals-statistics
-     */
-    private long goalStatisticsTime = System.currentTimeMillis();
+    public static SubcategoryItemAdapter getNormalSubcategoryItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, int onSubcategoryItemClickAction){
+        SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
+        subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
+        subcategoryItemAdapter.subcategories = primaryCategoryOfSubcategories.getSubcategories();
+        subcategoryItemAdapter.adapterType = TYPE_NORMAl;
+        subcategoryItemAdapter.onSubcategoryClickAction = onSubcategoryItemClickAction;
 
-    /**
-     * If a click shows SubcategoryEditorDialogFragment
-     */
-    private boolean allowDirectEdit, showFavoredIcon;
+        return subcategoryItemAdapter;
+    }
 
-    private int type;
+    public static SubcategoryItemAdapter getGoalsStatisticsSubcategoryItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, long timeStampOfMonthToLoadStatistics){
+        SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
+        subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
+        subcategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+        subcategoryItemAdapter.subcategories = removeSubcategoriesWhatHaveNoGoal(primaryCategoryOfSubcategories.getSubcategories());
+        subcategoryItemAdapter.adapterType = TYPE_GOAL_STATISTIC;
 
-    /**
-     *
-     *
-     *
-     *
-     * TODO When users clicks on SubcategoryItem (PrimaryCategoryAdapterType == Normal) it always starts category activity with PrimaryCategoryIndexInDatabase = 0!!!
-     *
-     *
-     *
-     *
-     *
-     */
+        return subcategoryItemAdapter;
+    }
 
-    public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit, int type){
-        this.primaryCategory = primaryCategory;
-        this.allowDirectEdit = allowDirectEdit;
-        this.type = type;
+    public static SubcategoryItemAdapter getSelectCategoryItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, OnCategorySelectedListener onCategorySelectedListener){
+        SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
+        subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
+        subcategoryItemAdapter.onCategorySelectedListener = onCategorySelectedListener;
+        subcategoryItemAdapter.subcategories = primaryCategoryOfSubcategories.getSubcategories();
+        subcategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
+
+        return subcategoryItemAdapter;
+    }
+
+    public static SubcategoryItemAdapter getSelectCategoryItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, OnCategorySelectedListener onCategorySelectedListener, Subcategory selectedSubcategory){
+        SubcategoryItemAdapter subcategoryItemAdapter = getSelectCategoryItemAdapter(primaryCategoryOfSubcategories, onCategorySelectedListener);
+        subcategoryItemAdapter.selectedSubcategory = selectedSubcategory;
+
+        return subcategoryItemAdapter;
     }
 
     @Override
@@ -83,133 +92,47 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     @Override
     public void onBindViewHolder(final SubcategoryItemViewHolder holder, final int position) {
-        final Subcategory subcategory;
+        final Subcategory subcategory = subcategories.get(position);
 
-        if(type == TYPE_NORMAl){
-            subcategory = primaryCategory.getSubcategories().get(position);
-            holder.mBtnSelectCategory.setVisibility(View.GONE);
-
-            if(subcategory.isFavoured()){
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
-            } else {
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
-            }
-        } else if (type == TYPE_GOAL_STATISTIC){
-            ArrayList<Subcategory> subcategories = new ArrayList<>();
-            for(Subcategory currentSubcategory:primaryCategory.getSubcategories()){
-                if(currentSubcategory.getGoal().getAmount() != 0){
-                    subcategories.add(currentSubcategory);
-                }
-            }
-
-            subcategory = subcategories.get(position);
-            holder.mBtnSelectCategory.setVisibility(View.GONE);
-            holder.mImvSubcategoryFavored.setVisibility(View.GONE);
-        } else {
-            subcategory = primaryCategory.getSubcategories().get(position);
-            holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
-            holder.mTxvSubcategoryGoalStatus.setVisibility(View.GONE);
-
-            holder.mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
+        if (adapterType == TYPE_NORMAl){
+            setupForNormalAdapterType(subcategory, holder);
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    int primaryCategoryIndex = 0, subcategoryIndex = 0;
-                    for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                        if (Database.getPrimaryCategories().get(i).equals(subcategory.getPrimaryCategory())){
-                            primaryCategoryIndex = i;
-                            for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
-                                if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
-                                    subcategoryIndex  = y;
-                                    break;
-                                }
-                            }
-                        }
+                    if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR){
+                        showSubcategoryEditor(subcategory, holder);
+                    } else if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_CATEGORY_ACTIVITY_FIRST){
+                        showCategoryActivityAndSubcategoryEditor(subcategory, holder);
+                    } else {
+                        throw new InvalidParameterException("Couldn't resolve " + onSubcategoryClickAction + " as a subcategory-click-action!");
                     }
-
-                    onCategorySelectedListener.onSelected(primaryCategoryIndex, subcategoryIndex);
                 }
             });
-
-            if(subcategory.isFavoured()){
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
-            } else {
-                holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
-            }
-        }
-
-        if (selectedSubcategory != null && selectedSubcategory.equals(subcategory)){
-            holder.mTxvSubcategoryName.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
-            holder.mBtnSelectCategory.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
-        }
-
-        //Sets name of the subcategory
-        holder.mTxvSubcategoryName.setText(subcategory.getName());
-
-        holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    //Changes the favored state of the subcategory
-                    if(subcategory.isFavoured())
-                        holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
-                    else
-                        holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
-
-                    subcategory.setFavoured(!subcategory.isFavoured());
-                    CategoriesSorter.sortSubcategories(primaryCategory.getSubcategories());
-                }
-        });
-
-
-        if (type == TYPE_NORMAl){
-            //Displays SubcategoryEditorDialogFragment if it's allowed
-            if(allowDirectEdit){
-                holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-                        subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory, position);
-                        subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
-                    }
-                });
-            } else {
-                holder.mLlMaster.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-
-                        //Gets the index of the primary category in the Database
-                        int primaryCategoryIndex = 0;
-                        for(int i = 0; i<Database.getPrimaryCategories().size(); i++){
-                            if(primaryCategory.equals(Database.getPrimaryCategories().get(i))){
-                                primaryCategoryIndex = i;
-                                System.out.println(i);
-                            }
-                        }
-
-                        //Starts CategoryActivity
-                        Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
-                        intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndex);
-                        holder.itemView.getContext().startActivity(intent);
-                    }
-                });
-            }
+        } else if (adapterType == TYPE_SELECT_CATEGORY){
+            setupForSelectCategoryAdapterType(subcategory, holder);
+            markSelectedSubcategory(subcategory, holder);
+        } else if (adapterType == TYPE_GOAL_STATISTIC){
+            setupForGoalsStatisticsAdapterType(holder);
+        } else {
+            throw new IllegalStateException("Couldn't resolve " + adapterType + " as adapter-type");
         }
 
         loadGoalStatistics(holder, subcategory);
+
+        holder.mTxvSubcategoryName.setText(subcategory.getName());
+        holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    subcategory.setFavoured(!subcategory.isFavoured());
+                    setFavoredIcon(subcategory.isFavoured(), holder);
+                    CategoriesSorter.sortSubcategories(primaryCategoryOfSubcategories.getSubcategories());
+                }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if(type == TYPE_GOAL_STATISTIC){
-            int itemCount = 0;
-            for(int i = 0; i<primaryCategory.getSubcategories().size(); i++){
-                if(primaryCategory.getSubcategories().get(i).getGoal().getAmount() != 0){
-                    itemCount++;
-                }
-            }
-            return itemCount;
-        }
-
-        return primaryCategory.getSubcategories().size();
+        return subcategories.size();
     }
 
     public class SubcategoryItemViewHolder extends RecyclerView.ViewHolder{
@@ -234,61 +157,177 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         }
     }
 
-    /**
-     * Gets called when the user selects a category
-     */
     interface OnCategorySelectedListener{
 
         void onSelected(int primaryCategoryIndex, int subcategoryIndex);
     }
 
-    public void setOnCategorySelectedListener(OnCategorySelectedListener onCategorySelectedListener){
-        this.onCategorySelectedListener = onCategorySelectedListener;
-    }
-
-    public void setSelectedSubcategory(Subcategory selectedSubcategory){
-        this.selectedSubcategory = selectedSubcategory;
-    }
-
-    public void setGoalStatisticsTime(long goalStatisticsTime){
-        this.goalStatisticsTime = goalStatisticsTime;
-    }
-
     private void loadGoalStatistics(SubcategoryItemViewHolder holder, Subcategory subcategory){
-
-        //Displays the goal-amount
         if(subcategory.getGoal().getAmount() != 0) {
+            ArrayList<Bill> billsOfMonth = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
+            int percentOfUsedGoalAmount = getPercentOfUsedGoalAmount(subcategory, billsOfMonth);
 
-            //Reads how much bills have this as subcategory and adds its amount into the variable amount
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(goalStatisticsTime);
-            int currentMonth = calendar.get(Calendar.YEAR) + calendar.get(Calendar.MONTH);
+            long usedGoalAmount = getTotalAmountOfBills(billsOfMonth);
+            long subcategoryGoalAmount = subcategory.getGoal().getAmount();
 
-            //Reads how much bills have the this as primary category, reads their amount and adds it in the amount variable
-            long amount = 0;
-            for (Bill bill: Toolbox.getBills(goalStatisticsTime, Toolbox.TYPE_MONTH)){
-                if (bill.getSubcategory().equals(subcategory)){
-                    if (bill.getType() == Bill.TYPE_INPUT){
-                        amount -= bill.getAmount();
-                    } else {
-                        amount += bill.getAmount();
-                    }
-                }
-            }
+            String formattedUsedGoalAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(subcategoryGoalAmount);
+            String formattedGoalAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(usedGoalAmount);
 
-            //Displays informations
-            holder.mTxvSubcategoryGoalStatus.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(amount));
-            holder.mTxvSubcategoryGoalStatusAmount.setText(" (" + Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(subcategory.getGoal().getAmount()) + ")");
-            holder.mPgbSubcategoryGoalStatus.setProgress((int)(100 / (double)(subcategory.getGoal().getAmount() / 100) * (double)(amount / 100)));
+            holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
+            holder.mTxvSubcategoryGoalStatus.setText(formattedGoalAmount);
+            holder.mTxvSubcategoryGoalStatusAmount.setText("(" + formattedUsedGoalAmount + ")");
 
-            //Enables a ProgressBar if there is a goal
-            if(amount > subcategory.getGoal().getAmount()){
+            if(usedGoalAmount > subcategoryGoalAmount){
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
                 holder.mPgbSubcategoryGoalStatus.setProgressTintList(ColorStateList.valueOf(Color.RED));
             } else{
-                //Colors text color red if the user has exceeded the amount of the goal
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
             }
         }
+    }
+
+    private void setupForNormalAdapterType(Subcategory subcategory, SubcategoryItemViewHolder holder){
+        holder.mBtnSelectCategory.setVisibility(View.GONE);
+        setFavoredIcon(subcategory.isFavoured(), holder);
+    }
+
+    private void setupForGoalsStatisticsAdapterType(SubcategoryItemViewHolder holder){
+        holder.mBtnSelectCategory.setVisibility(View.GONE);
+        holder.mImvSubcategoryFavored.setVisibility(View.GONE);
+    }
+
+    private static ArrayList<Subcategory> removeSubcategoriesWhatHaveNoGoal(ArrayList<Subcategory> subcategories){
+        ArrayList<Subcategory> subcategoriesToReturn = new ArrayList<>();
+        for (Subcategory subcategory:subcategories){
+            if (subcategory.getGoal().getAmount() != 0){
+                subcategoriesToReturn.add(subcategory);
+            }
+        }
+
+        return subcategoriesToReturn;
+    }
+
+    private void setupForSelectCategoryAdapterType(final Subcategory subcategory, SubcategoryItemViewHolder holder){
+        holder.mTxvSubcategoryGoalStatus.setVisibility(View.GONE);
+        holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
+        setFavoredIcon(subcategory.isFavoured(), holder);
+
+        holder.mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
+                int subcategoryIndexInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
+
+                onCategorySelectedListener.onSelected(primaryCategoryIndexInDatabase, subcategoryIndexInDatabase);
+            }
+        });
+    }
+
+    private void setFavoredIcon(boolean isSubcategoryFavored, SubcategoryItemViewHolder holder){
+        if (isSubcategoryFavored){
+            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
+        } else {
+            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+        }
+    }
+
+    private void markSelectedSubcategory(Subcategory subcategory, SubcategoryItemViewHolder holder){
+        if (subcategory != null && subcategory.equals(selectedSubcategory)){
+            holder.mTxvSubcategoryName.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
+            holder.mBtnSelectCategory.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
+        }
+    }
+
+    private void showSubcategoryEditor(Subcategory subcategory, SubcategoryItemViewHolder holder){
+        SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
+
+        int positionOfSubcategoryInPrimaryCategory = getPositionOfSubcategoryInPrimaryCategory(subcategory, primaryCategoryOfSubcategories);
+        subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategoryOfSubcategories, positionOfSubcategoryInPrimaryCategory);
+
+        subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
+    }
+
+    private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
+        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+            for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
+                if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
+                    return y;
+                }
+            }
+        }
+
+        throw new IllegalStateException("Couldn't find subcategory in database!");
+    }
+
+
+    private void showCategoryActivityAndSubcategoryEditor(Subcategory selectedSubcategory, SubcategoryItemViewHolder holder){
+        int indexOfSubcategoryPrimaryCategory = getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory);
+        int indexOfPrimaryCategoryInDatabase = getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory());
+
+        Intent intent = new Intent(holder.itemView.getContext(), CategoryActivity.class);
+        intent.putExtra(CategoryActivity.EXTRA_SUBCATEGORY_TO_SHOW_INDEX, indexOfSubcategoryPrimaryCategory);
+        intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, indexOfPrimaryCategoryInDatabase);
+
+        holder.itemView.getContext().startActivity(intent);
+    }
+
+    private ArrayList<Bill> getBillsOfSubcategoryAndMonth(Subcategory subcategory, long timeStampOfMonth){
+        ArrayList<Bill> billsToReturn = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                calendar.setTimeInMillis(bill.getCreationDate());
+
+                int currentYear = calendar.get(Calendar.YEAR);
+                int currentMonth = calendar.get(Calendar.MONTH);
+
+                if (bill.getSubcategory().equals(subcategory) && currentYear == year && currentMonth == month){
+                    billsToReturn.add(bill);
+                }
+            }
+        }
+
+        return billsToReturn;
+    }
+
+    private int getPercentOfUsedGoalAmount(Subcategory subcategory, ArrayList<Bill> bills){
+        long subcategoryGoalAmount = subcategory.getGoal().getAmount();
+        long billsAmount = getTotalAmountOfBills(bills);
+
+        return (int)(100 / (double)subcategoryGoalAmount * (double)billsAmount);
+    }
+
+    private long getTotalAmountOfBills(ArrayList<Bill> bills){
+        long billsTotalAmount = 0;
+        for (Bill bill:bills){
+            billsTotalAmount += bill.getAmount();
+        }
+
+        return billsTotalAmount;
+    }
+
+    private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
+        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+            if (primaryCategory.equals(Database.getPrimaryCategories().get(i))){
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("Couldn't find primary category in database!");
+    }
+
+    private int getPositionOfSubcategoryInPrimaryCategory(Subcategory subcategory, PrimaryCategory primaryCategory){
+        for (int i = 0; i<primaryCategory.getSubcategories().size(); i++){
+            if (primaryCategory.getSubcategories().get(i).equals(subcategory)){
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("Couldn't find subcategory in primary category!");
     }
 }

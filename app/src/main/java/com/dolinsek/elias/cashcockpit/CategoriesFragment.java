@@ -117,8 +117,8 @@ public class CategoriesFragment extends Fragment{
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
 
         //Reset Button-visibilities
         setVisibilities();

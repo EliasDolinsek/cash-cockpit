@@ -31,6 +31,7 @@ import java.util.ArrayList;
 public class CategoryActivity extends AppCompatActivity implements DialogInterface.OnDismissListener, DeletePrimaryCategoryDialogFragment.DeletePrimaryCategoryListener {
 
     public static final String EXTRA_PRIMARY_CATEGORY_INDEX = "primaryCategoryIndex";
+    public static final String EXTRA_SUBCATEGORY_TO_SHOW_INDEX = "subcategoryToShow";
 
     private Button mBtnCreate, mBtnDelete, mBtnSetGoal, mBtnAddSubcategory;
     private EditText mEdtCategoryName;
@@ -72,7 +73,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
             mBtnDelete.setVisibility(View.GONE);
         }
 
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true, SubcategoryItemAdapter.TYPE_NORMAl)));
+        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
 
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,7 +182,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
     @Override
     public void onDismiss(DialogInterface dialogInterface) {
         CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = new SubcategoryItemAdapter(primaryCategory, true, SubcategoryItemAdapter.TYPE_NORMAl)));
+        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
     }
 
     @Override
@@ -208,6 +209,16 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
             Database.load(getApplicationContext());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getIntent().hasExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX)){
+            SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
+            subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory, getIntent().getIntExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX, 0));
+            subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "edit_subcategory");
         }
     }
 }

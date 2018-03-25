@@ -29,7 +29,9 @@ import java.util.Calendar;
 
 public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCategoryItemAdapter.PrimaryCategoryViewHolder>{
 
-    public static final int TYPE_NORMAL = 0, TYPE_GOAL_STATISTICS = 1, TYPE_SELECT_CATEGORY = 2;
+    private static final int TYPE_NORMAL = 0;
+    private static final int TYPE_GOAL_STATISTICS = 1;
+    private static final int TYPE_SELECT_CATEGORY = 2;
 
     private int adapterType;
     private ArrayList<PrimaryCategory> primaryCategoriesToDisplay;
@@ -67,6 +69,13 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoryItemAdapter;
     }
 
+    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, Subcategory selectedSubcategory){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = getSelectCategoryPrimaryCategoryItemAdapter(primaryCategoriesToDisplay);
+        primaryCategoryItemAdapter.selectedSubcategory = selectedSubcategory;
+
+        return primaryCategoryItemAdapter;
+    }
+
     public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(){
         return getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
     }
@@ -85,7 +94,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         loadPrimaryCategoryIcon(primaryCategory, holder);
 
         SubcategoryItemAdapter subcategoryItemAdapter = createSubcategoriesItemAdapter(primaryCategory);
-        setupSubcategoriesRecyclerView(subcategoryItemAdapter);
 
         holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
@@ -93,6 +101,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
         if(adapterType == TYPE_NORMAL){
             setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
+        } else if (adapterType == TYPE_GOAL_STATISTICS){
+            hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
         }
     }
 
@@ -262,18 +272,24 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoriesWithGoals;
     }
 
-    private void setupSubcategoriesRecyclerView(SubcategoryItemAdapter subcategoryItemAdapter){
-        subcategoryItemAdapter.setOnCategorySelectedListener(onCategorySelectedListener);
-        subcategoryItemAdapter.setSelectedSubcategory(selectedSubcategory);
-        subcategoryItemAdapter.setGoalStatisticsTime(timeStampOfMonthToLoadStatistics);
-    }
-
     private SubcategoryItemAdapter createSubcategoriesItemAdapter(PrimaryCategory primaryCategoryWhatContainsSubcategories){
         switch (adapterType){
-            case TYPE_NORMAL: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_NORMAl);
-            case TYPE_GOAL_STATISTICS: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
-            case TYPE_SELECT_CATEGORY: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
+            case TYPE_NORMAL: return SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR);
+            case TYPE_GOAL_STATISTICS: return SubcategoryItemAdapter.getGoalsStatisticsSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, timeStampOfMonthToLoadStatistics);
+            case TYPE_SELECT_CATEGORY: {
+                if (selectedSubcategory != null){
+                    return SubcategoryItemAdapter.getSelectCategoryItemAdapter(primaryCategoryWhatContainsSubcategories, onCategorySelectedListener, selectedSubcategory);
+                } else {
+                    return SubcategoryItemAdapter.getSelectCategoryItemAdapter(primaryCategoryWhatContainsSubcategories, onCategorySelectedListener);
+                }
+            }
             default: throw new Resources.NotFoundException("Couldn't find following adapter-type: " + adapterType);
+        }
+    }
+
+    private void hideItemIfPrimaryCategoryHasNoSubcategories(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
+        if (primaryCategory.getSubcategories().size() == 0){
+            holder.mCardView.setVisibility(View.GONE);
         }
     }
 }
