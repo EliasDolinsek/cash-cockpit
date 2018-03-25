@@ -56,6 +56,19 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private int type;
 
+    /**
+     *
+     *
+     *
+     *
+     * TODO When users clicks on SubcategoryItem (PrimaryCategoryAdapterType == Normal) it always starts category activity with PrimaryCategoryIndexInDatabase = 0!!!
+     *
+     *
+     *
+     *
+     *
+     */
+
     public SubcategoryItemAdapter(PrimaryCategory primaryCategory, boolean allowDirectEdit, int type){
         this.primaryCategory = primaryCategory;
         this.allowDirectEdit = allowDirectEdit;

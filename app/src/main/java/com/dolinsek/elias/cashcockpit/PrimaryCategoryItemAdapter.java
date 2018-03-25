@@ -54,9 +54,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
         primaryCategoryItemAdapter.adapterType = TYPE_GOAL_STATISTICS;
         primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
-
-        ArrayList<PrimaryCategory> filteredPrimaryCategories = filterPrimaryCategoriesWithGoals(primaryCategoriesToDisplay);
-        primaryCategoryItemAdapter.primaryCategoriesToDisplay = filteredPrimaryCategories;
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = filterPrimaryCategoriesWithGoals(primaryCategoriesToDisplay);
 
         return primaryCategoryItemAdapter;
     }
@@ -67,6 +65,10 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
 
         return primaryCategoryItemAdapter;
+    }
+
+    public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(){
+        return getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
     }
 
     @Override
@@ -129,27 +131,34 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private long getAmountOfUsedMoneyOfPresetTimestamp(PrimaryCategory primaryCategory){
+        long usedMoney = 0;
+        for (Bill bill:getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonthToLoadStatistics)){
+            usedMoney += bill.getAmount();
+        }
+
+        return usedMoney;
+    }
+
+    private ArrayList<Bill> getBillsWithSameCreationDateAndCategory(PrimaryCategory primaryCategory, long creationDateMonth){
+        ArrayList<Bill> bills = getBillsWhatBelongToPrimaryCategory(primaryCategory);
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonthToLoadStatistics);
+        calendar.setTimeInMillis(creationDateMonth);
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
 
-        long usedMoney = 0;
-
-        //TODO refactor this
-        for (Bill bill:getBillsWhatBelongToPrimaryCategory(primaryCategory)){
+        for (Bill bill:bills){
             calendar.setTimeInMillis(bill.getCreationDate());
 
             int currentYear = calendar.get(Calendar.YEAR);
             int currentMonth = calendar.get(Calendar.MONTH);
 
-            if (year == currentYear && month == currentMonth){
-                usedMoney += bill.getAmount();
+            if (year != currentYear || month != currentMonth){
+                bills.remove(bill);
             }
         }
 
-        return usedMoney;
+        return bills;
     }
 
     private ArrayList<Bill> getBillsWhatBelongToPrimaryCategory(PrimaryCategory primaryCategory){
@@ -171,11 +180,13 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         long goalAmount = primaryCategory.getGoal().getAmount();
         Context context = primaryCategoryViewHolder.itemView.getContext();
 
+        int percentOfUsedAmount = (int)(100 / (double) goalAmount * (double) usedMoney);
         String formattedUsedMoney = formatToReadableAmountUsingActiveCurrency(usedMoney, context);
         String formattedGoalAmount = formatToReadableAmountUsingActiveCurrency(goalAmount, context);
 
         primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
-        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText(formattedGoalAmount);
+        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText("(" + formattedGoalAmount + ")");
+        primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(percentOfUsedAmount);
 
         manageGoalStatusTxvColor(primaryCategory, primaryCategoryViewHolder);
     }
@@ -260,8 +271,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     private SubcategoryItemAdapter createSubcategoriesItemAdapter(PrimaryCategory primaryCategoryWhatContainsSubcategories){
         switch (adapterType){
             case TYPE_NORMAL: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_NORMAl);
-            case TYPE_GOAL_STATISTICS: new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
-            case TYPE_SELECT_CATEGORY: new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
+            case TYPE_GOAL_STATISTICS: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false, SubcategoryItemAdapter.TYPE_GOAL_STATISTIC);
+            case TYPE_SELECT_CATEGORY: return new SubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, false,SubcategoryItemAdapter.TYPE_SELECT_CATEGORY);
             default: throw new Resources.NotFoundException("Couldn't find following adapter-type: " + adapterType);
         }
     }
