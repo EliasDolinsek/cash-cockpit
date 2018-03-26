@@ -1,6 +1,8 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.graphics.Paint;
+import android.net.IpPrefix;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -14,13 +16,16 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
-import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
-import com.jjoe64.graphview.DefaultLabelFormatter;
-import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.series.BarGraphSeries;
-import com.jjoe64.graphview.series.DataPoint;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -36,9 +41,8 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private FloatingActionButton fbtnBack, fbtnForward;
     private TextView txvCurrentMonth;
-    private GraphView gvStatistic;
     private RecyclerView rvCategories;
-    private ScrollView scrollView;
+    private PieChart pcStatistics;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private long timestampOfCurrentDisplayedMonth;
@@ -53,13 +57,13 @@ public class CategoriesStatisticsFragment extends Fragment {
         fbtnBack = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_categories_statistics_back);
         fbtnForward = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_categories_statistics_forward);
         txvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_categories_statistics_current_month);
-        gvStatistic = (GraphView) inflatedView.findViewById(R.id.gv_categories_statistics);
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
-        scrollView = (ScrollView) inflatedView.findViewById(R.id.scv_categories_statistics);
+        pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
 
-        setupGraphView();
+        setupChartStatistics();
         loadCurrentMonthText();
-        loadGraphViewWithStatistics(timestampOfCurrentDisplayedMonth);
+        loadRecyclerViewAdapter();
+        loadChartStatistics();
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -80,12 +84,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         return inflatedView;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        loadRecyclerViewAdapter();
-    }
-
     private void changeMonthAndReloadData(int monthsToStep){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestampOfCurrentDisplayedMonth);
@@ -95,14 +93,11 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         loadRecyclerViewAdapter();
         loadCurrentMonthText();
-        setupGraphView();
-        loadGraphViewWithStatistics(timestampOfCurrentDisplayedMonth);
-
-        scrollView.scrollTo(0,0);
+        loadChartStatistics();
     }
 
     private void loadRecyclerViewAdapter(){
-        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getCategoriesStatisticsPrimaryCategoryItemAdapter();
+        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getCategoriesStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timestampOfCurrentDisplayedMonth);
         rvCategories.setAdapter(primaryCategoryItemAdapter);
     }
 
@@ -117,61 +112,73 @@ public class CategoriesStatisticsFragment extends Fragment {
         txvCurrentMonth.setText(month + " " + year);
     }
 
-    private void loadGraphViewWithStatistics(long timeStampOfMonth){
-        ArrayList<DataPoint> dataPoints = getDataPointsWithDataOfMonth(timeStampOfMonth);
-        DataPoint[] dataPointInterface = new DataPoint[dataPoints.size()];
+    private void loadChartStatistics(){
+        PieDataSet pieDataSet = new PieDataSet(getChartStatisticsData(), "");
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        pieDataSet.setDrawValues(false);
+        pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
 
-        for (int i = 0; i<dataPoints.size(); i++){
-            dataPointInterface[i] = dataPoints.get(i);
-        }
+        PieData pieData = new PieData();
+        pieData.addDataSet(pieDataSet);
 
-        BarGraphSeries<DataPoint> barGraphSeries = new BarGraphSeries(dataPointInterface);
-        barGraphSeries.setSpacing(30);
-        barGraphSeries.setDrawValuesOnTop(true);
-        barGraphSeries.setValuesOnTopColor(getResources().getColor(R.color.colorAccent));
-        barGraphSeries.setValuesOnTopSize(50);
-        barGraphSeries.setAnimated(true);
-
-        gvStatistic.removeAllSeries();
-        gvStatistic.addSeries(barGraphSeries);
+        pcStatistics.setData(pieData);
+        pcStatistics.invalidate(); //Refreshes data
     }
 
-    private ArrayList<DataPoint> getDataPointsWithDataOfMonth(long timeStampMonth){
-        ArrayList<DataPoint> dataPoints = new ArrayList<>();
-        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-            long primaryCategoryBillsTotalAmount = 0;
-            PrimaryCategory currentPrimaryCategory = Database.getPrimaryCategories().get(i);
+    private void setupChartStatistics(){
+        Description description = new Description();
+        description.setText("");
 
-            ArrayList<Bill> bills = getAllBillsOfPrimaryCategory(currentPrimaryCategory);
-            bills = filterBillsToMonth(bills, timeStampMonth);
+        pcStatistics.setDescription(description);
+        pcStatistics.setUsePercentValues(true);
+        pcStatistics.setEntryLabelTextSize(17f);
+        pcStatistics.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
+        pcStatistics.invalidate(); //Refreshes data
+    }
 
-            for (Bill bill:bills){
-                primaryCategoryBillsTotalAmount += bill.getAmount();
+    private ArrayList<PieEntry> getChartStatisticsData(){
+        ArrayList<PieEntry> entries = new ArrayList<>();
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            ArrayList<Bill> billsOfPrimaryCategory = getBillsOfPrimaryCategory(primaryCategory);
+            ArrayList<Bill> filteredBillsOfPrimaryCategory = filterBillsToMonth(billsOfPrimaryCategory, timestampOfCurrentDisplayedMonth);
+
+            long amountOfBills = getTotalAmountOfBills(filteredBillsOfPrimaryCategory);
+            if (amountOfBills != 0){
+                entries.add(new PieEntry(amountOfBills, primaryCategory.getName()));
             }
-
-            DataPoint dataPoint = new DataPoint(i, primaryCategoryBillsTotalAmount);
-            dataPoints.add(dataPoint);
         }
 
-        return dataPoints;
+        return entries;
     }
 
-    private ArrayList<Bill> filterBillsToMonth(ArrayList<Bill> bills, long timeStampOfMonth){
-        ArrayList<Bill> filteredBills = new ArrayList<>();
+    private long getTotalAmountOfBills(ArrayList<Bill> bills){
+        long totalAmount = 0;
+        for (Bill bill:bills){
+            if (bill.getType() == Bill.TYPE_INPUT){
+                totalAmount -= bill.getAmount();
+            } else {
+                totalAmount += bill.getAmount();
+            }
+        }
 
+        return totalAmount;
+    }
+
+    private ArrayList<Bill> filterBillsToMonth(ArrayList<Bill> billsToFilter, long timestampOfMonth){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonth);
+        calendar.setTimeInMillis(timestampOfMonth);
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
 
-        for (Bill bill:bills){
+        for (Bill bill:billsToFilter){
             calendar.setTimeInMillis(bill.getCreationDate());
 
             int currentYear = calendar.get(Calendar.YEAR);
             int currentMonth = calendar.get(Calendar.MONTH);
 
-            if (year == currentYear && month == currentMonth){
+            if (currentYear == year && currentMonth == month){
                 filteredBills.add(bill);
             }
         }
@@ -179,8 +186,9 @@ public class CategoriesStatisticsFragment extends Fragment {
         return filteredBills;
     }
 
-    private ArrayList<Bill> getAllBillsOfPrimaryCategory(PrimaryCategory primaryCategory){
+    private ArrayList<Bill> getBillsOfPrimaryCategory(PrimaryCategory primaryCategory){
         ArrayList<Bill> bills = new ArrayList<>();
+
         for (BankAccount bankAccount:Database.getBankAccounts()){
             for (Bill bill:bankAccount.getBills()){
                 if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
@@ -190,59 +198,5 @@ public class CategoriesStatisticsFragment extends Fragment {
         }
 
         return bills;
-    }
-
-    private void setupGraphView(){
-        gvStatistic.getViewport().setMinX(0);
-        gvStatistic.getViewport().setMinY(0);
-
-        int primaryCategoriesInDatabase = Database.getPrimaryCategories().size();
-        gvStatistic.getViewport().setMaxX(primaryCategoriesInDatabase);
-
-        long biggestAmount = getBiggestAmountOfCategories();
-        gvStatistic.getViewport().setMaxY(biggestAmount + biggestAmount / 10);
-
-        gvStatistic.getViewport().setXAxisBoundsManual(true);
-        gvStatistic.getViewport().setYAxisBoundsManual(true);
-        displayGraphViewLabels();
-    }
-
-    private void displayGraphViewLabels(){
-        gvStatistic.getGridLabelRenderer().setLabelFormatter(new DefaultLabelFormatter(){
-            @Override
-            public String formatLabel(double value, boolean isValueX) {
-                if (isValueX){
-                    int primaryCategoriesInDatabase = Database.getPrimaryCategories().size();
-                    if (value % 1.0 == 0 && value < primaryCategoriesInDatabase){
-                        return Database.getPrimaryCategories().get((int)value).getName();
-                    } else {
-                        return "";
-                    }
-                } else {
-                    return Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol((long)value);
-                }
-            }
-        });
-    }
-
-    private long getBiggestAmountOfCategories(){
-        long biggestAmount = 0;
-        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            for (BankAccount bankAccount:Database.getBankAccounts()){
-                long amountOfCurrentPrimaryCategory = 0;
-
-                for (Bill bill:bankAccount.getBills()){
-                    if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
-                        amountOfCurrentPrimaryCategory += bill.getAmount();
-                    }
-                }
-
-                if (biggestAmount < amountOfCurrentPrimaryCategory){
-                    biggestAmount = amountOfCurrentPrimaryCategory;
-                }
-            }
-        }
-
-        return biggestAmount;
     }
 }

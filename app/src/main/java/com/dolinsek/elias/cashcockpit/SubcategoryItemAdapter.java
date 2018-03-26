@@ -36,6 +36,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private static final int TYPE_NORMAl = 0;
     private static final int TYPE_GOAL_STATISTIC = 1;
     private static final int TYPE_SELECT_CATEGORY = 2;
+    private static final int TYPE_CATEGORIES_STATISTICS = 3;
 
     public static final int ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR = 3;
     public static final int ON_SUBCATEGORY_CLICK_ACTION_OPEN_CATEGORY_ACTIVITY_FIRST = 4;
@@ -84,6 +85,16 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         return subcategoryItemAdapter;
     }
 
+    public static SubcategoryItemAdapter getCategoriesStatisticsItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, long timeStampOfMonthToLoadStatistics){
+        SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
+        subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
+        subcategoryItemAdapter.subcategories = primaryCategoryOfSubcategories.getSubcategories();
+        subcategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+        subcategoryItemAdapter.adapterType = TYPE_CATEGORIES_STATISTICS;
+
+        return subcategoryItemAdapter;
+    }
+
     @Override
     public SubcategoryItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
@@ -96,6 +107,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
         if (adapterType == TYPE_NORMAl){
             setupForNormalAdapterType(subcategory, holder);
+            loadGoalStatistics(holder, subcategory);
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -110,14 +123,17 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             });
         } else if (adapterType == TYPE_SELECT_CATEGORY){
             setupForSelectCategoryAdapterType(subcategory, holder);
+            loadGoalStatistics(holder, subcategory);
             markSelectedSubcategory(subcategory, holder);
         } else if (adapterType == TYPE_GOAL_STATISTIC){
             setupForGoalsStatisticsAdapterType(holder);
+            loadGoalStatistics(holder, subcategory);
+        } else if (adapterType == TYPE_CATEGORIES_STATISTICS){
+            setupForCategoriesStatistics(holder);
+            loadSubcategoryStatistic(subcategory, holder);
         } else {
             throw new IllegalStateException("Couldn't resolve " + adapterType + " as adapter-type");
         }
-
-        loadGoalStatistics(holder, subcategory);
 
         holder.mTxvSubcategoryName.setText(subcategory.getName());
         holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
@@ -186,12 +202,42 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         }
     }
 
+    private void loadSubcategoryStatistic(Subcategory subcategory, SubcategoryItemViewHolder holder){
+        ArrayList<Bill> billsOfPrimaryCategory = getBillsOfPrimaryCategoryAndMonth(subcategory.getPrimaryCategory(), timeStampOfMonthToLoadStatistics);
+        ArrayList<Bill> billsOfSubcategory = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
+        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsOfPrimaryCategory);
+        long totalAmountOfBillsOfSubcategory = getTotalAmountOfBills(billsOfSubcategory);
+
+        int usageOfSubcategoryOfMonthInPercent = (int) Math.round(100 / (double)totalAmountOfBillsOfPrimaryCategory * (double)totalAmountOfBillsOfSubcategory);
+        String formattedTotalAmountOfBillsOfSubcategory = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfSubcategory);
+
+        holder.mTxvSubcategoryGoalStatus.setText(formattedTotalAmountOfBillsOfSubcategory);
+        holder.mTxvSubcategoryGoalStatusAmount.setText("(" + usageOfSubcategoryOfMonthInPercent + "%)");
+        holder.mPgbSubcategoryGoalStatus.setProgress(usageOfSubcategoryOfMonthInPercent);
+    }
+
+    private ArrayList<Bill> getBillsOfPrimaryCategoryAndMonth(PrimaryCategory primaryCategory, long timeStampOfMonth){
+        ArrayList<Bill> bills = new ArrayList<>();
+
+        for (Subcategory subcategory:primaryCategory.getSubcategories()){
+            bills.addAll(getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonth));
+        }
+
+        return bills;
+    }
+
+
     private void setupForNormalAdapterType(Subcategory subcategory, SubcategoryItemViewHolder holder){
         holder.mBtnSelectCategory.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);
     }
 
     private void setupForGoalsStatisticsAdapterType(SubcategoryItemViewHolder holder){
+        holder.mBtnSelectCategory.setVisibility(View.GONE);
+        holder.mImvSubcategoryFavored.setVisibility(View.GONE);
+    }
+
+    private void setupForCategoriesStatistics(SubcategoryItemViewHolder holder){
         holder.mBtnSelectCategory.setVisibility(View.GONE);
         holder.mImvSubcategoryFavored.setVisibility(View.GONE);
     }
@@ -305,7 +351,11 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long billsTotalAmount = 0;
         for (Bill bill:bills){
-            billsTotalAmount += bill.getAmount();
+            if (bill.getType() == Bill.TYPE_INPUT){
+                billsTotalAmount -= bill.getAmount();
+            } else {
+                billsTotalAmount += bill.getAmount();
+            }
         }
 
         return billsTotalAmount;

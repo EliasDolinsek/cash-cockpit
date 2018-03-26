@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Picture;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SubscriptionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Category;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -32,6 +35,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     private static final int TYPE_NORMAL = 0;
     private static final int TYPE_GOAL_STATISTICS = 1;
     private static final int TYPE_SELECT_CATEGORY = 2;
+    private static final int TYPE_CATEGORIES_STATISTICS = 3;
 
     private int adapterType;
     private ArrayList<PrimaryCategory> primaryCategoriesToDisplay;
@@ -61,23 +65,29 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoryItemAdapter;
     }
 
-    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay){
+    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener){
         PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
         primaryCategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
-        primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = filterPrimaryCategoriesWithSubcategories(primaryCategoriesToDisplay);
+        primaryCategoryItemAdapter.onCategorySelectedListener = onCategorySelectedListener;
 
         return primaryCategoryItemAdapter;
     }
 
-    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, Subcategory selectedSubcategory){
-        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = getSelectCategoryPrimaryCategoryItemAdapter(primaryCategoriesToDisplay);
+    public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, Subcategory selectedSubcategory, SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = getSelectCategoryPrimaryCategoryItemAdapter(primaryCategoriesToDisplay, onCategorySelectedListener);
         primaryCategoryItemAdapter.selectedSubcategory = selectedSubcategory;
 
         return primaryCategoryItemAdapter;
     }
 
-    public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(){
-        return getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
+    public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, long timeStampOfMonthToLoadStatistics){
+        PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
+        primaryCategoryItemAdapter.adapterType = TYPE_CATEGORIES_STATISTICS;
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
+        primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+
+        return primaryCategoryItemAdapter;
     }
 
     @Override
@@ -90,7 +100,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     public void onBindViewHolder(final PrimaryCategoryViewHolder holder, final int position) {
         final PrimaryCategory primaryCategory = primaryCategoriesToDisplay.get(position);
 
-        manageGoalViews(primaryCategory, holder);
         loadPrimaryCategoryIcon(primaryCategory, holder);
 
         SubcategoryItemAdapter subcategoryItemAdapter = createSubcategoriesItemAdapter(primaryCategory);
@@ -101,8 +110,14 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
         if(adapterType == TYPE_NORMAL){
             setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
+            manageGoalViews(primaryCategory, holder);
         } else if (adapterType == TYPE_GOAL_STATISTICS){
             hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
+            manageGoalViews(primaryCategory, holder);
+        } else if (adapterType == TYPE_SELECT_CATEGORY){
+            manageGoalViews(primaryCategory, holder);
+        } else if (adapterType == TYPE_CATEGORIES_STATISTICS){
+            loadPrimaryCategoryStatisticInGoalViews(primaryCategory, holder, timeStampOfMonthToLoadStatistics);
         }
     }
 
@@ -132,17 +147,11 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
     }
 
-    public void setOnCategorySelectedListener(SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener) {
-        this.onCategorySelectedListener = onCategorySelectedListener;
-    }
-
-    public void setSelectedSubcategory(Subcategory selectedSubcategory){
-        this.selectedSubcategory = selectedSubcategory;
-    }
-
     private long getAmountOfUsedMoneyOfPresetTimestamp(PrimaryCategory primaryCategory){
+        ArrayList<Bill> bills = getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonthToLoadStatistics);
         long usedMoney = 0;
-        for (Bill bill:getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonthToLoadStatistics)){
+
+        for (Bill bill:bills){
             usedMoney += bill.getAmount();
         }
 
@@ -151,6 +160,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
     private ArrayList<Bill> getBillsWithSameCreationDateAndCategory(PrimaryCategory primaryCategory, long creationDateMonth){
         ArrayList<Bill> bills = getBillsWhatBelongToPrimaryCategory(primaryCategory);
+        ArrayList<Bill> filteredBills = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(creationDateMonth);
 
@@ -163,12 +173,12 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             int currentYear = calendar.get(Calendar.YEAR);
             int currentMonth = calendar.get(Calendar.MONTH);
 
-            if (year != currentYear || month != currentMonth){
-                bills.remove(bill);
+            if (year == currentYear && month == currentMonth){
+                filteredBills.add(bill);
             }
         }
 
-        return bills;
+        return filteredBills;
     }
 
     private ArrayList<Bill> getBillsWhatBelongToPrimaryCategory(PrimaryCategory primaryCategory){
@@ -272,10 +282,22 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoriesWithGoals;
     }
 
+    private static ArrayList<PrimaryCategory> filterPrimaryCategoriesWithSubcategories(ArrayList<PrimaryCategory> primaryCategories){
+        ArrayList<PrimaryCategory> primaryCategoriesToReturn = new ArrayList<>();
+        for (PrimaryCategory primaryCategory:primaryCategories){
+            if (primaryCategory.getSubcategories().size() != 0){
+                primaryCategoriesToReturn.add(primaryCategory);
+            }
+        }
+
+        return primaryCategoriesToReturn;
+    }
+
     private SubcategoryItemAdapter createSubcategoriesItemAdapter(PrimaryCategory primaryCategoryWhatContainsSubcategories){
         switch (adapterType){
             case TYPE_NORMAL: return SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR);
             case TYPE_GOAL_STATISTICS: return SubcategoryItemAdapter.getGoalsStatisticsSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, timeStampOfMonthToLoadStatistics);
+            case TYPE_CATEGORIES_STATISTICS: return SubcategoryItemAdapter.getCategoriesStatisticsItemAdapter(primaryCategoryWhatContainsSubcategories, timeStampOfMonthToLoadStatistics);
             case TYPE_SELECT_CATEGORY: {
                 if (selectedSubcategory != null){
                     return SubcategoryItemAdapter.getSelectCategoryItemAdapter(primaryCategoryWhatContainsSubcategories, onCategorySelectedListener, selectedSubcategory);
@@ -291,5 +313,79 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         if (primaryCategory.getSubcategories().size() == 0){
             holder.mCardView.setVisibility(View.GONE);
         }
+    }
+
+    private void loadPrimaryCategoryStatisticInGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder, long timeStampOfMonthToLoadStatistics){
+        ArrayList<Bill> bills = getBillsOfPrimaryCategoryFromDatabase(primaryCategory);
+        ArrayList<Bill> filteredBills = filterBillsOfMonth(bills, timeStampOfMonthToLoadStatistics);
+        long totalAmountOfBillsOfCategory = getTotalAmountOfBills(filteredBills);
+
+        ArrayList<Bill> allBillsOfMonth = getAllBillsOfMonthFromDatabase(timeStampOfMonthToLoadStatistics);
+        long totalAmountOfAllBillsOfMonth = getTotalAmountOfBills(allBillsOfMonth);
+        int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round((100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory));
+
+        String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
+        holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
+        holder.mTxvGoalStatusAmount.setText("(" + usageOfPrimaryCategoryOfMonthInPercent + "%)");
+        holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);
+    }
+
+    private long getTotalAmountOfBills(ArrayList<Bill> bills){
+        long totalAmount = 0;
+        for (Bill bill:bills){
+            if (bill.getType() == Bill.TYPE_INPUT){
+                totalAmount -= bill.getAmount();
+            } else {
+                totalAmount += bill.getAmount();
+            }
+        }
+
+        return totalAmount;
+    }
+
+    private ArrayList<Bill> filterBillsOfMonth(ArrayList<Bill> billsToFilter, long timeStampOfMonth){
+        ArrayList<Bill> billsToReturn = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (Bill bill:billsToFilter){
+            calendar.setTimeInMillis(bill.getCreationDate());
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+
+            if (year == currentYear && month == currentMonth){
+                billsToReturn.add(bill);
+            }
+        }
+
+        return billsToReturn;
+    }
+
+    private ArrayList<Bill> getBillsOfPrimaryCategoryFromDatabase(PrimaryCategory primaryCategory){
+        ArrayList<Bill> bills = new ArrayList<>();
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                    bills.add(bill);
+                }
+            }
+        }
+
+        return bills;
+    }
+
+    private ArrayList<Bill> getAllBillsOfMonthFromDatabase(long timeStampOfMonth){
+        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
+
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            allBillsInDatabase.addAll(getBillsWhatBelongToPrimaryCategory(primaryCategory));
+        }
+
+        return filterBillsOfMonth(allBillsInDatabase, timeStampOfMonth);
     }
 }
