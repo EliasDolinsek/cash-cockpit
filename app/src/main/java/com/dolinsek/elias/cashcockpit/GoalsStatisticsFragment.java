@@ -33,13 +33,16 @@ import java.util.Calendar;
  */
 public class GoalsStatisticsFragment extends Fragment {
 
+    private static final int STEP_ONE_MONTH_FORWARD = 1;
+    private static final int STEP_ONE_MONTH_BACK = -1;
+
     private static final String EXTRA_MONTH = "month";
 
     private RecyclerView mRvCategories;
     private ProgressBar mPgbMonth, mPgbAverage;
     private FloatingActionButton mFbtnBack, mFbtnForward;
     private TextView mTxvMonth, mTxvCurrentMonth, mTxvAverage;
-    private Calendar calendar;
+    private long timeStampOfMonthToLoadStatistics;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
@@ -57,14 +60,8 @@ public class GoalsStatisticsFragment extends Fragment {
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
         mTxvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_current_month);
 
-        calendar = Calendar.getInstance();
-        if (savedInstanceState != null) {
-            calendar.setTimeInMillis(Long.parseLong(savedInstanceState.getString(EXTRA_MONTH)));
-        } else {
-            calendar.setTimeInMillis(System.currentTimeMillis());
-        }
-
-        updateCurrentMonthTextView();
+        initTimestampOfMonthToLoadStatistics(savedInstanceState);
+        updateCurrentMonthTextView(timeStampOfMonthToLoadStatistics);
 
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
@@ -74,64 +71,75 @@ public class GoalsStatisticsFragment extends Fragment {
         mFbtnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                calendar.add(Calendar.MONTH, -1);
-                loadStatisticsMonth(calendar.getTimeInMillis());
-                updateCurrentMonthTextView();
+                changeMonthAndReloadData(STEP_ONE_MONTH_BACK);
             }
         });
 
         mFbtnForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                calendar.add(Calendar.MONTH, 1);
-                loadStatisticsMonth(calendar.getTimeInMillis());
-                updateCurrentMonthTextView();
+                changeMonthAndReloadData(STEP_ONE_MONTH_FORWARD);
             }
         });
 
         return inflatedView;
     }
 
-    /**
-     * Loads statistics of a specific month
-     *
-     * @param timeStamp of month
-     */
-    private void loadStatisticsMonth(long timeStamp) {
+    @Override
+    public void onResume() {
+        super.onResume();
 
-        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timeStamp);
+        loadAverageStatistics();
+        loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
+    }
+
+    private void changeMonthAndReloadData(int monthsToStep){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonthToLoadStatistics);
+        calendar.add(Calendar.MONTH, monthsToStep);
+
+        timeStampOfMonthToLoadStatistics = calendar.getTimeInMillis();
+
+        loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
+        updateCurrentMonthTextView(timeStampOfMonthToLoadStatistics);
+    }
+
+    private void loadStatisticsOfMonth(long timeStampOfMonth) {
+        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timeStampOfMonth);
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
-        int percent = (int) (100 / (double) getGoalsTotalAmount() * getUsedMoneyOfMonth(timeStamp));
+        long totalAmountOfAllGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
+        long totalAmountOfBillsOfMonth = getTotalAmountOfBillsOfMonthWithGoals(timeStampOfMonth);
+        int percent = Math.round((int) (100 / (double) totalAmountOfAllGoals * totalAmountOfBillsOfMonth));
+
         mPgbMonth.setProgress(percent);
-
-        if (percent <= 0) {
-            mTxvMonth.setText("0%");
-        } else {
-            mTxvMonth.setText(percent + "%");
-        }
+        displayPercentCorrectly(mTxvMonth, percent);
     }
 
-    /**
-     * @return sum of all goal-amounts
-     */
-    private long getGoalsTotalAmount() {
-        ArrayList<Goal> goals = Toolbox.getSubcategoriesGoals();
-
-        long goalsTotalAmount = 0;
-        for (Goal goal : goals) {
-            goalsTotalAmount += goal.getAmount();
+    private long getTotalAmountOfAllGoalsOfSubcategoriesInDatabase(){
+        ArrayList<Goal> goals = new ArrayList<>();
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            for (Subcategory subcategory:primaryCategory.getSubcategories()){
+                goals.add(subcategory.getGoal());
+            }
         }
 
-        return goalsTotalAmount;
+        return getTotalAmountOfGoals(goals);
     }
 
-    /**
-     * Displays date of current month of statistics
-     */
-    private void updateCurrentMonthTextView() {
+    private long getTotalAmountOfGoals(ArrayList<Goal> goals){
+        long totalAmount = 0;
+        for (Goal goal:goals){
+            totalAmount += goal.getAmount();
+        }
+
+        return totalAmount;
+    }
+
+    private void updateCurrentMonthTextView(long timeStampOfNewMonth) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfNewMonth);
+
         String date = getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR);
         mTxvCurrentMonth.setText(date);
     }
@@ -139,12 +147,9 @@ public class GoalsStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(EXTRA_MONTH, String.valueOf(calendar.getTimeInMillis()));
+        outState.putString(EXTRA_MONTH, String.valueOf(timeStampOfMonthToLoadStatistics));
     }
 
-    /**
-     * @return creation date of first bill
-     */
     private long getFirstCreationDateOfBills() {
         long firstCreationDate = System.currentTimeMillis();
 
@@ -159,58 +164,131 @@ public class GoalsStatisticsFragment extends Fragment {
         return firstCreationDate;
     }
 
-    private long getUsedMoneyOfMonth(long timeStamp) {
-        ArrayList<Bill> bills = Toolbox.getBills(timeStamp, Toolbox.TYPE_MONTH);
-        long monthAmount = 0;
+    private long getTotalAmountOfBillsOfMonthWithGoals(long timeStampOfMonth) {
+        ArrayList<Bill> allBillsInDatabase = getAllBillsInDatabase();
+        ArrayList<Bill> allBillsInDatabaseOfMonth = filterBillsOfMonth(allBillsInDatabase, timeStampOfMonth);
+        ArrayList<Bill> allBillsInDatabaseOfMonthWhatHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(allBillsInDatabaseOfMonth);
 
-        for (PrimaryCategory primaryCategory : Database.getPrimaryCategories()) {
-            if (primaryCategory.getGoal().getAmount() != 0) {
-                for (Subcategory subcategory : primaryCategory.getSubcategories()) {
-                    if (subcategory.getGoal().getAmount() != 0) {
-                        for (Bill bill : bills) {
-                            if (bill.getSubcategory().equals(subcategory)) {
-                                if (bill.getType() == Bill.TYPE_INPUT) {
-                                    monthAmount -= bill.getAmount();
-                                } else {
-                                    monthAmount += bill.getAmount();
-                                }
-                            }
-                        }
-                    }
-                }
+        long amountOfBills = getTotalAmountOfBills(allBillsInDatabaseOfMonthWhatHaveGoals);
+
+        return amountOfBills;
+    }
+
+    private ArrayList<Bill> getAllBillsInDatabase(){
+        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                allBillsInDatabase.add(bill);
             }
         }
 
-        return monthAmount;
+        return allBillsInDatabase;
+    }
+
+    private ArrayList<Bill> filterBillsOfMonth(ArrayList<Bill> billsToFilter, long timestampOfMonth){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (Bill bill:billsToFilter){
+            calendar.setTimeInMillis(bill.getCreationDate());
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+
+            if (currentYear == year && currentMonth == month){
+                filteredBills.add(bill);
+            }
+        }
+
+        return filteredBills;
+    }
+
+    private long getTotalAmountOfBills(ArrayList<Bill> bills){
+        long totalAmount = 0;
+
+        for (Bill bill:bills){
+            if (bill.getType() == Bill.TYPE_INPUT){
+                totalAmount -= bill.getAmount();
+            } else {
+                totalAmount += bill.getAmount();
+            }
+        }
+
+        return totalAmount;
+    }
+
+    private ArrayList<Bill> filterBillsWithSubcategoriesWhatHaveGoals(ArrayList<Bill> bills){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+
+        for (Bill bill:bills){
+            if (bill.getSubcategory().getGoal().getAmount() != 0){
+                filteredBills.add(bill);
+            }
+        }
+
+        return filteredBills;
+    }
+
+    private int getAveragePercentOfAllMonths(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getTimeStampOfCreationDateOfFirstBillInDatabase());
+        ArrayList<Bill> allBillsInDatabase = getAllBillsInDatabase();
+
+        int months = 0;
+        long totalAmount = 0;
+        while (calendar.getTimeInMillis() <= System.currentTimeMillis()){
+            ArrayList<Bill> billsOfCurrentMonth = filterBillsOfMonth(allBillsInDatabase, calendar.getTimeInMillis());
+            ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(billsOfCurrentMonth);
+
+            totalAmount += getTotalAmountOfBills(filteredBillsWhatSubcategoriesHaveGoals);
+            calendar.add(Calendar.MONTH, STEP_ONE_MONTH_FORWARD);
+            months++;
+        }
+
+        long totalAmountOfGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
+        int percent = (int)(100 / (double) (totalAmountOfGoals * months) * totalAmount);
+
+        return Math.round(percent);
     }
 
     private void loadAverageStatistics(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(getFirstCreationDateOfBills());
+        int percent = getAveragePercentOfAllMonths();
 
-        long amount = 0;
-        int loops = 0;
+        mPgbAverage.setProgress(percent);
+        displayPercentCorrectly(mTxvAverage, percent);
+    }
 
-        while (calendar.getTimeInMillis() <= System.currentTimeMillis()){
-            amount += getUsedMoneyOfMonth(calendar.getTimeInMillis());
-            calendar.add(Calendar.MONTH, 1);
-            loops++;
+    private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
+        long firstCreationDate = System.currentTimeMillis();
+
+        ArrayList<Bill> billsInDatabase = getAllBillsInDatabase();
+        for (Bill bill:billsInDatabase){
+            if (bill.getCreationDate() < firstCreationDate){
+                firstCreationDate = bill.getCreationDate();
+            }
         }
 
-        int percent = (int)(100 / (double)(getGoalsTotalAmount() * loops) * amount);
-        mPgbAverage.setProgress(percent);
-        if (percent <= 0) {
-            mTxvAverage.setText("0%");
+        return firstCreationDate;
+    }
+
+    private void initTimestampOfMonthToLoadStatistics(Bundle savedInstanceState){
+        if (savedInstanceState != null) {
+            timeStampOfMonthToLoadStatistics = savedInstanceState.getLong(EXTRA_MONTH);
         } else {
-            mTxvAverage.setText(percent + "%");
+            timeStampOfMonthToLoadStatistics = System.currentTimeMillis();
         }
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        loadAverageStatistics();
-        loadStatisticsMonth(calendar.getTimeInMillis());
+    private void displayPercentCorrectly(TextView textView, int percent){
+        if (percent <= 0) {
+            textView.setText("0%");
+        } else {
+            textView.setText(percent + "%");
+        }
     }
 }

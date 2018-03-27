@@ -53,8 +53,8 @@ public class SelectCategoryActivity extends AppCompatActivity {
             primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), onSubcategorySelectedListener);
         }
 
-        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
         mRecyclerView.setHasFixedSize(false);
     }
 }

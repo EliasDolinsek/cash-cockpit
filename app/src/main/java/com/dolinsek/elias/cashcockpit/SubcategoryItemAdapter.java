@@ -195,7 +195,6 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
             if(usedGoalAmount > subcategoryGoalAmount){
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
-                holder.mPgbSubcategoryGoalStatus.setProgressTintList(ColorStateList.valueOf(Color.RED));
             } else{
                 holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
             }
