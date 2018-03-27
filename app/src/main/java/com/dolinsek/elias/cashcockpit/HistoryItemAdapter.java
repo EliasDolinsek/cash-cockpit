@@ -32,89 +32,28 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     public static final int FILTER_HIGHEST_PRICE_FIRST = 2;
     public static final int FILTER_LOWEST_PRICE_FIRST = 3;
 
-    ArrayList<Bill> bills;
-    private boolean editMode;
+    private ArrayList<Bill> billsToDisplay;
+    private boolean allowToEditBill;
+    private int filterType;
 
-    public HistoryItemAdapter(int filter, BankAccount bankAccount, boolean editMode){
-        bills = new ArrayList<>();
-        this.editMode = editMode;
+    public static HistoryItemAdapter getDefaultHistoryItemAdapter(ArrayList<Bill> billsToDisplay, int filterType){
+        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
+        historyItemAdapter.filterType = filterType;
+        historyItemAdapter.billsToDisplay = billsToDisplay;
+        historyItemAdapter.allowToEditBill = true;
+        historyItemAdapter.filterBills(historyItemAdapter.filterType);
 
-        if(filter == FILTER_NEWEST_ITEM_FIRST || filter == FILTER_OLDEST_ITEM_FIRST){
-            ArrayList<Long> times = new ArrayList<>();
-            if(bankAccount == null){
-                for(int i = 0; i< Database.getBankAccounts().size(); i++){
-                    for(Bill bill:Database.getBankAccounts().get(i).getBills())
-                        times.add(bill.getCreationDate());
-                }
-            } else {
-                for(Bill bill:bankAccount.getBills()){
-                    times.add(bill.getCreationDate());
-                }
-            }
+        return historyItemAdapter;
+    }
 
-            long allTimes[] = new long[times.size()];
-            for(int i = 0; i<times.size(); i++){
-                allTimes[i] = (long)times.toArray()[i];
-            }
+    public static HistoryItemAdapter getBankAccountHistoryItemAdapter(BankAccount bankAccount){
+        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
+        historyItemAdapter.filterType = FILTER_NEWEST_ITEM_FIRST;
+        historyItemAdapter.billsToDisplay = bankAccount.getBills();
+        historyItemAdapter.allowToEditBill = false;
+        historyItemAdapter.filterBills(historyItemAdapter.filterType);
 
-            Arrays.sort(allTimes);
-            if(filter == FILTER_NEWEST_ITEM_FIRST){
-                for(int i = allTimes.length; i != 0; i--){
-                    if(bankAccount == null){
-                        for(BankAccount currentBankAccount:Database.getBankAccounts()){
-                            for(Bill bill:currentBankAccount.getBills()){
-                                if(bill.getCreationDate() == allTimes[i-1]){
-                                    bills.add(bill);
-                                }
-                            }
-                        }
-                    } else {
-                        for (Bill bill:bankAccount.getBills()){
-                            if(bill.getCreationDate() == allTimes[i-1]){
-                                bills.add(bill);
-                            }
-                        }
-                    }
-                }
-            } else {
-                for(int i = 0; i < allTimes.length; i++){
-                    for(BankAccount currentBankAccount:Database.getBankAccounts()){
-                        for(Bill bill:currentBankAccount.getBills()){
-                            if(bill.getCreationDate() == allTimes[i]){
-                                bills.add(bill);
-                            }
-                        }
-                    }
-                }
-            }
-        } else {
-            if(bankAccount == null){
-                for(BankAccount currentBankAccount:Database.getBankAccounts()){
-                    for(Bill bill:currentBankAccount.getBills())
-                        bills.add(bill);
-                }
-            } else {
-                for(Bill bill:bankAccount.getBills())
-                    bills.add(bill);
-            }
-
-            if(filter == FILTER_LOWEST_PRICE_FIRST){
-                Collections.sort(bills, new Comparator<Bill>() {
-                    @Override
-                    public int compare(Bill bill, Bill t1) {
-                        return Long.valueOf(bill.getAmount()).compareTo(t1.getAmount());
-                    }
-                });
-            } else {
-                Collections.sort(bills, new Comparator<Bill>() {
-                    @Override
-                    public int compare(Bill bill, Bill t1) {
-                        return Long.valueOf(t1.getAmount()).compareTo(bill.getAmount());
-                    }
-                });
-            }
-        }
-
+        return historyItemAdapter;
     }
 
     @Override
@@ -125,7 +64,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
-        final Bill bill = bills.get(position);
+        final Bill bill = billsToDisplay.get(position);
         if(bill.getType() == Bill.TYPE_INPUT){
             holder.mTxvTagOutput.setVisibility(View.GONE);
             holder.mTxvTagTransfer.setVisibility(View.GONE);
@@ -155,7 +94,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             holder.mTxvDetails.setText(new SimpleDateFormat("dd.MM HH:mm").format(new Date(bill.getCreationDate())) + " " + Character.toString((char)0x00B7) + " " + bill.getDescription());
         }
 
-        if(editMode){
+        if(allowToEditBill){
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -184,7 +123,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     @Override
     public int getItemCount() {
-        return bills.size();
+        return billsToDisplay.size();
     }
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
@@ -201,5 +140,55 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             mTxvCategory = (TextView) itemView.findViewById(R.id.txv_item_history_category);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
         }
+    }
+
+    private void filterBills(int filterType){
+        if (filterType == FILTER_NEWEST_ITEM_FIRST){
+            filterBillsNewestFirst(billsToDisplay);
+        } else if (filterType == FILTER_OLDEST_ITEM_FIRST){
+            filterBillsOldestFirst(billsToDisplay);
+        } else if (filterType == FILTER_HIGHEST_PRICE_FIRST){
+            filterBillsHighestPriceFirst(billsToDisplay);
+        } else if (filterType == FILTER_LOWEST_PRICE_FIRST){
+            filterBillsLowestPriceFirst(billsToDisplay);
+        } else {
+            throw new IllegalArgumentException("Couldn't resolve " + filterType + " as a filter type");
+        }
+    }
+
+    private void filterBillsNewestFirst(ArrayList<Bill> billsToFilter){
+        Collections.sort(billsToFilter, new Comparator<Bill>() {
+            @Override
+            public int compare(Bill bill, Bill t1) {
+                return Long.compare(t1.getCreationDate(), bill.getCreationDate());
+            }
+        });
+    }
+
+    private void filterBillsOldestFirst(ArrayList<Bill> billsToFilter){
+        Collections.sort(billsToFilter, new Comparator<Bill>() {
+            @Override
+            public int compare(Bill bill, Bill t1) {
+                return Long.compare(bill.getCreationDate(), t1.getCreationDate());
+            }
+        });
+    }
+
+    private void filterBillsHighestPriceFirst(ArrayList<Bill> billsToFilter){
+        Collections.sort(billsToFilter, new Comparator<Bill>() {
+            @Override
+            public int compare(Bill bill, Bill t1) {
+                return Long.compare(t1.getAmount(), bill.getAmount());
+            }
+        });
+    }
+
+    private void filterBillsLowestPriceFirst(ArrayList<Bill> billsToFilter){
+        Collections.sort(billsToFilter, new Comparator<Bill>() {
+            @Override
+            public int compare(Bill bill, Bill t1) {
+                return Long.compare(bill.getAmount(), t1.getAmount());
+            }
+        });
     }
 }

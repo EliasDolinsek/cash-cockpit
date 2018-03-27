@@ -31,24 +31,19 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
 
-        Intent intent = getIntent();
         SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
             @Override
             public void onSelected(int primaryCategoryIndex, int subcategoryIndex) {
                 selectedPrimaryCategoryIndex = primaryCategoryIndex;
                 selectedSubcategoryIndex = subcategoryIndex;
-
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(EXTRA_PRIMARY_CATEGORY_INDEX, selectedPrimaryCategoryIndex);
-                resultIntent.putExtra(EXTRA_SUBCATEGORY_INDEX, selectedSubcategoryIndex);
-                setResult(RESULT_OK, resultIntent);
-
-                finish();
+                setResultsAndFinishActivity();
             }
         };
 
+        Intent intent = getIntent();
         if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
-            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), Database.getPrimaryCategories().get(intent.getIntExtra(SELECTED_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(intent.getIntExtra(SELECTED_SUBCATEGORY_INDEX, 0)), onSubcategorySelectedListener);
+            Subcategory selectedSubcategory = getSelectedSubcategoryFromIntentExtras();
+            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), selectedSubcategory, onSubcategorySelectedListener);
         } else {
             primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), onSubcategorySelectedListener);
         }
@@ -56,5 +51,24 @@ public class SelectCategoryActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setAdapter(primaryCategoryItemAdapter);
         mRecyclerView.setHasFixedSize(false);
+    }
+
+    private void setResultsAndFinishActivity(){
+        Intent resultIntent = new Intent();
+
+        resultIntent.putExtra(EXTRA_PRIMARY_CATEGORY_INDEX, selectedPrimaryCategoryIndex);
+        resultIntent.putExtra(EXTRA_SUBCATEGORY_INDEX, selectedSubcategoryIndex);
+        setResult(RESULT_OK, resultIntent);
+
+        finish();
+    }
+
+    private Subcategory getSelectedSubcategoryFromIntentExtras(){
+        Intent intent = getIntent();
+
+        int primaryCategoryIndexInDatabase = intent.getIntExtra(SELECTED_PRIMARY_CATEGORY_INDEX, 0);
+        int subcategoryIndexInPrimaryCategory = intent.getIntExtra(SELECTED_SUBCATEGORY_INDEX, 0);
+
+        return Database.getPrimaryCategories().get(primaryCategoryIndexInDatabase).getSubcategories().get(subcategoryIndexInPrimaryCategory);
     }
 }

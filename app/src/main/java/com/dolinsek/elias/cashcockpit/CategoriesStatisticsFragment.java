@@ -1,8 +1,5 @@
 package com.dolinsek.elias.cashcockpit;
 
-
-import android.graphics.Paint;
-import android.net.IpPrefix;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -11,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
@@ -20,11 +17,9 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.interfaces.datasets.IPieDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -43,6 +38,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private TextView txvCurrentMonth;
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
+    private LinearLayout llNotEnoughDataForStatistic;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private long timestampOfCurrentDisplayedMonth;
@@ -59,11 +55,13 @@ public class CategoriesStatisticsFragment extends Fragment {
         txvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_categories_statistics_current_month);
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
         pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
+        llNotEnoughDataForStatistic = (LinearLayout) inflatedView.findViewById(R.id.ll_categorise_statistics_not_enough_data);
 
         setupChartStatistics();
         loadCurrentMonthText();
         loadRecyclerViewAdapter();
         loadChartStatistics();
+        manageViews();
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -94,6 +92,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         loadRecyclerViewAdapter();
         loadCurrentMonthText();
         loadChartStatistics();
+        manageViews();
     }
 
     private void loadRecyclerViewAdapter(){
@@ -198,5 +197,21 @@ public class CategoriesStatisticsFragment extends Fragment {
         }
 
         return bills;
+    }
+
+    private void manageViews(){
+        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            allBillsInDatabase.addAll(getBillsOfPrimaryCategory(primaryCategory));
+        }
+
+        ArrayList<Bill> allBillsInDatabaseOfMonth = filterBillsToMonth(allBillsInDatabase, timestampOfCurrentDisplayedMonth);
+        if (allBillsInDatabaseOfMonth.size() == 0){
+            llNotEnoughDataForStatistic.setVisibility(View.VISIBLE);
+            pcStatistics.setVisibility(View.GONE);
+        } else {
+            llNotEnoughDataForStatistic.setVisibility(View.GONE);
+            pcStatistics.setVisibility(View.VISIBLE);
+        }
     }
 }

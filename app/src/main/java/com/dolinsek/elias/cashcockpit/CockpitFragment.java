@@ -46,7 +46,7 @@ import static android.app.Activity.RESULT_OK;
  */
 public class CockpitFragment extends Fragment {
 
-    private static final int NO_VALUE = 89;
+    private static final int NO_VALUE = -1;
 
     private static final int RQ_SELECT_CATEGORY = 35;
 
@@ -138,7 +138,7 @@ public class CockpitFragment extends Fragment {
 
                 if (selectedSubcategory != null){
                     intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
-                    intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInDatabase(selectedSubcategory));
+                    intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
                 }
 
                 startActivityForResult(intent, RQ_SELECT_CATEGORY);
@@ -162,7 +162,6 @@ public class CockpitFragment extends Fragment {
                     Toast.makeText(getContext(), getResources().getString(R.string.toast_bill_added), Toast.LENGTH_SHORT).show();
                     clearFieldsFromUserInputs();
                     hideKeyboard();
-
                 }
             }
         });
@@ -215,18 +214,14 @@ public class CockpitFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         if(selectedSubcategory != null){
-
             int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory());
-            int subcategoryIndexInDatabase = getIndexOfSubcategoryInDatabase(selectedSubcategory);
+            int subcategoryIndexInDatabase = getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory);
 
             outState.putInt(PRIMARY_CATEGORY, primaryCategoryIndexInDatabase);
             outState.putInt(SUBCATEGORY, subcategoryIndexInDatabase);
-
         } else if(bankAccountOfBill != null){
-
             int bankAccountIndexInDatabase = getIndexOfBankAccountInDatabase(bankAccountOfBill);
             outState.putInt(ACCOUNT, bankAccountIndexInDatabase);
-
         }
 
         outState.putInt(TYPE, currentlySelectedBillType);
@@ -321,7 +316,7 @@ public class CockpitFragment extends Fragment {
         currentlySelectedBillType = savedInstanceState.getInt(TYPE, Bill.TYPE_OUTPUT);
         mSpnSelectBillType.setSelection(currentlySelectedBillType);
 
-        if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE){
+        if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE && savedInstanceState.getInt(SUBCATEGORY, NO_VALUE) != NO_VALUE){
             selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
             displaySelectedSubcategory();
         }
@@ -373,12 +368,10 @@ public class CockpitFragment extends Fragment {
         textView.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
     }
 
-    private int getIndexOfSubcategoryInDatabase(Subcategory subcategory){
-        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-            for (int y = 0; y<Database.getPrimaryCategories().get(i).getSubcategories().size(); y++){
-                if (Database.getPrimaryCategories().get(i).getSubcategories().get(y).equals(subcategory)){
-                    return y;
-                }
+    private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
+        for (int i = 0; i<subcategory.getPrimaryCategory().getSubcategories().size(); i++){
+            if (subcategory.equals(subcategory.getPrimaryCategory().getSubcategories().get(i))){
+                return i;
             }
         }
 
@@ -386,8 +379,10 @@ public class CockpitFragment extends Fragment {
     }
 
     private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
-        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-            if (primaryCategory.equals(Database.getPrimaryCategories().get(i))){
+        ArrayList<PrimaryCategory> primaryCategoriesInDatabase = Database.getPrimaryCategories();
+        for (int i = 0; i<primaryCategoriesInDatabase.size(); i++){
+            System.out.println(primaryCategory + " " + primaryCategoriesInDatabase.get(i));
+            if (primaryCategory.equals(primaryCategoriesInDatabase.get(i))){
                 return i;
             }
         }

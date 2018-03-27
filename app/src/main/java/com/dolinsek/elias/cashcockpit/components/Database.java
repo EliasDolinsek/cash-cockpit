@@ -78,6 +78,8 @@ public class Database {
                 getBankAccounts().add(0, primaryBankAccount);
             }
         }
+
+        System.out.println("Inside load...");
     }
 
     /**
@@ -89,10 +91,7 @@ public class Database {
         if(dataHelper != null){
             try {
                 dataHelper.writeData(bankAccounts, primaryCategories, autoPays);
-                load(context);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

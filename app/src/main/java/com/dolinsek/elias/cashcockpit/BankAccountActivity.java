@@ -212,7 +212,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
 
         boolean allowToEditBillsOfBankAccount = false;
-        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter(HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST, bankAccount, allowToEditBillsOfBankAccount);
+        HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBankAccountHistoryItemAdapter(bankAccount);
         mRvBills.setAdapter(historyItemAdapter);
     }
 

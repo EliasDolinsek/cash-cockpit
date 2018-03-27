@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -42,6 +43,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private ProgressBar mPgbMonth, mPgbAverage;
     private FloatingActionButton mFbtnBack, mFbtnForward;
     private TextView mTxvMonth, mTxvCurrentMonth, mTxvAverage;
+    private LinearLayout mLlNotEnoughData, mLLContent;
     private long timeStampOfMonthToLoadStatistics;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
@@ -60,6 +62,10 @@ public class GoalsStatisticsFragment extends Fragment {
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
         mTxvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_current_month);
 
+        mLlNotEnoughData = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_not_enough_data);
+        mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
+
+        manageViews();
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
         updateCurrentMonthTextView(timeStampOfMonthToLoadStatistics);
 
@@ -148,20 +154,6 @@ public class GoalsStatisticsFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(EXTRA_MONTH, String.valueOf(timeStampOfMonthToLoadStatistics));
-    }
-
-    private long getFirstCreationDateOfBills() {
-        long firstCreationDate = System.currentTimeMillis();
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                if (bill.getCreationDate() < firstCreationDate){
-                    firstCreationDate = bill.getCreationDate();
-                }
-            }
-        }
-
-        return firstCreationDate;
     }
 
     private long getTotalAmountOfBillsOfMonthWithGoals(long timeStampOfMonth) {
@@ -289,6 +281,16 @@ public class GoalsStatisticsFragment extends Fragment {
             textView.setText("0%");
         } else {
             textView.setText(percent + "%");
+        }
+    }
+
+    private void manageViews(){
+        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0){
+            mLLContent.setVisibility(View.GONE);
+            mLlNotEnoughData.setVisibility(View.VISIBLE);
+        } else {
+            mLLContent.setVisibility(View.VISIBLE);
+            mLlNotEnoughData.setVisibility(View.GONE);
         }
     }
 }

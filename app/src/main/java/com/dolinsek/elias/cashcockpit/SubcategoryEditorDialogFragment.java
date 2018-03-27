@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -46,7 +47,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     private DialogInterface.OnDismissListener mOnDismissListener;
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(final Bundle savedInstanceState) {
         if(mSubcategory == null)
             throw new IllegalStateException("No subcategory set (setSubcategory)");
 
@@ -186,13 +187,17 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                                 public void onClick(View view) {
 
                                     //Deletes Bills
-                                    for(int i = 0; i< Database.getBankAccounts().size(); i++){
-                                        for(int y = 0; y<Database.getBankAccounts().get(i).getBills().size(); y++){
-                                            if(Database.getBankAccounts().get(i).getBills().get(y).getSubcategory().equals(mSubcategory)){
-                                                Database.getBankAccounts().get(i).getBills().remove(y);
+                                    for (BankAccount bankAccount:Database.getBankAccounts()){
+                                        for (Bill bill:bankAccount.getBills()){
+                                            ArrayList<Bill> billsToRemove = new ArrayList<>();
+                                            if (bill.getSubcategory().equals(mSubcategory)){
+                                                billsToRemove.add(bill);
                                             }
+
+                                            bankAccount.getBills().removeAll(billsToRemove);
                                         }
                                     }
+
 
                                     //Deletes AutoPays
                                     for(int i = 0; i<Database.getAutoPays().size(); i++){

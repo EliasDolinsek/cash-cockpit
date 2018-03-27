@@ -107,6 +107,7 @@
     <string name="label_this_month">This Month</string>
     <string name="label_overall">Overall</string>
     <string name="label_average">Average</string>
+    <string name="label_not_enough_data_for_statistic">Not enough data for a statistic</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>
@@ -137,8 +138,8 @@
     <array name="filters_array">
         <item>Newest first</item>
         <item>Oldest first</item>
-        <item>Lowest price first</item>
         <item>Highest price first</item>
+        <item>Lowest price first</item>
     </array>
 
     <array name="auto_pay_types_array">

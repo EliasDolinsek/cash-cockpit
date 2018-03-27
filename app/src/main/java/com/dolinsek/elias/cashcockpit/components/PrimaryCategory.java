@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit.components;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Represents a primary category
@@ -84,4 +85,5 @@ public class PrimaryCategory extends Category{
     public String getIconName() {
         return iconName;
     }
+
 }
