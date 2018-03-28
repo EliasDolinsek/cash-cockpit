@@ -205,10 +205,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         String formattedGoalAmount = formatToReadableAmountUsingActiveCurrency(goalAmount, context);
 
         primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
-        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText("(" + formattedGoalAmount + ")");
+        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText(formattedGoalAmount);
         primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(percentOfUsedAmount);
-
-        manageGoalStatusTxvColor(primaryCategory, primaryCategoryViewHolder);
     }
 
     private String formatToReadableAmountUsingActiveCurrency(long amount, Context context){
@@ -233,25 +231,12 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         primaryCategoryViewHolder.mImvCategoryIcon.setBackgroundResource(R.drawable.ic_default_category_image);
     }
 
-    private void manageGoalStatusTxvColor(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
-        long primaryCategoryGoalAmount = primaryCategory.getGoal().getAmount();
-        long usedMoney = getAmountOfUsedMoneyOfPresetTimestamp(primaryCategory);
-
-        Context context = primaryCategoryViewHolder.itemView.getContext();
-        if (usedMoney > primaryCategoryGoalAmount){
-            int redColor = context.getResources().getColor(android.R.color.holo_red_dark);
-            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setTextColor(redColor);
-        } else {
-            int colorAccent = context.getResources().getColor(R.color.colorAccent);
-            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setTextColor(colorAccent);
-        }
-    }
-
     private void manageGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
         long primaryCategoryGoalAmount = primaryCategory.getGoal().getAmount();
 
         if(primaryCategoryGoalAmount == 0){
             primaryCategoryViewHolder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
+            primaryCategoryViewHolder.mTxvGoalStatusAmount.setVisibility(View.GONE);
         } else {
             displayGoalInformations(primaryCategory, primaryCategoryViewHolder);
         }
@@ -326,7 +311,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
         holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
-        holder.mTxvGoalStatusAmount.setText("(" + usageOfPrimaryCategoryOfMonthInPercent + "%)");
+        holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
         holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);
     }
 

@@ -48,15 +48,25 @@
                     android:id="@+id/txv_item_primary_category_goal_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccent"/>
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:background="@drawable/border_accent"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
                 <TextView
                     android:id="@+id/txv_item_primary_category_goal_status_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="5dp"
-                    android:layout_marginStart="3dp"
-                    android:textColor="@color/colorPrimary"/>
+                    android:layout_marginStart="5dp"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    android:background="@drawable/border_primary"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
             </LinearLayout>
 
         </LinearLayout>

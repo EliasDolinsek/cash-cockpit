@@ -36,9 +36,9 @@ public class BankAccount {
     private long creationDate;
 
     /**
-     * List of all balance changes. List does contain dates in time-millis
+     * List of all balance changes.
      */
-    private ArrayList<Long> balanceChanges;
+    private ArrayList<BalanceChange> balanceChanges;
 
     /**
      * Creates a new bank account
@@ -74,12 +74,15 @@ public class BankAccount {
         return name;
     }
 
-    public void addBill(Bill bill){
-        bills.add(bill);
-        if(bill.getType() == Bill.TYPE_INPUT)
+    public void addBill(Bill bill) {
+        if (bill.getType() == Bill.TYPE_INPUT){
             setBalance(getBalance() + bill.getAmount());
-        else if(bill.getType() == Bill.TYPE_OUTPUT)
+    } else if(bill.getType() == Bill.TYPE_OUTPUT){
             setBalance(getBalance() - bill.getAmount());
+        }
+
+        bills.add(bill);
+        balanceChanges.add(new BalanceChange(System.currentTimeMillis(), this.getBalance()));
 
     }
 
@@ -119,11 +122,11 @@ public class BankAccount {
         this.creationDate = creationDate;
     }
 
-    public ArrayList<Long> getBalanceChanges() {
+    public ArrayList<BalanceChange> getBalanceChanges() {
         return balanceChanges;
     }
 
-    public void setBalanceChanges(ArrayList<Long> balanceChanges) {
+    public void setBalanceChanges(ArrayList<BalanceChange> balanceChanges) {
         this.balanceChanges = balanceChanges;
     }
 }

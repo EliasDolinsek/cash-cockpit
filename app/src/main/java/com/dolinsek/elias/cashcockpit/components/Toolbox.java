@@ -58,18 +58,4 @@ public class Toolbox {
         return bills;
     }
 
-    public static ArrayList<Goal> getSubcategoriesGoals(){
-        ArrayList<Goal> goals = new ArrayList<>();
-        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            if (primaryCategory.getGoal().getAmount() != 0){
-                for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                    if (subcategory.getGoal().getAmount() != 0){
-                        goals.add(subcategory.getGoal());
-                    }
-                }
-            }
-        }
-
-        return goals;
-    }
 }

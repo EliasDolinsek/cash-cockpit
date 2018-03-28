@@ -195,6 +195,7 @@ public class CockpitFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         getAssociatedBankAccountOfBill(bill).getBills().remove(bill);
+                        getActivity().finish();
                     }
                 });
                 deleteBillDialogFragment.show(getFragmentManager(), "delete_bill");
@@ -302,7 +303,7 @@ public class CockpitFragment extends Fragment {
     }
 
     private void setupForEditMode(){
-        String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
+        String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableString(bill.getAmount());
         mEdtBillAmount.setText(amountWithoutCurrencySymbol);
         mEdtBillDescription.setText(bill.getDescription());
 

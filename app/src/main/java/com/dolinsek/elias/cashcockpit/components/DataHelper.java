@@ -44,6 +44,7 @@ public class DataHelper {
     //Balance changes
     private static final String BALANCE_CHANGES_JSON = "balanceChanges";
     private static final String BALANCE_CHANGE_DATE_JSON = "date";
+    private static final String BALANCE_CHANGE_NEW_BALANCE_JSON = "newBalance";
 
     //Bill
     private static final String BILLS_JSON = "bills";
@@ -144,11 +145,12 @@ public class DataHelper {
                 //Contains the current balance change
                 JSONObject currentBalanceChangeJSON = new JSONObject();
 
-                //Adds current balance change to the array of balance changes
+                //Adds date of balance change to the array of balance changes
                 balanceChanges.put(currentBalanceChangeJSON);
 
-                //Adds balance-change-amount to the current balance change
-                currentBalanceChangeJSON.put(BALANCE_CHANGE_DATE_JSON, bankAccount.getBalanceChanges().get(y));
+                //Adds data
+                currentBalanceChangeJSON.put(BALANCE_CHANGE_NEW_BALANCE_JSON, bankAccount.getBalanceChanges().get(y).getNewBalance());
+                currentBalanceChangeJSON.put(BALANCE_CHANGE_DATE_JSON, bankAccount.getBalanceChanges().get(y).getTimeStampOfChange());
             }
 
             //Contains all bills
@@ -341,14 +343,13 @@ public class DataHelper {
             JSONObject currentBankAccountJSON = bankAccountsJSON.getJSONObject(i);
 
             //Contains all balance changes of current bank account
-            ArrayList<Long> balanceChanges = new ArrayList<>();
+            ArrayList<BalanceChange> balanceChanges = new ArrayList<>();
 
             //Checks if bank account has balance changes
             if(currentBankAccountJSON.has(BALANCE_CHANGES_JSON)){
                 //Adds every balance change of current bank account
                 for(int y = 0; y<currentBankAccountJSON.getJSONArray(BALANCE_CHANGES_JSON).length(); y++){
-                    //Adds balance change
-                    balanceChanges.add(currentBankAccountJSON.getJSONArray(BALANCE_CHANGES_JSON).getJSONObject(y).getLong(BALANCE_CHANGE_DATE_JSON));
+                    balanceChanges.add(new BalanceChange(currentBankAccountJSON.getLong(BALANCE_CHANGE_DATE_JSON), currentBankAccountJSON.getLong(BALANCE_CHANGE_NEW_BALANCE_JSON)));
                 }
             }
 
@@ -405,6 +406,7 @@ public class DataHelper {
             //Adds bank account
             BankAccount bankAccount = new BankAccount(bankAccountName, bankAccountBalance, bankAccountPrimaryAccount, bankAccountCreationDate);
             bankAccount.setBills(bills);
+            bankAccount.setBalanceChanges(balanceChanges);
             bankAccounts.add(bankAccount);
         }
 

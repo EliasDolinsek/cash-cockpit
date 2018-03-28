@@ -88,7 +88,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         if(mEditMode){
             mEdtSubcategoryName.setText(mSubcategory.getName());
             if(mSubcategory.getGoal().getAmount() != 0){
-                mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmounToReadableString(mSubcategory.getGoal().getAmount()));
+                mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmountToReadableString(mSubcategory.getGoal().getAmount()));
                 mChbGoalEnabled.setChecked(true);
             }
 

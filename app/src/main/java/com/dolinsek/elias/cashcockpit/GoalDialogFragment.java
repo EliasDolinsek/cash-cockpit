@@ -46,7 +46,7 @@ public class GoalDialogFragment extends DialogFragment{
         mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
 
         if(primaryCategory.getGoal().getAmount() != 0){
-            mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmounToReadableString(primaryCategory.getGoal().getAmount()));
+            mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmountToReadableString(primaryCategory.getGoal().getAmount()));
 
             builder.setTitle(getResources().getString(R.string.dialog_title_edit_goal));
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);

@@ -211,14 +211,13 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         mBtnDelete.setEnabled(!bankAccount.isPrimaryAccount());
 
-        boolean allowToEditBillsOfBankAccount = false;
         HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBankAccountHistoryItemAdapter(bankAccount);
         mRvBills.setAdapter(historyItemAdapter);
     }
 
     private void displayBankAccountDetails(){
         mEdtAccountName.setText(bankAccount.getName());
-        mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()));
+        mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
 
         mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
         mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());

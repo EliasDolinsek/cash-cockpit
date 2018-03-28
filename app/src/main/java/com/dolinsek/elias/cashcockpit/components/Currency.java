@@ -47,7 +47,7 @@ public class Currency {
         this.currencyIndex = currencyIndex;
     }
 
-    public String formatAmounToReadableString(long amount){
+    public String formatAmountToReadableString(long amount){
         if (getCurrencyIndex() == CURRENCY_INDEX_EURO){
             return formatAmountToReadableStringCurrencyEuro(amount);
         } else if (getCurrencyIndex() == CURRENCY_INDEX_DOLLAR){
@@ -60,7 +60,7 @@ public class Currency {
     }
 
     public String formatAmountToReadableStringWithCurrencySymbol(long amount){
-        return formatAmounToReadableString(amount) + getCurrencySymbol();
+        return formatAmountToReadableString(amount) + getCurrencySymbol();
     }
 
     public static Currency getActiveCurrency(Context context){

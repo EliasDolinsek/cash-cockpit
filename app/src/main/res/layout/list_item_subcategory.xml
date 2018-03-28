@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:layout_marginBottom="10dp">
+    android:layout_marginBottom="5dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +40,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
-                android:textColor="@color/colorAccent"/>
+                android:textStyle="bold"
+                android:textColor="@color/colorAccent" />
 
             <TextView
                 android:id="@+id/txv_item_subcategory_goal_status_amount"
@@ -48,7 +49,11 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:layout_marginStart="5dp"
-                android:textColor="@color/colorPrimary"/>
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:background="@drawable/border_primary"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"/>
 
             <Button
                 android:id="@+id/btn_item_subcategory_select"
@@ -66,6 +71,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginStart="10dp" />
+        android:layout_marginStart="10dp"/>
 
 </LinearLayout>

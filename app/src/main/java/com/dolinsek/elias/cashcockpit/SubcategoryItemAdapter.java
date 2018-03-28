@@ -191,13 +191,9 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
             holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
             holder.mTxvSubcategoryGoalStatus.setText(formattedGoalAmount);
-            holder.mTxvSubcategoryGoalStatusAmount.setText("(" + formattedUsedGoalAmount + ")");
-
-            if(usedGoalAmount > subcategoryGoalAmount){
-                holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(android.R.color.holo_red_dark));
-            } else{
-                holder.mTxvSubcategoryGoalStatus.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorAccent));
-            }
+            holder.mTxvSubcategoryGoalStatusAmount.setText(formattedUsedGoalAmount);
+        } else {
+            holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
         }
     }
 
@@ -211,7 +207,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         String formattedTotalAmountOfBillsOfSubcategory = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfSubcategory);
 
         holder.mTxvSubcategoryGoalStatus.setText(formattedTotalAmountOfBillsOfSubcategory);
-        holder.mTxvSubcategoryGoalStatusAmount.setText("(" + usageOfSubcategoryOfMonthInPercent + "%)");
+        holder.mTxvSubcategoryGoalStatusAmount.setText(usageOfSubcategoryOfMonthInPercent + "%");
         holder.mPgbSubcategoryGoalStatus.setProgress(usageOfSubcategoryOfMonthInPercent);
     }
 

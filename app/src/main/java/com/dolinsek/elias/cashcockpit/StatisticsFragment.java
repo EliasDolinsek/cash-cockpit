@@ -20,6 +20,7 @@ public class StatisticsFragment extends Fragment {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
+    private BankAccountsStatisticsFragment bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
     private CategoriesStatisticsFragment categoriesStatisticsFragment = new CategoriesStatisticsFragment();
     private GoalsStatisticsFragment goalsStatisticsFragment = new GoalsStatisticsFragment();
 
@@ -50,6 +51,7 @@ public class StatisticsFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             switch (position){
+                case 1: return bankAccountsStatisticsFragment;
                 case 2: return categoriesStatisticsFragment;
                 case 3: return goalsStatisticsFragment;
                 default: return new BankAccountsFragment();
