@@ -108,6 +108,12 @@
     <string name="label_overall">Overall</string>
     <string name="label_average">Average</string>
     <string name="label_not_enough_data_for_statistic">Not enough data for a statistic</string>
+    <string name="label_current_bank_account">Current bank account</string>
+    <string name="label_cash">Cash</string>
+    <string name="label_cockpit">Cockpit</string>
+    <string name="label_loading_data">Loading data&#8230;</string>
+    <string name="label_beta">Beta</string>
+    <string name="label_monthly_balance">Monthly balance</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>

@@ -16,6 +16,7 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -108,6 +109,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                         //Saves bank account changes
                         bankAccount.setName(mEdtAccountName.getText().toString());
                         bankAccount.setBalance(balance);
+                        bankAccount.getBalanceChanges().add(new BalanceChange(System.currentTimeMillis(), balance));
 
                         //Sets this account as primary account it the user wants it
                         if(mSwPrimaryAccount.isChecked()){

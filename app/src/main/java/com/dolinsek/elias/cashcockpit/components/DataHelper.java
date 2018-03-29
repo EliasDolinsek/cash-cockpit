@@ -329,8 +329,9 @@ public class DataHelper {
         //Contains file
         String file = readFile(false);
 
-        if(file == null)
+        if(file == null){
             return null;
+        }
 
         //Main JSON-Object
         JSONObject jsonObject = new JSONObject(file);
@@ -348,8 +349,10 @@ public class DataHelper {
             //Checks if bank account has balance changes
             if(currentBankAccountJSON.has(BALANCE_CHANGES_JSON)){
                 //Adds every balance change of current bank account
-                for(int y = 0; y<currentBankAccountJSON.getJSONArray(BALANCE_CHANGES_JSON).length(); y++){
-                    balanceChanges.add(new BalanceChange(currentBankAccountJSON.getLong(BALANCE_CHANGE_DATE_JSON), currentBankAccountJSON.getLong(BALANCE_CHANGE_NEW_BALANCE_JSON)));
+                JSONArray balanceChangesJSON = currentBankAccountJSON.getJSONArray(BALANCE_CHANGES_JSON);
+                for(int y = 0; y<balanceChangesJSON.length(); y++){
+                    JSONObject currentBalanceChangeJSON = balanceChangesJSON.getJSONObject(y);
+                    balanceChanges.add(new BalanceChange(currentBalanceChangeJSON.getLong(BALANCE_CHANGE_DATE_JSON), currentBalanceChangeJSON.getLong(BALANCE_CHANGE_NEW_BALANCE_JSON)));
                 }
             }
 

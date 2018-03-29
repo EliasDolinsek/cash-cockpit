@@ -75,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        initDatabase();
     }
 
     /**
@@ -110,19 +109,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void initDatabase(){
-        try {
-            Database.load(getApplicationContext());
-        } catch (Exception e) {
-            if (Database.getPrimaryCategories().size() == 0){
-                restorePrimaryCategories();
-            }
-        }
-    }
-
-    private void restorePrimaryCategories(){
-        Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
     }
 }

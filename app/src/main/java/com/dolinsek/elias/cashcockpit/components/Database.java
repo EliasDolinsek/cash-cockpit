@@ -78,8 +78,6 @@ public class Database {
                 getBankAccounts().add(0, primaryBankAccount);
             }
         }
-
-        System.out.println("Inside load...");
     }
 
     /**
