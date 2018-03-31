@@ -72,6 +72,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
         subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
         subcategoryItemAdapter.onCategorySelectedListener = onCategorySelectedListener;
+        subcategoryItemAdapter.timeStampOfMonthToLoadStatistics = System.currentTimeMillis();
         subcategoryItemAdapter.subcategories = primaryCategoryOfSubcategories.getSubcategories();
         subcategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
 
@@ -281,10 +282,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private void showSubcategoryEditor(Subcategory subcategory, SubcategoryItemViewHolder holder){
         SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-
-        int positionOfSubcategoryInPrimaryCategory = getPositionOfSubcategoryInPrimaryCategory(subcategory, primaryCategoryOfSubcategories);
-        subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategoryOfSubcategories, positionOfSubcategoryInPrimaryCategory);
-
+        subcategoryEditorDialogFragment.setupForEditMode(primaryCategoryOfSubcategories, subcategory);
         subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
     }
 
@@ -346,11 +344,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long billsTotalAmount = 0;
         for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                billsTotalAmount -= bill.getAmount();
-            } else {
-                billsTotalAmount += bill.getAmount();
-            }
+            billsTotalAmount += bill.getAmount();
         }
 
         return billsTotalAmount;

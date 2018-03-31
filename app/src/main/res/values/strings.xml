@@ -102,7 +102,7 @@
     <string name="label_no_category_selected">No category selected</string>
     <string name="label_no_data_for_history">There is no data for a history!</string>
     <string name="dialog_msg_delete_bill">Do you really want to delete this bill?</string>
-    <string name="tab_overview">Overview</string>
+    <string name="tab_bills">Bills</string>
     <string name="tab_goals">Goals</string>
     <string name="label_this_month">This Month</string>
     <string name="label_overall">Overall</string>

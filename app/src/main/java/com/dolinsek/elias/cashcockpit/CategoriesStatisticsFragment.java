@@ -31,6 +31,8 @@ import java.util.Calendar;
  */
 public class CategoriesStatisticsFragment extends Fragment {
 
+    private static final String EXTRA_TIME_STAMP_OF_MONTH = "timeStampOfMonth";
+
     private static final int STEP_ONE_MONTH_FORWARD = 1;
     private static final int STEP_ONE_MONTH_BACKWARD = -1;
 
@@ -48,7 +50,7 @@ public class CategoriesStatisticsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_categories_statistics, container, false);
 
-        timestampOfCurrentDisplayedMonth = System.currentTimeMillis();
+        loadTimeStampOfMonth(savedInstanceState);
 
         fbtnBack = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_categories_statistics_back);
         fbtnForward = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_categories_statistics_forward);
@@ -153,11 +155,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long totalAmount = 0;
         for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                totalAmount -= bill.getAmount();
-            } else {
-                totalAmount += bill.getAmount();
-            }
+            totalAmount += bill.getAmount();
         }
 
         return totalAmount;
@@ -212,6 +210,20 @@ public class CategoriesStatisticsFragment extends Fragment {
         } else {
             llNotEnoughDataForStatistic.setVisibility(View.GONE);
             pcStatistics.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putLong(EXTRA_TIME_STAMP_OF_MONTH, timestampOfCurrentDisplayedMonth);
+    }
+
+    private void loadTimeStampOfMonth(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            timestampOfCurrentDisplayedMonth = savedInstanceState.getLong(EXTRA_TIME_STAMP_OF_MONTH);
+        } else {
+            timestampOfCurrentDisplayedMonth = System.currentTimeMillis();
         }
     }
 }

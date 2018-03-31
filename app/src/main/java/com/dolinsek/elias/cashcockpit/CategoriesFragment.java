@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,7 +23,7 @@ import java.io.IOException;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CategoriesFragment extends Fragment{
+public class CategoriesFragment extends Fragment implements DialogInterface.OnDismissListener{
 
     /**
      * Displays a list of all categories
@@ -69,8 +70,6 @@ public class CategoriesFragment extends Fragment{
         mFbtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //Start CategoryActivity
                 Intent intent = new Intent(container.getContext(), CategoryActivity.class);
                 startActivity(intent);
             }
@@ -79,8 +78,6 @@ public class CategoriesFragment extends Fragment{
         mBtnCreateCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //Start CategoryActivity
                 Intent intent = new Intent(container.getContext(), CategoryActivity.class);
                 startActivity(intent);
             }
@@ -89,26 +86,16 @@ public class CategoriesFragment extends Fragment{
         mBtnRestoreDefaultCategories.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //Add default categories to categories
-                for(int i = 0; i<Database.getDefaultPrimaryCategories().size(); i++){
-                    Database.getPrimaryCategories().add(Database.getDefaultPrimaryCategories().get(i));
-                }
+                addDefaultPrimaryCategoriesToPrimaryCategories();
 
                 try {
-                    //Save data
                     Database.save(getContext());
-
-                    //Reload data
-                    Database.load(getContext());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                //Reset Button-visibilities
                 setVisibilities();
 
-                //Load categories
                 mRvCategories.setAdapter((mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories())));
             }
         });
@@ -120,18 +107,12 @@ public class CategoriesFragment extends Fragment{
     public void onStart() {
         super.onStart();
 
-        //Reset Button-visibilities
         setVisibilities();
 
-        //Load bank accounts
-        mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
+        setupPrimaryCategoryItemAdapter();
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
     }
 
-    /**
-     * Displays all Buttons and hides FloatingActionButton when there are zero categories,
-     * hides all Buttons and shows FloatingActionButton when there are more than zero categories
-     */
     private void setVisibilities(){
         if(Database.getPrimaryCategories().size() != 0){
             mBtnCreateCategory.setVisibility(View.GONE);
@@ -147,8 +128,20 @@ public class CategoriesFragment extends Fragment{
     @Override
     public void onPause() {
         super.onPause();
-
-        //Saves data to save categories-favored states
         Database.save(getContext());
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialogInterface) {
+        setupPrimaryCategoryItemAdapter();
+        mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
+    }
+
+    private void setupPrimaryCategoryItemAdapter(){
+        mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
+    }
+
+    private void addDefaultPrimaryCategoriesToPrimaryCategories(){
+        Database.getPrimaryCategories().addAll(Database.getDefaultPrimaryCategories());
     }
 }

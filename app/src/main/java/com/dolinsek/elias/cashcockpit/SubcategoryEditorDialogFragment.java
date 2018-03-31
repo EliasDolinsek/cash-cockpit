@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
@@ -43,16 +45,15 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     private CheckBox mChbGoalEnabled;
     private ImageView mImvFavored;
 
-    //Interface what gets called when the dialog dismisses
     private DialogInterface.OnDismissListener mOnDismissListener;
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        if(mSubcategory == null)
-            throw new IllegalStateException("No subcategory set (setSubcategory)");
+        if(mSubcategory == null){
+            throw new NullPointerException("No subcategory set");
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View inflatedView = inflater.inflate(R.layout.dialog_subcategory_editor, null);
 
@@ -67,50 +68,18 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         mImvFavored = (ImageView) inflatedView.findViewById(R.id.imv_item_subcategory_editor_favored);
         setupImage(mSubcategory.isFavoured());
 
-        //Enable/Disable goal
-        mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                mEdtGoalAmount.setEnabled(checked);
-            }
-        });
+        setupButtonClickListener();
+        setupTextWatcherForCurrency();
 
-        //Changes favored state on click
-        mImvFavored.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSubcategory.setFavoured(!mSubcategory.isFavoured());
-                setupImage(mSubcategory.isFavoured());
-            }
-        });
-
-        //If edit mode is active it displays details
         if(mEditMode){
-            mEdtSubcategoryName.setText(mSubcategory.getName());
-            if(mSubcategory.getGoal().getAmount() != 0){
-                mEdtGoalAmount.setText(Currency.getActiveCurrency(getContext()).formatAmountToReadableString(mSubcategory.getGoal().getAmount()));
-                mChbGoalEnabled.setChecked(true);
-            }
-
-
+            displaySubcategoryDetails();
+            setupButtonsForEditMode(builder);
+        } else {
+            setupButtonsForCreateMode(builder);
         }
 
-        //Sets View
         builder.setView(inflatedView);
 
-        //Setups buttons depending if the edit mode is active
-        if(mEditMode){
-            builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
-            builder.setNegativeButton(getResources().getString(R.string.dialog_action_delete), null);
-            builder.setTitle(getResources().getString(R.string.dialog_title_edit_subcategory));
-        } else {
-            builder.setPositiveButton(getResources().getString(R.string.dialog_action_create), null);
-            builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
-        }
-
-        mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
-
-        //Sets up button clicks
         final AlertDialog dialog = builder.create();
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
@@ -119,55 +88,26 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                 mBtnPositive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        //Remove error
-                        mEdtSubcategoryName.setError(null);
+                        removeAllErrorsFromViews();
 
-                        //Checks if name already exists
-                        boolean nameAlreadyExits = false;
-                        if(!mEditMode){
-                            for(int i = 0; i<mPrimaryCategory.getSubcategories().size(); i++){
-                                if(mPrimaryCategory.getSubcategories().get(i).getName().equals(mEdtSubcategoryName.getText().toString()))
-                                    nameAlreadyExits = true;
-                            }
-                        }
-
+                        boolean nameAlreadyExits = doesNameForSubcategoryAlreadyExist();
                         if(mEdtSubcategoryName.getText().toString().trim().equals("")){
                             mTilSubcategoryName.setError(getResources().getString(R.string.label_enter_category_name));
-                        } else if(nameAlreadyExits) {
+                        } else if(nameAlreadyExits && !mEditMode) {
                             mTilSubcategoryName.setError(getResources().getString(R.string.label_category_name_already_exists));
                         } else if(mChbGoalEnabled.isChecked() && mEdtGoalAmount.getText().toString().equals("")){
                             mTilGoalAmount.setError(getResources().getString(R.string.label_enter_euros));
                         } else {
 
-                            //If the name starts with a space it removes it so that the category-sorter works properly
                             String name = mEdtSubcategoryName.getText().toString();
-                            while(true){
-                                if(name.startsWith(" "))
-                                    name = name.substring(1, name.length());
-                                else
-                                    break;
-                            }
+                            removeAllWhiteSpacesAtBeginning(name);
 
-                            //Saves name
                             mSubcategory.setName(name);
+                            setGoalForSubcategory();
 
-                            //Saves goal-status
-                            if(mChbGoalEnabled.isChecked()){
-                                long goalBefore = mSubcategory.getGoal().getAmount();
-                                if (mSubcategory.getGoal().getAmount() == 0){
-                                    mSubcategory.setGoal(new Goal((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100)));
-                                } else {
-                                    mSubcategory.getGoal().setAmount((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100));
-                                }
-                                mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() + mSubcategory.getGoal().getAmount() - goalBefore);
-                            } else {
-                                mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
-                                mSubcategory.setGoal(new Goal(0));
+                            if(!mEditMode){
+                                addSubcategoryToPrimaryCategory(mPrimaryCategory, mSubcategory);
                             }
-
-                            //Adds a new Subcategory if it isn't in edit mode
-                            if(!mEditMode)
-                                mPrimaryCategory.addSubcategory(mSubcategory);
 
                             dialog.dismiss();
                         }
@@ -185,32 +125,12 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                             mBtnNegative.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View view) {
+                                    deleteAllBillsOfSubcategory(mSubcategory);
+                                    deleteAllAutoPaysOfSubcategory(mSubcategory);
 
-                                    //Deletes Bills
-                                    for (BankAccount bankAccount:Database.getBankAccounts()){
-                                        for (Bill bill:bankAccount.getBills()){
-                                            ArrayList<Bill> billsToRemove = new ArrayList<>();
-                                            if (bill.getSubcategory().equals(mSubcategory)){
-                                                billsToRemove.add(bill);
-                                            }
-
-                                            bankAccount.getBills().removeAll(billsToRemove);
-                                        }
-                                    }
-
-
-                                    //Deletes AutoPays
-                                    for(int i = 0; i<Database.getAutoPays().size(); i++){
-                                        if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(mSubcategory)){
-                                            Database.getAutoPays().remove(Database.getAutoPays().get(i));
-                                        }
-                                    }
-
-                                    //Deletes subcategory
                                     mPrimaryCategory.getSubcategories().remove(mSubcategory);
-
-                                    //Sets goal
                                     mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
+
                                     dialog.dismiss();
                                 }
                             });
@@ -228,43 +148,141 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+        mOnDismissListener.onDismiss(dialog);
+    }
 
-        //Calls interface in activity if it implements the right inteface
-        final Activity activity = getActivity();
-        if (activity instanceof DialogInterface.OnDismissListener) {
-            ((DialogInterface.OnDismissListener) activity).onDismiss(dialog);
+    private void setupImage(boolean favored){
+        if(favored){
+            mImvFavored.setImageResource(R.drawable.ic_favorite);
+        } else {
+            mImvFavored.setImageResource(R.drawable.ic_not_favorite);
         }
     }
 
-    /**
-     * Sets up the icons what display if the subcategory is favored or not
-     * @param favored if the subcategory is favored or not
-     */
-    private void setupImage(boolean favored){
-        if(favored)
-            mImvFavored.setImageResource(R.drawable.ic_favorite);
-        else
-            mImvFavored.setImageResource(R.drawable.ic_not_favorite);
-    }
-
-    /**
-     * Sets primary category including subcategory to edit and enables edit mode
-     * @param primaryCategory primary category
-     * @param subcategoryIndex index in array for subcategories in primary category
-     */
-    public void setPrimaryCategory(PrimaryCategory primaryCategory, int subcategoryIndex){
-        mSubcategory = primaryCategory.getSubcategories().get(subcategoryIndex);
+    public void setupForEditMode(PrimaryCategory primaryCategory, Subcategory subcategoryToEdit){
+        mSubcategory = subcategoryToEdit;
         mPrimaryCategory = primaryCategory;
-
         mEditMode = true;
     }
 
-    /**
-     * Sets primary category and edit mode keeps disabled
-     * @param primaryCategory primary category
-     */
-    public void setPrimaryCategory(PrimaryCategory primaryCategory){
-        mSubcategory = new Subcategory("", new Goal(0), primaryCategory, false);
-        mPrimaryCategory = primaryCategory;
+    public void setupForCreateMode(PrimaryCategory primaryCategoryForCreation){
+        mSubcategory = new Subcategory("", new Goal(0), primaryCategoryForCreation, false);
+        mPrimaryCategory = primaryCategoryForCreation;
+        mEditMode = false;
+    }
+
+    private void setupButtonClickListener(){
+        mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
+                mEdtGoalAmount.setEnabled(checked);
+            }
+        });
+
+        mImvFavored.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSubcategory.setFavoured(!mSubcategory.isFavoured());
+                setupImage(mSubcategory.isFavoured());
+            }
+        });
+    }
+
+    private void displaySubcategoryDetails(){
+        mEdtSubcategoryName.setText(mSubcategory.getName());
+        if(mSubcategory.getGoal().getAmount() != 0){
+            displayGoalOfSubcategory();
+        }
+    }
+
+    private void displayGoalOfSubcategory(){
+        String formattedGoalAmount = Currency.getActiveCurrency(getContext()).formatAmountToReadableString(mSubcategory.getGoal().getAmount());
+        mEdtGoalAmount.setText(formattedGoalAmount);
+        mChbGoalEnabled.setChecked(true);
+    }
+
+    private void setupButtonsForEditMode(AlertDialog.Builder builder){
+        builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
+        builder.setNegativeButton(getResources().getString(R.string.dialog_action_delete), null);
+        builder.setTitle(getResources().getString(R.string.dialog_title_edit_subcategory));
+    }
+
+    private void setupButtonsForCreateMode(AlertDialog.Builder builder){
+        builder.setPositiveButton(getResources().getString(R.string.dialog_action_create), null);
+        builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
+    }
+
+    private void setupTextWatcherForCurrency(){
+        mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
+    }
+
+    private void removeAllErrorsFromViews(){
+        mEdtSubcategoryName.setError(null);
+    }
+
+    private boolean doesNameForSubcategoryAlreadyExist(){
+        for(int i = 0; i<mPrimaryCategory.getSubcategories().size(); i++){
+            if(mPrimaryCategory.getSubcategories().get(i).getName().equals(mEdtSubcategoryName.getText().toString()))
+                return true;
+        }
+
+        return false;
+    }
+
+    private void removeAllWhiteSpacesAtBeginning(String value){
+        while(true){
+            if(value.startsWith(" ")){
+                value = value.substring(1, value.length());
+            } else {
+                break;
+            }
+        }
+    }
+
+    private void addSubcategoryToPrimaryCategory(PrimaryCategory primaryCategory, Subcategory subcategoryToAdd){
+        primaryCategory.addSubcategory(subcategoryToAdd);
+    }
+
+    private void setGoalForSubcategory(){
+        if(mChbGoalEnabled.isChecked()){
+            long goalBefore = mSubcategory.getGoal().getAmount();
+            if (mSubcategory.getGoal().getAmount() == 0){
+                mSubcategory.setGoal(new Goal((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100)));
+            } else {
+                mSubcategory.getGoal().setAmount((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100));
+            }
+            mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() + mSubcategory.getGoal().getAmount() - goalBefore);
+        } else {
+            mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
+            mSubcategory.setGoal(new Goal(0));
+        }
+    }
+
+    private void deleteAllBillsOfSubcategory(Subcategory subcategory){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            ArrayList<Bill> billsToRemove = new ArrayList<>();
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getSubcategory().equals(subcategory)){
+                    billsToRemove.add(bill);
+                }
+            }
+
+            bankAccount.getBills().removeAll(billsToRemove);
+        }
+    }
+
+    private void deleteAllAutoPaysOfSubcategory(Subcategory subcategory){
+        for(int i = 0; i<Database.getAutoPays().size(); i++){
+            ArrayList<AutoPay> autoPaysToDelete = new ArrayList<>();
+            if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(subcategory)){
+                autoPaysToDelete.add(Database.getAutoPays().get(i));
+            }
+
+            Database.getAutoPays().removeAll(autoPaysToDelete);
+        }
+    }
+
+    public void setOnDismissListener(DialogInterface.OnDismissListener onDismissListener){
+        this.mOnDismissListener = onDismissListener;
     }
 }

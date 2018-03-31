@@ -70,6 +70,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         primaryCategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
         primaryCategoryItemAdapter.primaryCategoriesToDisplay = filterPrimaryCategoriesWithSubcategories(primaryCategoriesToDisplay);
         primaryCategoryItemAdapter.onCategorySelectedListener = onCategorySelectedListener;
+        primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = System.currentTimeMillis();
 
         return primaryCategoryItemAdapter;
     }
@@ -117,7 +118,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         } else if (adapterType == TYPE_SELECT_CATEGORY){
             manageGoalViews(primaryCategory, holder);
         } else if (adapterType == TYPE_CATEGORIES_STATISTICS){
-            loadPrimaryCategoryStatisticInGoalViews(primaryCategory, holder, timeStampOfMonthToLoadStatistics);
+            loadPrimaryCategoryStatisticInGoalViews(primaryCategory, holder);
         }
     }
 
@@ -147,8 +148,8 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
     }
 
-    private long getAmountOfUsedMoneyOfPresetTimestamp(PrimaryCategory primaryCategory){
-        ArrayList<Bill> bills = getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonthToLoadStatistics);
+    private long getAmountOfUsedMoneyOfTimestamp(PrimaryCategory primaryCategory, long timeStampOfMonth){
+        ArrayList<Bill> bills = getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonth);
         long usedMoney = 0;
 
         for (Bill bill:bills){
@@ -196,7 +197,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private void displayGoalInformations(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
-        long usedMoney = getAmountOfUsedMoneyOfPresetTimestamp(primaryCategory);
+        long usedMoney = getAmountOfUsedMoneyOfTimestamp(primaryCategory, System.currentTimeMillis());
         long goalAmount = primaryCategory.getGoal().getAmount();
         Context context = primaryCategoryViewHolder.itemView.getContext();
 
@@ -300,7 +301,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
     }
 
-    private void loadPrimaryCategoryStatisticInGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder, long timeStampOfMonthToLoadStatistics){
+    private void loadPrimaryCategoryStatisticInGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
         ArrayList<Bill> bills = getBillsOfPrimaryCategoryFromDatabase(primaryCategory);
         ArrayList<Bill> filteredBills = filterBillsOfMonth(bills, timeStampOfMonthToLoadStatistics);
         long totalAmountOfBillsOfCategory = getTotalAmountOfBills(filteredBills);
@@ -318,11 +319,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long totalAmount = 0;
         for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                totalAmount -= bill.getAmount();
-            } else {
-                totalAmount += bill.getAmount();
-            }
+            totalAmount += bill.getAmount();
         }
 
         return totalAmount;

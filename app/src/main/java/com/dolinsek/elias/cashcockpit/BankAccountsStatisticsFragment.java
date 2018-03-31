@@ -47,6 +47,8 @@ import java.util.HashMap;
  */
 public class BankAccountsStatisticsFragment extends Fragment {
 
+    private static final String EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE = "bankAccountIndex";
+
     private FloatingActionButton fbtnNextBankAccount, fbtnPreviousBankAccount;
     private TextView txvCurrentBankAccount;
     private RecyclerView rvBills;
@@ -73,7 +75,7 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
         if (Database.getBankAccounts().size() != 0){
             llNotEnoughData.setVisibility(View.GONE);
-            currentBankAccount = Database.getBankAccounts().get(0);
+            loadBankAccount(savedInstanceState);
             loadStatisticsIfThereIsEnoughData();
         } else {
             llNotEnoughData.setVisibility(View.VISIBLE);
@@ -267,5 +269,20 @@ public class BankAccountsStatisticsFragment extends Fragment {
                 return Long.compare(balanceChange.getTimeStampOfChange(), t1.getTimeStampOfChange());
             }
         });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, getIndexOfBankAccountInDatabase(currentBankAccount));
+    }
+
+    private void loadBankAccount(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            int indexOfBankAccountInDatabase = savedInstanceState.getInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE);
+            currentBankAccount = Database.getBankAccounts().get(indexOfBankAccountInDatabase);
+        } else {
+            currentBankAccount = Database.getBankAccounts().get(0);
+        }
     }
 }

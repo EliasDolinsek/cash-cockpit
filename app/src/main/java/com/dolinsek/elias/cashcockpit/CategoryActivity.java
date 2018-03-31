@@ -28,7 +28,7 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class CategoryActivity extends AppCompatActivity implements DialogInterface.OnDismissListener, DeletePrimaryCategoryDialogFragment.DeletePrimaryCategoryListener {
+public class CategoryActivity extends AppCompatActivity implements DeletePrimaryCategoryDialogFragment.DeletePrimaryCategoryListener {
 
     public static final String EXTRA_PRIMARY_CATEGORY_INDEX = "primaryCategoryIndex";
     public static final String EXTRA_SUBCATEGORY_TO_SHOW_INDEX = "subcategoryToShow";
@@ -48,7 +48,6 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        //Don't show keyboard automatically
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         mBtnCreate = (Button) findViewById(R.id.btn_category_create);
@@ -111,7 +110,7 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
             @Override
             public void onClick(View view) {
                 SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-                subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory);
+                subcategoryEditorDialogFragment.setupForCreateMode(primaryCategory);
                 subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "new_subcategory");
             }
         });
@@ -180,12 +179,6 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
     }
 
     @Override
-    public void onDismiss(DialogInterface dialogInterface) {
-        CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
-    }
-
-    @Override
     public void onDialogPositiveClick() {
         //Deletes AutoPay
         ArrayList<AutoPay> autoPaysToDelete = getAutoPays();
@@ -217,8 +210,21 @@ public class CategoryActivity extends AppCompatActivity implements DialogInterfa
         super.onStart();
         if (getIntent().hasExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX)){
             SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-            subcategoryEditorDialogFragment.setPrimaryCategory(primaryCategory, getIntent().getIntExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX, 0));
+
+            int indexOfSubcategoryInPrimaryCategory = getIntent().getIntExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX, 0);
+            subcategoryEditorDialogFragment.setupForEditMode(primaryCategory, getSubcategoryInPrimaryCategoryOfIndex(primaryCategory, indexOfSubcategoryInPrimaryCategory));
+            subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialogInterface) {
+                    CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
+                    mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+                }
+            });
             subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "edit_subcategory");
         }
+    }
+
+    private Subcategory getSubcategoryInPrimaryCategoryOfIndex(PrimaryCategory primaryCategory, int index){
+        return primaryCategory.getSubcategories().get(index);
     }
 }
