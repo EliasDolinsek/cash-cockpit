@@ -14,20 +14,13 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 
 import java.util.ArrayList;
 
-/**
- * Created by elias on 13.01.2018.
- */
 
 public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItemAdapter.BankAccountItemViewHolder>{
 
-    /**
-     * Contains bank accounts to display
-     */
     ArrayList<BankAccount> mBankAccounts;
 
-    public BankAccountItemAdapter(){
-        //Gets bank accounts from database
-        mBankAccounts = Database.getBankAccounts();
+    public BankAccountItemAdapter(ArrayList<BankAccount> bankAccountsToDisplay){
+        mBankAccounts = bankAccountsToDisplay;
     }
 
     @Override
@@ -40,20 +33,15 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public void onBindViewHolder(final BankAccountItemViewHolder holder, final int position) {
         BankAccount bankAccount = mBankAccounts.get(position);
 
-        //Display data
-        holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
+        displayData(bankAccount, holder);
 
-        //Displays if the current bank account is the primary bank account
         if(bankAccount.isPrimaryAccount()){
-            holder.mTxvDetails.append(" " + Character.toString((char)0x00B7) + " ");
-            holder.mTxvPrimaryAccount.setText(holder.itemView.getContext().getResources().getString(R.string.label_primary_account));
+            markAsPrimaryAccount(holder);
         }
 
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Start CreateBankAccountActivity to edit the clicked bank account
                 Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
                 intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);
                 holder.itemView.getContext().startActivity(intent);
@@ -80,5 +68,21 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
             mCardView = (CardView) itemView.findViewById(R.id.cv_item_bank_account);
         }
+    }
+
+    private void displayData(BankAccount bankAccount, BankAccountItemViewHolder holder){
+        holder.mTxvName.setText(bankAccount.getName());
+
+        String formattedBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance());
+        String numberOfBillsOfBankAccount = String.valueOf(bankAccount.getBills().size());
+        String labelBills = holder.itemView.getContext().getString(R.string.label_bills);
+
+        String detailsToDisplay = formattedBalance + " " + Character.toString((char)0x00B7) + " " + numberOfBillsOfBankAccount + " " +  labelBills;
+        holder.mTxvDetails.setText(detailsToDisplay);
+    }
+
+    private void markAsPrimaryAccount(BankAccountItemViewHolder holder){
+        holder.mTxvDetails.append(" " + Character.toString((char)0x00B7) + " ");
+        holder.mTxvPrimaryAccount.setText(holder.itemView.getContext().getResources().getString(R.string.label_primary_account));
     }
 }

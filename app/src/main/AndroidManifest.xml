@@ -12,8 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"></activity>
         <activity android:name=".SettingsActivity" />
         <activity android:name=".BankAccountActivity" />
         <activity android:name=".CategoryActivity" />
@@ -24,13 +23,18 @@
             android:name=".BillEditorActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SelectCategoryActivity" />
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".AutoPaysService"
+            android:enabled="false"
+            android:exported="false"></service>
     </application>
 
 </manifest>

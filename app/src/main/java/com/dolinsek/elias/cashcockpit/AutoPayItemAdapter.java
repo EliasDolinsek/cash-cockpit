@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -22,8 +23,8 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
     private ArrayList<AutoPay> autoPays;
 
-    public AutoPayItemAdapter(){
-        autoPays = Database.getAutoPays();
+    public AutoPayItemAdapter(ArrayList<AutoPay> autoPaysToDisplay){
+        autoPays = autoPaysToDisplay;
     }
 
     @Override
@@ -35,32 +36,11 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
     @Override
     public void onBindViewHolder(final AutoPayItemViewHolder holder, final int position) {
         AutoPay autoPay = autoPays.get(position);
+        displayAutoPayDetails(autoPay, holder);
 
-        //Converts the type of the AutoPay to a string
-        String type = holder.itemView.getContext().getResources().getString(R.string.label_none);
-        switch (autoPay.getType()){
-            case AutoPay.TYPE_WEEKLY: type = holder.itemView.getContext().getResources().getString(R.string.label_weekly);
-                break;
-            case AutoPay.TYPE_MONTHLY: type = holder.itemView.getContext().getResources().getString(R.string.label_monthly);
-                break;
-            case AutoPay.TYPE_YEARLY: type = holder.itemView.getContext().getResources().getString(R.string.label_yearly);
-                break;
-        }
-
-        //Displays data
-        holder.mTxvName.setText(autoPay.getName());
-
-        String amount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(autoPay.getBill().getAmount());
-        if(amount.startsWith("-")){
-            amount.replace("-", "");
-        }
-
-        holder.mTxvDetails.setText(type + " " + Character.toString((char)0x00B7) + " " + amount + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName());
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //Start AutoPayActivity
                 Intent intent = new Intent(holder.itemView.getContext(), AutoPayActivity.class);
                 intent.putExtra(AutoPayActivity.EXTRA_AUTO_PAY_INDEX, position);
                 holder.itemView.getContext().startActivity(intent);
@@ -85,5 +65,27 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_auto_pays_details);
             mCardView = (CardView) itemView.findViewById(R.id.cv_item_auto_pay);
         }
+    }
+
+    private String getAutoPayTypeAsSting(AutoPay autoPay, Context context){
+        switch (autoPay.getType()){
+            case AutoPay.TYPE_WEEKLY: return context.getResources().getString(R.string.label_weekly);
+            case AutoPay.TYPE_MONTHLY: return  context.getString(R.string.label_monthly);
+            case AutoPay.TYPE_YEARLY: return context.getResources().getString(R.string.label_yearly);
+        }
+
+        throw new IllegalArgumentException("Couldn't resolve " + autoPay.getType() + " as a auto-pay-type");
+    }
+
+    private void displayAutoPayDetails(AutoPay autoPay, AutoPayItemViewHolder holder){
+        Context context = holder.itemView.getContext();
+
+        String centerDot = Character.toString((char)0x00B7);
+        String formattedType = getAutoPayTypeAsSting(autoPay, context);
+        String formattedAmount = Currency.getActiveCurrency(context).formatAmountToReadableStringWithCurrencySymbol(autoPay.getBill().getAmount());
+        String detailsToDisplay = formattedType + " " + centerDot + " " + formattedAmount + " " + centerDot + " " + autoPay.getBankAccount().getName();
+
+        holder.mTxvName.setText(autoPay.getName());
+        holder.mTxvDetails.setText(detailsToDisplay);
     }
 }

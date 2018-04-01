@@ -3,29 +3,38 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.View;
+import android.widget.RelativeLayout;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 public class StartActivity extends AppCompatActivity {
 
+    private static final long TIME_UNTIL_MAIN_ACTIVITY_START = 1000;
     private static final String TAG = StartActivity.class.getSimpleName();
+
+    private View rootView;
+    private Thread automaticallyMainActivityStartThread;
+    private boolean mainActivityAlreadyStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        rootView = (RelativeLayout) findViewById(R.id.rl_start_root);
 
-        new Thread(new Runnable() {
+        initDatabase();
+        initAutomaticallyStartThread();
+        automaticallyMainActivityStartThread.start();
+
+        rootView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                long startTime = System.currentTimeMillis();
-                initDatabase();
-                long stopTime = System.currentTimeMillis();
-
-                requestStartOfMainActivity(stopTime - startTime);
+            public void onClick(View view) {
+                requestStartOfMainActivity();
             }
-        }).start();
+        });
     }
 
     private void initDatabase(){
@@ -43,17 +52,27 @@ public class StartActivity extends AppCompatActivity {
         Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
     }
 
-    private void requestStartOfMainActivity(long durationOfLoadingDatabase){
-        long startTime = 1500;
-        if (durationOfLoadingDatabase < startTime){
-            try {
-                Thread.sleep(startTime - durationOfLoadingDatabase);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    private void initAutomaticallyStartThread(){
+        automaticallyMainActivityStartThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(TIME_UNTIL_MAIN_ACTIVITY_START);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                requestStartOfMainActivity();
             }
+        });
+    }
+
+    private void requestStartOfMainActivity(){
+        if (!mainActivityAlreadyStarted){
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
         }
 
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
+        mainActivityAlreadyStarted = true;
     }
 }

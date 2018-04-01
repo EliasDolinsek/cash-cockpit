@@ -19,6 +19,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 
 public class AutoPaysFragment extends Fragment {
@@ -71,7 +72,8 @@ public class AutoPaysFragment extends Fragment {
             mBtnCreateAutoPay.setVisibility(View.VISIBLE);
         }
 
-        mRvAutoPays.setAdapter((mAutoPayItemAdapter = new AutoPayItemAdapter()));
+        ArrayList<AutoPay> autoPays = Database.getAutoPays();
+        mRvAutoPays.setAdapter((mAutoPayItemAdapter = new AutoPayItemAdapter(autoPays)));
     }
 
 }
