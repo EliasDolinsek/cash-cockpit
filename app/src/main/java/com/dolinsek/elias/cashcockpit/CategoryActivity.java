@@ -63,44 +63,32 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         mRvSubcategories.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
         if (getIntent().hasExtra(EXTRA_PRIMARY_CATEGORY_INDEX)) {
-            mEditMode = true;
-            primaryCategory = Database.getPrimaryCategories().get(getIntent().getIntExtra(EXTRA_PRIMARY_CATEGORY_INDEX, 0));
-            mEdtCategoryName.setText(primaryCategory.getName());
+            setupForEditMode();
         } else {
-            primaryCategory = new PrimaryCategory("", null);
-            mBtnCreate.setText(getResources().getString(R.string.btn_create));
-            mBtnDelete.setVisibility(View.GONE);
+            setupForNormalMode();
         }
 
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+        setupRecyclerViewAdapter();
 
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean nameAlreadyExists = false;
-                for (int i = 0; i < Database.getPrimaryCategories().size(); i++) {
-                    if (Database.getPrimaryCategories().get(i).getName().equals(mEdtCategoryName.getText().toString()))
-                        nameAlreadyExists = true;
-                }
+                String nameOfPrimaryCategory = mEdtCategoryName.getText().toString();
+                boolean nameAlreadyExists = doesNameForPrimaryCategoryAlreadyExist(nameOfPrimaryCategory);
 
                 if (mEdtCategoryName.getText().toString().trim().equals("")) {
                     mTextInputLayout.setError(getResources().getString(R.string.label_enter_category_name));
                 } else if (nameAlreadyExists && !mEditMode) {
                     mTextInputLayout.setError(getResources().getString(R.string.label_category_name_already_exists));
                 } else {
-                    //Set name
                     primaryCategory.setName(mEdtCategoryName.getText().toString());
 
-                    if (mEditMode)
-                        Database.save(getApplicationContext());
-                    else {
-                        //Add and save data
+                    if (!mEditMode) {
                         Database.getPrimaryCategories().add(primaryCategory);
-                        Database.save(getApplicationContext());
                     }
 
+                    Database.save(getApplicationContext());
                     changesSaved = true;
-                    //Go back to MainActivity
                     finish();
                 }
             }
@@ -111,6 +99,12 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             public void onClick(View view) {
                 SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
                 subcategoryEditorDialogFragment.setupForCreateMode(primaryCategory);
+                subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        setupRecyclerViewAdapter();
+                    }
+                });
                 subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "new_subcategory");
             }
         });
@@ -128,25 +122,21 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             @Override
             public void onClick(View view) {
                 DeletePrimaryCategoryDialogFragment deletePrimaryCategoryDialogFragment = new DeletePrimaryCategoryDialogFragment();
-                deletePrimaryCategoryDialogFragment.setAutoPaysToDelete(getAutoPays());
+                deletePrimaryCategoryDialogFragment.setAutoPaysToDelete(getAutoPaysOfPrimaryCategory());
                 deletePrimaryCategoryDialogFragment.show(getSupportFragmentManager(), "delete_category");
             }
         });
     }
 
-    /**
-     * @return associated AutoPays
-     */
-    private ArrayList<AutoPay> getAutoPays(){
-        ArrayList<AutoPay> autoPays = new ArrayList<>();
-        for(int i = 0; i<Database.getAutoPays().size(); i++){
-            for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
-                if(Database.getAutoPays().get(i).getBill().getSubcategory().equals(primaryCategory.getSubcategories().get(y)))
-                    autoPays.add(Database.getAutoPays().get(i));
+    private ArrayList<AutoPay> getAutoPaysOfPrimaryCategory(){
+        ArrayList<AutoPay> autoPaysOfPrimaryCategory = new ArrayList<>();
+        for (AutoPay autoPay:Database.getAutoPays()){
+            if (autoPay.getBill().getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                autoPaysOfPrimaryCategory.add(autoPay);
             }
         }
 
-        return autoPays;
+        return autoPaysOfPrimaryCategory;
     }
 
     @Override
@@ -180,21 +170,30 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
     @Override
     public void onDialogPositiveClick() {
-        //Deletes AutoPay
-        ArrayList<AutoPay> autoPaysToDelete = getAutoPays();
-        for(int i = 0; i<autoPaysToDelete.size(); i++)
-            Database.getAutoPays().remove(autoPaysToDelete.get(i));
-
-        //Deletes associated bills
-        for(int i = 0; i<Database.getBankAccounts().size(); i++){
-            Database.getBankAccounts().get(i).setBills(new ArrayList<Bill>());
-        }
+        deleteAutoPaysOfPrimaryCategory();
+        deleteBillsOfPrimaryCategory();
 
         Database.getPrimaryCategories().remove(primaryCategory);
         Database.save(getApplicationContext());
 
-        //Go back to MainActivity
         finish();
+    }
+
+    private void deleteAutoPaysOfPrimaryCategory(){
+        Database.getAutoPays().removeAll(getAutoPaysOfPrimaryCategory());
+    }
+
+    private void deleteBillsOfPrimaryCategory(){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            ArrayList<Bill> billsToDeleteOfCurrentBankAccount = new ArrayList<>();
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                    billsToDeleteOfCurrentBankAccount.add(bill);
+                }
+            }
+
+            bankAccount.getBills().removeAll(billsToDeleteOfCurrentBankAccount);
+        }
     }
 
     private void discardChanges() {
@@ -210,14 +209,14 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         super.onStart();
         if (getIntent().hasExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX)){
             SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
-
             int indexOfSubcategoryInPrimaryCategory = getIntent().getIntExtra(EXTRA_SUBCATEGORY_TO_SHOW_INDEX, 0);
+
             subcategoryEditorDialogFragment.setupForEditMode(primaryCategory, getSubcategoryInPrimaryCategoryOfIndex(primaryCategory, indexOfSubcategoryInPrimaryCategory));
             subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialogInterface) {
                     CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
-                    mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+                    setupRecyclerViewAdapter();
                 }
             });
             subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "edit_subcategory");
@@ -226,5 +225,36 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
     private Subcategory getSubcategoryInPrimaryCategoryOfIndex(PrimaryCategory primaryCategory, int index){
         return primaryCategory.getSubcategories().get(index);
+    }
+
+    private void setupForEditMode(){
+        int indexOfPrimaryCategoryInDatabase = getIntent().getIntExtra(EXTRA_PRIMARY_CATEGORY_INDEX, 0);
+        primaryCategory = Database.getPrimaryCategories().get(indexOfPrimaryCategoryInDatabase);
+        mEdtCategoryName.setText(primaryCategory.getName());
+
+        mEditMode = true;
+    }
+
+    private void setupForNormalMode(){
+        primaryCategory = new PrimaryCategory("", null);
+        mBtnCreate.setText(getResources().getString(R.string.btn_create));
+        mBtnDelete.setVisibility(View.GONE);
+
+        mEditMode = false;
+    }
+
+    private boolean doesNameForPrimaryCategoryAlreadyExist(String nameOfPrimaryCategory){
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            if (primaryCategory.getName().equals(nameOfPrimaryCategory)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void setupRecyclerViewAdapter(){
+        mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR);
+        mRvSubcategories.setAdapter(mSubcategoryItemAdapter);
     }
 }

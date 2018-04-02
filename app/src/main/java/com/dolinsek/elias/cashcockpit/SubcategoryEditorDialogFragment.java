@@ -148,7 +148,9 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        mOnDismissListener.onDismiss(dialog);
+        if (mOnDismissListener != null){
+            mOnDismissListener.onDismiss(dialog);
+        }
     }
 
     private void setupImage(boolean favored){
