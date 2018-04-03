@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 public class StatisticsFragment extends Fragment {
 
     private static final String EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT = "bankAccountsStatisticsFragment";
+    private static final String EXTRA_BILLS_STATISTICS_FRAGMENT = "billStatisticsFragment";
     private static final String EXTRA_CATEGORIES_STATISTICS_FRAGMENT = "categoriesStatisticsFragment";
     private static final String EXTRA_GOALS_STATISTICS_FRAGMENT = "goalsStatisticsFragment";
 
@@ -26,6 +27,7 @@ public class StatisticsFragment extends Fragment {
     private ViewPager mViewPager;
 
     private BankAccountsStatisticsFragment bankAccountsStatisticsFragment;
+    private BillsStatisticsFragment billsStatisticsFragment;
     private CategoriesStatisticsFragment categoriesStatisticsFragment;
     private GoalsStatisticsFragment goalsStatisticsFragment;
 
@@ -59,10 +61,10 @@ public class StatisticsFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position){
                 case 0:return bankAccountsStatisticsFragment;
-                case 1: return new BankAccountsFragment();
+                case 1: return billsStatisticsFragment;
                 case 2: return categoriesStatisticsFragment;
                 case 3: return goalsStatisticsFragment;
-                default: return new BankAccountsFragment();
+                default: throw new IllegalStateException("Couldn't find a fragment for psoition " + position);
             }
         }
 
@@ -85,10 +87,12 @@ public class StatisticsFragment extends Fragment {
     private void loadFragments(Bundle savedInstanceState){
         if (savedInstanceState != null){
             bankAccountsStatisticsFragment = (BankAccountsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT);
+            billsStatisticsFragment = (BillsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_BILLS_STATISTICS_FRAGMENT);
             categoriesStatisticsFragment = (CategoriesStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_CATEGORIES_STATISTICS_FRAGMENT);
             goalsStatisticsFragment = (GoalsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_GOALS_STATISTICS_FRAGMENT);
         } else {
             bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
+            billsStatisticsFragment = new BillsStatisticsFragment();
             categoriesStatisticsFragment = new CategoriesStatisticsFragment();
             goalsStatisticsFragment = new GoalsStatisticsFragment();
         }
@@ -99,6 +103,7 @@ public class StatisticsFragment extends Fragment {
         super.onSaveInstanceState(outState);
 
         getChildFragmentManager().putFragment(outState, EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT, bankAccountsStatisticsFragment);
+        getChildFragmentManager().putFragment(outState, EXTRA_BILLS_STATISTICS_FRAGMENT, billsStatisticsFragment);
         getChildFragmentManager().putFragment(outState, EXTRA_CATEGORIES_STATISTICS_FRAGMENT, categoriesStatisticsFragment);
         getChildFragmentManager().putFragment(outState, EXTRA_GOALS_STATISTICS_FRAGMENT, goalsStatisticsFragment);
     }

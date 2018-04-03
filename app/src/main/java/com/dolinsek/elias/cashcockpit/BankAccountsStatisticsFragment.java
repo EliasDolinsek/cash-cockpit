@@ -105,7 +105,8 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
     private void loadStatisticsIfThereIsEnoughData(){
         loadCurrentBankAccountText(currentBankAccount);
-        if (currentBankAccount.getBalanceChanges().size() > 1){
+        int availableStatisticsOfMonths = getLastBalanceChangesOfMonthsAsEntriesOfBankAccountAndSetupLabelsForLineCharts(currentBankAccount).size();
+        if (availableStatisticsOfMonths != 0){
             loadStatisticsOfBankAccount(currentBankAccount);
             loadPcStatistics(currentBankAccount);
 
