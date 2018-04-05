@@ -137,6 +137,14 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        //Saves data if user changed something in SubcategoryEditorDialogFragment
+        Database.save(getContext());
+    }
+
     private void setupPrimaryCategoryItemAdapter(){
         mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
     }

@@ -1,16 +1,13 @@
 package com.dolinsek.elias.cashcockpit;
 
-
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -21,9 +18,6 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
-import com.dolinsek.elias.cashcockpit.components.Toolbox;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,10 +35,10 @@ public class GoalsStatisticsFragment extends Fragment {
 
     private RecyclerView mRvCategories;
     private ProgressBar mPgbMonth, mPgbAverage;
-    private FloatingActionButton mFbtnBack, mFbtnForward;
-    private TextView mTxvMonth, mTxvCurrentMonth, mTxvAverage;
+    private TextView mTxvMonth, mTxvAverage;
     private LinearLayout mLlNotEnoughData, mLLContent;
     private long timeStampOfMonthToLoadStatistics;
+    private SelectMonthFragment mSelectMonthFragment;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
@@ -60,33 +54,15 @@ public class GoalsStatisticsFragment extends Fragment {
 
         mTxvMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_month);
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
-        mTxvCurrentMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_current_month);
 
         mLlNotEnoughData = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_not_enough_data);
         mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
 
         manageViews();
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
-        updateCurrentMonthTextView(timeStampOfMonthToLoadStatistics);
+        setupSelectMonthFragment();
 
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
-
-        mFbtnBack = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_goals_statistics_back);
-        mFbtnForward = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_goals_statistics_forward);
-
-        mFbtnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeMonthAndReloadData(STEP_ONE_MONTH_BACK);
-            }
-        });
-
-        mFbtnForward.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                changeMonthAndReloadData(STEP_ONE_MONTH_FORWARD);
-            }
-        });
 
         return inflatedView;
     }
@@ -97,17 +73,6 @@ public class GoalsStatisticsFragment extends Fragment {
 
         loadAverageStatistics();
         loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
-    }
-
-    private void changeMonthAndReloadData(int monthsToStep){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonthToLoadStatistics);
-        calendar.add(Calendar.MONTH, monthsToStep);
-
-        timeStampOfMonthToLoadStatistics = calendar.getTimeInMillis();
-
-        loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
-        updateCurrentMonthTextView(timeStampOfMonthToLoadStatistics);
     }
 
     private void loadStatisticsOfMonth(long timeStampOfMonth) {
@@ -140,14 +105,6 @@ public class GoalsStatisticsFragment extends Fragment {
         }
 
         return totalAmount;
-    }
-
-    private void updateCurrentMonthTextView(long timeStampOfNewMonth) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfNewMonth);
-
-        String date = getResources().getStringArray(R.array.months_array)[calendar.get(Calendar.MONTH)] + " " + calendar.get(Calendar.YEAR);
-        mTxvCurrentMonth.setText(date);
     }
 
     @Override
@@ -292,5 +249,73 @@ public class GoalsStatisticsFragment extends Fragment {
             mLLContent.setVisibility(View.VISIBLE);
             mLlNotEnoughData.setVisibility(View.GONE);
         }
+    }
+
+    private void setupSelectMonthFragment(){
+        mSelectMonthFragment = new SelectMonthFragment();
+
+        getFragmentManager().beginTransaction().add(R.id.ll_goals_statistics_select_month_container, mSelectMonthFragment).commit();
+
+        long[] timeStampsOfMonthsWithStatistics = arrayListToLongArray(getTimeStampsOfAllMonthsWithGoalStatistics());
+        mSelectMonthFragment.setTimeStampsOfDates(timeStampsOfMonthsWithStatistics);
+        mSelectMonthFragment.setOnItemSelectedListener(getOnMonthToLoadStatisticsSelectedOnSelectedListener());
+    }
+
+    private AdapterView.OnItemSelectedListener getOnMonthToLoadStatisticsSelectedOnSelectedListener(){
+        return new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                timeStampOfMonthToLoadStatistics = getTimeStampsOfAllMonthsWithGoalStatistics().get(i);
+                loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        };
+    }
+
+    private ArrayList<Long> getTimeStampsOfAllMonthsWithGoalStatistics(){
+        ArrayList<Long> timeStamps = new ArrayList<>();
+        long firstBillCreationDate = getTimeStampOfCreationDateOfFirstBillInDatabase();
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(firstBillCreationDate);
+
+        while (calendar.getTimeInMillis() < System.currentTimeMillis()){
+            ArrayList<Bill> listOfBillsOfCurrentMonth = filterBillsOfMonth(getAllBillsInDatabase(), calendar.getTimeInMillis());
+            ArrayList<Bill> listOfBillsOfCurrentMonthWhatBelongToGoals = filterBillsWhatBelongToGoals(listOfBillsOfCurrentMonth);
+
+            if (listOfBillsOfCurrentMonthWhatBelongToGoals.size() != 0){
+                timeStamps.add(calendar.getTimeInMillis());
+            }
+
+            calendar.add(Calendar.MONTH, STEP_ONE_MONTH_FORWARD);
+        }
+
+        return timeStamps;
+    }
+
+    private ArrayList<Bill> filterBillsWhatBelongToGoals(ArrayList<Bill> billsToFilter){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+
+        for (Bill bill:billsToFilter){
+            if (bill.getSubcategory().getGoal().getAmount() != 0){
+                filteredBills.add(bill);
+            }
+        }
+
+        return filteredBills;
+    }
+
+    private long[] arrayListToLongArray(ArrayList<Long> arrayList){
+        long[] longsToReturn = new long[arrayList.size()];
+
+        for (int i = 0; i<longsToReturn.length; i++){
+            longsToReturn[i] = arrayList.get(i);
+        }
+
+        return longsToReturn;
     }
 }

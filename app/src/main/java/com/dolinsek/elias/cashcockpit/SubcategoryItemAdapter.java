@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.content.res.ColorStateList;
@@ -193,6 +194,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
             holder.mTxvSubcategoryGoalStatus.setText(formattedGoalAmount);
             holder.mTxvSubcategoryGoalStatusAmount.setText(formattedUsedGoalAmount);
+
+            holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.VISIBLE);
         } else {
             holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
         }
@@ -283,6 +286,13 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private void showSubcategoryEditor(Subcategory subcategory, SubcategoryItemViewHolder holder){
         SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
         subcategoryEditorDialogFragment.setupForEditMode(primaryCategoryOfSubcategories, subcategory);
+        subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                refreshListOfItems();
+            }
+        });
+
         subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
     }
 
@@ -360,13 +370,10 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         throw new IllegalStateException("Couldn't find primary category in database!");
     }
 
-    private int getPositionOfSubcategoryInPrimaryCategory(Subcategory subcategory, PrimaryCategory primaryCategory){
-        for (int i = 0; i<primaryCategory.getSubcategories().size(); i++){
-            if (primaryCategory.getSubcategories().get(i).equals(subcategory)){
-                return i;
-            }
-        }
+    private void refreshListOfItems(){
+        int indexOfPrimaryCategoryInDatabase = getIndexOfPrimaryCategoryInDatabase(primaryCategoryOfSubcategories);
+        subcategories = Database.getPrimaryCategories().get(indexOfPrimaryCategoryInDatabase).getSubcategories();
 
-        throw new IllegalStateException("Couldn't find subcategory in primary category!");
+        notifyDataSetChanged();
     }
 }
