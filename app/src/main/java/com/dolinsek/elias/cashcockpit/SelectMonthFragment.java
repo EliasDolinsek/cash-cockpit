@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ public class SelectMonthFragment extends Fragment {
 
     private Spinner spnSelectMonth;
     private long[] timeStampsOfDates;
+    private boolean selectLastItemAfterCreate;
     private AdapterView.OnItemSelectedListener onItemSelectedListener;
 
     @Override
@@ -32,6 +34,11 @@ public class SelectMonthFragment extends Fragment {
 
         if (timeStampsOfDates != null){
             setupSpinner();
+        }
+
+        if (selectLastItemAfterCreate){
+            int lastIndexOfItems = timeStampsOfDates.length - 1;
+            setSpinnerSelection(lastIndexOfItems);
         }
 
         return inflatedView;
@@ -54,10 +61,12 @@ public class SelectMonthFragment extends Fragment {
     }
 
     private void setupSpinner(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, getTimeStampsAsReadableString());
+        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), R.layout.costum_spinner_layout, getTimeStampsAsReadableString());
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        spnSelectMonth.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         spnSelectMonth.setAdapter(filterItems);
+
         if (onItemSelectedListener != null){
             spnSelectMonth.setOnItemSelectedListener(onItemSelectedListener);
         }
@@ -71,4 +80,15 @@ public class SelectMonthFragment extends Fragment {
         this.timeStampsOfDates = timeStampsOfDates;
     }
 
+    public void setSpinnerSelection(int index){
+        spnSelectMonth.setSelection(index, true);
+    }
+
+    public boolean isSelectLastItemAfterCreate() {
+        return selectLastItemAfterCreate;
+    }
+
+    public void setSelectLastItemAfterCreate(boolean selectLastItemAfterCreate) {
+        this.selectLastItemAfterCreate = selectLastItemAfterCreate;
+    }
 }

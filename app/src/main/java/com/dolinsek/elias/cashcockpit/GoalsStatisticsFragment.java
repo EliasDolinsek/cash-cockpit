@@ -190,7 +190,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         int months = 0;
         long totalAmount = 0;
-        while (calendar.getTimeInMillis() <= System.currentTimeMillis()){
+        while (!doesMonthExceedsCurrentTime(calendar)){
             ArrayList<Bill> billsOfCurrentMonth = filterBillsOfMonth(allBillsInDatabase, calendar.getTimeInMillis());
             ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(billsOfCurrentMonth);
 
@@ -253,12 +253,13 @@ public class GoalsStatisticsFragment extends Fragment {
 
     private void setupSelectMonthFragment(){
         mSelectMonthFragment = new SelectMonthFragment();
-
         getFragmentManager().beginTransaction().add(R.id.ll_goals_statistics_select_month_container, mSelectMonthFragment).commit();
 
         long[] timeStampsOfMonthsWithStatistics = arrayListToLongArray(getTimeStampsOfAllMonthsWithGoalStatistics());
+
         mSelectMonthFragment.setTimeStampsOfDates(timeStampsOfMonthsWithStatistics);
         mSelectMonthFragment.setOnItemSelectedListener(getOnMonthToLoadStatisticsSelectedOnSelectedListener());
+        mSelectMonthFragment.setSelectLastItemAfterCreate(true);
     }
 
     private AdapterView.OnItemSelectedListener getOnMonthToLoadStatisticsSelectedOnSelectedListener(){
@@ -283,7 +284,7 @@ public class GoalsStatisticsFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(firstBillCreationDate);
 
-        while (calendar.getTimeInMillis() < System.currentTimeMillis()){
+        while (!doesMonthExceedsCurrentTime(calendar)){
             ArrayList<Bill> listOfBillsOfCurrentMonth = filterBillsOfMonth(getAllBillsInDatabase(), calendar.getTimeInMillis());
             ArrayList<Bill> listOfBillsOfCurrentMonthWhatBelongToGoals = filterBillsWhatBelongToGoals(listOfBillsOfCurrentMonth);
 
@@ -295,6 +296,16 @@ public class GoalsStatisticsFragment extends Fragment {
         }
 
         return timeStamps;
+    }
+
+    private boolean doesMonthExceedsCurrentTime(Calendar calendar){
+        Calendar currentMonthCalendar = Calendar.getInstance();
+        currentMonthCalendar.setTimeInMillis(System.currentTimeMillis());
+
+        int currentYear = currentMonthCalendar.get(Calendar.YEAR);
+        int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
+
+        return currentYear < calendar.get(Calendar.YEAR) || currentMonth < calendar.get(Calendar.MONTH);
     }
 
     private ArrayList<Bill> filterBillsWhatBelongToGoals(ArrayList<Bill> billsToFilter){

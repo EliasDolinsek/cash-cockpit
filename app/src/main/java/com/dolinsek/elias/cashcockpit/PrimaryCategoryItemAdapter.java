@@ -197,7 +197,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private void displayGoalInformations(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
-        long usedMoney = getAmountOfUsedMoneyOfTimestamp(primaryCategory, System.currentTimeMillis());
+        long usedMoney = getAmountOfUsedMoneyOfTimestamp(primaryCategory, timeStampOfMonthToLoadStatistics);
         long goalAmount = primaryCategory.getGoal().getAmount();
         Context context = primaryCategoryViewHolder.itemView.getContext();
 
