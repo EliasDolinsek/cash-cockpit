@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                     android:textAlignment="center"
-                    android:text="@string/label_this_month"/>
+                    android:text="@string/label_selected_month"/>
 
             </LinearLayout>
 

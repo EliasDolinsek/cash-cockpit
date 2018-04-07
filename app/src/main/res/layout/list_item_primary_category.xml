@@ -67,6 +67,13 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
+
+                <Button
+                    android:id="@+id/btn_show_hide_subcategories"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/ic_keyboard_arrow_down_gray"/>
             </LinearLayout>
 
         </LinearLayout>

@@ -60,6 +60,11 @@ public class SelectMonthFragment extends Fragment {
         return formattedTimeStamps;
     }
 
+    public void hideViews(){
+        spnSelectMonth.setVisibility(View.GONE);
+    }
+
+
     private void setupSpinner(){
         ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), R.layout.costum_spinner_layout, getTimeStampsAsReadableString());
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

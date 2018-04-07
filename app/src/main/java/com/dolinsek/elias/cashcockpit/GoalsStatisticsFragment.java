@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -39,6 +40,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private LinearLayout mLlNotEnoughData, mLLContent;
     private long timeStampOfMonthToLoadStatistics;
     private SelectMonthFragment mSelectMonthFragment;
+    private LinearLayout mLlSelectMonthFragmentContainer;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
@@ -57,6 +59,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         mLlNotEnoughData = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_not_enough_data);
         mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
+        mLlSelectMonthFragmentContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_select_month_container);
 
         manageViews();
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
@@ -245,6 +248,7 @@ public class GoalsStatisticsFragment extends Fragment {
         if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0){
             mLLContent.setVisibility(View.GONE);
             mLlNotEnoughData.setVisibility(View.VISIBLE);
+            mLlSelectMonthFragmentContainer.setVisibility(View.GONE);
         } else {
             mLLContent.setVisibility(View.VISIBLE);
             mLlNotEnoughData.setVisibility(View.GONE);

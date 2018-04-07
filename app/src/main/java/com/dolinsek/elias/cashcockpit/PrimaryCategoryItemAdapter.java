@@ -1,11 +1,14 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Picture;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +16,11 @@ import android.telephony.SubscriptionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewPropertyAnimator;
+import android.view.animation.Animation;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -108,6 +115,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.mTxvCategoryName.setText(primaryCategory.getName());
+        holder.mBtnShowHideSubcategories.setOnClickListener(getOnSubcategoryViewStateChangeButtonOnClickListener(holder));
 
         if(adapterType == TYPE_NORMAL){
             setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
@@ -134,6 +142,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         public ProgressBar mPgbCategoryGoalStatus;
         public RecyclerView mRvSubcategories;
         public CardView mCardView;
+        public Button mBtnShowHideSubcategories;
 
         public PrimaryCategoryViewHolder(View itemView) {
             super(itemView);
@@ -145,7 +154,31 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             mTxvGoalStatusAmount = (TextView) itemView.findViewById(R.id.txv_item_primary_category_goal_status_amount);
             mPgbCategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_primary_category_goal_status);
             mRvSubcategories = (RecyclerView) itemView.findViewById(R.id.rv_item_primary_categories_subcategory);
+            mBtnShowHideSubcategories = (Button) itemView.findViewById(R.id.btn_show_hide_subcategories);
         }
+    }
+
+    private View.OnClickListener getOnSubcategoryViewStateChangeButtonOnClickListener(final PrimaryCategoryViewHolder holder){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (holder.mRvSubcategories.getVisibility() == View.VISIBLE){
+                    hideSubcategoriesRecyclerView(holder);
+                } else {
+                    showSubcategoriesRecyclerView(holder);
+                }
+            }
+        };
+    }
+
+    private void hideSubcategoriesRecyclerView(PrimaryCategoryViewHolder holder){
+        holder.mBtnShowHideSubcategories.setBackgroundResource(R.drawable.ic_keyboard_arrow_up_gray);
+        holder.mRvSubcategories.setVisibility(View.GONE);
+    }
+
+    private void showSubcategoriesRecyclerView(PrimaryCategoryViewHolder holder){
+        holder.mBtnShowHideSubcategories.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_gray);
+        holder.mRvSubcategories.setVisibility(View.VISIBLE);
     }
 
     private long getAmountOfUsedMoneyOfTimestamp(PrimaryCategory primaryCategory, long timeStampOfMonth){
