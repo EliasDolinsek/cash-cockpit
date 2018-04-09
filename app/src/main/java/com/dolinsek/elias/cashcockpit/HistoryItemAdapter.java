@@ -1,8 +1,9 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,10 @@ import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
-import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 
 /**
  * Created by elias on 22.02.2018.
@@ -65,57 +62,23 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
         final Bill bill = billsToDisplay.get(position);
-        if(bill.getType() == Bill.TYPE_INPUT){
-            holder.mTxvTagOutput.setVisibility(View.GONE);
-            holder.mTxvTagTransfer.setVisibility(View.GONE);
-        } else if(bill.getType() == Bill.TYPE_OUTPUT){
-            holder.mTxvTagInput.setVisibility(View.GONE);
-            holder.mTxvTagTransfer.setVisibility(View.GONE);
-        } else {
-            holder.mTxvTagInput.setVisibility(View.GONE);
-            holder.mTxvTagOutput.setVisibility(View.GONE);
-        }
+        final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
+        setupTxvBackgroundFromBillType(holder.mTxvDate, bill);
         holder.mTxvAmount.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount()));
-        holder.mTxvCategory.setText(bill.getSubcategory().getName());
+        holder.mTxvDescription.setText(bill.getDescription());
 
-        //Gets bank account-name
-        String bankAccountName = null;
-        for(BankAccount bankAccount:Database.getBankAccounts()){
-            for(PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-                if(bill.getSubcategory().getPrimaryCategory().equals(primaryCategory))
-                    bankAccountName = bankAccount.getName();
-            }
-        }
+        String billDetails = bankAccountOfBill.getName() + " " + Character.toString((char)0x00B7) + " " + bill.getSubcategory().getName();
+        holder.mTxvDetails.setText(billDetails);
 
-        if(bill.getDescription().equals("")){
-            holder.mTxvDetails.setText(new SimpleDateFormat("dd.MM HH:mm").format(new Date(bill.getCreationDate())));
-        } else {
-            holder.mTxvDetails.setText(new SimpleDateFormat("dd.MM HH:mm").format(new Date(bill.getCreationDate())) + " " + Character.toString((char)0x00B7) + " " + bill.getDescription());
-        }
+        String dateOfCreationDate = DateFormat.format("EEEE dd.MM", bill.getCreationDate()).toString();
+        holder.mTxvDate.setText(dateOfCreationDate);
 
         if(allowToEditBill){
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //Gets position of bill and bank account in database
-                    int billPosition = 0;
-                    int bankAccountPosition = 0;
-                    for(int i = 0; i<Database.getBankAccounts().size(); i++){
-                        for(int y = 0; y<Database.getBankAccounts().get(i).getBills().size(); y++){
-                            if(Database.getBankAccounts().get(i).getBills().get(y).equals(bill)){
-                                billPosition = y;
-                                bankAccountPosition = i;
-                                break;
-                            }
-                        }
-                    }
-
-                    //Start BillEditorActivity
-                    Intent intent = new Intent(holder.itemView.getContext(), BillEditorActivity.class);
-                    intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
-                    intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountPosition);
-                    holder.itemView.getContext().startActivity(intent);
+                    showEditDialogForSubcategory(bill, bankAccountOfBill, holder.itemView.getContext());
                 }
             });
         }
@@ -128,18 +91,72 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvTagInput, mTxvTagOutput, mTxvTagTransfer, mTxvAmount, mTxvCategory, mTxvDetails;
+        public TextView mTxvDate, mTxvAmount, mTxvDescription, mTxvDetails;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
-            mTxvTagInput = (TextView) itemView.findViewById(R.id.txv_item_history_input);
-            mTxvTagOutput = (TextView) itemView.findViewById(R.id.txv_item_history_output);
-            mTxvTagTransfer = (TextView) itemView.findViewById(R.id.txv_item_history_transfer);
+            mTxvDate = (TextView) itemView.findViewById(R.id.txv_item_history_date);
             mTxvAmount = (TextView) itemView.findViewById(R.id.txv_item_history_amount);
-            mTxvCategory = (TextView) itemView.findViewById(R.id.txv_item_history_category);
+            mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
         }
+    }
+
+    private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
+        int bankAccountIndex = getIndexOfBankAccountInDatabase(bankAccountOfBill);
+        int billPosition = getIndexOfBillInBankAccount(bill, bankAccountOfBill);
+
+        Intent intent = new Intent(context, BillEditorActivity.class);
+        intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
+        intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
+        context.startActivity(intent);
+    }
+
+    private void setupTxvBackgroundFromBillType(TextView textView, Bill bill){
+        Context context = textView.getContext();
+        if (bill.getType() == Bill.TYPE_INPUT){
+            textView.setBackground(context.getDrawable(R.drawable.border_green));
+        } else if (bill.getType() == Bill.TYPE_OUTPUT){
+            textView.setBackground(context.getDrawable(R.drawable.border_red));
+        } else if (bill.getType() == Bill.TYPE_TRANSFER){
+            textView.setBackground(context.getDrawable(R.drawable.border_orange));
+        } else {
+            throw new IllegalArgumentException("Couldn't resolve " + bill.getType() + " as a bill type!");
+        }
+
+    }
+
+    private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){
+        for (int i = 0; i<Database.getBankAccounts().size(); i++){
+            if (Database.getBankAccounts().get(i).equals(bankAccount)){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account in database!");
+    }
+
+    private int getIndexOfBillInBankAccount(Bill bill, BankAccount bankAccount){
+        for (int i = 0; i<bankAccount.getBills().size(); i++){
+            if (bill.equals(bankAccount.getBills().get(i))){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account of bill!");
+    }
+
+    private BankAccount getBankAccountOfBill(Bill bill){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill currentBill:bankAccount.getBills()){
+                if (currentBill.equals(bill)){
+                    return bankAccount;
+                }
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account of bill!");
     }
 
     private void filterBills(int filterType){

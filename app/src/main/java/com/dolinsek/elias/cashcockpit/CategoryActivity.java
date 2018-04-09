@@ -72,35 +72,28 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             mBtnDelete.setVisibility(View.GONE);
         }
 
-        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+        setupSubcategoriesAdapter();
 
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean nameAlreadyExists = false;
-                for (int i = 0; i < Database.getPrimaryCategories().size(); i++) {
-                    if (Database.getPrimaryCategories().get(i).getName().equals(mEdtCategoryName.getText().toString()))
-                        nameAlreadyExists = true;
-                }
+                boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(mEdtCategoryName.getText().toString());
 
                 if (mEdtCategoryName.getText().toString().trim().equals("")) {
                     mTextInputLayout.setError(getResources().getString(R.string.label_enter_category_name));
                 } else if (nameAlreadyExists && !mEditMode) {
                     mTextInputLayout.setError(getResources().getString(R.string.label_category_name_already_exists));
                 } else {
-                    //Set name
                     primaryCategory.setName(mEdtCategoryName.getText().toString());
 
-                    if (mEditMode)
+                    if (mEditMode) {
                         Database.save(getApplicationContext());
-                    else {
-                        //Add and save data
+                    } else {
                         Database.getPrimaryCategories().add(primaryCategory);
                         Database.save(getApplicationContext());
                     }
 
                     changesSaved = true;
-                    //Go back to MainActivity
                     finish();
                 }
             }
@@ -111,6 +104,13 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             public void onClick(View view) {
                 SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
                 subcategoryEditorDialogFragment.setupForCreateMode(primaryCategory);
+                subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialogInterface) {
+                        setupSubcategoriesAdapter();
+                    }
+                });
+
                 subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "new_subcategory");
             }
         });
@@ -217,7 +217,8 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
                 @Override
                 public void onDismiss(DialogInterface dialogInterface) {
                     CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
-                    mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+                    setupSubcategoriesAdapter();
+
                 }
             });
             subcategoryEditorDialogFragment.show(getSupportFragmentManager(), "edit_subcategory");
@@ -226,5 +227,19 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
     private Subcategory getSubcategoryInPrimaryCategoryOfIndex(PrimaryCategory primaryCategory, int index){
         return primaryCategory.getSubcategories().get(index);
+    }
+
+    private void setupSubcategoriesAdapter(){
+        mRvSubcategories.setAdapter((mSubcategoryItemAdapter = SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategory, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR)));
+    }
+
+    private boolean doesPrimaryCategoryNameAlreadyExist(String nameOfPrimaryCategory){
+        for (int i = 0; i < Database.getPrimaryCategories().size(); i++) {
+            if (Database.getPrimaryCategories().get(i).getName().equals(nameOfPrimaryCategory)){
+                return true;
+            }
+        }
+
+        return false;
     }
 }
