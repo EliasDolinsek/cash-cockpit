@@ -44,6 +44,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private PrimaryCategory primaryCategoryOfSubcategories;
     private ArrayList<Subcategory> subcategories;
+    private ArrayList<Bill> billsUsedForPrimaryCategoryStatistic;
     private OnCategorySelectedListener onCategorySelectedListener;
     private Subcategory selectedSubcategory;
     private long timeStampOfMonthToLoadStatistics;
@@ -87,11 +88,12 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         return subcategoryItemAdapter;
     }
 
-    public static SubcategoryItemAdapter getCategoriesStatisticsItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, long timeStampOfMonthToLoadStatistics){
+    public static SubcategoryItemAdapter getCategoriesStatisticsItemAdapter(PrimaryCategory primaryCategoryOfSubcategories, ArrayList<Bill> billsUsedForPrimaryCategoryStatistic, long timeStampOfMonthToLoadStatistics){
         SubcategoryItemAdapter subcategoryItemAdapter = new SubcategoryItemAdapter();
         subcategoryItemAdapter.primaryCategoryOfSubcategories = primaryCategoryOfSubcategories;
         subcategoryItemAdapter.subcategories = primaryCategoryOfSubcategories.getSubcategories();
         subcategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+        subcategoryItemAdapter.billsUsedForPrimaryCategoryStatistic = billsUsedForPrimaryCategoryStatistic;
         subcategoryItemAdapter.adapterType = TYPE_CATEGORIES_STATISTICS;
 
         return subcategoryItemAdapter;
@@ -202,9 +204,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     }
 
     private void loadSubcategoryStatistic(Subcategory subcategory, SubcategoryItemViewHolder holder){
-        ArrayList<Bill> billsOfPrimaryCategory = getBillsOfPrimaryCategoryAndMonth(subcategory.getPrimaryCategory(), timeStampOfMonthToLoadStatistics);
-        ArrayList<Bill> billsOfSubcategory = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
-        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsOfPrimaryCategory);
+        ArrayList<Bill> billsOfSubcategory = filterBillsOfSubcategory(billsUsedForPrimaryCategoryStatistic, subcategory);
+        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsOfSubcategory);
         long totalAmountOfBillsOfSubcategory = getTotalAmountOfBills(billsOfSubcategory);
 
         int usageOfSubcategoryOfMonthInPercent = (int) Math.round(100 / (double)totalAmountOfBillsOfPrimaryCategory * (double)totalAmountOfBillsOfSubcategory);
@@ -215,11 +216,36 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         holder.mPgbSubcategoryGoalStatus.setProgress(usageOfSubcategoryOfMonthInPercent);
     }
 
+    private ArrayList<Bill> getBillsOfSubcategoryAndMonth(Subcategory subcategory, long timeStampOfMonth){
+        ArrayList<Bill> billsToReturn = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                calendar.setTimeInMillis(bill.getCreationDate());
+
+                int currentYear = calendar.get(Calendar.YEAR);
+                int currentMonth = calendar.get(Calendar.MONTH);
+
+                if (bill.getSubcategory().equals(subcategory) && currentYear == year && currentMonth == month){
+                    billsToReturn.add(bill);
+                }
+            }
+        }
+
+        return billsToReturn;
+    }
+
+
     private ArrayList<Bill> getBillsOfPrimaryCategoryAndMonth(PrimaryCategory primaryCategory, long timeStampOfMonth){
         ArrayList<Bill> bills = new ArrayList<>();
 
         for (Subcategory subcategory:primaryCategory.getSubcategories()){
-            bills.addAll(getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonth));
+            bills.addAll(billsUsedForPrimaryCategoryStatistic);
         }
 
         return bills;
@@ -320,28 +346,15 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         holder.itemView.getContext().startActivity(intent);
     }
 
-    private ArrayList<Bill> getBillsOfSubcategoryAndMonth(Subcategory subcategory, long timeStampOfMonth){
-        ArrayList<Bill> billsToReturn = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                calendar.setTimeInMillis(bill.getCreationDate());
-
-                int currentYear = calendar.get(Calendar.YEAR);
-                int currentMonth = calendar.get(Calendar.MONTH);
-
-                if (bill.getSubcategory().equals(subcategory) && currentYear == year && currentMonth == month){
-                    billsToReturn.add(bill);
-                }
+    private ArrayList<Bill> filterBillsOfSubcategory(ArrayList<Bill> bills, Subcategory subcategory){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+        for (Bill bill:bills){
+            if (bill.getSubcategory().equals(subcategory)){
+                filteredBills.add(bill);
             }
         }
 
-        return billsToReturn;
+        return filteredBills;
     }
 
     private int getPercentOfUsedGoalAmount(Subcategory subcategory, ArrayList<Bill> bills){

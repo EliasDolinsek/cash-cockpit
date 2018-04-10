@@ -74,13 +74,6 @@ public class HistoryFragment extends Fragment {
         outState.putInt(EXTRA_SELECTED_FILTER, mSpnFilterMain.getSelectedItemPosition());
     }
 
-    private void resetFilters(){
-        mSpnFilterMain.setSelection(0);
-        mSpnFilterBillTypes.setSelection(0);
-
-        reloadRecyclerView(selectedMainFilter);
-    }
-
     private ArrayList<Bill> getAllBillsInDatabase(){
         ArrayList<Bill> allBills = new ArrayList<>();
         for (BankAccount bankAccount:Database.getBankAccounts()){
@@ -170,7 +163,7 @@ public class HistoryFragment extends Fragment {
 
         for (int i = 0; i<billTypesIncludingAll.length; i++){
             if (i == 0){
-                billTypesIncludingAll[i] = getString(R.string.label_all_bills);
+                billTypesIncludingAll[i] = getString(R.string.label_all_bill_types);
             } else {
                 billTypesIncludingAll[i] = billTypes[i - 1];
             }
@@ -178,6 +171,7 @@ public class HistoryFragment extends Fragment {
 
         return billTypesIncludingAll;
     }
+
     private void manageViews(){
         if (getSizeOfBillsInDatabase() != 0){
             mTxvNoDataForHistory.setVisibility(View.GONE);

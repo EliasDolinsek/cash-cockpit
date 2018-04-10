@@ -46,6 +46,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
     private int adapterType;
     private ArrayList<PrimaryCategory> primaryCategoriesToDisplay;
+    private ArrayList<Bill> billsToUseForPrimaryCategoryStatisticUsage;
 
     private SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener;
     private Subcategory selectedSubcategory;
@@ -89,11 +90,12 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoryItemAdapter;
     }
 
-    public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, long timeStampOfMonthToLoadStatistics){
+    public static PrimaryCategoryItemAdapter getCategoriesStatisticsPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, ArrayList<Bill> billsToUseForPrimaryCategoryStatisticUsage, long timeStampOfMonthToLoadStatistics){
         PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
         primaryCategoryItemAdapter.adapterType = TYPE_CATEGORIES_STATISTICS;
         primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
         primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = timeStampOfMonthToLoadStatistics;
+        primaryCategoryItemAdapter.billsToUseForPrimaryCategoryStatisticUsage = billsToUseForPrimaryCategoryStatisticUsage;
 
         return primaryCategoryItemAdapter;
     }
@@ -316,7 +318,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         switch (adapterType){
             case TYPE_NORMAL: return SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR);
             case TYPE_GOAL_STATISTICS: return SubcategoryItemAdapter.getGoalsStatisticsSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, timeStampOfMonthToLoadStatistics);
-            case TYPE_CATEGORIES_STATISTICS: return SubcategoryItemAdapter.getCategoriesStatisticsItemAdapter(primaryCategoryWhatContainsSubcategories, timeStampOfMonthToLoadStatistics);
+            case TYPE_CATEGORIES_STATISTICS: return SubcategoryItemAdapter.getCategoriesStatisticsItemAdapter(primaryCategoryWhatContainsSubcategories, billsToUseForPrimaryCategoryStatisticUsage, timeStampOfMonthToLoadStatistics);
             case TYPE_SELECT_CATEGORY: {
                 if (selectedSubcategory != null){
                     return SubcategoryItemAdapter.getSelectCategoryItemAdapter(primaryCategoryWhatContainsSubcategories, onCategorySelectedListener, selectedSubcategory);
@@ -335,12 +337,11 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private void loadPrimaryCategoryStatisticInGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
-        ArrayList<Bill> bills = getBillsOfPrimaryCategoryFromDatabase(primaryCategory);
+        ArrayList<Bill> bills = filterBillsOfPrimaryCategory(billsToUseForPrimaryCategoryStatisticUsage, primaryCategory);
         ArrayList<Bill> filteredBills = filterBillsOfMonth(bills, timeStampOfMonthToLoadStatistics);
         long totalAmountOfBillsOfCategory = getTotalAmountOfBills(filteredBills);
 
-        ArrayList<Bill> allBillsOfMonth = getAllBillsOfMonthFromDatabase(timeStampOfMonthToLoadStatistics);
-        long totalAmountOfAllBillsOfMonth = getTotalAmountOfBills(allBillsOfMonth);
+        long totalAmountOfAllBillsOfMonth = getTotalAmountOfBills(billsToUseForPrimaryCategoryStatisticUsage);
         int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round((100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory));
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
@@ -380,18 +381,15 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return billsToReturn;
     }
 
-    private ArrayList<Bill> getBillsOfPrimaryCategoryFromDatabase(PrimaryCategory primaryCategory){
-        ArrayList<Bill> bills = new ArrayList<>();
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
-                    bills.add(bill);
-                }
+    private ArrayList<Bill> filterBillsOfPrimaryCategory(ArrayList<Bill> billsToFilter, PrimaryCategory primaryCategory){
+        ArrayList<Bill> billsOfPrimaryCategory = new ArrayList<>();
+        for (Bill bill:billsToFilter){
+            if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                billsOfPrimaryCategory.add(bill);
             }
         }
 
-        return bills;
+        return billsOfPrimaryCategory;
     }
 
     private ArrayList<Bill> getAllBillsOfMonthFromDatabase(long timeStampOfMonth){

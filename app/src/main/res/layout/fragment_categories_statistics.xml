@@ -11,33 +11,91 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pc_categories_statistics"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="5dp"/>
-
             <LinearLayout
-                android:id="@+id/ll_categorise_statistics_not_enough_data"
+                android:id="@+id/ll_categories_statistics_filters_container"
                 android:layout_width="match_parent"
-                android:layout_height="260dp"
-                android:orientation="vertical"
-                android:paddingBottom="20dp"
-                android:gravity="center">
+                android:layout_height="wrap_content">
 
-                <ImageView
+                <LinearLayout
+                    android:id="@+id/ll_categories_statistics_select_date_fragment_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_info_outline_black_96dp"/>
+                    android:orientation="vertical"
+                    android:padding="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/border_primary"/>
 
-                <TextView
-                    android:text="@string/label_not_enough_data_for_statistic"
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="5dp"
+                    android:background="@drawable/border_accent">
+
+                    <Spinner
+                        android:id="@+id/spn_categories_statistics_bill_type"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-            </LinearLayout>
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txv_categories_statistics_chart_description"
+                        android:text="@string/label_categories_statistics_chart_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"/>
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/pc_categories_statistics"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"
+                        android:padding="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_categorise_statistics_not_enough_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_info_outline_black_96dp"/>
+
+                    <TextView
+                        android:text="@string/label_not_enough_data_for_statistic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_categories_statistics"
@@ -48,36 +106,4 @@
 
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:layout_marginBottom="10dp">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fbtn_categories_statistics_back"
-            android:src="@drawable/ic_arrow_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/txv_categories_statistics_current_month"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fbtn_categories_statistics_forward"
-            android:src="@drawable/ic_arrow_forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
 </LinearLayout>
