@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -57,7 +58,6 @@ public class CockpitFragment extends Fragment {
 
     private LinearLayout mLlSelectInfo;
     private TextView mTxvSelectInfo, mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory;
-    private TextInputLayout mTilBillAmount, mTilBillDescription;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
@@ -75,9 +75,6 @@ public class CockpitFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit, container, false);
 
-        mTilBillAmount = (TextInputLayout) inflatedView.findViewById(R.id.til_cockpit_bill_amount);
-        mTilBillDescription = (TextInputLayout) inflatedView.findViewById(R.id.til_cockpit_bill_description);
-
         mEdtBillAmount = (EditText) inflatedView.findViewById(R.id.edt_cockpit_bill_amount);
         mEdtBillDescription = (EditText) inflatedView.findViewById(R.id.edt_cockpit_bill_description);
 
@@ -94,7 +91,8 @@ public class CockpitFragment extends Fragment {
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
 
-        final ArrayAdapter<CharSequence> selectBillTypeAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
+        setupSpinnersStyles();
+        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.bill_types_array));
         selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
@@ -103,9 +101,6 @@ public class CockpitFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currentlySelectedBillType = i;
-                if (((TextView) view) != null){
-                    ((TextView) view).setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
-                }
             }
 
             @Override
@@ -169,8 +164,6 @@ public class CockpitFragment extends Fragment {
         mBtnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                hideErrorsFromSelections();
-
                 if(everythingFilledCorrectly()){
 
                     if(hasBillTypeChanged(bill.getType(), currentlySelectedBillType)){
@@ -181,8 +174,6 @@ public class CockpitFragment extends Fragment {
 
                     Database.save(getContext());
                     getActivity().finish();
-                } else {
-                    displayErrorOnSelectionsIfNecessary();
                 }
             }
         });
@@ -203,6 +194,11 @@ public class CockpitFragment extends Fragment {
         });
 
         return inflatedView;
+    }
+
+    private void setupSpinnersStyles(){
+        mSpnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+        mSpnSelectBillType.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     private void hideKeyboard(){
@@ -246,24 +242,6 @@ public class CockpitFragment extends Fragment {
         } else {
             return true;
         }
-    }
-
-    private void displayErrorOnSelectionsIfNecessary(){
-        if(mEdtBillAmount.getText().toString().equals("")){
-            mTilBillDescription.setErrorEnabled(true);
-            mTilBillAmount.setError(getResources().getString(R.string.label_enter_amount));
-            mTilBillDescription.setErrorEnabled(false);
-        } else if(selectedSubcategory == null){
-            mLlSelectInfo.setVisibility(View.VISIBLE);
-            mTxvSelectInfo.setText(getResources().getString(R.string.label_need_to_select_category));
-        }
-    }
-
-    private void hideErrorsFromSelections(){
-        mTilBillAmount.setError(null);
-        mTilBillAmount.setErrorEnabled(false);
-        mTilBillDescription.setErrorEnabled(false);
-        mLlSelectInfo.setVisibility(View.GONE);
     }
 
     public static class DeleteBillDialogFragment extends DialogFragment {
@@ -334,18 +312,14 @@ public class CockpitFragment extends Fragment {
     }
 
     private void setupBankAccountSpinner(){
-        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item);
+        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), R.layout.costum_spinner_layout, getBankAccountsNames());
         selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        selectBankAccountAdapter.addAll(getBankAccountsNames());
 
         mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
         mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 bankAccountOfBill = Database.getBankAccounts().get(i);
-                if (((TextView) view) != null){
-                    changeTextViewColorToSelectedMode((TextView) view);
-                }
             }
 
             @Override
@@ -363,10 +337,6 @@ public class CockpitFragment extends Fragment {
         }
 
         return bankAccountsNames;
-    }
-
-    private void changeTextViewColorToSelectedMode(TextView textView){
-        textView.setTextColor(getResources().getColor(R.color.colorPrimaryTextColor));
     }
 
     private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){

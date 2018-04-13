@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
+import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
@@ -26,7 +27,6 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     ArrayList<BankAccount> mBankAccounts;
 
     public BankAccountItemAdapter(){
-        //Gets bank accounts from database
         mBankAccounts = Database.getBankAccounts();
     }
 
@@ -40,20 +40,19 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public void onBindViewHolder(final BankAccountItemViewHolder holder, final int position) {
         BankAccount bankAccount = mBankAccounts.get(position);
 
-        //Display data
         holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance()) + " " + Character.toString((char)0x00B7) + " " + String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
+        holder.mTxvDetails.setText(String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
 
-        //Displays if the current bank account is the primary bank account
-        if(bankAccount.isPrimaryAccount()){
-            holder.mTxvDetails.append(" " + Character.toString((char)0x00B7) + " ");
-            holder.mTxvPrimaryAccount.setText(holder.itemView.getContext().getResources().getString(R.string.label_primary_account));
+        String formattedBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance());
+        holder.mTxvBalance.setText(formattedBalance);
+
+        if(!bankAccount.isPrimaryAccount()){
+            holder.mTxvPrimaryAccount.setVisibility(View.GONE);
         }
 
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Start CreateBankAccountActivity to edit the clicked bank account
                 Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
                 intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);
                 holder.itemView.getContext().startActivity(intent);
@@ -68,7 +67,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
     public class BankAccountItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvName, mTxvDetails, mTxvPrimaryAccount;
+        public TextView mTxvName, mTxvDetails, mTxvPrimaryAccount, mTxvBalance;
         public CardView mCardView;
 
         public BankAccountItemViewHolder(View itemView) {
@@ -77,6 +76,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_bank_account_name);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_bank_account_details);
             mTxvPrimaryAccount = (TextView) itemView.findViewById(R.id.txv_item_bank_account_primary_account);
+            mTxvBalance = (TextView) itemView.findViewById(R.id.txv_item_bank_account_balance);
 
             mCardView = (CardView) itemView.findViewById(R.id.cv_item_bank_account);
         }
