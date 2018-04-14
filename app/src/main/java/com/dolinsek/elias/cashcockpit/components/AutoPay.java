@@ -83,6 +83,9 @@ public class AutoPay {
         creationDate = System.currentTimeMillis();
     }
 
+    public AutoPay() {
+    }
+
     public void managePayments(){
         new PaymentManager(this).managePayments();
     }

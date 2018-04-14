@@ -88,7 +88,7 @@
     <string name="label_no_bank_accounts">There are no bank accounts!</string>
     <string name="label_no_categories">There are no categories!</string>
     <string name="dialog_action_restore">Restore</string>
-    <string name="dialog_msg_delete_auto_pay">Delete AutoPay?</string>
+    <string name="dialog_msg_delete_auto_pay">Do you really want to delete this AutoPay?</string>
     <string name="label_subcategory_delete_information">When deleting, all AutoPays and bills are also removed!</string>
     <string name="dialog_action_confirm_deletion">Confirm deletion</string>
     <string name="label_need_to_select_category">You need to select a category!</string>

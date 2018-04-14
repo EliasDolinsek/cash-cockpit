@@ -73,6 +73,10 @@ public class Bill {
         creationDate = System.currentTimeMillis();
     }
 
+    public Bill(){
+
+    }
+
     public long getAmount() {
         return amount;
     }

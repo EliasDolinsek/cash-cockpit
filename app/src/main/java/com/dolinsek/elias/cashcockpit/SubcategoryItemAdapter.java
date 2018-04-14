@@ -205,7 +205,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private void loadSubcategoryStatistic(Subcategory subcategory, SubcategoryItemViewHolder holder){
         ArrayList<Bill> billsOfSubcategory = filterBillsOfSubcategory(billsUsedForPrimaryCategoryStatistic, subcategory);
-        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsOfSubcategory);
+        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsUsedForPrimaryCategoryStatistic);
         long totalAmountOfBillsOfSubcategory = getTotalAmountOfBills(billsOfSubcategory);
 
         int usageOfSubcategoryOfMonthInPercent = (int) Math.round(100 / (double)totalAmountOfBillsOfPrimaryCategory * (double)totalAmountOfBillsOfSubcategory);
