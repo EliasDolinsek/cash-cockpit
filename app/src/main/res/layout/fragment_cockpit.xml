@@ -30,7 +30,7 @@
                     android:maxLength="15"
                     android:maxLines="1"
                     android:inputType="numberDecimal"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                     android:textAlignment="center"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/label_description"
                     android:lines="1"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -105,7 +105,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="5dp">
+            android:padding="3dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -164,6 +164,7 @@
         android:layout_height="0dp"
         android:orientation="horizontal"
         android:layout_weight="10"
+        android:padding="10dp"
         android:gravity="bottom">
 
         <Button
@@ -172,7 +173,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            style="@style/Widget.AppCompat.Button.Colored"/>
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:background="@drawable/border_accent"/>
 
         <Button
             android:id="@+id/btn_cockpit_delete"
@@ -186,6 +188,7 @@
     <Button
         android:id="@+id/btn_cockpit_add"
         style="@style/Widget.AppCompat.Button.Colored"
+        android:background="@drawable/border_accent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/btn_add_bill"

@@ -29,6 +29,10 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
+import org.json.JSONException;
+
+import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 
 public class AutoPayActivity extends AppCompatActivity {
@@ -190,6 +194,17 @@ public class AutoPayActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        try {
+            //Restores AutoPay so that unwanted changes don't get saved
+            Database.load(getApplicationContext());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void putSelectedSubcategoryIndexIntoIntent(Subcategory subcategory, Intent intent){
         int indexOfPrimaryCategoryInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
         int indexOfSubcategoryInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
@@ -272,6 +287,21 @@ public class AutoPayActivity extends AppCompatActivity {
 
         String formattedAmountOfAutoPay = Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(autoPay.getBill().getAmount());
         mEdtAmount.setText(formattedAmountOfAutoPay);
+
+        int indexOfBankAccountInDatabase = getIndexOfBankAccountInDatabase(autoPay.getBankAccount());
+        mSpnSelectAutoPayBillType.setSelection(autoPay.getBill().getType());
+        mSpnSelectAutoPayType.setSelection(autoPay.getType());
+        mSpnSelectBankAccount.setSelection(indexOfBankAccountInDatabase);
+    }
+
+    private int getIndexOfBankAccountInDatabase(BankAccount bankAccountToSearch){
+        for (int i = 0; i<Database.getBankAccounts().size(); i++){
+            if (Database.getBankAccounts().get(i).equals(bankAccountToSearch)){
+                return i;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account in database!");
     }
 
     private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
