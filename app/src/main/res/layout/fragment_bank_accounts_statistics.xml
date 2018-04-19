@@ -3,6 +3,21 @@
     xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
 
     <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="@drawable/border_primary"
+        android:layout_margin="5dp">
+
+        <Spinner
+            android:id="@+id/spn_bank_accounts_statistics_select_bank_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/ll_bank_accounts_statistics_not_enough_data"
         android:layout_width="match_parent"
         android:layout_height="250dp"
@@ -35,11 +50,18 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <com.github.mikephil.charting.charts.LineChart
-                android:id="@+id/lc_bank_accounts_statistics"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_margin="5dp"/>
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:layout_margin="5dp">
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lc_bank_accounts_statistics"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+
+            </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"
@@ -49,37 +71,5 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:layout_marginBottom="10dp">
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fbtn_bank_accounts_statistics_previous"
-            android:src="@drawable/ic_arrow_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/txv_bank_accounts_statistics_current_bank_account"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="10"
-            android:layout_gravity="center"
-            android:textAlignment="center"
-            android:text="@string/label_current_bank_account"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fbtn_bank_accounts_statistics_next"
-            android:src="@drawable/ic_arrow_forward"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
 
 </LinearLayout>

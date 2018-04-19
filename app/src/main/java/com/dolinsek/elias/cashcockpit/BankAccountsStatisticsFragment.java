@@ -3,21 +3,27 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -49,13 +55,13 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
     private static final String EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE = "bankAccountIndex";
 
-    private FloatingActionButton fbtnNextBankAccount, fbtnPreviousBankAccount;
-    private TextView txvCurrentBankAccount;
     private RecyclerView rvBills;
     private LineChart lcStatistics;
     private BankAccount currentBankAccount;
     private LinearLayout llNotEnoughData;
+    private Spinner spnSelectBankAccount;
 
+    private BankAccount selectedBankAccount;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,86 +69,88 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
         View inflatedView =  inflater.inflate(R.layout.fragment_bank_accounts_statistics, container, false);
 
-        fbtnNextBankAccount = inflatedView.findViewById(R.id.fbtn_bank_accounts_statistics_next);
-        fbtnPreviousBankAccount = inflatedView.findViewById(R.id.fbtn_bank_accounts_statistics_previous);
-        txvCurrentBankAccount = inflatedView.findViewById(R.id.txv_bank_accounts_statistics_current_bank_account);
         rvBills = inflatedView.findViewById(R.id.rv_bank_account_statistics);
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
         llNotEnoughData = inflatedView.findViewById(R.id.ll_bank_accounts_statistics_not_enough_data);
+        spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
-        setupLineChart();
 
         if (Database.getBankAccounts().size() != 0){
             llNotEnoughData.setVisibility(View.GONE);
             loadBankAccount(savedInstanceState);
-            loadStatisticsIfThereIsEnoughData();
+
+            setupSelectBankAccountSpinner();
         } else {
             llNotEnoughData.setVisibility(View.VISIBLE);
             lcStatistics.setVisibility(View.GONE);
-            fbtnNextBankAccount.setEnabled(false);
-            fbtnPreviousBankAccount.setEnabled(false);
         }
-
-        fbtnNextBankAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stepOneBankAccountForward();
-                loadStatisticsIfThereIsEnoughData();
-            }
-        });
-
-        fbtnPreviousBankAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                stepOneBankAccountBack();
-                loadStatisticsIfThereIsEnoughData();
-            }
-        });
 
         return inflatedView;
     }
 
-    private void loadStatisticsIfThereIsEnoughData(){
-        loadCurrentBankAccountText(currentBankAccount);
-        int availableStatisticsOfMonths = getLastBalanceChangesOfMonthsAsEntriesOfBankAccountAndSetupLabelsForLineCharts(currentBankAccount).size();
-        if (availableStatisticsOfMonths != 0){
-            loadStatisticsOfBankAccount(currentBankAccount);
-            loadPcStatistics(currentBankAccount);
+    private void loadChartData(BankAccount bankAccount){
+        LineData lineData = new LineData();
 
-            lcStatistics.setVisibility(View.VISIBLE);
-            llNotEnoughData.setVisibility(View.GONE);
-        } else {
-            lcStatistics.setVisibility(View.GONE);
-            llNotEnoughData.setVisibility(View.VISIBLE);
-            rvBills.setAdapter(null);
-        }
+        ArrayList<BalanceChange> balanceChanges = getLastBalanceChangesOfMonthsOfBankAccount(bankAccount);
+        LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
+        lineData.addDataSet(lineDataSet);
+
+        lcStatistics.setData(lineData);
+        lcStatistics.invalidate();
     }
 
-    private void stepOneBankAccountForward(){
-        int currentIndexOfBankAccount = getIndexOfBankAccountInDatabase(currentBankAccount);
-
-        if (currentIndexOfBankAccount + 1 >= Database.getBankAccounts().size()){
-            currentBankAccount = Database.getBankAccounts().get(0);
-        } else {
-            currentBankAccount = Database.getBankAccounts().get(currentIndexOfBankAccount + 1);
+    private LineDataSet getBalanceChangesAsLineDataSet(ArrayList<BalanceChange> balanceChanges){
+        ArrayList<Entry> balanceChangesAsEntries = new ArrayList<>();
+        for (int i = 0; i<balanceChanges.size(); i++){
+            Entry entry = getBalanceChangeAsEntry(balanceChanges.get(i), i);
+            balanceChangesAsEntries.add(entry);
         }
+
+        return getBalanceChangeEntriesAsLineDataSet(balanceChangesAsEntries);
     }
 
-    private void stepOneBankAccountBack(){
-        int currentIndexOfBankAccount = getIndexOfBankAccountInDatabase(currentBankAccount);
+    private LineDataSet getBalanceChangeEntriesAsLineDataSet(ArrayList<Entry> entries){
+        LineDataSet lineDataSet = new LineDataSet(entries, "");
+        lineDataSet.setValues(entries);
 
-        if (currentIndexOfBankAccount - 1 < 0){
-            int lasBankAccountInDatabase = Database.getBankAccounts().size() - 1;
-            currentBankAccount = Database.getBankAccounts().get(lasBankAccountInDatabase);
-        } else {
-            int previousBankAccountInDatabase = currentIndexOfBankAccount - 1;
-            currentBankAccount = Database.getBankAccounts().get(previousBankAccountInDatabase);
-        }
+        return lineDataSet;
     }
 
-    private void loadCurrentBankAccountText(BankAccount bankAccountToDisplay){
-        txvCurrentBankAccount.setText(bankAccountToDisplay.getName());
+    private ArrayList<String> getNamesOfBankAccountsInDatabase(){
+        ArrayList<String> bankAccountsNames = new ArrayList<>();
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            bankAccountsNames.add(bankAccount.getName());
+        }
+
+        return bankAccountsNames;
+    }
+
+    private void setupSelectBankAccountSpinner(){
+        ArrayAdapter<String> bankAccountsAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
+        bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+
+        spnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+        spnSelectBankAccount.setAdapter(bankAccountsAdapter);
+
+        spnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
+                selectedBankAccount = Database.getBankAccounts().get(index);
+                displayBillsOfBankAccount(selectedBankAccount);
+
+                if (selectedBankAccount.getBalanceChanges().size() != 0){
+                    loadChartData(selectedBankAccount);
+                } else {
+                    //TODO display not enough data
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccountToSearch){
@@ -155,85 +163,64 @@ public class BankAccountsStatisticsFragment extends Fragment {
         throw new IllegalArgumentException("Couldn't find bank account in database!");
     }
 
-    private void loadStatisticsOfBankAccount(BankAccount bankAccount){
+    private void displayBillsOfBankAccount(BankAccount bankAccount){
         HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBankAccountHistoryItemAdapter(bankAccount);
         rvBills.setAdapter(historyItemAdapter);
     }
 
-    private void loadPcStatistics(BankAccount bankAccount){
-        ArrayList<Entry> balanceChangesOfLastMonthsAsPieEntries = getLastBalanceChangesOfMonthsAsEntriesOfBankAccountAndSetupLabelsForLineCharts(bankAccount);
-        LineDataSet lineDataSet = new LineDataSet(balanceChangesOfLastMonthsAsPieEntries, "null");
-        setupLineDataSet(lineDataSet);
-
-        LineData lineData = new LineData(lineDataSet);
-        lcStatistics.setData(lineData);
-        lcStatistics.invalidate();
-    }
-
-    private void setupLineDataSet(LineDataSet lineDataSet){
-        lineDataSet.setDrawCircles(false);
-        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-        lineDataSet.setLineWidth(5f);
-        lineDataSet.setValueTextSize(15f);
-        lineDataSet.setValueTextColor(getResources().getColor(R.color.colorAccent));
-        lineDataSet.setColor(getResources().getColor(R.color.colorPrimary));
-    }
-
-    private void setupLineChart(){
-        Description description = new Description();
-        description.setText(getString(R.string.label_monthly_balance));
-        description.setTextSize(15f);
-
-        lcStatistics.setDescription(description);
-        lcStatistics.setDrawGridBackground(false);
-        lcStatistics.setDrawBorders(false);
-        lcStatistics.setAutoScaleMinMaxEnabled(true);
-
-        removeAxisesFromChart();
-        hideLegendFromChart();
-
-        lcStatistics.invalidate();
-    }
-
-    private void removeAxisesFromChart(){
-        YAxis leftAxis = lcStatistics.getAxisLeft();
-        YAxis rightAxis = lcStatistics.getAxisRight();
-        XAxis xAxis = lcStatistics.getXAxis();
-
-        leftAxis.setEnabled(false);
-        rightAxis.setEnabled(false);
-        xAxis.setEnabled(false);
-    }
-
-    private void hideLegendFromChart(){
-        Legend legend = lcStatistics.getLegend();
-        legend.setEnabled(false);
-    }
-
-    private ArrayList<Entry> getLastBalanceChangesOfMonthsAsEntriesOfBankAccountAndSetupLabelsForLineCharts(BankAccount bankAccount){
+    private ArrayList<BalanceChange> getLastBalanceChangesOfMonthsOfBankAccount(BankAccount bankAccount){
+        ArrayList<BalanceChange> balanceChanges = new ArrayList<>();
         sortBalanceChangesOfCreationDates(bankAccount.getBalanceChanges());
-        long creationDateOfFirstBalanceChange = bankAccount.getBalanceChanges().get(0).getTimeStampOfChange();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(creationDateOfFirstBalanceChange);
+        calendar.setTimeInMillis(calendar.getTimeInMillis());
 
-        int loops = 0;
-        ArrayList<Entry> entries = new ArrayList<>();
-        while (calendar.getTimeInMillis() < System.currentTimeMillis()){
-            ArrayList<BalanceChange> balanceChangesOfThisMonth = getBalanceChangesOfMonth(bankAccount, calendar.getTimeInMillis());
-            sortBalanceChangesOfCreationDates(balanceChangesOfThisMonth);
+        int firstBalanceChangeYear = calendar.get(Calendar.YEAR);
+        int firstBalanceChangeMonth = calendar.get(Calendar.MONTH);
 
-            int lastBalanceChangeOfMonthIndex = balanceChangesOfThisMonth.size() - 1;
-            if (lastBalanceChangeOfMonthIndex != -1){
-                BalanceChange lastBalanceChangeOfMonth = balanceChangesOfThisMonth.get(lastBalanceChangeOfMonthIndex);
-                entries.add(getBalanceChangesAsEntry(loops, lastBalanceChangeOfMonth));
-                loops++;
-            }
-
+        while (calendar.get(Calendar.YEAR) <= firstBalanceChangeYear && calendar.get(Calendar.MONTH) <= firstBalanceChangeMonth){
+            BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
+            balanceChanges.add(lastBalanceChangeOfMonth);
             calendar.add(Calendar.MONTH, 1);
         }
 
-        return entries;
+        return balanceChanges;
+    }
+
+    private Entry getBalanceChangeAsEntry(BalanceChange balanceChange, int x){
+        long formattedAmountOfBalanceChange = balanceChange.getNewBalance() / 100;
+
+        return new Entry(x, formattedAmountOfBalanceChange);
+    }
+
+    private BalanceChange getLastBalanceChangeOfBankAccountAndMonth(BankAccount bankAccount, long timeStampOfMonth){
+        ArrayList<BalanceChange> balanceChangesOfBankAccount = bankAccount.getBalanceChanges();
+        sortBalanceChangesOfCreationDates(balanceChangesOfBankAccount);
+
+        ArrayList<BalanceChange> balanceChangesOfBankAccountAndMonth = filterBalanceChangesOfMonth(balanceChangesOfBankAccount, timeStampOfMonth);
+        return balanceChangesOfBankAccountAndMonth.get(balanceChangesOfBankAccountAndMonth.size() - 1);
+    }
+
+    private ArrayList<BalanceChange> filterBalanceChangesOfMonth(ArrayList<BalanceChange> balanceChangesToFilter, long timeStampOfMonth){
+        ArrayList<BalanceChange> balanceChangesOfMonth = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (BalanceChange balanceChange:balanceChangesToFilter){
+            calendar.setTimeInMillis(balanceChange.getTimeStampOfChange());
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+
+            if (currentYear == year && currentMonth == month){
+                balanceChangesOfMonth.add(balanceChange);
+            }
+        }
+
+        return balanceChangesOfMonth;
     }
 
     private Entry getBalanceChangesAsEntry(int xPosition, BalanceChange balanceChange){
@@ -263,13 +250,18 @@ public class BankAccountsStatisticsFragment extends Fragment {
         return balanceChanges;
     }
 
-    private void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
+    private ArrayList<BalanceChange> getAndSortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
         Collections.sort(balanceChangesToSort, new Comparator<BalanceChange>() {
             @Override
             public int compare(BalanceChange balanceChange, BalanceChange t1) {
                 return Long.compare(balanceChange.getTimeStampOfChange(), t1.getTimeStampOfChange());
             }
         });
+
+        return balanceChangesToSort;
+    }
+    private void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
+        getAndSortBalanceChangesOfCreationDates(balanceChangesToSort);
     }
 
     @Override
