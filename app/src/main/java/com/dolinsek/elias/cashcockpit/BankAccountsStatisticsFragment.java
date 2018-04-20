@@ -1,13 +1,8 @@
 package com.dolinsek.elias.cashcockpit;
 
-
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,36 +11,31 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
-import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
-import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.DefaultValueFormatter;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.Date;
 
 
 /**
@@ -79,7 +69,6 @@ public class BankAccountsStatisticsFragment extends Fragment {
         if (Database.getBankAccounts().size() != 0){
             llNotEnoughData.setVisibility(View.GONE);
             loadBankAccount(savedInstanceState);
-
             setupSelectBankAccountSpinner();
         } else {
             llNotEnoughData.setVisibility(View.VISIBLE);
@@ -89,15 +78,63 @@ public class BankAccountsStatisticsFragment extends Fragment {
         return inflatedView;
     }
 
+    private void setupChartStyle(){
+        lcStatistics.getLegend().setEnabled(false);
+        lcStatistics.getAxisLeft().setEnabled(false);
+        lcStatistics.getAxisRight().setEnabled(false);
+        lcStatistics.getData().setHighlightEnabled(false);
+        lcStatistics.getXAxis().setDrawGridLines(false);
+        lcStatistics.getXAxis().setYOffset(0f);
+        lcStatistics.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lcStatistics.getXAxis().setGranularityEnabled(true);
+        lcStatistics.getXAxis().setGranularity(1f);
+        lcStatistics.getDescription().setEnabled(false);
+        lcStatistics.setViewPortOffsets(5f,5f,5f,5f);
+        lcStatistics.setScaleEnabled(false);
+
+        setupChartTextStyles();
+    }
+
+    private void setupLineDataSet(LineDataSet lineDataSet){
+        lineDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        lineDataSet.setLineWidth(3f);
+        lineDataSet.setColor(getResources().getColor(R.color.colorPrimary));
+        lineDataSet.setCircleRadius(7f);
+        lineDataSet.setDrawCircleHole(false);
+        lineDataSet.setCircleColor(getResources().getColor(R.color.colorPrimary));
+        lineDataSet.setValueFormatter(new CurrencyEntryValueFormatter(getContext()));
+    }
+
+    private void setupChartTextStyles(){
+        lcStatistics.getXAxis().setTextSize(14f);
+        lcStatistics.getData().setValueTextSize(14f);
+    }
+
+    private void displayTimeStampsOfBalanceChangesOnChart(ArrayList<Long> timeStampsOfMonths){
+        XAxis xAxis = lcStatistics.getXAxis();
+        xAxis.setValueFormatter(new DateValueFormatter(timeStampsOfMonths));
+    }
+
     private void loadChartData(BankAccount bankAccount){
         LineData lineData = new LineData();
 
         ArrayList<BalanceChange> balanceChanges = getLastBalanceChangesOfMonthsOfBankAccount(bankAccount);
         LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
         lineData.addDataSet(lineDataSet);
+        setupLineDataSet(lineDataSet);
 
+        displayTimeStampsOfBalanceChangesOnChart(getTimeStampsOfBalanceChanges(balanceChanges));
         lcStatistics.setData(lineData);
         lcStatistics.invalidate();
+    }
+
+    private ArrayList<Long> getTimeStampsOfBalanceChanges(ArrayList<BalanceChange> balanceChanges){
+        ArrayList<Long> timeStamps = new ArrayList<>();
+        for (BalanceChange balanceChange:balanceChanges){
+            timeStamps.add(balanceChange.getTimeStampOfChange());
+        }
+
+        return timeStamps;
     }
 
     private LineDataSet getBalanceChangesAsLineDataSet(ArrayList<BalanceChange> balanceChanges){
@@ -141,6 +178,7 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
                 if (selectedBankAccount.getBalanceChanges().size() != 0){
                     loadChartData(selectedBankAccount);
+                    setupChartStyle();
                 } else {
                     //TODO display not enough data
                 }
@@ -170,17 +208,21 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
     private ArrayList<BalanceChange> getLastBalanceChangesOfMonthsOfBankAccount(BankAccount bankAccount){
         ArrayList<BalanceChange> balanceChanges = new ArrayList<>();
+
         sortBalanceChangesOfCreationDates(bankAccount.getBalanceChanges());
+        long firstBalanceChangeDate = bankAccount.getBalanceChanges().get(0).getTimeStampOfChange();
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(calendar.getTimeInMillis());
+        calendar.setTimeInMillis(System.currentTimeMillis());
 
-        int firstBalanceChangeYear = calendar.get(Calendar.YEAR);
-        int firstBalanceChangeMonth = calendar.get(Calendar.MONTH);
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
 
-        while (calendar.get(Calendar.YEAR) <= firstBalanceChangeYear && calendar.get(Calendar.MONTH) <= firstBalanceChangeMonth){
+        calendar.setTimeInMillis(firstBalanceChangeDate);
+        while (calendar.get(Calendar.YEAR) <= year && calendar.get(Calendar.MONTH) <= month){
             BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
             balanceChanges.add(lastBalanceChangeOfMonth);
+
             calendar.add(Calendar.MONTH, 1);
         }
 
@@ -189,7 +231,6 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
     private Entry getBalanceChangeAsEntry(BalanceChange balanceChange, int x){
         long formattedAmountOfBalanceChange = balanceChange.getNewBalance() / 100;
-
         return new Entry(x, formattedAmountOfBalanceChange);
     }
 
@@ -223,33 +264,6 @@ public class BankAccountsStatisticsFragment extends Fragment {
         return balanceChangesOfMonth;
     }
 
-    private Entry getBalanceChangesAsEntry(int xPosition, BalanceChange balanceChange){
-        return new Entry(xPosition, balanceChange.getNewBalance() / 100);
-    }
-
-    private ArrayList<BalanceChange> getBalanceChangesOfMonth(BankAccount bankAccount, long timestampOfMonth){
-        ArrayList<BalanceChange> balanceChanges = new ArrayList<>();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestampOfMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (BalanceChange balanceChange:bankAccount.getBalanceChanges()){
-            calendar.setTimeInMillis(balanceChange.getTimeStampOfChange());
-
-            int currentYear = calendar.get(Calendar.YEAR);
-            int currentMonth = calendar.get(Calendar.MONTH);
-
-            if (year == currentYear && month == currentMonth){
-                balanceChanges.add(balanceChange);
-            }
-        }
-
-        return balanceChanges;
-    }
-
     private ArrayList<BalanceChange> getAndSortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
         Collections.sort(balanceChangesToSort, new Comparator<BalanceChange>() {
             @Override
@@ -276,6 +290,24 @@ public class BankAccountsStatisticsFragment extends Fragment {
             currentBankAccount = Database.getBankAccounts().get(indexOfBankAccountInDatabase);
         } else {
             currentBankAccount = Database.getBankAccounts().get(0);
+        }
+    }
+
+    private class DateValueFormatter implements IAxisValueFormatter{
+
+        private ArrayList<Long> timeStampsOfMonths;
+
+        public DateValueFormatter(ArrayList<Long> timeStampsOfMonths){
+            this.timeStampsOfMonths = timeStampsOfMonths;
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM");
+
+            int month = Math.round(value);
+            Date date = new Date(timeStampsOfMonths.get(month));
+            return simpleDateFormat.format(date);
         }
     }
 }

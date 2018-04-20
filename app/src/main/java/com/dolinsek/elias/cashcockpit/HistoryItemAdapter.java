@@ -64,7 +64,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final Bill bill = billsToDisplay.get(position);
         final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
-        setupTxvBackgroundFromBillType(holder.mTxvDate, bill);
+        setupTxvBackgroundFromBillType(holder.mTxvAmount, bill);
         holder.mTxvAmount.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount()));
         holder.mTxvDescription.setText(bill.getDescription());
 

@@ -20,6 +20,7 @@
                 android:layout_marginBottom="5dp"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                 android:textColor="@android:color/white"
+                android:background="@drawable/border_primary"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"/>
 
@@ -30,7 +31,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
                 android:layout_marginStart="5dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 

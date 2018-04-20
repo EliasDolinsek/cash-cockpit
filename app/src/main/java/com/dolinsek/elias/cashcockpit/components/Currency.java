@@ -193,7 +193,7 @@ public class Currency {
 
     private static String formatAmountToReadableStringCurrencyEuro(long amount){
         long euros = amount / 100;
-        long cents = amount % 100;
+        long cents = Math.abs(amount % 100);
         String result;
 
         result = String.valueOf(euros) + "." + String.valueOf(cents);
