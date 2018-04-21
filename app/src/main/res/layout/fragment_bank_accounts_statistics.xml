@@ -17,29 +17,6 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_bank_accounts_statistics_not_enough_data"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        android:orientation="vertical"
-        android:paddingBottom="20dp"
-        android:gravity="center"
-        android:layout_margin="5dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_info_outline_black_96dp"/>
-
-        <TextView
-            android:text="@string/label_not_enough_data_for_statistic"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-    </LinearLayout>
-
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -60,6 +37,28 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_margin="5dp"/>
+
+                <LinearLayout
+                    android:id="@+id/ll_bank_accounts_statistics_not_enough_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_margin="5dp"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_info_outline_black_96dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/label_not_enough_data_for_statistic"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+                </LinearLayout>
 
             </android.support.v7.widget.CardView>
 

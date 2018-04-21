@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -24,6 +25,7 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
@@ -46,6 +48,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private SelectMonthFragment mSelectMonthFragment;
     private Spinner spnBillTypeFilter;
     private TextView txvChartDescription;
+    private ScrollView scrollView;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private ArrayList<Bill> billsToUse;
@@ -65,6 +68,8 @@ public class CategoriesStatisticsFragment extends Fragment {
         llFilterFragmentsContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_categories_statistics_filters_container);
         spnBillTypeFilter = (Spinner) inflatedView.findViewById(R.id.spn_categories_statistics_bill_type);
         txvChartDescription = (TextView) inflatedView.findViewById(R.id.txv_categories_statistics_chart_description);
+        scrollView = (ScrollView) inflatedView.findViewById(R.id.sv_categories_statistics);
+        scrollView.scrollTo(0,0);
 
         timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills());
         billsToUse = getAllBillsInDatabase();
@@ -190,6 +195,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
         pieDataSet.setValueLineWidth(2f);
         pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
     private void setupChartStatistics(){

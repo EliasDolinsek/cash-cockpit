@@ -38,7 +38,7 @@ public class StatisticsFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        loadFragments(savedInstanceState);
+        setupFragments();
 
         mTabLayout = (TabLayout) inflatedView.findViewById(R.id.tl_statistics);
         mViewPager = (ViewPager) inflatedView.findViewById(R.id.vp_statistics);
@@ -84,27 +84,10 @@ public class StatisticsFragment extends Fragment {
         }
     }
 
-    private void loadFragments(Bundle savedInstanceState){
-        if (savedInstanceState != null){
-            bankAccountsStatisticsFragment = (BankAccountsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT);
-            billsStatisticsFragment = (BillsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_BILLS_STATISTICS_FRAGMENT);
-            categoriesStatisticsFragment = (CategoriesStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_CATEGORIES_STATISTICS_FRAGMENT);
-            goalsStatisticsFragment = (GoalsStatisticsFragment) getChildFragmentManager().getFragment(savedInstanceState, EXTRA_GOALS_STATISTICS_FRAGMENT);
-        } else {
-            bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
-            billsStatisticsFragment = new BillsStatisticsFragment();
-            categoriesStatisticsFragment = new CategoriesStatisticsFragment();
-            goalsStatisticsFragment = new GoalsStatisticsFragment();
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        getChildFragmentManager().putFragment(outState, EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT, bankAccountsStatisticsFragment);
-        getChildFragmentManager().putFragment(outState, EXTRA_BILLS_STATISTICS_FRAGMENT, billsStatisticsFragment);
-        getChildFragmentManager().putFragment(outState, EXTRA_CATEGORIES_STATISTICS_FRAGMENT, categoriesStatisticsFragment);
-        getChildFragmentManager().putFragment(outState, EXTRA_GOALS_STATISTICS_FRAGMENT, goalsStatisticsFragment);
+    private void setupFragments(){
+        bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
+        billsStatisticsFragment = new BillsStatisticsFragment();
+        categoriesStatisticsFragment = new CategoriesStatisticsFragment();
+        goalsStatisticsFragment = new GoalsStatisticsFragment();
     }
 }

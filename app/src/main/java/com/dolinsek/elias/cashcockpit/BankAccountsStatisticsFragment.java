@@ -89,8 +89,8 @@ public class BankAccountsStatisticsFragment extends Fragment {
         lcStatistics.getXAxis().setGranularityEnabled(true);
         lcStatistics.getXAxis().setGranularity(1f);
         lcStatistics.getDescription().setEnabled(false);
-        lcStatistics.setViewPortOffsets(5f,5f,5f,5f);
-        lcStatistics.setScaleEnabled(false);
+        lcStatistics.setExtraOffsets(25f,10f,25f,10f);
+        lcStatistics.setTouchEnabled(false);
 
         setupChartTextStyles();
     }
@@ -179,8 +179,12 @@ public class BankAccountsStatisticsFragment extends Fragment {
                 if (selectedBankAccount.getBalanceChanges().size() != 0){
                     loadChartData(selectedBankAccount);
                     setupChartStyle();
+
+                    lcStatistics.setVisibility(View.VISIBLE);
+                    llNotEnoughData.setVisibility(View.GONE);
                 } else {
-                    //TODO display not enough data
+                    lcStatistics.setVisibility(View.GONE);
+                    llNotEnoughData.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -305,9 +309,13 @@ public class BankAccountsStatisticsFragment extends Fragment {
         public String getFormattedValue(float value, AxisBase axis) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM");
 
-            int month = Math.round(value);
-            Date date = new Date(timeStampsOfMonths.get(month));
-            return simpleDateFormat.format(date);
+            try {
+                Date date = new Date(timeStampsOfMonths.get((int) value));
+                return simpleDateFormat.format(date);
+            } catch (Exception e){
+                e.printStackTrace();
+                return "";
+            }
         }
     }
 }
