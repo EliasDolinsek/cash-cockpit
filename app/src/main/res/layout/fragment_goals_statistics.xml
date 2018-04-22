@@ -1,148 +1,162 @@
 <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/ll_goals_statistics_select_month_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="5dp"
-        android:background="@drawable/border_primary"/>
+    <!--To avoid scroll view from scrolling to the bottom automatically-->
+    <View android:layout_width="match_parent" android:id="@+id/focus_view" android:layout_height="0dp" android:focusable="true" android:focusableInTouchMode="true"><requestFocus/></View>
 
-    <android.support.v7.widget.CardView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:id="@+id/ll_goals_statistics_not_enough_data"
             android:layout_width="match_parent"
-            android:layout_height="260dp"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <ImageView
+            <LinearLayout
+                android:id="@+id/ll_goals_statistics_select_month_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_info_outline_black_96dp"/>
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginStart="5dp"
+                android:background="@drawable/border_primary"/>
 
-            <TextView
-                android:text="@string/label_not_enough_data_for_statistic"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textAlignment="center"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-        </LinearLayout>
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp">
 
-        <LinearLayout
-            android:id="@+id/ll_goals_statistics_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical">
+                <LinearLayout
+                    android:id="@+id/ll_goals_statistics_not_enough_data"
+                    android:layout_width="match_parent"
+                    android:layout_height="260dp"
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-            <TextView
-                android:text="@string/label_goals_statistics_charts_description"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAlignment="center"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_info_outline_black_96dp"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
+                    <TextView
+                        android:text="@string/label_not_enough_data_for_statistic"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+                </LinearLayout>
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/ll_goals_statistics_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp">
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/txv_goals_statistics_month"
-                        android:layout_width="wrap_content"
+                        android:text="@string/label_goals_statistics_charts_description"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="53dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                        android:textSize="30sp"
-                        android:textStyle="bold"/>
+                        android:textAlignment="center"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
-                    <ProgressBar
-                        android:id="@+id/pgb_goals_statistics_month"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="170dp"
-                        android:layout_height="170dp"
-                        android:max="100"
-                        android:progress="1"
-                        android:progressDrawable="@drawable/circular"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/txv_goals_statistics_month"
-                        android:layout_centerHorizontal="true"
-                        android:text="@string/label_selected_month"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                        android:textSize="15sp"
-                        android:textStyle="italic"/>
+                        android:gravity="center"
+                        android:orientation="horizontal">
 
-                </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp">
 
-                <RelativeLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                            <TextView
+                                android:id="@+id/txv_goals_statistics_month"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="53dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                android:textSize="30sp"
+                                android:textStyle="bold"/>
 
-                    <TextView
-                        android:id="@+id/txv_goals_statistics_average"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="53dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                        android:textSize="30sp"
-                        android:textStyle="bold"/>
+                            <ProgressBar
+                                android:id="@+id/pgb_goals_statistics_month"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="170dp"
+                                android:layout_height="170dp"
+                                android:max="100"
+                                android:progress="1"
+                                android:progressDrawable="@drawable/circular"/>
 
-                    <ProgressBar
-                        android:id="@+id/pgb_goals_statistics_average"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="170dp"
-                        android:layout_height="170dp"
-                        android:max="100"
-                        android:progress="1"
-                        android:progressDrawable="@drawable/circular" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/txv_goals_statistics_month"
+                                android:layout_centerHorizontal="true"
+                                android:text="@string/label_selected_month"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                                android:textSize="15sp"
+                                android:textStyle="italic"/>
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@+id/txv_goals_statistics_average"
-                        android:layout_centerHorizontal="true"
-                        android:text="@string/label_average"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                        android:textSize="15sp"
-                        android:textStyle="italic"/>
+                        </RelativeLayout>
 
-                </RelativeLayout>
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
 
-            </LinearLayout>
+                            <TextView
+                                android:id="@+id/txv_goals_statistics_average"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentTop="true"
+                                android:layout_centerHorizontal="true"
+                                android:layout_marginTop="53dp"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                                android:textSize="30sp"
+                                android:textStyle="bold"/>
 
+                            <ProgressBar
+                                android:id="@+id/pgb_goals_statistics_average"
+                                style="?android:attr/progressBarStyleHorizontal"
+                                android:layout_width="170dp"
+                                android:layout_height="170dp"
+                                android:max="100"
+                                android:progress="1"
+                                android:progressDrawable="@drawable/circular" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/txv_goals_statistics_average"
+                                android:layout_centerHorizontal="true"
+                                android:text="@string/label_average"
+                                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                                android:textSize="15sp"
+                                android:textStyle="italic"/>
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv_goals_statistics_categories"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="10"/>
         </LinearLayout>
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_goals_statistics_categories"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"/>
+    </ScrollView>
 </LinearLayout>

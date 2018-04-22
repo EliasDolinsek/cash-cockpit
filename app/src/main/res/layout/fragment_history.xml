@@ -49,12 +49,10 @@
     <TextView
         android:id="@+id/txv_history_no_data_for_history"
         android:text="@string/label_no_data_for_history"
-        android:textStyle="italic"
         android:textAlignment="center"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textColor="@color/colorAccent"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
 
     <android.support.v7.widget.RecyclerView

@@ -12,24 +12,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
-import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
-import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -50,6 +45,7 @@ public class BankAccountsStatisticsFragment extends Fragment {
     private BankAccount currentBankAccount;
     private LinearLayout llNotEnoughData;
     private Spinner spnSelectBankAccount;
+    private TextView txvNoBills;
 
     private BankAccount selectedBankAccount;
 
@@ -63,6 +59,7 @@ public class BankAccountsStatisticsFragment extends Fragment {
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
         llNotEnoughData = inflatedView.findViewById(R.id.ll_bank_accounts_statistics_not_enough_data);
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
+        txvNoBills = inflatedView.findViewById(R.id.txv_bank_accounts_statistics_no_bills);
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -186,6 +183,14 @@ public class BankAccountsStatisticsFragment extends Fragment {
                     lcStatistics.setVisibility(View.GONE);
                     llNotEnoughData.setVisibility(View.VISIBLE);
                 }
+
+                if (selectedBankAccount.getBills().size() == 0){
+                    txvNoBills.setVisibility(View.VISIBLE);
+                    rvBills.setVisibility(View.GONE);
+                } else {
+                    txvNoBills.setVisibility(View.GONE);
+                    rvBills.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -285,7 +290,12 @@ public class BankAccountsStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, getIndexOfBankAccountInDatabase(currentBankAccount));
+        int index = 0;
+        if (currentBankAccount != null){
+            index = getIndexOfBankAccountInDatabase(currentBankAccount);
+        }
+
+        outState.putInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, index);
     }
 
     private void loadBankAccount(Bundle savedInstanceState){

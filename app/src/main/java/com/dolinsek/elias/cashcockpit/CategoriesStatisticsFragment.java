@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
@@ -82,6 +83,14 @@ public class CategoriesStatisticsFragment extends Fragment {
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
 
         return inflatedView;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //Removes Fragment because otherwise it would be added twice
+        getFragmentManager().beginTransaction().remove(mSelectMonthFragment).commit();
     }
 
     private void setupSelectMonthFragment(){

@@ -132,8 +132,12 @@ public class CockpitFragment extends Fragment {
                 Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
 
                 if (selectedSubcategory != null){
-                    intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
-                    intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
+                    try {
+                        intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
+                        intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
+                    } catch (Exception e){
+                        selectedSubcategory = null;
+                    }
                 }
 
                 startActivityForResult(intent, RQ_SELECT_CATEGORY);

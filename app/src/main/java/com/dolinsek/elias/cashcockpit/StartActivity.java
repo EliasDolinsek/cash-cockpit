@@ -44,7 +44,7 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void requestStartOfMainActivity(long durationOfLoadingDatabase){
-        long startTime = 1500;
+        long startTime = 500;
         if (durationOfLoadingDatabase < startTime){
             try {
                 Thread.sleep(startTime - durationOfLoadingDatabase);

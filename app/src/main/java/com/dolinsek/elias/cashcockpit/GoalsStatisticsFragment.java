@@ -78,6 +78,14 @@ public class GoalsStatisticsFragment extends Fragment {
         loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        //Removes Fragment because otherwise it would be added twice
+        getFragmentManager().beginTransaction().remove(mSelectMonthFragment).commit();
+    }
+
     private void loadStatisticsOfMonth(long timeStampOfMonth) {
         primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timeStampOfMonth);
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
@@ -245,7 +253,7 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private void manageViews(){
-        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0){
+        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0 || getAllBillsInDatabase().size() == 0){
             mLLContent.setVisibility(View.GONE);
             mLlNotEnoughData.setVisibility(View.VISIBLE);
             mLlSelectMonthFragmentContainer.setVisibility(View.GONE);

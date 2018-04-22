@@ -24,7 +24,7 @@
             android:name=".BillEditorActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SelectCategoryActivity" />
-        <activity android:name=".StartActivity">
+        <activity android:name=".StartActivity" android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
