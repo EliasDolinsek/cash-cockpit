@@ -6,6 +6,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 /**
  * This has static array lists of all components
@@ -105,5 +109,64 @@ public class Database {
 
     public static void setAutoPays(ArrayList<AutoPay> autoPays) {
         Database.autoPays = autoPays;
+    }
+
+    public static class Toolkit {
+
+        public static ArrayList<Bill> getAllBillsInDatabase(){
+            ArrayList<Bill> allBills = new ArrayList<>();
+            for (BankAccount bankAccount: bankAccounts){
+                allBills.addAll(bankAccount.getBills());
+            }
+
+            return allBills;
+        }
+
+        public static long getCreationDateOfFirstBill(ArrayList<Bill> bills){
+            long firstCreationDate = System.currentTimeMillis();
+
+            ArrayList<Bill> billsInDatabase = getAllBillsInDatabase();
+            for (Bill bill:billsInDatabase){
+                if (bill.getCreationDate() < firstCreationDate){
+                    firstCreationDate = bill.getCreationDate();
+                }
+            }
+
+            return firstCreationDate;
+        }
+
+        public static ArrayList<Bill> getBillsOfMonth(long timeStampOfMonth){
+            ArrayList<Bill> billsOfMonth = new ArrayList<>();
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timeStampOfMonth);
+
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+
+            for (Bill bill:getAllBillsInDatabase()){
+                calendar.setTimeInMillis(bill.getCreationDate());
+
+                int billYear = calendar.get(Calendar.YEAR);
+                int billMonth = calendar.get(Calendar.MONTH);
+
+                if (year == billYear && month == billMonth){
+                    billsOfMonth.add(bill);
+                }
+            }
+
+            return  billsOfMonth;
+        }
+
+        public static ArrayList<Bill> filterBillsOfBillType(ArrayList<Bill> billsToFilter, int billType){
+            ArrayList<Bill> filteredBills = new ArrayList<>();
+            for (Bill bill:billsToFilter){
+                if (bill.getType() == billType){
+                    filteredBills.add(bill);
+                }
+            }
+
+            return filteredBills;
+        }
     }
 }

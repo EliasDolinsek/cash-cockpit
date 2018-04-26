@@ -63,7 +63,6 @@ public class GoalsStatisticsFragment extends Fragment {
 
         manageViews();
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
-        setupSelectMonthFragment();
 
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
@@ -76,6 +75,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         loadAverageStatistics();
         loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
+        setupSelectMonthFragment();
     }
 
     @Override

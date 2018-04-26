@@ -118,6 +118,7 @@
     <string name="label_all_bill_types">All types</string>
     <string name="label_categories_statistics_chart_description">Usage of categories</string>
     <string name="label_no_bills">No bills found</string>
+    <string name="label_no_description">No description</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>

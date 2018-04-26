@@ -240,18 +240,6 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         return billsToReturn;
     }
 
-
-    private ArrayList<Bill> getBillsOfPrimaryCategoryAndMonth(PrimaryCategory primaryCategory, long timeStampOfMonth){
-        ArrayList<Bill> bills = new ArrayList<>();
-
-        for (Subcategory subcategory:primaryCategory.getSubcategories()){
-            bills.addAll(billsUsedForPrimaryCategoryStatistic);
-        }
-
-        return bills;
-    }
-
-
     private void setupForNormalAdapterType(Subcategory subcategory, SubcategoryItemViewHolder holder){
         holder.mBtnSelectCategory.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);

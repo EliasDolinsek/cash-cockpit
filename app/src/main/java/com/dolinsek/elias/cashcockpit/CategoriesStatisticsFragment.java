@@ -76,7 +76,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         billsToUse = getAllBillsInDatabase();
 
         setupBillTypeFilter();
-        setupSelectMonthFragment();
         setupChartStatistics();
         manageViews();
 
@@ -91,6 +90,12 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         //Removes Fragment because otherwise it would be added twice
         getFragmentManager().beginTransaction().remove(mSelectMonthFragment).commit();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setupSelectMonthFragment();
     }
 
     private void setupSelectMonthFragment(){

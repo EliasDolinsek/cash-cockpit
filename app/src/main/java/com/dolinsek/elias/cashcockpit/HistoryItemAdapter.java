@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -66,7 +67,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
         setupTxvBackgroundFromBillType(holder.mTxvAmount, bill);
         holder.mTxvAmount.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount()));
-        holder.mTxvDescription.setText(bill.getDescription());
+        displayDescription(bill.getDescription(), holder);
 
         String billDetails = bankAccountOfBill.getName() + " " + Character.toString((char)0x00B7) + " " + bill.getSubcategory().getName();
         holder.mTxvDetails.setText(billDetails);
@@ -100,6 +101,17 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             mTxvAmount = (TextView) itemView.findViewById(R.id.txv_item_history_amount);
             mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
+        }
+    }
+
+    private void displayDescription(String description, HistoryViewHolder holder){
+        TextView txvDescription = holder.mTxvDescription;
+        if (description.equals("")){
+            txvDescription.setText(R.string.label_no_description);
+            txvDescription.setTypeface(txvDescription.getTypeface(), Typeface.ITALIC);
+        } else {
+            txvDescription.setText(description);
+            txvDescription.setTypeface(Typeface.DEFAULT); //To avoid problems
         }
     }
 
