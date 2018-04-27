@@ -220,6 +220,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         pcStatistics.setUsePercentValues(true);
         pcStatistics.setEntryLabelTextSize(17f);
         pcStatistics.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
+        pcStatistics.getLegend().setEnabled(false);
         pcStatistics.invalidate(); //Refreshes data
     }
 
