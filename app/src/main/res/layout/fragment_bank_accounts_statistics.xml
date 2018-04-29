@@ -38,13 +38,13 @@
                 <com.github.mikephil.charting.charts.LineChart
                     android:id="@+id/lc_bank_accounts_statistics"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="210dp"
                     android:layout_margin="5dp"/>
 
                 <LinearLayout
                     android:id="@+id/ll_bank_accounts_statistics_not_enough_data"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="210dp"
                     android:layout_margin="5dp"
                     android:gravity="center"
                     android:orientation="vertical">

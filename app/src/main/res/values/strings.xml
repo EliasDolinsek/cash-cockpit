@@ -120,6 +120,8 @@
     <string name="label_no_bills">No bills found</string>
     <string name="label_no_description">No description</string>
     <string name="label_bill_types_usage">Usage of Bill-Types</string>
+    <string name="label_categories_usage">Usage of Categories</string>
+    <string name="label_history_of_added_bills">History of added bills of month</string>
 
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>

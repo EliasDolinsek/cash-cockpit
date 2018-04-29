@@ -62,6 +62,7 @@ public class BankAccountsStatisticsFragment extends Fragment {
         txvNoBills = inflatedView.findViewById(R.id.txv_bank_accounts_statistics_no_bills);
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvBills.setNestedScrollingEnabled(false);
 
         if (Database.getBankAccounts().size() != 0){
             llNotEnoughData.setVisibility(View.GONE);
@@ -80,14 +81,16 @@ public class BankAccountsStatisticsFragment extends Fragment {
         lcStatistics.getAxisLeft().setEnabled(false);
         lcStatistics.getAxisRight().setEnabled(false);
         lcStatistics.getData().setHighlightEnabled(false);
-        lcStatistics.getXAxis().setDrawGridLines(false);
-        lcStatistics.getXAxis().setYOffset(0f);
-        lcStatistics.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        lcStatistics.getXAxis().setGranularityEnabled(true);
-        lcStatistics.getXAxis().setGranularity(1f);
         lcStatistics.getDescription().setEnabled(false);
         lcStatistics.setExtraOffsets(25f,10f,25f,10f);
         lcStatistics.setTouchEnabled(false);
+
+        XAxis xAxis = lcStatistics.getXAxis();
+        xAxis.setDrawGridLines(false);
+        xAxis.setYOffset(0f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularity(1f);
 
         setupChartTextStyles();
     }

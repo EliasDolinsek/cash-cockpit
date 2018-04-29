@@ -125,25 +125,13 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private long getTotalAmountOfBillsOfMonthWithGoals(long timeStampOfMonth) {
-        ArrayList<Bill> allBillsInDatabase = getAllBillsInDatabase();
+        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
         ArrayList<Bill> allBillsInDatabaseOfMonth = filterBillsOfMonth(allBillsInDatabase, timeStampOfMonth);
         ArrayList<Bill> allBillsInDatabaseOfMonthWhatHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(allBillsInDatabaseOfMonth);
 
         long amountOfBills = getTotalAmountOfBills(allBillsInDatabaseOfMonthWhatHaveGoals);
 
         return amountOfBills;
-    }
-
-    private ArrayList<Bill> getAllBillsInDatabase(){
-        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                allBillsInDatabase.add(bill);
-            }
-        }
-
-        return allBillsInDatabase;
     }
 
     private ArrayList<Bill> filterBillsOfMonth(ArrayList<Bill> billsToFilter, long timestampOfMonth){
@@ -197,7 +185,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private int getAveragePercentOfAllMonths(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTimeStampOfCreationDateOfFirstBillInDatabase());
-        ArrayList<Bill> allBillsInDatabase = getAllBillsInDatabase();
+        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
 
         int months = 0;
         long totalAmount = 0;
@@ -226,7 +214,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
         long firstCreationDate = System.currentTimeMillis();
 
-        ArrayList<Bill> billsInDatabase = getAllBillsInDatabase();
+        ArrayList<Bill> billsInDatabase = Database.Toolkit.getAllBillsInDatabase();
         for (Bill bill:billsInDatabase){
             if (bill.getCreationDate() < firstCreationDate){
                 firstCreationDate = bill.getCreationDate();
@@ -253,7 +241,8 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private void manageViews(){
-        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0 || getAllBillsInDatabase().size() == 0){
+        ArrayList<Bill> billsWhatBelongToGoals = filterBillsWhatBelongToGoals(Database.Toolkit.getAllBillsInDatabase());
+        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0 || billsWhatBelongToGoals.size() == 0){
             mLLContent.setVisibility(View.GONE);
             mLlNotEnoughData.setVisibility(View.VISIBLE);
             mLlSelectMonthFragmentContainer.setVisibility(View.GONE);
@@ -297,7 +286,7 @@ public class GoalsStatisticsFragment extends Fragment {
         calendar.setTimeInMillis(firstBillCreationDate);
 
         while (!doesMonthExceedsCurrentTime(calendar)){
-            ArrayList<Bill> listOfBillsOfCurrentMonth = filterBillsOfMonth(getAllBillsInDatabase(), calendar.getTimeInMillis());
+            ArrayList<Bill> listOfBillsOfCurrentMonth = filterBillsOfMonth(Database.Toolkit.getAllBillsInDatabase(), calendar.getTimeInMillis());
             ArrayList<Bill> listOfBillsOfCurrentMonthWhatBelongToGoals = filterBillsWhatBelongToGoals(listOfBillsOfCurrentMonth);
 
             if (listOfBillsOfCurrentMonthWhatBelongToGoals.size() != 0){

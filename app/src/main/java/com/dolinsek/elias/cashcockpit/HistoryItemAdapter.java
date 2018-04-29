@@ -54,6 +54,16 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         return historyItemAdapter;
     }
 
+    public static HistoryItemAdapter getBillsStatisticsHisotryItemAdapter(ArrayList<Bill> billsToDisplay){
+        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
+        historyItemAdapter.filterType = FILTER_NEWEST_ITEM_FIRST;
+        historyItemAdapter.billsToDisplay = billsToDisplay;
+        historyItemAdapter.allowToEditBill = false;
+        historyItemAdapter.filterBills(historyItemAdapter.filterType);
+
+        return historyItemAdapter;
+    }
+
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());

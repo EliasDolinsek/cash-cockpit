@@ -190,6 +190,7 @@ public class CockpitFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         getAssociatedBankAccountOfBill(bill).getBills().remove(bill);
+                        Database.save(getContext());
                         getActivity().finish();
                     }
                 });
