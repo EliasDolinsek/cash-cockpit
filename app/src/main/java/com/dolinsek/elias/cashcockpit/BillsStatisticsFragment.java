@@ -34,6 +34,8 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -52,7 +54,7 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private RecyclerView rvBillsOfSelectedMonth;
-    private CardView cvNotEnoughData, cvCategoryUsageStatisticContainer, cvOverallDetailsContainer, cvSelectedMonthDetailsContainer, cvHistoryChartContainer;
+    private CardView cvNotEnoughData, cvCategoryUsageStatisticContainer, cvDetailsContainer, cvHistoryChartContainer;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
     private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
@@ -71,8 +73,7 @@ public class BillsStatisticsFragment extends Fragment {
 
         cvNotEnoughData = inflatedView.findViewById(R.id.cv_bills_statistics_not_enough_data);
         cvCategoryUsageStatisticContainer = inflatedView.findViewById(R.id.cv_bills_statistics_category_usage_statistic_container);
-        cvOverallDetailsContainer = inflatedView.findViewById(R.id.cv_bills_statistics_overall_details_container);
-        cvSelectedMonthDetailsContainer = inflatedView.findViewById(R.id.cv_bills_statistics_selected_month_details_container);
+        cvDetailsContainer = inflatedView.findViewById(R.id.cv_bills_statistics_details_container);
         cvHistoryChartContainer = inflatedView.findViewById(R.id.cv_bills_statistics_history_chart_container);
 
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
@@ -94,8 +95,7 @@ public class BillsStatisticsFragment extends Fragment {
             cvNotEnoughData.setVisibility(View.VISIBLE);
             llSelectMonthFragment.setVisibility(View.GONE);
             cvCategoryUsageStatisticContainer.setVisibility(View.GONE);
-            cvOverallDetailsContainer.setVisibility(View.GONE);
-            cvSelectedMonthDetailsContainer.setVisibility(View.GONE);
+            cvDetailsContainer.setVisibility(View.GONE);
             cvHistoryChartContainer.setVisibility(View.GONE);
         }
 
@@ -120,15 +120,13 @@ public class BillsStatisticsFragment extends Fragment {
         if (sizeOfBills == 0){
             cvNotEnoughData.setVisibility(View.VISIBLE);
             cvCategoryUsageStatisticContainer.setVisibility(View.GONE);
-            cvOverallDetailsContainer.setVisibility(View.GONE);
-            cvSelectedMonthDetailsContainer.setVisibility(View.GONE);
+            cvDetailsContainer.setVisibility(View.GONE);
             cvHistoryChartContainer.setVisibility(View.GONE);
 
         } else {
             cvNotEnoughData.setVisibility(View.GONE);
             cvCategoryUsageStatisticContainer.setVisibility(View.VISIBLE);
-            cvOverallDetailsContainer.setVisibility(View.VISIBLE);
-            cvSelectedMonthDetailsContainer.setVisibility(View.VISIBLE);
+            cvDetailsContainer.setVisibility(View.VISIBLE);
             cvHistoryChartContainer.setVisibility(View.VISIBLE);
         }
     }
@@ -175,6 +173,7 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void setupBarData(BarData barData){
         barData.setValueFormatter(new HistoryOfPaymentsValueFormatter());
+        barData.setValueTextSize(15f);
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
@@ -198,22 +197,32 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void loadBillTypeUsageStatistic(long timeStampToLoadStatistics){
         ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(timeStampToLoadStatistics);
+        loadUsageOfBillTypeChart(
+                getBillsAsPieEntriesForBillUsageStatistics(billsOfMonth)
+        );
+    }
 
-        ArrayList<Bill> inputTypeBills = Database.Toolkit.filterBillsOfBillType(billsOfMonth, Bill.TYPE_INPUT);
-        ArrayList<Bill> outputTypeBills = Database.Toolkit.filterBillsOfBillType(billsOfMonth, Bill.TYPE_OUTPUT);
-        ArrayList<Bill> transferTypeBills = Database.Toolkit.filterBillsOfBillType(billsOfMonth, Bill.TYPE_TRANSFER);
+    private ArrayList<PieEntry> getBillsAsPieEntriesForBillUsageStatistics(ArrayList<Bill> bills){
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+
+        ArrayList<Bill> inputTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_INPUT);
+        ArrayList<Bill> outputTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_OUTPUT);
+        ArrayList<Bill> transferTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_TRANSFER);
 
         int allBillsSize = inputTypeBills.size() + outputTypeBills.size() + transferTypeBills.size();
         int usageOfInputTypesInPercent = getPercentOfBillUsage(allBillsSize, inputTypeBills.size());
         int usageOfOutputTypesInPercent = getPercentOfBillUsage(allBillsSize, outputTypeBills.size());
         int usageOfTransferTypesInPercent = getPercentOfBillUsage(allBillsSize, transferTypeBills.size());
 
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        pieEntries.add(usageOfBillTypeToPieEntry(usageOfInputTypesInPercent, Bill.TYPE_INPUT));
-        pieEntries.add(usageOfBillTypeToPieEntry(usageOfOutputTypesInPercent, Bill.TYPE_OUTPUT));
-        pieEntries.add(usageOfBillTypeToPieEntry(usageOfTransferTypesInPercent, Bill.TYPE_TRANSFER));
+        if (usageOfInputTypesInPercent != 0){
+            pieEntries.add(usageOfBillTypeToPieEntry(usageOfInputTypesInPercent, Bill.TYPE_INPUT));
+        } else if(usageOfOutputTypesInPercent != 0){
+            pieEntries.add(usageOfBillTypeToPieEntry(usageOfOutputTypesInPercent, Bill.TYPE_OUTPUT));
+        } else if (usageOfTransferTypesInPercent != 0){
+            pieEntries.add(usageOfBillTypeToPieEntry(usageOfTransferTypesInPercent, Bill.TYPE_TRANSFER));
+        }
 
-        loadUsageOfBillTypeChart(pieEntries);
+        return pieEntries;
     }
 
     private void loadUsageOfBillTypeChart(ArrayList<PieEntry> entries){
@@ -420,7 +429,7 @@ public class BillsStatisticsFragment extends Fragment {
         @Override
         public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
             if (entry.getY() == 0){
-                return "0";
+                return "";
             } else {
                 return String.valueOf(Math.round(entry.getY()));
             }
@@ -431,8 +440,7 @@ public class BillsStatisticsFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            String formattedValue = String.valueOf(Math.round(value) + ".");
-            return formattedValue;
+            return String.valueOf(Math.round(value + 1) + ".");
         }
     }
 

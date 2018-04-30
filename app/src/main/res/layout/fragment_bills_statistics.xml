@@ -88,7 +88,7 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
-                android:id="@+id/cv_bills_statistics_overall_details_container"
+                android:id="@+id/cv_bills_statistics_details_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
@@ -103,101 +103,105 @@
 
                     <TextView
                         android:text="@string/label_overall"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:textStyle="bold"/>
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                        android:layout_marginTop="5dp"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="5dp">
+                        android:padding="5dp"
+                        android:weightSum="3"
+                        android:layout_marginBottom="10dp">
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_input_usage_overall"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_marginEnd="5dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@color/colorGreen"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_output_usage_overall"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_marginEnd="5dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@android:color/holo_red_light"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_transfer_usage_overall"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@color/colorOrange"
                             android:textStyle="bold"/>
                     </LinearLayout>
-                </LinearLayout>
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cv_bills_statistics_selected_month_details_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="5dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="5dp">
 
                     <TextView
                         android:text="@string/label_selected_month"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorPrimary"
-                        android:textStyle="bold"/>
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="5dp">
+                        android:padding="5dp"
+                        android:weightSum="3"
+                        android:layout_marginBottom="10dp">
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_input_usage_month"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_marginEnd="5dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@color/colorGreen"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_output_usage_month"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:layout_marginEnd="5dp"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@android:color/holo_red_light"
                             android:textStyle="bold"/>
 
                         <TextView
                             android:id="@+id/txv_bills_statistics_bills_type_transfer_usage_month"
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+                            android:textAlignment="center"
                             android:textColor="@color/colorOrange"
                             android:textStyle="bold"/>
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
+
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cv_bills_statistics_history_chart_container"

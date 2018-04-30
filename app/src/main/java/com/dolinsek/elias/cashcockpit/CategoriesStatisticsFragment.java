@@ -80,6 +80,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         manageViews();
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvCategories.setNestedScrollingEnabled(false);
 
         return inflatedView;
     }
@@ -203,7 +204,9 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        int[] colors = new int[]{R.color.colorGreen, android.R.color.holo_red_light, R.color.colorOrange, android.R.color.holo_blue_dark, android.R.color.holo_purple};
+        pieDataSet.setColors(colors, getContext());
+
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));

@@ -65,6 +65,7 @@ public class GoalsStatisticsFragment extends Fragment {
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
 
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
+        mRvCategories.setNestedScrollingEnabled(false);
 
         return inflatedView;
     }
