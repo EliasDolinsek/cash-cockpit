@@ -71,6 +71,8 @@ public class BankAccountsStatisticsFragment extends Fragment {
         } else {
             llNotEnoughData.setVisibility(View.VISIBLE);
             lcStatistics.setVisibility(View.GONE);
+            spnSelectBankAccount.setVisibility(View.GONE);
+            txvNoBills.setVisibility(View.GONE);
         }
 
         return inflatedView;
@@ -232,8 +234,11 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
         calendar.setTimeInMillis(firstBalanceChangeDate);
         while (calendar.get(Calendar.YEAR) <= year && calendar.get(Calendar.MONTH) <= month){
-            BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
-            balanceChanges.add(lastBalanceChangeOfMonth);
+            int balanceChangesOfMonthSize = getSizeOfBalanceChangesOfMonth(bankAccount, calendar.getTimeInMillis());
+            if (balanceChangesOfMonthSize != 0){
+                BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
+                balanceChanges.add(lastBalanceChangeOfMonth);
+            }
 
             calendar.add(Calendar.MONTH, 1);
         }
@@ -252,6 +257,11 @@ public class BankAccountsStatisticsFragment extends Fragment {
 
         ArrayList<BalanceChange> balanceChangesOfBankAccountAndMonth = filterBalanceChangesOfMonth(balanceChangesOfBankAccount, timeStampOfMonth);
         return balanceChangesOfBankAccountAndMonth.get(balanceChangesOfBankAccountAndMonth.size() - 1);
+    }
+
+    private int getSizeOfBalanceChangesOfMonth(BankAccount bankAccount, long timeStampOfMonth){
+        ArrayList<BalanceChange> balanceChangesOfMonth = filterBalanceChangesOfMonth(bankAccount.getBalanceChanges(), timeStampOfMonth);
+        return balanceChangesOfMonth.size();
     }
 
     private ArrayList<BalanceChange> filterBalanceChangesOfMonth(ArrayList<BalanceChange> balanceChangesToFilter, long timeStampOfMonth){

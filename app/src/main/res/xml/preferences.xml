@@ -1,10 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:key="preference_currency"
-        android:summary="@string/label_currency_preference_description"
-        android:entries="@array/currencies_array"
-        android:entryValues="@array/currencies_values_array"
-        android:title="@string/label_currency"/>
+    <PreferenceCategory
+        android:title="@string/label_general">
+
+        <ListPreference
+            android:key="preference_currency"
+            android:summary="@string/label_currency_preference_description"
+            android:entries="@array/currencies_array"
+            android:entryValues="@array/currencies_values_array"
+            android:title="@string/label_currency"
+            android:defaultValue="1"/>
+
+        <CheckBoxPreference
+            android:key="preference_show_notification_on_auto_pay_payed"
+            android:title="@string/label_auto_pay_notifications"
+            android:summary="@string/label_auto_pay_notification_preference_description"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/label_safety">
+
+        <CheckBoxPreference
+            android:title="@string/label_backup_database_regularly"
+            android:summary="@string/label_backup_database_regularly_preference_description"
+            android:defaultValue="true"/>
+
+        <CheckBoxPreference
+            android:title="@string/label_use_pin_for_login"
+            android:summary="@string/label_use_pin_for_login_preference_description"
+            android:defaultValue="true"/>
+
+        <EditTextPreference
+            android:title="@string/label_pin_for_login"
+            android:summary="@string/label_pin_for_login_preference_description"
+            android:inputType="textPassword"/>
+
+    </PreferenceCategory>
 </PreferenceScreen>

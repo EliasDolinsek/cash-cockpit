@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.preference.PreferenceFragment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import 	android.support.v4.app.FragmentTransaction;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private HistoryFragment historyFragment = new HistoryFragment();
     private StatisticsFragment statisticsFragment = new StatisticsFragment();
     private DatabaseFragment databaseFragment = new DatabaseFragment();
+    private SettingsFragment settingsFragment = new SettingsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +70,9 @@ public class MainActivity extends AppCompatActivity {
                         replaceFragment(statisticsFragment);
                             return true;
                     case R.id.navigation_settings:
-                        return false;
+                        replaceFragment(settingsFragment);
+                            return true;
+
                 }
 
                 return false;
@@ -95,19 +99,5 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.options_activity_main, menu);
 
         return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.action_settings){
-
-            //Start SettingsActivity
-            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-            startActivity(intent);
-
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

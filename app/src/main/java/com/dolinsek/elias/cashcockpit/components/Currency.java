@@ -66,13 +66,13 @@ public class Currency {
     public static Currency getActiveCurrency(Context context){
         String defaultCurrency = context.getResources().getString(R.string.euro);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String activeCurrency = sharedPreferences.getString("preference_currency", defaultCurrency);
+        int activeCurrency = Integer.valueOf(sharedPreferences.getString("preference_currency", defaultCurrency));
 
-        if (activeCurrency.equals(context.getResources().getString(R.string.euro))){
+        if (activeCurrency == 1){
             return getEuroCurrency();
-        } else if(activeCurrency.equals(context.getResources().getString(R.string.dollar))){
+        } else if(activeCurrency == 2){
             return getDollarCurrency();
-        } else if(activeCurrency.equals(context.getResources().getString(R.string.pounds))){
+        } else if(activeCurrency == 3){
             return getPoundCurrency();
         } else {
             throw new Resources.NotFoundException("Couldn't find an active currency!");

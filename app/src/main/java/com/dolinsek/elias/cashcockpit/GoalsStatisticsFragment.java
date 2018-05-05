@@ -162,9 +162,9 @@ public class GoalsStatisticsFragment extends Fragment {
 
         for (Bill bill:bills){
             if (bill.getType() == Bill.TYPE_INPUT){
-                totalAmount -= bill.getAmount();
-            } else {
                 totalAmount += bill.getAmount();
+            } else {
+                totalAmount -= bill.getAmount();
             }
         }
 
