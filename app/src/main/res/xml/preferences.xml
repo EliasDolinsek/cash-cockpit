@@ -17,7 +17,7 @@
             android:title="@string/label_auto_pay_notifications"
             android:summary="@string/label_auto_pay_notification_preference_description"
             android:defaultValue="true"/>
-    </PreferenceCategory>
+</PreferenceCategory>
 
     <PreferenceCategory
         android:title="@string/label_safety">
@@ -28,14 +28,21 @@
             android:defaultValue="true"/>
 
         <CheckBoxPreference
-            android:title="@string/label_use_pin_for_login"
-            android:summary="@string/label_use_pin_for_login_preference_description"
+            android:key="preference_password_required_for_login"
+            android:title="@string/label_use_password_for_login"
+            android:summary="@string/label_use_password_for_login_preference_description"
             android:defaultValue="true"/>
 
         <EditTextPreference
-            android:title="@string/label_pin_for_login"
-            android:summary="@string/label_pin_for_login_preference_description"
-            android:inputType="textPassword"/>
+            android:key="preference_password_for_login"
+            android:title="@string/label_password_for_login"
+            android:summary="@string/label_password_for_login_preference_description"
+            android:defaultValue="false"
+            android:inputType="textPassword"
+            android:textAlignment="center"
+            android:password="true"
+            android:persistent="true"/> />
+
 
     </PreferenceCategory>
 </PreferenceScreen>

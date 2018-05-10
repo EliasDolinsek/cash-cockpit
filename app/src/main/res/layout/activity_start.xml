@@ -12,24 +12,24 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="90dp"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-20dp"
+            android:layout_marginStart="10dp"
             android:text="@string/label_cash"
             android:textColor="@color/colorAccent"
-            android:textSize="30dp"
-            android:layout_marginBottom="-20dp"
-            android:layout_marginStart="10dp"/>
+            android:textSize="60sp" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/label_cockpit"
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="60dp" />
+            android:textSize="60sp" />
 
     </LinearLayout>
 
@@ -49,5 +49,53 @@
         android:text="@string/label_beta"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
         android:textColor="@android:color/white" />
+
+    <EditText
+        android:id="@+id/edt_start_password"
+        android:hint="@string/label_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="179dp"
+        android:background="@drawable/rounded_edit_text"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textSize="30sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/edt_start_password"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:paddingTop="5dp">
+
+        <TextView
+            android:id="@+id/txv_forgot_password"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/label_forgot_password"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_weight="10"
+            android:layout_marginStart="20dp"/>
+
+        <Button
+            android:id="@+id/btn_start_login"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_login"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"/>
+
+    </LinearLayout>
 
 </RelativeLayout>

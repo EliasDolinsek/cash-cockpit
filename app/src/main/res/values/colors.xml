@@ -8,8 +8,10 @@
     <color name="colorAccentDark">#c66900</color>
     <color name="colorPrimaryTextColor">#000000</color>
     <color name="colorAccentTextColor">#000000</color>
+
     <color name="colorLightGray">#E0E0E0</color>
     <color name="colorGreen">#66bb6a</color>
     <color name="colorGray">#636363</color>
     <color name="colorOrange">#ffab40</color>
+    <color name="colorBlue">#0000ff</color>
 </resources>

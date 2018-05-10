@@ -64,9 +64,8 @@ public class Currency {
     }
 
     public static Currency getActiveCurrency(Context context){
-        String defaultCurrency = context.getResources().getString(R.string.euro);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        int activeCurrency = Integer.valueOf(sharedPreferences.getString("preference_currency", defaultCurrency));
+        int activeCurrency = Integer.valueOf(sharedPreferences.getString("preference_currency", "1"));
 
         if (activeCurrency == 1){
             return getEuroCurrency();
@@ -119,10 +118,15 @@ public class Currency {
     }
 
     public static TextWatcher getCurrencyTextWatcherByCurrencyIndex(final int currencyIndex, final EditText editText){
-        TextWatcher currencyTextWatcher = new TextWatcher() {
+        return new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String input = charSequence.toString();
 
                 if (currencyIndex == CURRENCY_INDEX_EURO){
@@ -134,12 +138,6 @@ public class Currency {
                 } else {
                     throw new Resources.NotFoundException("Couldn't find Currency by Currency-ID");
                 }
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -147,8 +145,6 @@ public class Currency {
 
             }
         };
-
-        return currencyTextWatcher;
     }
 
     public TextWatcher getCurrencyTextWatcher(EditText editText){
@@ -160,7 +156,7 @@ public class Currency {
 
         if (input.contains(".") && getLengthOfNumbersAfterComma(input) > allowedLengthAfterComma){
             editText.setText(removeLastCharacterFromString(input));
-            editText.setSelection(input.length());
+            editText.setSelection(input.length() - 1);
         }
     }
 
@@ -169,7 +165,7 @@ public class Currency {
 
         if (input.contains(".") && getLengthOfNumbersAfterComma(input) > allowedLengthAfterComma){
             editText.setText(removeLastCharacterFromString(input));
-            editText.setSelection(input.length());
+            editText.setSelection(input.length() - 1);
         }
     }
 
@@ -178,7 +174,7 @@ public class Currency {
 
         if (input.contains(".") && getLengthOfNumbersAfterComma(input) > allowedLengthAfterComma){
             editText.setText(removeLastCharacterFromString(input));
-            editText.setSelection(input.length());
+            editText.setSelection(input.length() - 1);
         }
     }
 
