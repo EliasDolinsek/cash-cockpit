@@ -12,8 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"></activity>
         <activity android:name=".BankAccountActivity" />
         <activity android:name=".CategoryActivity" />
         <activity
@@ -23,13 +22,25 @@
             android:name=".BillEditorActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".SelectCategoryActivity" />
-        <activity android:name=".StartActivity" android:noHistory="true">
+        <activity
+            android:name=".StartActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name=".DayChangedReceiver"
+            android:enabled="true"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.DATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -200,7 +200,7 @@ public class Currency {
 
     private static String formatAmountToReadableStringCurrencyDollar(long amount){
         long dollar = amount / 100;
-        long cents = amount % 100;
+        long cents = Math.abs(amount % 100);
         String result;
 
         result = String.valueOf(dollar) + "." + String.valueOf(cents);
@@ -211,7 +211,7 @@ public class Currency {
 
     private static String formatAmountToReadableStringCurrencyPound(long amount){
         long pounds = amount / 100;
-        long cents = amount % 100;
+        long cents = Math.abs(amount % 100);
         String result;
 
         result = String.valueOf(pounds) + "." + String.valueOf(cents);

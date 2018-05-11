@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StartActivity">
+    tools:context=".StartActivity"
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/ll_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="90dp"
-        android:orientation="horizontal">
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="-20dp"
-            android:layout_marginStart="10dp"
             android:text="@string/label_cash"
             android:textColor="@color/colorAccent"
-            android:textSize="60sp" />
+            android:textAlignment="center"
+            android:textSize="45sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,26 +29,9 @@
             android:text="@string/label_cockpit"
             android:textAlignment="center"
             android:textColor="@color/colorPrimaryDark"
-            android:textSize="60sp" />
+            android:textSize="45sp" />
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="-50dp"
-        android:background="@drawable/border_red"
-        android:paddingBottom="3dp"
-        android:paddingEnd="50dp"
-        android:paddingStart="50dp"
-        android:paddingTop="3dp"
-        android:rotation="45"
-        android:text="@string/label_beta"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-        android:textColor="@android:color/white" />
 
     <EditText
         android:id="@+id/edt_start_password"
@@ -57,9 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="179dp"
         android:background="@drawable/rounded_edit_text"
         android:inputType="textPassword"
         android:textAlignment="center"
@@ -69,9 +49,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/edt_start_password"
-        android:layout_centerVertical="true"
         android:orientation="horizontal"
         android:gravity="center"
         android:layout_marginStart="40dp"
@@ -98,4 +75,4 @@
 
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

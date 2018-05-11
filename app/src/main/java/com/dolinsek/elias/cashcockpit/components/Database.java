@@ -168,5 +168,22 @@ public class Database {
 
             return filteredBills;
         }
+
+        public static void manageAllPayments(){
+            for (AutoPay autoPay:Database.getAutoPays()){
+                autoPay.managePayment();
+            }
+        }
+
+        public static ArrayList<AutoPay> autoPaysWherePaymentsAreRequired(){
+            ArrayList<AutoPay> autoPays = new ArrayList<>();
+            for (AutoPay autoPay:Database.getAutoPays()){
+                if (autoPay.isPaymentRequired()){
+                    autoPays.add(autoPay);
+                }
+            }
+
+            return autoPays;
+        }
     }
 }

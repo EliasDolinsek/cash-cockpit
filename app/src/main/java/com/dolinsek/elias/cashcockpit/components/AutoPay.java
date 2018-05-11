@@ -86,10 +86,6 @@ public class AutoPay {
     public AutoPay() {
     }
 
-    public void managePayments(){
-        new PaymentManager(this).managePayments();
-    }
-
     public Bill getBill() {
         return bill;
     }
@@ -138,63 +134,51 @@ public class AutoPay {
         this.payments = payments;
     }
 
-    public class PaymentManager {
+    public void managePayment(){
+        int paymentsToDo = getPaymentsToDo();
+        for (int i = 0; i<=paymentsToDo; i++){
+            addPayment();
+        }
+    }
 
-        private AutoPay autoPay;
+    private void addPayment(){
+        bankAccount.addBill(bill);
+        payments.add(System.currentTimeMillis());
+    }
 
-        public PaymentManager(AutoPay autoPay){
-            this.autoPay = autoPay;
+    public boolean isPaymentRequired(){
+        return getPaymentsToDo() != 0;
+    }
+
+    private int getPaymentsToDo(){
+        if (payments.size() == 0){
+            return 1;
         }
 
-        public void managePayments(){
-            if(autoPay.getPayments().size() != 0){
-                Calendar currentTimeCalender = Calendar.getInstance();
-                currentTimeCalender.setTimeInMillis(System.currentTimeMillis());
+        long currentTimeStamp = payments.get(payments.size() - 1);
+        long timeMillisToAdd = getTimeMillisOfPaymentDistances();
+        int paymentsToDo = 0;
 
-                Calendar lastPaymentCalender = Calendar.getInstance();
-                lastPaymentCalender.setTimeInMillis((autoPay.getPayments().size() == 0 ? 0 : autoPay.getPayments().get(autoPay.getPayments().size() - 1)));
+        do {
+            paymentsToDo++;
+            currentTimeStamp += timeMillisToAdd;
+        } while (currentTimeStamp <= System.currentTimeMillis());
 
-                int yearsDifference = currentTimeCalender.get(Calendar.YEAR) - lastPaymentCalender.get(Calendar.YEAR);
-                int monthsDifference = currentTimeCalender.get(Calendar.MONTH) - lastPaymentCalender.get(Calendar.MONTH);
-                int weeksDifference = currentTimeCalender.get(Calendar.WEEK_OF_MONTH) - lastPaymentCalender.get(Calendar.WEEK_OF_MONTH);
+        return paymentsToDo;
+    }
 
-                autoPay.getBill().setCreationDate(getPaymentDate());
-                if(autoPay.getType() == TYPE_WEEKLY){
-                    for(int i = 0; i<=weeksDifference; i++){
-                        for(int y = 0; y<=monthsDifference; y++){
-                            for(int x = 0; y<=yearsDifference; x++){
-                                autoPay.getBankAccount().addBill(autoPay.getBill());
-                            }
-                        }
-                    }
-                } else if(autoPay.getType() == TYPE_MONTHLY){
-                    for(int i = 0; i<=monthsDifference; i++){
-                        for(int y = 0; y<=yearsDifference; y++){
-                            autoPay.getBankAccount().addBill(autoPay.getBill());
-                        }
-                    }
-                } else {
-                    for(int i = 0; i<=yearsDifference; i++){
-                        autoPay.getBankAccount().addBill(autoPay.getBill());
-                    }
-                }
-
-                autoPay.getPayments().add(getPaymentDate());
-            } else {
-                autoPay.getPayments().add(getPaymentDate());
-            }
+    private long getTimeMillisOfPaymentDistances(){
+        Calendar calendar = Calendar.getInstance();
+        if (type == TYPE_WEEKLY){
+            calendar.add(Calendar.WEEK_OF_MONTH, 1);
+        } else if (type == TYPE_MONTHLY){
+            calendar.add(Calendar.MONTH, 1);
+        } else if (type == TYPE_YEARLY){
+            calendar.add(Calendar.YEAR, 1);
+        } else {
+            throw new IllegalArgumentException("Couldn't resolve " + type + " as a valid auto-pay-type");
         }
 
-        private long getPaymentDate(){
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            if(autoPay.getType() == TYPE_WEEKLY){
-                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + (String.valueOf(calendar.get(Calendar.MONTH)).length() != 2 ? "0" + String.valueOf(calendar.get(Calendar.MONTH)) : String.valueOf(calendar.get(Calendar.MONTH))) + "-" + (calendar.getActualMinimum(Calendar.DAY_OF_WEEK) != 2 ? "0" + calendar.getActualMinimum(Calendar.DAY_OF_WEEK) : calendar.getActualMinimum(Calendar.DAY_OF_WEEK)) + " 00:00:01.00").getTime();
-            } else if(autoPay.getType() == TYPE_MONTHLY){
-                return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-" + (String.valueOf(calendar.get(Calendar.MONTH)).length() != 2 ? "0" + String.valueOf(calendar.get(Calendar.MONTH)) : String.valueOf(calendar.get(Calendar.MONTH))) + "-01 00:00:01.00").getTime();
-            } else {
-               return Timestamp.valueOf(calendar.get(Calendar.YEAR) + "-01-01 00:00:01.00").getTime();
-            }
-        }
+        return calendar.getTimeInMillis();
     }
 }
