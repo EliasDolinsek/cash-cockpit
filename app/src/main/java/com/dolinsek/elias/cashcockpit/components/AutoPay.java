@@ -66,6 +66,8 @@ public class AutoPay {
         this.name = name;
         this.bankAccount = bankAccount;
         this.creationDate = creationDate;
+
+        addFirstPayment();
     }
 
     /**
@@ -81,9 +83,12 @@ public class AutoPay {
         this.name = name;
         this.bankAccount = bankAccount;
         creationDate = System.currentTimeMillis();
+
+        addFirstPayment();
     }
 
     public AutoPay() {
+        addFirstPayment();
     }
 
     public Bill getBill() {
@@ -134,6 +139,28 @@ public class AutoPay {
         this.payments = payments;
     }
 
+    private void addFirstPayment(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        calendar.set(Calendar.HOUR, calendar.getActualMinimum(Calendar.HOUR));
+        calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
+        calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
+
+        switch (type){
+            case TYPE_WEEKLY: calendar.set(Calendar.DAY_OF_WEEK, calendar.getActualMinimum(Calendar.DAY_OF_WEEK));
+                break;
+            case TYPE_MONTHLY: calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+                break;
+            case TYPE_YEARLY: calendar.set(Calendar.MONTH, calendar.getActualMinimum(Calendar.MONTH));
+                break;
+                default: throw new IllegalStateException("Couldn't resolve " + type + " as a valid auto-pay-type");
+        }
+
+        payments.add(calendar.getTimeInMillis());
+    }
+
     public void managePayment(){
         int paymentsToDo = getPaymentsToDo();
         for (int i = 0; i<=paymentsToDo; i++){
@@ -151,10 +178,6 @@ public class AutoPay {
     }
 
     private int getPaymentsToDo(){
-        if (payments.size() == 0){
-            return 1;
-        }
-
         long currentTimeStamp = payments.get(payments.size() - 1);
         long timeMillisToAdd = getTimeMillisOfPaymentDistances();
         int paymentsToDo = 0;

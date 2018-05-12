@@ -278,6 +278,9 @@ public class DataHelper {
             //Adds creation date of bill
             autoPayBill.put(BILL_CREATION_DATE_JSON, autoPay.getBill().getCreationDate());
 
+            //Adds type of bill
+            autoPayBill.put(BILL_TYPE_JSON, autoPay.getType());
+
 
             //Adds type
             currentAutoPay.put(AUTO_PAY_TYPE, autoPay.getType());
@@ -564,14 +567,9 @@ public class DataHelper {
             }
 
             //Adds current AutoPay
-            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, Bill.TYPE_OUTPUT, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
+            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
             autoPayToAdd.setPayments(payments);
 
-            if(autoPayToAdd.getBill().getAmount() > 0){
-                autoPayToAdd.getBill().setType(Bill.TYPE_OUTPUT);
-            } else {
-                autoPayToAdd.getBill().setType(Bill.TYPE_INPUT);
-            }
             autoPays.add(autoPayToAdd);
         }
 

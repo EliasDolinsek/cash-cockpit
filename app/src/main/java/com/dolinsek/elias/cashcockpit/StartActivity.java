@@ -44,7 +44,7 @@ public class StartActivity extends AppCompatActivity {
         txvForgotPassword.setOnClickListener(getOnForgotPasswordClickListener());
 
         if (!isPinRequiredForLogin()){
-            edtPassword.setVisibility(View.GONE);
+            login();
         }
 
         long timeStampWhenPasswordGetsReset = getTimeStampWhenPasswordGetsReset();
@@ -137,7 +137,7 @@ public class StartActivity extends AppCompatActivity {
         try {
             Database.load(getApplicationContext());
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            e.printStackTrace();
             if (Database.getPrimaryCategories().size() == 0){
                 restorePrimaryCategories();
             }

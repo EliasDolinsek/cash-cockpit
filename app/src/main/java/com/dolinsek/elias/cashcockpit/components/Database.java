@@ -43,6 +43,8 @@ public class Database {
      */
     private static DataHelper dataHelper;
 
+    private static boolean loaded;
+
     public static ArrayList<BankAccount> getBankAccounts() {
         return bankAccounts;
     }
@@ -82,6 +84,8 @@ public class Database {
                 getBankAccounts().add(0, primaryBankAccount);
             }
         }
+
+        loaded = true;
     }
 
     /**
@@ -111,6 +115,10 @@ public class Database {
         Database.autoPays = autoPays;
     }
 
+    public static boolean isLoaded() {
+        return loaded;
+    }
+
     public static class Toolkit {
 
         public static ArrayList<Bill> getAllBillsInDatabase(){
@@ -125,8 +133,7 @@ public class Database {
         public static long getCreationDateOfFirstBill(ArrayList<Bill> bills){
             long firstCreationDate = System.currentTimeMillis();
 
-            ArrayList<Bill> billsInDatabase = getAllBillsInDatabase();
-            for (Bill bill:billsInDatabase){
+            for (Bill bill:bills){
                 if (bill.getCreationDate() < firstCreationDate){
                     firstCreationDate = bill.getCreationDate();
                 }
@@ -175,7 +182,7 @@ public class Database {
             }
         }
 
-        public static ArrayList<AutoPay> autoPaysWherePaymentsAreRequired(){
+        public static ArrayList<AutoPay> getAutoPaysWherePaymentsAreRequired(){
             ArrayList<AutoPay> autoPays = new ArrayList<>();
             for (AutoPay autoPay:Database.getAutoPays()){
                 if (autoPay.isPaymentRequired()){
