@@ -66,8 +66,6 @@ public class AutoPay {
         this.name = name;
         this.bankAccount = bankAccount;
         this.creationDate = creationDate;
-
-        addFirstPayment();
     }
 
     /**
@@ -83,12 +81,10 @@ public class AutoPay {
         this.name = name;
         this.bankAccount = bankAccount;
         creationDate = System.currentTimeMillis();
-
-        addFirstPayment();
     }
 
     public AutoPay() {
-        addFirstPayment();
+
     }
 
     public Bill getBill() {
@@ -139,24 +135,24 @@ public class AutoPay {
         this.payments = payments;
     }
 
-    private void addFirstPayment(){
+    public void addFirstPayment(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
-        calendar.set(Calendar.HOUR, calendar.getActualMinimum(Calendar.HOUR));
-        calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
-        calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
-        calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
-
         switch (type){
-            case TYPE_WEEKLY: calendar.set(Calendar.DAY_OF_WEEK, calendar.getActualMinimum(Calendar.DAY_OF_WEEK));
+            case TYPE_YEARLY: calendar.set(Calendar.DAY_OF_YEAR, calendar.getActualMinimum(Calendar.DAY_OF_YEAR));
                 break;
             case TYPE_MONTHLY: calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
                 break;
-            case TYPE_YEARLY: calendar.set(Calendar.MONTH, calendar.getActualMinimum(Calendar.MONTH));
+            case TYPE_WEEKLY: calendar.set(Calendar.DAY_OF_WEEK, calendar.getActualMinimum(Calendar.DAY_OF_WEEK));
                 break;
-                default: throw new IllegalStateException("Couldn't resolve " + type + " as a valid auto-pay-type");
+            default: throw new IllegalStateException("Couldn't resolve " + type + " as a valid auto-pay-type");
         }
+
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.getActualMinimum(Calendar.HOUR_OF_DAY));
+        calendar.set(Calendar.MINUTE, calendar.getActualMinimum(Calendar.MINUTE));
+        calendar.set(Calendar.SECOND, calendar.getActualMinimum(Calendar.SECOND));
+        calendar.set(Calendar.MILLISECOND, calendar.getActualMinimum(Calendar.MILLISECOND));
 
         payments.add(calendar.getTimeInMillis());
     }
@@ -179,29 +175,32 @@ public class AutoPay {
 
     private int getPaymentsToDo(){
         long currentTimeStamp = payments.get(payments.size() - 1);
-        long timeMillisToAdd = getTimeMillisOfPaymentDistances();
         int paymentsToDo = 0;
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        int currentYear = calendar.get(Calendar.YEAR), currentMonth = calendar.get(Calendar.MONTH), currentWeek = calendar.get(Calendar.WEEK_OF_MONTH);
+        calendar.setTimeInMillis(currentTimeStamp);
 
         do {
             paymentsToDo++;
-            currentTimeStamp += timeMillisToAdd;
-        } while (currentTimeStamp <= System.currentTimeMillis());
+            addDurationOfPaymentDifferenceToCalendar(calendar);
+        } while (currentYear >= calendar.get(Calendar.YEAR) || currentMonth >= calendar.get(Calendar.MONTH) || currentWeek >= calendar.get(Calendar.WEEK_OF_MONTH));
 
         return paymentsToDo;
     }
 
-    private long getTimeMillisOfPaymentDistances(){
-        Calendar calendar = Calendar.getInstance();
-        if (type == TYPE_WEEKLY){
-            calendar.add(Calendar.WEEK_OF_MONTH, 1);
-        } else if (type == TYPE_MONTHLY){
-            calendar.add(Calendar.MONTH, 1);
-        } else if (type == TYPE_YEARLY){
-            calendar.add(Calendar.YEAR, 1);
-        } else {
-            throw new IllegalArgumentException("Couldn't resolve " + type + " as a valid auto-pay-type");
+    private void addDurationOfPaymentDifferenceToCalendar(Calendar calendar){
+        switch (type){
+            case TYPE_WEEKLY: calendar.add(Calendar.WEEK_OF_MONTH, 1);
+                break;
+            case TYPE_MONTHLY: calendar.add(Calendar.MONTH, 1);
+                break;
+            case TYPE_YEARLY: calendar.add(Calendar.YEAR, 1);
+                break;
+            default: throw new IllegalArgumentException("Couldn't resolve " + type + " as a valid bill type");
         }
-
-        return calendar.getTimeInMillis();
     }
+
 }
