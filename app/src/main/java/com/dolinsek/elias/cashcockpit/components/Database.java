@@ -94,12 +94,14 @@ public class Database {
      */
     public static void save(Context context){
 
-        if(dataHelper != null){
-            try {
-                dataHelper.writeData(bankAccounts, primaryCategories, autoPays);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (dataHelper == null){
+            dataHelper = new DataHelper(context);
+        }
+
+        try {
+            dataHelper.writeData(bankAccounts, primaryCategories, autoPays);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -191,6 +193,19 @@ public class Database {
             }
 
             return autoPays;
+        }
+
+        public static long getTotalAmountOfBills(ArrayList<Bill> bills){
+            long amount = 0;
+            for (Bill bill:bills){
+                if (bill.getType() == Bill.TYPE_INPUT){
+                    amount += bill.getAmount();
+                } else if (bill.getType() == Bill.TYPE_OUTPUT || bill.getType() == Bill.TYPE_TRANSFER){
+                    amount -= bill.getAmount();
+                }
+            }
+
+            return amount;
         }
     }
 }

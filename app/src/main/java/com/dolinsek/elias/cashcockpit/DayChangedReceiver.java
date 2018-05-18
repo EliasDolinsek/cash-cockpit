@@ -1,19 +1,17 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationManagerCompat;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.AutoPayPaymentManager;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class DayChangedReceiver extends BroadcastReceiver {
 
@@ -25,8 +23,17 @@ public class DayChangedReceiver extends BroadcastReceiver {
             }
 
             AutoPayPaymentManager autoPayPaymentManager = new AutoPayPaymentManager(context);
-            autoPayPaymentManager.manageAutoPayPaymentsAndDisplayNotifications();
+            if (doShowNotificationOnAutoPayPayment(context)){
+                autoPayPaymentManager.manageAutoPayPaymentsAndDisplayNotifications();
+            } else {
+                autoPayPaymentManager.manageAutoPaysPayments();
+            }
         }
+    }
+
+    private boolean doShowNotificationOnAutoPayPayment(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("preference_show_notification_on_auto_pay_payed", true);
     }
 
     private void initDatabase(Context context){

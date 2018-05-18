@@ -3,6 +3,8 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPayPaymentManager;
@@ -22,8 +24,17 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             }
 
             AutoPayPaymentManager autoPayPaymentManager = new AutoPayPaymentManager(context);
-            autoPayPaymentManager.manageAutoPayPaymentsAndDisplayNotifications();
+            if (doShowNotificationOnAutoPayPayment(context)){
+                autoPayPaymentManager.manageAutoPayPaymentsAndDisplayNotifications();
+            } else {
+                autoPayPaymentManager.manageAutoPaysPayments();
+            }
         }
+    }
+
+    private boolean doShowNotificationOnAutoPayPayment(Context context){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getBoolean("preference_show_notification_on_auto_pay_payed", true);
     }
 
     private void initDatabase(Context context){

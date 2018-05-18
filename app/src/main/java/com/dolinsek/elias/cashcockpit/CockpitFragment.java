@@ -33,6 +33,11 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONException;
 
@@ -61,6 +66,7 @@ public class CockpitFragment extends Fragment {
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
+    private PieChart pieChart;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -82,6 +88,7 @@ public class CockpitFragment extends Fragment {
         mBtnAdd = (Button) inflatedView.findViewById(R.id.btn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
+        pieChart = (PieChart) inflatedView.findViewById(R.id.pc_cockpit);
 
         mLlSelectInfo = (LinearLayout) inflatedView.findViewById(R.id.ll_cockpit_select_info);
         mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
@@ -198,7 +205,12 @@ public class CockpitFragment extends Fragment {
             }
         });
 
+        loadStatistics();
         return inflatedView;
+    }
+
+    private void loadStatistics(){
+        loadPieChart();
     }
 
     private void setupSpinnersStyles(){
@@ -421,5 +433,48 @@ public class CockpitFragment extends Fragment {
         }
 
         throw new Resources.NotFoundException("Couldn't find associated bank account of bill!");
+    }
+
+    private long getAmountOfOutputBillsOfMonth(long timeStampOfMonth){
+        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_OUTPUT);
+        return Database.Toolkit.getTotalAmountOfBills(bills);
+    }
+
+    private long getAmountOfTransferBillsOfMonth(long timeStampOfMonth){
+        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_TRANSFER);
+        return Database.Toolkit.getTotalAmountOfBills(bills);
+    }
+
+    private long getAmountOfInputBillsOfMonth(long timeStampOfMonth){
+        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_INPUT);
+        return Database.Toolkit.getTotalAmountOfBills(bills);
+    }
+
+    private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(long timeStampOfMonth){
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+
+        long amountOfInput = getAmountOfInputBillsOfMonth(timeStampOfMonth);
+        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
+        long amountOfTransfer = getAmountOfTransferBillsOfMonth(timeStampOfMonth);
+
+        pieEntries.add(new PieEntry(amountOfInput, getString(R.string.label_input)));
+        pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
+        pieEntries.add(new PieEntry(Math.abs(amountOfTransfer), getString(R.string.label_transfer)));
+
+        return pieEntries;
+    }
+
+    private void loadPieChart(){
+        ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries(System.currentTimeMillis());
+
+        int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_dark), getResources().getColor(R.color.colorOrange)};
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "TODO");
+        pieDataSet.setColors(colors);
+
+        PieData pieData = new PieData(pieDataSet);
+
+        //TODO
+        pieChart.setHoleRadius(70f);
+        pieChart.setData(pieData);
     }
 }
