@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -93,7 +94,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         long totalAmountOfAllGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
         long totalAmountOfBillsOfMonth = getTotalAmountOfBillsOfMonthWithGoals(timeStampOfMonth);
-        int percent = Math.round((int) (100 / (double) totalAmountOfAllGoals * totalAmountOfBillsOfMonth));
+        int percent = Math.abs(Math.round((int) (100 / (double) totalAmountOfAllGoals * totalAmountOfBillsOfMonth)));
 
         mPgbMonth.setProgress(percent);
         displayPercentCorrectly(mTxvMonth, percent);
@@ -126,13 +127,10 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private long getTotalAmountOfBillsOfMonthWithGoals(long timeStampOfMonth) {
-        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
-        ArrayList<Bill> allBillsInDatabaseOfMonth = filterBillsOfMonth(allBillsInDatabase, timeStampOfMonth);
+        ArrayList<Bill> allBillsInDatabaseOfMonth = Database.Toolkit.getBillsOfMonth(timeStampOfMonth);
         ArrayList<Bill> allBillsInDatabaseOfMonthWhatHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(allBillsInDatabaseOfMonth);
 
-        long amountOfBills = getTotalAmountOfBills(allBillsInDatabaseOfMonthWhatHaveGoals);
-
-        return amountOfBills;
+        return getTotalAmountOfBills(allBillsInDatabaseOfMonthWhatHaveGoals);
     }
 
     private ArrayList<Bill> filterBillsOfMonth(ArrayList<Bill> billsToFilter, long timestampOfMonth){
@@ -186,12 +184,11 @@ public class GoalsStatisticsFragment extends Fragment {
     private int getAveragePercentOfAllMonths(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(getTimeStampOfCreationDateOfFirstBillInDatabase());
-        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
 
         int months = 0;
         long totalAmount = 0;
         while (!doesMonthExceedsCurrentTime(calendar)){
-            ArrayList<Bill> billsOfCurrentMonth = filterBillsOfMonth(allBillsInDatabase, calendar.getTimeInMillis());
+            ArrayList<Bill> billsOfCurrentMonth = Database.Toolkit.getBillsOfMonth(calendar.getTimeInMillis());
             ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(billsOfCurrentMonth);
 
             totalAmount += getTotalAmountOfBills(filteredBillsWhatSubcategoriesHaveGoals);
@@ -200,7 +197,7 @@ public class GoalsStatisticsFragment extends Fragment {
         }
 
         long totalAmountOfGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
-        int percent = (int)(100 / (double) (totalAmountOfGoals * months) * totalAmount);
+        int percent = Math.abs((int)(100 / (double) (totalAmountOfGoals * months) * totalAmount));
 
         return Math.round(percent);
     }

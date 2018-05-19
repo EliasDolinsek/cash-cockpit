@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
@@ -34,9 +35,11 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONException;
@@ -62,7 +65,7 @@ public class CockpitFragment extends Fragment {
     private static final String TYPE = "type";
 
     private LinearLayout mLlSelectInfo;
-    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory;
+    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory, txvAmountOfInput, txvAmountOfTransfer;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
@@ -94,6 +97,9 @@ public class CockpitFragment extends Fragment {
         mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
         mTxvSelectedPrimaryCategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_primary_category);
+
+        txvAmountOfInput = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_input);
+        txvAmountOfTransfer = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_transfer);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
@@ -205,7 +211,10 @@ public class CockpitFragment extends Fragment {
             }
         });
 
+        setupPieChart();
         loadStatistics();
+        displayAmountOfBillTypes();
+
         return inflatedView;
     }
 
@@ -454,12 +463,12 @@ public class CockpitFragment extends Fragment {
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
         long amountOfInput = getAmountOfInputBillsOfMonth(timeStampOfMonth);
-        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
         long amountOfTransfer = getAmountOfTransferBillsOfMonth(timeStampOfMonth);
+        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
 
-        pieEntries.add(new PieEntry(amountOfInput, getString(R.string.label_input)));
-        pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
-        pieEntries.add(new PieEntry(Math.abs(amountOfTransfer), getString(R.string.label_transfer)));
+        pieEntries.add(new PieEntry(amountOfInput));
+        pieEntries.add(new PieEntry(Math.abs(amountOfTransfer)));
+        pieEntries.add(new PieEntry(Math.abs(amountOfOutput)));
 
         return pieEntries;
     }
@@ -467,14 +476,42 @@ public class CockpitFragment extends Fragment {
     private void loadPieChart(){
         ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries(System.currentTimeMillis());
 
-        int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_dark), getResources().getColor(R.color.colorOrange)};
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "TODO");
-        pieDataSet.setColors(colors);
-
+        setupPieDataSet(pieDataSet);
         PieData pieData = new PieData(pieDataSet);
 
-        //TODO
-        pieChart.setHoleRadius(70f);
         pieChart.setData(pieData);
+    }
+
+    private void setupPieChart(){
+        Description description = new Description();
+        description.setText("");
+        pieChart.setDescription(description);
+
+        pieChart.setHoleRadius(75f);
+        pieChart.setUsePercentValues(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.invalidate();
+    }
+
+    private void setupPieDataSet(PieDataSet pieDataSet){
+        setupPieDataSetColors(pieDataSet);
+        pieDataSet.setValueTextSize(0f); //Removes value text-view
+    }
+
+    private void setupPieDataSetColors(PieDataSet pieDataSet){
+        int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_dark), getResources().getColor(R.color.colorOrange)};
+        pieDataSet.setColors(colors);
+    }
+
+    private void displayAmountOfBillTypes(){
+        long amountOfInput = getAmountOfInputBillsOfMonth(System.currentTimeMillis());
+        String txtInput = ": " + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(amountOfInput);
+
+        long amountOfTransfer = Math.abs(getAmountOfTransferBillsOfMonth(System.currentTimeMillis()));
+        String txtTransfer = ": " + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(amountOfTransfer);
+
+        txvAmountOfInput.append(txtInput);
+        txvAmountOfTransfer.append(txtTransfer);
     }
 }

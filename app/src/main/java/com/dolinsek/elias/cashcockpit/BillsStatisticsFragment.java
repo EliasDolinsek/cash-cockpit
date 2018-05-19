@@ -216,9 +216,13 @@ public class BillsStatisticsFragment extends Fragment {
 
         if (usageOfInputTypesInPercent != 0){
             pieEntries.add(usageOfBillTypeToPieEntry(usageOfInputTypesInPercent, Bill.TYPE_INPUT));
-        } else if(usageOfOutputTypesInPercent != 0){
+        }
+
+        if(usageOfOutputTypesInPercent != 0){
             pieEntries.add(usageOfBillTypeToPieEntry(usageOfOutputTypesInPercent, Bill.TYPE_OUTPUT));
-        } else if (usageOfTransferTypesInPercent != 0){
+        }
+
+        if (usageOfTransferTypesInPercent != 0){
             pieEntries.add(usageOfBillTypeToPieEntry(usageOfTransferTypesInPercent, Bill.TYPE_TRANSFER));
         }
 

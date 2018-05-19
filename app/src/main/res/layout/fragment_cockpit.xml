@@ -1,22 +1,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dolinsek.elias.cashcockpit.CockpitFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.dolinsek.elias.cashcockpit.CockpitFragment">
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="5dp">
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_margin="5dp"
+            android:orientation="vertical"
             android:padding="5dp">
 
             <android.support.design.widget.TextInputLayout
@@ -29,11 +30,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/label_amount"
+                    android:inputType="numberDecimal"
                     android:maxLength="15"
                     android:maxLines="1"
-                    android:inputType="numberDecimal"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:textAlignment="center"/>
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -55,42 +56,42 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="8"
-                android:layout_marginTop="5dp">
+                android:layout_marginTop="5dp"
+                android:weightSum="8">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="5"
                     android:layout_marginEnd="5dp"
-                    android:orientation="vertical"
-                    android:background="@drawable/border_primary">
+                    android:layout_weight="5"
+                    android:background="@drawable/border_primary"
+                    android:orientation="vertical">
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bank_account"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"/>
+                        android:layout_marginTop="5dp" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="3"
-                    android:orientation="vertical"
-                    android:background="@drawable/border_accent">
+                    android:background="@drawable/border_accent"
+                    android:orientation="vertical">
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bill_type"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
+                        android:layout_marginBottom="5dp"
                         android:layout_marginStart="5dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp" />
+                        android:layout_marginTop="5dp" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -101,9 +102,9 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
+        android:layout_marginEnd="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp">
+        android:layout_marginTop="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -114,8 +115,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
+                android:gravity="center"
+                android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/btn_cockpit_select_category"
@@ -128,14 +129,14 @@
                     android:id="@+id/txv_cockpit_selected_subcategory"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/txv_cockpit_selected_primary_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorPrimary"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -143,8 +144,8 @@
                 android:id="@+id/ll_cockpit_select_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
                 android:layout_gravity="center_horizontal"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:visibility="gone">
 
@@ -166,92 +167,234 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="15dp"
         android:layout_weight="10">
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@+id/pc_cockpit"
+            app:layout_constraintStart_toStartOf="@+id/pc_cockpit"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:id="@+id/txv_cockpit_amount_of_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorGreen"
+                android:textStyle="bold"
+                android:text="@string/label_input" />
+
+            <TextView
+                android:id="@+id/txv_cockpit_amount_of_transfer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorOrange"
+                android:textStyle="bold"
+                android:text="@string/label_transfer" />
+        </LinearLayout>
 
         <com.github.mikephil.charting.charts.PieChart
             android:id="@+id/pc_cockpit"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:id="@+id/linearLayout3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:gravity="center_vertical"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <!--To algin textviews center vertically-->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="5"/>
+                android:layout_weight="5" />
 
-            <TextView
-                android:text="Ausgaben"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:text="Cash"
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50000€"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="Ausgaben"
+                    android:textAlignment="center" />
+
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"/>
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
 
-            <TextView
-                android:text="Tageslimit"
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1500€"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                    android:textSize="38sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="3dp"
+                    android:text="Cash"
+                    android:textAlignment="center" />
+
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"/>
+                android:orientation="horizontal">
 
-            <TextView
-                android:text="Kreditrate"
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50€"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="Tageslimit"
+                    android:textAlignment="center" />
+
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAlignment="center"/>
+                android:orientation="horizontal">
+
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="50€"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="3dp"
+                    android:text="Kreditrate"
+                    android:textAlignment="center" />
+
+                <!--To align textviews center vertically-->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="5" />
+            </LinearLayout>
 
             <!--To algin textviews center vertically-->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="5"/>
+                android:layout_weight="5" />
         </LinearLayout>
     </android.support.constraint.ConstraintLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="bottom"
         android:orientation="horizontal"
-        android:padding="10dp"
-        android:gravity="bottom">
+        android:padding="10dp">
 
         <Button
             android:id="@+id/btn_cockpit_save"
-            android:text="@string/btn_save"
+            style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            style="@style/Widget.AppCompat.Button.Colored"
-            android:background="@drawable/border_accent"/>
+            android:background="@drawable/border_accent"
+            android:text="@string/btn_save" />
 
         <Button
             android:id="@+id/btn_cockpit_delete"
-            android:text="@string/btn_delete"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="5"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
+            android:text="@string/btn_delete" />
     </LinearLayout>
 
     <Button
         android:id="@+id/btn_cockpit_add"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:background="@drawable/border_accent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/btn_add_bill"
         android:layout_gravity="bottom"
-        android:layout_marginStart="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_marginEnd="5dp"/>
+        android:layout_marginEnd="5dp"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/border_accent"
+        android:text="@string/btn_add_bill" />
 
 </LinearLayout>
