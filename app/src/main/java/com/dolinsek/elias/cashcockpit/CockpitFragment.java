@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -65,9 +66,10 @@ public class CockpitFragment extends Fragment {
     private static final String TYPE = "type";
 
     private LinearLayout mLlSelectInfo;
-    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory, txvAmountOfInput, txvAmountOfTransfer;
+    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, txvAmountOfInput, txvAmountOfTransfer;
     private EditText mEdtBillAmount, mEdtBillDescription;
-    private Button mBtnSelectCategory, mBtnAdd, mBtnSave, mBtnDelete;
+    private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
+    private FloatingActionButton mFbtnAdd;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
     private PieChart pieChart;
 
@@ -88,15 +90,12 @@ public class CockpitFragment extends Fragment {
         mEdtBillDescription = (EditText) inflatedView.findViewById(R.id.edt_cockpit_bill_description);
 
         mBtnSelectCategory = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_category);
-        mBtnAdd = (Button) inflatedView.findViewById(R.id.btn_cockpit_add);
+        mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
         pieChart = (PieChart) inflatedView.findViewById(R.id.pc_cockpit);
 
-        mLlSelectInfo = (LinearLayout) inflatedView.findViewById(R.id.ll_cockpit_select_info);
-        mTxvSelectInfo = (TextView) inflatedView.findViewById(R.id.txv_cockpit_select_info);
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
-        mTxvSelectedPrimaryCategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_primary_category);
 
         txvAmountOfInput = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_input);
         txvAmountOfTransfer = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_transfer);
@@ -104,8 +103,7 @@ public class CockpitFragment extends Fragment {
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
 
-        setupSpinnersStyles();
-        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.bill_types_array));
+        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.bill_types_array));
         selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
@@ -157,7 +155,7 @@ public class CockpitFragment extends Fragment {
             }
         });
 
-        mBtnAdd.setOnClickListener(new View.OnClickListener() {
+        mFbtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(everythingFilledCorrectly()) {
@@ -220,11 +218,6 @@ public class CockpitFragment extends Fragment {
 
     private void loadStatistics(){
         loadPieChart();
-    }
-
-    private void setupSpinnersStyles(){
-        mSpnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        mSpnSelectBillType.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     private void hideKeyboard(){
@@ -301,9 +294,7 @@ public class CockpitFragment extends Fragment {
 
     private void displaySelectedSubcategory(){
         mTxvSelectedSubcategory.setVisibility(View.VISIBLE);
-        mTxvSelectedPrimaryCategory.setVisibility(View.VISIBLE);
         mTxvSelectedSubcategory.setText(selectedSubcategory.getName());
-        mTxvSelectedPrimaryCategory.setText(" (" + selectedSubcategory.getPrimaryCategory().getName() + ")");
     }
 
     private void setupForEditMode(){
@@ -313,7 +304,7 @@ public class CockpitFragment extends Fragment {
 
         displaySelectedSubcategory();
 
-        mBtnAdd.setVisibility(View.GONE);
+        mFbtnAdd.setVisibility(View.GONE);
         mSpnSelectBankAccount.setEnabled(false);
     }
 
@@ -338,7 +329,7 @@ public class CockpitFragment extends Fragment {
     }
 
     private void setupBankAccountSpinner(){
-        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), R.layout.costum_spinner_layout, getBankAccountsNames());
+        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, getBankAccountsNames());
         selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
