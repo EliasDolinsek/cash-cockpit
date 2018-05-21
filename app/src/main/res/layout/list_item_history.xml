@@ -5,54 +5,38 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="5dp">
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <ImageView
+            android:id="@+id/imv_item_history_bill_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="16dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txv_item_history_date"
-                android:layout_width="wrap_content"
+                android:id="@+id/txv_item_history_description"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/white"
-                android:background="@drawable/border_primary"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"/>
-
-            <TextView
-                android:id="@+id/txv_item_history_amount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:layout_marginStart="5dp"
-                android:textColor="@android:color/white"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textStyle="bold"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
+                android:textColor="@color/colorAccentTextColor"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:id="@+id/txv_item_history_details"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/txv_item_history_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryTextColor"
-            android:layout_marginStart="8dp"/>
-
-        <TextView
-            android:id="@+id/txv_item_history_details"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccentTextColor"/>
     </LinearLayout>
 
 </android.support.v7.widget.CardView>

@@ -22,6 +22,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -35,20 +36,21 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
                 android:orientation="vertical"
-                android:padding="4dp">
+                android:padding="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="2dp"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
+                        android:layout_marginEnd="12dp"
                         android:src="@drawable/ic_money" />
 
                     <android.support.design.widget.TextInputLayout
@@ -73,13 +75,14 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="2dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
+                        android:layout_marginEnd="12dp"
                         android:src="@drawable/ic_description" />
 
                     <android.support.design.widget.TextInputLayout
@@ -102,7 +105,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="4dp"
+                    android:layout_marginBottom="6dp"
                     android:layout_marginTop="6dp"
                     android:weightSum="8">
 
@@ -110,7 +113,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
+                        android:layout_marginEnd="8dp"
                         android:src="@drawable/ic_account" />
 
                     <Spinner
@@ -129,8 +132,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
-                        android:src="@drawable/ic_select_bill_type" />
+                        android:layout_marginEnd="8dp"
+                        android:src="@drawable/ic_bill_type" />
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bill_type"
@@ -142,13 +145,15 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
                     android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_select_category"
-                        android:layout_gravity="center_vertical"/>
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="4dp"
+                        android:src="@drawable/ic_select_category" />
 
                     <Button
                         android:id="@+id/btn_cockpit_select_category"
@@ -163,7 +168,8 @@
                         android:layout_height="wrap_content"
                         android:background="@drawable/border_primary"
                         android:padding="4dp"
-                        android:textColor="@android:color/white"/>
+                        android:textColor="@android:color/white"
+                        android:visibility="invisible" />
 
                 </LinearLayout>
             </LinearLayout>
@@ -176,31 +182,27 @@
             android:layout_marginTop="15dp"
             android:layout_weight="10">
 
-            <LinearLayout
-                android:id="@+id/linearLayout2"
+            <TextView
+                android:id="@+id/txv_cockpit_amount_of_input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="@+id/pc_cockpit"
-                app:layout_constraintStart_toStartOf="@+id/pc_cockpit">
+                android:text="@string/label_input"
+                android:textColor="@color/colorGreen"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/pc_cockpit"
+                app:layout_constraintTop_toTopOf="@+id/pc_cockpit"
+                android:layout_marginEnd="8dp"/>
 
-                <TextView
-                    android:id="@+id/txv_cockpit_amount_of_input"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_input"
-                    android:textColor="@color/colorGreen"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/txv_cockpit_amount_of_transfer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_transfer"
-                    android:textColor="@color/colorOrange"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/txv_cockpit_amount_of_transfer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_transfer"
+                android:textColor="@color/colorOrange"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/pc_cockpit"
+                app:layout_constraintTop_toTopOf="@+id/pc_cockpit"
+                android:layout_marginStart="8dp"/>
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pc_cockpit"
@@ -231,6 +233,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal">
 
                     <!--To align textviews center vertically-->
@@ -244,14 +247,15 @@
                         android:layout_height="wrap_content"
                         android:text="50000€"
                         android:textAlignment="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
                         android:text="Ausgaben"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     <!--To align textviews center vertically-->
                     <View
@@ -275,17 +279,18 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="1500€"
+                        android:text="150000€"
                         android:textAlignment="center"
                         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                        android:textSize="38sp" />
+                        android:textSize="45sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="3dp"
+                        android:layout_marginStart="4dp"
                         android:text="Cash"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
                     <!--To align textviews center vertically-->
                     <View
@@ -297,6 +302,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:orientation="horizontal">
 
                     <!--To align textviews center vertically-->
@@ -310,14 +316,16 @@
                         android:layout_height="wrap_content"
                         android:text="50€"
                         android:textAlignment="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+                        android:textSize="30sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
                         android:text="Tageslimit"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     <!--To align textviews center vertically-->
                     <View
@@ -342,14 +350,15 @@
                         android:layout_height="wrap_content"
                         android:text="50€"
                         android:textAlignment="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="3dp"
                         android:text="Kreditrate"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     <!--To align textviews center vertically-->
                     <View

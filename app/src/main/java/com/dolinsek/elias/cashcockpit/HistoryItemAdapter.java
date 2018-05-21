@@ -3,11 +3,13 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
@@ -75,15 +77,14 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final Bill bill = billsToDisplay.get(position);
         final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
-        setupTxvBackgroundFromBillType(holder.mTxvAmount, bill);
-        holder.mTxvAmount.setText(Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount()));
+        setupImvFromBillType(holder.mImvBillType, bill);
         displayDescription(bill.getDescription(), holder);
 
-        String billDetails = bankAccountOfBill.getName() + " " + Character.toString((char)0x00B7) + " " + bill.getSubcategory().getName();
-        holder.mTxvDetails.setText(billDetails);
+        String dateOfCreationDate = DateFormat.format("EEE dd.MM", bill.getCreationDate()).toString();
+        String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
 
-        String dateOfCreationDate = DateFormat.format("EEEE dd.MM", bill.getCreationDate()).toString();
-        holder.mTxvDate.setText(dateOfCreationDate);
+        String billDetails = dateOfCreationDate + " " + Character.toString((char)0x00B7) + " " + bill.getSubcategory().getName() + " " + Character.toString((char)0x00B7) + " " + formattedAmount;
+        holder.mTxvDetails.setText(billDetails);
 
         if(allowToEditBill){
             holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -102,15 +103,15 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvDate, mTxvAmount, mTxvDescription, mTxvDetails;
+        public ImageView mImvBillType;
+        public TextView mTxvDescription, mTxvDetails;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
-            mTxvDate = (TextView) itemView.findViewById(R.id.txv_item_history_date);
-            mTxvAmount = (TextView) itemView.findViewById(R.id.txv_item_history_amount);
             mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
+            mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_history_bill_type);
         }
     }
 
@@ -135,18 +136,17 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         context.startActivity(intent);
     }
 
-    private void setupTxvBackgroundFromBillType(TextView textView, Bill bill){
-        Context context = textView.getContext();
+    private void setupImvFromBillType(ImageView imageView, Bill bill){
+        Context context = imageView.getContext();
         if (bill.getType() == Bill.TYPE_INPUT){
-            textView.setBackground(context.getDrawable(R.drawable.border_green));
+            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_input));
         } else if (bill.getType() == Bill.TYPE_OUTPUT){
-            textView.setBackground(context.getDrawable(R.drawable.border_red));
+            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_output));
         } else if (bill.getType() == Bill.TYPE_TRANSFER){
-            textView.setBackground(context.getDrawable(R.drawable.border_orange));
+            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_transfer));
         } else {
             throw new IllegalArgumentException("Couldn't resolve " + bill.getType() + " as a bill type!");
         }
-
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){
