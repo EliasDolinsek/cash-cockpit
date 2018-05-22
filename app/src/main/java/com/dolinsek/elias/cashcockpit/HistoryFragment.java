@@ -99,12 +99,10 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupSpinnerMain(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.filters_array));
+        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.filters_array));
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpnFilterMain.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         mSpnFilterMain.setAdapter(filterItems);
-
         mSpnFilterMain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -120,10 +118,9 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupSpinnerBillTypes(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getBillsTypesAsStringIncludingAll());
+        ArrayAdapter<String> filterItems = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getBillsTypesAsStringIncludingAll());
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpnFilterBillTypes.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
         mSpnFilterBillTypes.setAdapter(filterItems);
         mSpnFilterBillTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

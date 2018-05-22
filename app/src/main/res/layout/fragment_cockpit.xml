@@ -388,7 +388,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="5"
-                android:background="@drawable/border_accent"
                 android:text="@string/btn_save" />
 
             <Button
