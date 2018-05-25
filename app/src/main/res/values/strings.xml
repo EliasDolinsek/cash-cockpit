@@ -33,7 +33,6 @@
 
     <!--New strings-->
     <string name="hint_bank_account_name">Account name</string>
-    <string name="label_set_as_primary_account">Set as primary account</string>
     <string name="btn_create">Create</string>
     <string name="btn_save">Save</string>
     <string name="btn_delete">Delete</string>

@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     private TextInputLayout mTilAccountName, mTilAccountAmount;
     private RecyclerView mRvBills;
     private EditText mEdtAccountName, mEdtAccountAmount;
-    private Switch mSwPrimaryAccount;
+    private CheckBox mChbPrimaryAccount;
     private Button mBtnCreate, mBtnDelete;
 
     private BankAccount bankAccount = null;
@@ -46,7 +47,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mEdtAccountName = (EditText) findViewById(R.id.edt_bank_account_name);
         mEdtAccountAmount = (EditText) findViewById(R.id.edt_bank_account_amount);
 
-        mSwPrimaryAccount = (Switch) findViewById(R.id.sw_bank_account_priamry_account);
+        mChbPrimaryAccount = (CheckBox) findViewById(R.id.chb_bank_account_primary_account);
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
         mBtnDelete = (Button) findViewById(R.id.btn_bank_account_delete);
 
@@ -65,8 +66,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         if(Database.getBankAccounts().size() == 0){
             //Forces user to create a primary bank account
-            mSwPrimaryAccount.setChecked(true);
-            mSwPrimaryAccount.setEnabled(false);
+            mChbPrimaryAccount.setChecked(true);
+            mChbPrimaryAccount.setEnabled(false);
         }
 
         mBtnCreate.setOnClickListener(new View.OnClickListener() {
@@ -89,14 +90,14 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                     if(bankAccount == null){
 
                         //Sets this account as primary account it the user wants it
-                        if(mSwPrimaryAccount.isChecked()){
+                        if(mChbPrimaryAccount.isChecked()){
                             for(int i = 0; i<Database.getBankAccounts().size(); i++){
                                 Database.getBankAccounts().get(i).setPrimaryAccount(false);
                             }
                         }
 
                         //Create and save it
-                        Database.getBankAccounts().add(new BankAccount(mEdtAccountName.getText().toString(), balance, mSwPrimaryAccount.isChecked()));
+                        Database.getBankAccounts().add(new BankAccount(mEdtAccountName.getText().toString(), balance, mChbPrimaryAccount.isChecked()));
                         Database.save(getApplicationContext());
 
                         //Displays that everything went ok
@@ -112,7 +113,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                         bankAccount.getBalanceChanges().add(new BalanceChange(System.currentTimeMillis(), balance));
 
                         //Sets this account as primary account it the user wants it
-                        if(mSwPrimaryAccount.isChecked()){
+                        if(mChbPrimaryAccount.isChecked()){
                             for(int i = 0; i<Database.getBankAccounts().size(); i++){
                                 Database.getBankAccounts().get(i).setPrimaryAccount(false);
                             }
@@ -221,8 +222,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mEdtAccountName.setText(bankAccount.getName());
         mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
 
-        mSwPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
-        mSwPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
+        mChbPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
+        mChbPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
 
         mBtnCreate.setText(getResources().getString(R.string.btn_save));
     }

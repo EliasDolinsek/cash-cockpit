@@ -40,11 +40,12 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public void onBindViewHolder(final BankAccountItemViewHolder holder, final int position) {
         BankAccount bankAccount = mBankAccounts.get(position);
 
-        holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills));
+        String accountBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance());
+        String formattedBills = String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills);
+        String formattedDetails =  accountBalance + " " + Character.toString((char)0x00B7) + " "  + formattedBills;
 
-        String formattedBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance());
-        holder.mTxvBalance.setText(formattedBalance);
+        holder.mTxvName.setText(bankAccount.getName());
+        holder.mTxvDetails.setText(formattedDetails);
 
         if(!bankAccount.isPrimaryAccount()){
             holder.mTxvPrimaryAccount.setVisibility(View.GONE);
@@ -67,7 +68,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
     public class BankAccountItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvName, mTxvDetails, mTxvPrimaryAccount, mTxvBalance;
+        public TextView mTxvName, mTxvDetails, mTxvPrimaryAccount;
         public CardView mCardView;
 
         public BankAccountItemViewHolder(View itemView) {
@@ -76,8 +77,6 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_bank_account_name);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_bank_account_details);
             mTxvPrimaryAccount = (TextView) itemView.findViewById(R.id.txv_item_bank_account_primary_account);
-            mTxvBalance = (TextView) itemView.findViewById(R.id.txv_item_bank_account_balance);
-
             mCardView = (CardView) itemView.findViewById(R.id.cv_item_bank_account);
         }
     }

@@ -13,32 +13,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="10dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="10dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
 
             <TextView
                 android:id="@+id/txv_item_bank_account_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="@color/colorAccentTextColor"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
-
-            <TextView
-                android:id="@+id/txv_item_bank_account_balance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                android:textColor="@android:color/white"
-                android:background="@drawable/border_primary"
-                android:paddingStart="5dp"
-                android:paddingEnd="5dp"
-                android:layout_marginStart="5dp"/>
 
             <TextView
                 android:id="@+id/txv_item_bank_account_primary_account"
@@ -58,9 +49,7 @@
             android:id="@+id/txv_item_bank_account_details"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginStart="5dp"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+            android:layout_marginEnd="4dp"/>
 
     </LinearLayout>
 
