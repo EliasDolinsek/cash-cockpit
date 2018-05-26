@@ -43,7 +43,7 @@ public class AutoPayActivity extends AppCompatActivity {
     private TextInputLayout mTilAutoPayName, mTilAmount;
     private TextInputEditText mEdtAutoPayName, mEdtAmount;
     private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
-    private TextView mTxvSelectedSubcategory, mTxvSelectedPrimaryCategory;
+    private TextView mTxvSelectedCategory;
 
     private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType, mSpnSelectAutoPayBillType;
 
@@ -61,9 +61,7 @@ public class AutoPayActivity extends AppCompatActivity {
         mEdtAutoPayName = (TextInputEditText) findViewById(R.id.edt_auto_pay_name);
         mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
         mEdtAmount.setSelection(mEdtAmount.getText().length());
-
-        mTxvSelectedSubcategory = (TextView) findViewById(R.id.txv_auto_pay_selected_subcategory);
-        mTxvSelectedPrimaryCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_primary_category);
+        mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
 
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
@@ -166,8 +164,8 @@ public class AutoPayActivity extends AppCompatActivity {
 
     private void updateTxtForSelectedSubcategory(){
         Subcategory selectedSubcategory = autoPay.getBill().getSubcategory();
-        mTxvSelectedSubcategory.setText(selectedSubcategory.getName());
-        mTxvSelectedPrimaryCategory.setText("(" + selectedSubcategory.getPrimaryCategory().getName() + ")");
+        mTxvSelectedCategory.setVisibility(View.VISIBLE);
+        mTxvSelectedCategory.setText(selectedSubcategory.getName());
     }
 
     private void setupViewsForActiveEditMode() {
@@ -215,9 +213,9 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private void setupSpinners(){
-        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
-        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.costum_spinner_layout, getResources().getTextArray(R.array.auto_pay_types_array));
-        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(getApplicationContext(), R.layout.costum_spinner_layout, getResources().getTextArray(R.array.bill_types_array));
+        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getNamesOfBankAccountsInDatabase());
+        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
+        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
 
         bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoPayTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -257,10 +255,6 @@ public class AutoPayActivity extends AppCompatActivity {
             }
         });
 
-        setupSpinnerStyle(mSpnSelectBankAccount);
-        setupSpinnerStyle(mSpnSelectAutoPayType);
-        setupSpinnerStyle(mSpnSelectAutoPayBillType);
-
         mSpnSelectBankAccount.setSelection(0);
         mSpnSelectAutoPayBillType.setSelection(0);
         mSpnSelectAutoPayType.setSelection(1); //AutoPay type monthly
@@ -268,9 +262,6 @@ public class AutoPayActivity extends AppCompatActivity {
         mSpnSelectBankAccount.setAdapter(bankAccountsAdapter);
         mSpnSelectAutoPayType.setAdapter(autoPayTypesAdapter);
         mSpnSelectAutoPayBillType.setAdapter(billTypesAdapter);
-    }
-    private void setupSpinnerStyle(Spinner spinner){
-        spinner.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     private ArrayList<CharSequence> getNamesOfBankAccountsInDatabase(){
