@@ -112,19 +112,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         if (adapterType == TYPE_NORMAl){
             setupForNormalAdapterType(subcategory, holder);
             loadGoalStatistics(holder, subcategory);
-
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR){
-                        showSubcategoryEditor(subcategory, holder);
-                    } else if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_CATEGORY_ACTIVITY_FIRST){
-                        showCategoryActivityAndSubcategoryEditor(subcategory, holder);
-                    } else {
-                        throw new InvalidParameterException("Couldn't resolve " + onSubcategoryClickAction + " as a subcategory-click-action!");
-                    }
-                }
-            });
+            setupItemViewToShowSubcategoryEditor(holder, subcategory);
         } else if (adapterType == TYPE_SELECT_CATEGORY){
             setupForSelectCategoryAdapterType(subcategory, holder);
             loadGoalStatistics(holder, subcategory);
@@ -242,6 +230,7 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private void setupForNormalAdapterType(Subcategory subcategory, SubcategoryItemViewHolder holder){
         holder.mBtnSelectCategory.setVisibility(View.GONE);
+        holder.mTxvSubcategoryGoalStatus.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);
     }
 
@@ -376,5 +365,20 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         subcategories = Database.getPrimaryCategories().get(indexOfPrimaryCategoryInDatabase).getSubcategories();
 
         notifyDataSetChanged();
+    }
+
+    private void setupItemViewToShowSubcategoryEditor(final SubcategoryItemViewHolder holder, final Subcategory subcategory){
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR){
+                    showSubcategoryEditor(subcategory, holder);
+                } else if (onSubcategoryClickAction == ON_SUBCATEGORY_CLICK_ACTION_OPEN_CATEGORY_ACTIVITY_FIRST){
+                    showCategoryActivityAndSubcategoryEditor(subcategory, holder);
+                } else {
+                    throw new InvalidParameterException("Couldn't resolve " + onSubcategoryClickAction + " as a subcategory-click-action!");
+                }
+            }
+        });
     }
 }

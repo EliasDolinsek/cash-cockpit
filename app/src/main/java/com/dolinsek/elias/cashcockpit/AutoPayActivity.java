@@ -213,9 +213,9 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private void setupSpinners(){
-        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getNamesOfBankAccountsInDatabase());
-        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
-        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
+        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getNamesOfBankAccountsInDatabase());
+        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
+        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
 
         bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoPayTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);

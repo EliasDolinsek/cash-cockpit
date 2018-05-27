@@ -122,6 +122,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         if(adapterType == TYPE_NORMAL){
             setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
             manageGoalViews(primaryCategory, holder);
+            holder.mTxvCategoryGoalStatus.setVisibility(View.GONE);
         } else if (adapterType == TYPE_GOAL_STATISTICS){
             hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
             manageGoalViews(primaryCategory, holder);

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -39,18 +40,13 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
         AutoPay autoPay = autoPays.get(position);
         Context context = holder.itemView.getContext();
 
-        holder.mTxvName.setText(autoPay.getName());
-
         String autoPayTypeAsString = getAutoPayTypeAsString(autoPay.getType(), context);
-        holder.mTxvAutoPayType.setText(autoPayTypeAsString);
-
-        String billTypeAsString = getBillTypeAsString(autoPay.getBill().getType(), context);
-        holder.mTxvAutoPayBillType.setText(billTypeAsString);
-        setTxvBackgroundDependingAutoPayBillType(autoPay.getBill().getType(), holder.mTxvAutoPayBillType);
-
         String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(autoPay.getBill().getAmount());
-        String details = formattedAmount + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName();
+        String details = formattedAmount + " " + Character.toString((char)0x00B7) + " " + autoPay.getBankAccount().getName() + " " + Character.toString((char)0x00B7) + " " + autoPayTypeAsString;
+
+        holder.mTxvName.setText(autoPay.getName());
         holder.mTxvDetails.setText(details);
+        setupImageViewDependingOnBillType(autoPay.getBill(), holder.mImvBillType);
 
         holder.mCardView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -69,17 +65,16 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
     public class AutoPayItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvName, mTxvAutoPayType, mTxvAutoPayBillType, mTxvDetails;
+        public TextView mTxvName, mTxvDetails;
+        public ImageView mImvBillType;
         public CardView mCardView;
 
         public AutoPayItemViewHolder(View itemView) {
             super(itemView);
 
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_auto_pay_name);
-            mTxvAutoPayType = (TextView) itemView.findViewById(R.id.txv_item_auto_pay_type);
-            mTxvAutoPayBillType = (TextView) itemView.findViewById(R.id.txv_item_auto_pay_bill_type);
-
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_auto_pay_details);
+            mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_auto_pay_bill_type);
             mCardView = (CardView) itemView.findViewById(R.id.cv_item_auto_pay);
         }
     }
@@ -94,21 +89,16 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
         throw new IllegalArgumentException("Couldn't resolve " + autoPayType + " as an AutoPay-Type");
     }
 
-    private String getBillTypeAsString(int billType, Context context){
-        switch (billType){
-            case Bill.TYPE_INPUT: return context.getString(R.string.label_input);
-            case Bill.TYPE_OUTPUT: return context.getString(R.string.label_output);
-            case Bill.TYPE_TRANSFER: return context.getString(R.string.label_transfer);
-        }
-
-        throw new IllegalArgumentException("Couldn't resolve " + billType + " as a Bill-Type");
-    }
-
-    private void setTxvBackgroundDependingAutoPayBillType(int autoPayBillType, TextView textView){
-        switch (autoPayBillType){
-            case Bill.TYPE_INPUT: textView.setBackgroundResource(R.drawable.border_green); return;
-            case Bill.TYPE_OUTPUT: textView.setBackgroundResource(R.drawable.border_red); return;
-            case Bill.TYPE_TRANSFER: textView.setBackgroundResource(R.drawable.border_orange); return;
+    private void setupImageViewDependingOnBillType(Bill bill, ImageView imageView){
+        Context context = imageView.getContext();
+        switch (bill.getType()){
+            case Bill.TYPE_INPUT: imageView.setImageDrawable(context.getDrawable(R.drawable.ic_bill_type_input));
+                break;
+            case Bill.TYPE_OUTPUT: imageView.setImageDrawable(context.getDrawable(R.drawable.ic_bill_type_output));
+                break;
+            case Bill.TYPE_TRANSFER: imageView.setImageDrawable(context.getDrawable(R.drawable.ic_bill_type_transfer));
+                break;
+            default: throw new IllegalArgumentException("Couldn't resolve " + bill.getType() + " as a valid bill-type");
         }
     }
 }
