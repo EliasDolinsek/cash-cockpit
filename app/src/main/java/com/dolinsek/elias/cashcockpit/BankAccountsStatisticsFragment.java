@@ -286,18 +286,13 @@ public class BankAccountsStatisticsFragment extends Fragment {
         return balanceChangesOfMonth;
     }
 
-    private ArrayList<BalanceChange> getAndSortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
+    private void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
         Collections.sort(balanceChangesToSort, new Comparator<BalanceChange>() {
             @Override
             public int compare(BalanceChange balanceChange, BalanceChange t1) {
                 return Long.compare(balanceChange.getTimeStampOfChange(), t1.getTimeStampOfChange());
             }
         });
-
-        return balanceChangesToSort;
-    }
-    private void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
-        getAndSortBalanceChangesOfCreationDates(balanceChangesToSort);
     }
 
     @Override

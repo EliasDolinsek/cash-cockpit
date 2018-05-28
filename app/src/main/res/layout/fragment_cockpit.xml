@@ -26,154 +26,146 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <android.support.v7.widget.CardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="4dp">
+            android:orientation="vertical"
+            android:padding="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp"
-                    android:layout_marginTop="2dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_money" />
-
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/til_cockpit_bill_amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/edt_cockpit_bill_amount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/label_amount"
-                            android:inputType="numberDecimal"
-                            android:maxLength="15"
-                            android:maxLines="1"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="2dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_description" />
-
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/til_cockpit_bill_description"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10">
-
-                        <android.support.design.widget.TextInputEditText
-                            android:id="@+id/edt_cockpit_bill_description"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="@string/label_description"
-                            android:lines="1"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-
-                <LinearLayout
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="6dp"
-                    android:layout_marginTop="6dp"
-                    android:weightSum="8">
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_money" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_account" />
-
-                    <Spinner
-                        android:id="@+id/spn_cockpit_select_bank_account"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="10" />
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_bill_type" />
-
-                    <Spinner
-                        android:id="@+id/spn_cockpit_select_bill_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_cockpit_bill_amount"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:orientation="horizontal">
+                    android:layout_weight="10">
 
-                    <ImageView
-                        android:layout_width="wrap_content"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edt_cockpit_bill_amount"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
-                        android:src="@drawable/ic_select_category" />
+                        android:hint="@string/label_amount"
+                        android:inputType="numberDecimal"
+                        android:maxLength="15"
+                        android:maxLines="1"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
-                    <Button
-                        android:id="@+id/btn_cockpit_select_category"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/btn_select_category" />
-
-                    <TextView
-                        android:id="@+id/txv_cockpit_selected_subcategory"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/border_primary"
-                        android:padding="4dp"
-                        android:textColor="@android:color/white"
-                        android:visibility="invisible" />
-
-                </LinearLayout>
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
-        </android.support.v7.widget.CardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="12dp"
+                    android:src="@drawable/ic_description" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/til_cockpit_bill_description"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/edt_cockpit_bill_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/label_description"
+                        android:lines="1"
+                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+                </android.support.design.widget.TextInputLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:weightSum="8">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_account" />
+
+                <Spinner
+                    android:id="@+id/spn_cockpit_select_bank_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="10" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_bill_type" />
+
+                <Spinner
+                    android:id="@+id/spn_cockpit_select_bill_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_select_category" />
+
+                <Button
+                    android:id="@+id/btn_cockpit_select_category"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/btn_select_category" />
+
+                <TextView
+                    android:id="@+id/txv_cockpit_selected_subcategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_primary"
+                    android:padding="4dp"
+                    android:textColor="@android:color/white"
+                    android:visibility="invisible" />
+
+            </LinearLayout>
+        </LinearLayout>
 
 
         <android.support.constraint.ConstraintLayout
