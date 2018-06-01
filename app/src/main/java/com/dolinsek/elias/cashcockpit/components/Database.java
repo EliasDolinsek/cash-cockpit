@@ -178,6 +178,17 @@ public class Database {
             return filteredBills;
         }
 
+        public static ArrayList<Bill> filterBillsOfAutoPayBill(ArrayList<Bill> billsToFilter){
+            ArrayList<Bill> filteredBills = new ArrayList<>();
+            for (Bill bill:getAllBillsInDatabase()){
+                if (bill.isAutoPayBill()){
+                    filteredBills.add(bill);
+                }
+            }
+
+            return filteredBills;
+        }
+
         public static void manageAllPayments(){
             for (AutoPay autoPay:Database.getAutoPays()){
                 autoPay.managePayment();
@@ -206,6 +217,11 @@ public class Database {
             }
 
             return amount;
+        }
+
+        public static long getTotalAmountOfOutputBillTypeOfMonth(long timeStampOfMonth, int billType){
+            ArrayList<Bill> inputBillsOfMonth = filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(timeStampOfMonth), billType);
+            return getTotalAmountOfBills(inputBillsOfMonth);
         }
     }
 }

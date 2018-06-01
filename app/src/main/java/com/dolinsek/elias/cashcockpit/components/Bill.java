@@ -42,6 +42,8 @@ public class Bill {
      */
     private int type;
 
+    private boolean autoPayBill;
+
     /**
      * Creates a new Bill
      * @param amount amount what get added or removed from the bank account
@@ -50,11 +52,12 @@ public class Bill {
      * @param subcategory subcategory
      * @param creationDate creation date of the bill
      */
-    public Bill(long amount, String description, Subcategory subcategory, int type, long creationDate) {
+    public Bill(long amount, String description, Subcategory subcategory, int type, boolean autoPayBill, long creationDate) {
         this.amount = amount;
         this.description = description;
         this.subcategory = subcategory;
         this.creationDate = creationDate;
+        this.autoPayBill = autoPayBill;
         this.type = type;
     }
 
@@ -65,17 +68,16 @@ public class Bill {
      * @param type type of the bill
      * @param subcategory subcategory
      */
-    public Bill(long amount, String description, int type, Subcategory subcategory) {
+    public Bill(long amount, String description, int type, boolean autoPayBill, Subcategory subcategory) {
         this.amount = amount;
         this.description = description;
         this.subcategory = subcategory;
         this.type = type;
+        this.autoPayBill = autoPayBill;
         creationDate = System.currentTimeMillis();
     }
 
-    public Bill(){
-
-    }
+    public Bill(){ }
 
     public long getAmount() {
         return amount;
@@ -83,6 +85,14 @@ public class Bill {
 
     public void setAmount(long amount) {
         this.amount = amount;
+    }
+
+    public boolean isAutoPayBill() {
+        return autoPayBill;
+    }
+
+    public void setAutoPayBill(boolean autoPayBill) {
+        this.autoPayBill = autoPayBill;
     }
 
     public String getDescription() {

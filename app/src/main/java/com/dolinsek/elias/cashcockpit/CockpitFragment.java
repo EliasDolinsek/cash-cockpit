@@ -65,13 +65,11 @@ public class CockpitFragment extends Fragment {
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
-    private LinearLayout mLlSelectInfo;
-    private TextView mTxvSelectInfo, mTxvSelectedSubcategory, txvAmountOfInput, txvAmountOfTransfer;
+    private TextView mTxvSelectedSubcategory;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
-    private PieChart pieChart;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -93,12 +91,8 @@ public class CockpitFragment extends Fragment {
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
-        pieChart = (PieChart) inflatedView.findViewById(R.id.pc_cockpit);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
-
-        txvAmountOfInput = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_input);
-        txvAmountOfTransfer = (TextView) inflatedView.findViewById(R.id.txv_cockpit_amount_of_transfer);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
@@ -161,7 +155,7 @@ public class CockpitFragment extends Fragment {
                 if(everythingFilledCorrectly()) {
                     long amount = formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString());
                     String description = mEdtBillDescription.getText().toString();
-                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, selectedSubcategory));
+                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory));
 
                     try {
                         Database.save(getContext());
@@ -209,15 +203,7 @@ public class CockpitFragment extends Fragment {
             }
         });
 
-        setupPieChart();
-        loadStatistics();
-        displayAmountOfBillTypes();
-
         return inflatedView;
-    }
-
-    private void loadStatistics(){
-        loadPieChart();
     }
 
     private void hideKeyboard(){
@@ -435,74 +421,4 @@ public class CockpitFragment extends Fragment {
         throw new Resources.NotFoundException("Couldn't find associated bank account of bill!");
     }
 
-    private long getAmountOfOutputBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_OUTPUT);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
-    }
-
-    private long getAmountOfTransferBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_TRANSFER);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
-    }
-
-    private long getAmountOfInputBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_INPUT);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
-    }
-
-    private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(long timeStampOfMonth){
-        ArrayList<PieEntry> pieEntries = new ArrayList<>();
-
-        long amountOfInput = getAmountOfInputBillsOfMonth(timeStampOfMonth);
-        long amountOfTransfer = getAmountOfTransferBillsOfMonth(timeStampOfMonth);
-        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
-
-        pieEntries.add(new PieEntry(amountOfInput));
-        pieEntries.add(new PieEntry(Math.abs(amountOfTransfer)));
-        pieEntries.add(new PieEntry(Math.abs(amountOfOutput)));
-
-        return pieEntries;
-    }
-
-    private void loadPieChart(){
-        ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries(System.currentTimeMillis());
-
-        PieDataSet pieDataSet = new PieDataSet(pieEntries, "TODO");
-        setupPieDataSet(pieDataSet);
-        PieData pieData = new PieData(pieDataSet);
-
-        pieChart.setData(pieData);
-    }
-
-    private void setupPieChart(){
-        Description description = new Description();
-        description.setText("");
-        pieChart.setDescription(description);
-
-        pieChart.setHoleRadius(75f);
-        pieChart.setUsePercentValues(false);
-        pieChart.getLegend().setEnabled(false);
-        pieChart.invalidate();
-    }
-
-    private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColors(pieDataSet);
-        pieDataSet.setValueTextSize(0f); //Removes value text-view
-    }
-
-    private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_dark), getResources().getColor(R.color.colorOrange)};
-        pieDataSet.setColors(colors);
-    }
-
-    private void displayAmountOfBillTypes(){
-        long amountOfInput = getAmountOfInputBillsOfMonth(System.currentTimeMillis());
-        String txtInput = ": " + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(amountOfInput);
-
-        long amountOfTransfer = Math.abs(getAmountOfTransferBillsOfMonth(System.currentTimeMillis()));
-        String txtTransfer = ": " + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithCurrencySymbol(amountOfTransfer);
-
-        txvAmountOfInput.append(txtInput);
-        txvAmountOfTransfer.append(txtTransfer);
-    }
 }

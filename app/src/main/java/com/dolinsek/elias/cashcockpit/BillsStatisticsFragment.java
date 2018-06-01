@@ -54,7 +54,7 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private RecyclerView rvBillsOfSelectedMonth;
-    private CardView cvNotEnoughData, cvCategoryUsageStatisticContainer, cvDetailsContainer, cvHistoryChartContainer;
+    private LinearLayout llNotEnoughData, llBillTypeUsageChartContainer, llBillTypeUsageTextContainer, llPaymentHistoryChartContainer;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
     private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
@@ -71,10 +71,10 @@ public class BillsStatisticsFragment extends Fragment {
         bcHistoryOfPayments = inflatedView.findViewById(R.id.bc_bills_statistics_history_of_payments);
         rvBillsOfSelectedMonth = inflatedView.findViewById(R.id.rv_bills_statistics_bills_of_month);
 
-        cvNotEnoughData = inflatedView.findViewById(R.id.cv_bills_statistics_not_enough_data);
-        cvCategoryUsageStatisticContainer = inflatedView.findViewById(R.id.cv_bills_statistics_category_usage_statistic_container);
-        cvDetailsContainer = inflatedView.findViewById(R.id.cv_bills_statistics_details_container);
-        cvHistoryChartContainer = inflatedView.findViewById(R.id.cv_bills_statistics_history_chart_container);
+        llNotEnoughData = inflatedView.findViewById(R.id.ll_bills_statistics_not_enough_data_container);
+        llBillTypeUsageChartContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_chart_container);
+        llBillTypeUsageTextContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_texts_container);
+        llPaymentHistoryChartContainer = inflatedView.findViewById(R.id.ll_bills_statistics_payment_history_chart_container);
 
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
         txvBillsTypeOutputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_month);
@@ -92,11 +92,11 @@ public class BillsStatisticsFragment extends Fragment {
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
         } else {
-            cvNotEnoughData.setVisibility(View.VISIBLE);
+            llNotEnoughData.setVisibility(View.VISIBLE);
             llSelectMonthFragment.setVisibility(View.GONE);
-            cvCategoryUsageStatisticContainer.setVisibility(View.GONE);
-            cvDetailsContainer.setVisibility(View.GONE);
-            cvHistoryChartContainer.setVisibility(View.GONE);
+            llBillTypeUsageChartContainer.setVisibility(View.GONE);
+            llBillTypeUsageTextContainer.setVisibility(View.GONE);
+            llPaymentHistoryChartContainer.setVisibility(View.GONE);
         }
 
         return inflatedView;
@@ -118,16 +118,16 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void displayStatisticsIfEnoughData(int sizeOfBills){
         if (sizeOfBills == 0){
-            cvNotEnoughData.setVisibility(View.VISIBLE);
-            cvCategoryUsageStatisticContainer.setVisibility(View.GONE);
-            cvDetailsContainer.setVisibility(View.GONE);
-            cvHistoryChartContainer.setVisibility(View.GONE);
+            llNotEnoughData.setVisibility(View.VISIBLE);
+            llBillTypeUsageChartContainer.setVisibility(View.GONE);
+            llBillTypeUsageTextContainer.setVisibility(View.GONE);
+            llPaymentHistoryChartContainer.setVisibility(View.GONE);
 
         } else {
-            cvNotEnoughData.setVisibility(View.GONE);
-            cvCategoryUsageStatisticContainer.setVisibility(View.VISIBLE);
-            cvDetailsContainer.setVisibility(View.VISIBLE);
-            cvHistoryChartContainer.setVisibility(View.VISIBLE);
+            llNotEnoughData.setVisibility(View.GONE);
+            llBillTypeUsageChartContainer.setVisibility(View.VISIBLE);
+            llBillTypeUsageTextContainer.setVisibility(View.VISIBLE);
+            llPaymentHistoryChartContainer.setVisibility(View.VISIBLE);
         }
     }
     private void setupSelectMonthFragment(){
@@ -148,6 +148,7 @@ public class BillsStatisticsFragment extends Fragment {
         pcUsageOfBillTypes.setEntryLabelTextSize(17f);
         pcUsageOfBillTypes.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
         pcUsageOfBillTypes.getLegend().setEnabled(false);
+        pcUsageOfBillTypes.setHoleRadius(60f);
         pcUsageOfBillTypes.invalidate();
     }
 

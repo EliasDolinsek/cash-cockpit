@@ -25,18 +25,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="5dp"
+                    android:padding="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
                     android:background="@drawable/border_primary"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="5dp"
+                    android:padding="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginStart="4dp"
                     android:background="@drawable/border_accent">
 
                     <Spinner
@@ -47,60 +47,54 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <android.support.v7.widget.CardView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp">
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/txv_categories_statistics_chart_description"
+                    android:text="@string/label_categories_usage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="vertical">
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/colorAccentTextColor"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"/>
 
-                    <TextView
-                        android:id="@+id/txv_categories_statistics_chart_description"
-                        android:text="@string/label_categories_usage"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="5dp"/>
-
-                    <com.github.mikephil.charting.charts.PieChart
-                        android:id="@+id/pc_categories_statistics"
-                        android:layout_width="match_parent"
-                        android:layout_height="250dp"
-                        android:padding="5dp"/>
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/ll_categorise_statistics_not_enough_data"
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/pc_categories_statistics"
                     android:layout_width="match_parent"
-                    android:layout_height="260dp"
-                    android:orientation="vertical"
-                    android:paddingBottom="20dp"
-                    android:gravity="center">
+                    android:layout_height="250dp"
+                    android:padding="4dp"/>
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_info_outline_black_96dp"/>
+            </LinearLayout>
 
-                    <TextView
-                        android:text="@string/label_not_enough_data_for_statistic"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-                </LinearLayout>
+            <LinearLayout
+                android:id="@+id/ll_categorise_statistics_not_enough_data"
+                android:layout_width="match_parent"
+                android:layout_height="260dp"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:paddingBottom="20dp"
+                android:gravity="center">
 
-            </android.support.v7.widget.CardView>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info_outline_black_96dp"/>
+
+                <TextView
+                    android:text="@string/label_not_enough_data_for_statistic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+            </LinearLayout>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_categories_statistics"

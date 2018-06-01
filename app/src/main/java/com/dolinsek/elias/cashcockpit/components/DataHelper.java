@@ -54,6 +54,7 @@ public class DataHelper {
     private static final String BILL_CREATION_DATE_JSON = "creationDate";
     private static final String BILL_PRIMARY_CATEGORY_NAME = "primaryCategory";
     private static final String BILL_TYPE_JSON = "type";
+    private static final String BILL_AUTO_PAY_BILL_JSON = "autoPayBill";
 
     //PrimaryCategory
     private static final String PRIMARY_CATEGORY_NAME = "name";
@@ -188,6 +189,9 @@ public class DataHelper {
 
                 //Adds type
                 currentBillJSON.put(BILL_TYPE_JSON, bill.getType());
+
+                //Adds if bill is an autoPayBill
+                currentBillJSON.put(BILL_AUTO_PAY_BILL_JSON, bill.isAutoPayBill());
             }
         }
 
@@ -281,6 +285,9 @@ public class DataHelper {
             //Adds type of bill
             autoPayBill.put(BILL_TYPE_JSON, autoPay.getType());
 
+            //Adds if bill is an autoPayBill
+            autoPayBill.put(BILL_AUTO_PAY_BILL_JSON, autoPay.getBill().isAutoPayBill());
+
 
             //Adds type
             currentAutoPay.put(AUTO_PAY_TYPE, autoPay.getType());
@@ -331,10 +338,6 @@ public class DataHelper {
 
         //Contains file
         String file = readFile(false);
-
-        if(file == null){
-            return null;
-        }
 
         //Main JSON-Object
         JSONObject jsonObject = new JSONObject(file);
@@ -389,7 +392,7 @@ public class DataHelper {
                     }
                 }
 
-                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), billCreationDate));
+                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getBoolean(BILL_AUTO_PAY_BILL_JSON), billCreationDate));
             }
 
             //Adds name
@@ -567,7 +570,7 @@ public class DataHelper {
             }
 
             //Adds current AutoPay
-            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
+            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getBoolean(BILL_AUTO_PAY_BILL_JSON), currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
             autoPayToAdd.setPayments(payments);
 
             autoPays.add(autoPayToAdd);
