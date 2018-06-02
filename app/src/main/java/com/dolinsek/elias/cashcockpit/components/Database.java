@@ -223,5 +223,18 @@ public class Database {
             ArrayList<Bill> inputBillsOfMonth = filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(timeStampOfMonth), billType);
             return getTotalAmountOfBills(inputBillsOfMonth);
         }
+
+        public static long getTotalBalanceOfAllBankAccounts(){
+            long balance = 0;
+            for (BankAccount bankAccount:Database.getBankAccounts()){
+                if (bankAccount.getBalance() < 0){
+                    balance -= bankAccount.getBalance();
+                } else {
+                    balance += bankAccount.getBalance();
+                }
+            }
+
+            return balance;
+        }
     }
 }

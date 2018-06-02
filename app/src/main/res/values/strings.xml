@@ -141,6 +141,10 @@
     <string name="dialog_msg_reset_password_description">Your password will be reset in 12 hours</string>
     <string name="dialog_action_reset_password">Reset password</string>
     <string name="label_hours_until_password_reset">Hours until password reset</string>
+    <string name="label_amount_to_save_preference_description">Sets how much money you want to save every month</string>
+    <string name="label_amount_to_save">Amount to save</string>
+    <string name="label_inputs">Inputs</string>
+    <string name="label_daily_limit">Daily limit</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

@@ -44,9 +44,9 @@
                 android:layout_weight="5" />
 
             <TextView
+                android:id="@+id/txv_cockpit_chart_input_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="50000€"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
-                android:text="Ausgaben"
+                android:text="@string/label_inputs"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
@@ -78,9 +78,9 @@
                 android:layout_weight="5" />
 
             <TextView
+                android:id="@+id/txv_cockpit_chart_cash_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="150000€"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textSize="45sp" />
@@ -89,7 +89,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                android:text="Cash"
+                android:text="@string/label_cash"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 
@@ -113,9 +113,9 @@
                 android:layout_weight="5" />
 
             <TextView
+                android:id="@+id/txv_cockpit_chart_daily_limit_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="50€"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
                 android:textSize="30sp" />
@@ -124,7 +124,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="3dp"
-                android:text="Tageslimit"
+                android:text="@string/label_daily_limit"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
@@ -147,9 +147,9 @@
                 android:layout_weight="5" />
 
             <TextView
+                android:id="@+id/txv_cockpit_chart_credit_rate_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="50€"
                 android:textAlignment="center"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
 

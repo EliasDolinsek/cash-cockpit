@@ -1,13 +1,18 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -24,6 +29,7 @@ import java.util.ArrayList;
 public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
+    private TextView txvInputAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
 
 
     @Override
@@ -32,10 +38,16 @@ public class CockpitChartFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit_chart, container, false);;
 
-        pieChart = (PieChart) inflatedView.findViewById(R.id.pc_cockpit);
+        pieChart = inflatedView.findViewById(R.id.pc_cockpit);
+        txvInputAmount =  inflatedView.findViewById(R.id.txv_cockpit_chart_input_amount);
+        txvCashAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_cash_amount);
+        txvDailyLimitAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_daily_limit_amount);
+        txvCreditRateAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_credit_rate_amount);
 
         setupPieChart();
         loadPieChart();
+
+        displayTextsOnTextFields();
 
         return inflatedView;
     }
@@ -100,14 +112,62 @@ public class CockpitChartFragment extends Fragment {
         pieDataSet.setColors(colors);
     }
 
-    private void getCreditRate(){
-        ArrayList<Bill> allBillsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> autoPayBillsOfMonth = Database.Toolkit.filterBillsOfAutoPayBill(allBillsOfMonth);
+    private void displayTextsOnTextFields(){
+        Currency activeCurrency = Currency.getActiveCurrency(getContext());
+        String formattedInputAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getTotalAmountOfInputBillsOfMonth());
+        txvInputAmount.setText(formattedInputAmount);
 
-        ArrayList<Bill> filteredBillsOfMonth = allBillsOfMonth;
-        filteredBillsOfMonth.removeAll(autoPayBillsOfMonth);
+        String formattedCash = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCash());
+        txvCashAmount.setText(formattedCash);
 
-        long totalAutoPayBillsAmount = Database.Toolkit.getTotalAmountOfBills(autoPayBillsOfMonth);
-        long totalAmountOfBill = Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
+        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getDailyLimit());
+        txvDailyLimitAmount.setText(formattedDailyLimit);
+
+        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getCreditRate());
+        txvCreditRateAmount.setText(formattedCreditRate);
+
+    }
+
+    private long getTotalAmountOfAutoPayBills(){
+        ArrayList<Bill> payedAutoPayBillsOfMonths = Database.Toolkit.filterBillsOfAutoPayBill(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()));
+        return Database.Toolkit.getTotalAmountOfBills(payedAutoPayBillsOfMonths);
+    }
+
+    private long getTotalAmountOfOutputBillsOfMonth(){
+        ArrayList<Bill> outputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()), Bill.TYPE_OUTPUT);
+        return Database.Toolkit.getTotalAmountOfBills(outputBillsOfMonth);
+    }
+
+    private long getTotalAmountOfInputBillsOfMonth(){
+        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()), Bill.TYPE_INPUT);
+        return Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth);
+    }
+
+    private long getAmountOfCash(){
+        long amountOfInputOfMonth = getTotalAmountOfInputBillsOfMonth();
+        long amountOfAutoPayBillsOfMonth = getTotalAmountOfAutoPayBills();
+        long amountOfOutputOfMonth = getTotalAmountOfOutputBillsOfMonth();
+
+        return amountOfInputOfMonth - amountOfAutoPayBillsOfMonth - amountOfOutputOfMonth;
+    }
+
+    private long getAmountToSaveEveryMonth(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return Long.parseLong(sharedPreferences.getString("preference_amount_to_save", "0"));
+    }
+
+    private long getCreditRate(){
+        long amountOfCash = getAmountOfCash();
+        long amountToSave = getAmountToSaveEveryMonth();
+
+        return amountOfCash - amountToSave;
+    }
+
+    private long getDailyLimit(){
+        long amountOfInputOfMonth = getTotalAmountOfInputBillsOfMonth();
+        long amountOfAutoPayBillsOfMonth = getTotalAmountOfAutoPayBills();
+        long amountToSave = getAmountToSaveEveryMonth();
+
+        return amountOfInputOfMonth - amountOfAutoPayBillsOfMonth - amountToSave;
     }
 }
