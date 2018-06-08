@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -20,7 +21,9 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
+import java.time.Year;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 /**
@@ -67,16 +70,42 @@ public class CockpitChartFragment extends Fragment {
         return Database.Toolkit.getTotalAmountOfBills(bills);
     }
 
+    private long getAmountOfAutoPaysWhichBelongToCurrentMonth(){
+        ArrayList<AutoPay> autoPays = new ArrayList<>();
+
+        ArrayList<AutoPay> autoPaysYearly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_YEARLY);
+        ArrayList<AutoPay> autoPaysMonthly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_MONTHLY);
+        ArrayList<AutoPay> autoPaysWeekly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_WEEKLY);
+
+        autoPays.addAll(autoPaysMonthly);
+
+        for (int i = 0; i < 4; i++){
+            autoPays.addAll(autoPaysWeekly);
+        }
+
+        if (isCurrentMonthDescember()){
+            autoPays.addAll(autoPaysYearly);
+        }
+
+        return Database.Toolkit.getAmountOfAutoPays(autoPays);
+    }
+
+    private boolean isCurrentMonthDescember(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        return calendar.get(Calendar.MONTH) == Calendar.DECEMBER;
+    }
+
     private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(long timeStampOfMonth){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfInput = getAmountOfInputBillsOfMonth(timeStampOfMonth);
-        long amountOfTransfer = getAmountOfTransferBillsOfMonth(timeStampOfMonth);
+        long amountOfAutoPays = getAmountOfAutoPaysWhichBelongToCurrentMonth();
         long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
+        long amountOfCash = getAmountOfCash();
 
-        pieEntries.add(new PieEntry(amountOfInput));
-        pieEntries.add(new PieEntry(Math.abs(amountOfTransfer)));
-        pieEntries.add(new PieEntry(Math.abs(amountOfOutput)));
+        pieEntries.add(new PieEntry(amountOfAutoPays, getString(R.string.auto_pay)));
+        pieEntries.add(new PieEntry(amountOfCash, getString(R.string.label_cash)));
+        pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
 
         return pieEntries;
     }
@@ -84,7 +113,7 @@ public class CockpitChartFragment extends Fragment {
     private void loadPieChart(){
         ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries(System.currentTimeMillis());
 
-        PieDataSet pieDataSet = new PieDataSet(pieEntries, "TODO");
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         setupPieDataSet(pieDataSet);
         PieData pieData = new PieData(pieDataSet);
 
@@ -96,15 +125,17 @@ public class CockpitChartFragment extends Fragment {
         description.setText("");
         pieChart.setDescription(description);
 
-        pieChart.setHoleRadius(75f);
-        pieChart.setUsePercentValues(false);
+        pieChart.setEntryLabelTextSize(17f);
+        pieChart.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
         pieChart.getLegend().setEnabled(false);
+        pieChart.setHoleRadius(75f);
         pieChart.invalidate();
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
-        pieDataSet.setValueTextSize(0f); //Removes value text-view
+        pieDataSet.setValueTextSize(15f);
+        pieDataSet.setValueTextColor(Color.WHITE);
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){

@@ -36,7 +36,8 @@ import java.util.Date;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class BankAccountsStatisticsFragment extends Fragment {
+public class
+BankAccountsStatisticsFragment extends Fragment {
 
     private static final String EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE = "bankAccountIndex";
 

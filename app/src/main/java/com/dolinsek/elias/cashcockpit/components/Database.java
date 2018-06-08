@@ -219,9 +219,15 @@ public class Database {
             return amount;
         }
 
-        public static long getTotalAmountOfOutputBillTypeOfMonth(long timeStampOfMonth, int billType){
-            ArrayList<Bill> inputBillsOfMonth = filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(timeStampOfMonth), billType);
-            return getTotalAmountOfBills(inputBillsOfMonth);
+        public static ArrayList<AutoPay> getAutoPaysOfType(int type){
+            ArrayList<AutoPay> autoPays = new ArrayList<>();
+            for (AutoPay autoPay:getAutoPays()){
+                if (autoPay.getType() == type){
+                    autoPays.add(autoPay);
+                }
+            }
+
+            return autoPays;
         }
 
         public static long getTotalBalanceOfAllBankAccounts(){
@@ -235,6 +241,15 @@ public class Database {
             }
 
             return balance;
+        }
+
+        public static long getAmountOfAutoPays(ArrayList<AutoPay> autoPays){
+            long amount = 0;
+            for (AutoPay autoPay:autoPays){
+                amount += autoPay.getBill().getAmount();
+            }
+
+            return amount;
         }
     }
 }
