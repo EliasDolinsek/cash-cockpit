@@ -145,6 +145,7 @@
     <string name="label_amount_to_save">Amount to save</string>
     <string name="label_inputs">Inputs</string>
     <string name="label_daily_limit">Daily limit</string>
+    <string name="label_installment">Installment</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

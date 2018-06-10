@@ -1,14 +1,18 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -99,9 +103,9 @@ public class CockpitChartFragment extends Fragment {
     private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(long timeStampOfMonth){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfAutoPays = getAmountOfAutoPaysWhichBelongToCurrentMonth();
-        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth);
-        long amountOfCash = getAmountOfCash();
+        long amountOfAutoPays = getAmountOfAutoPaysWhichBelongToCurrentMonth() / 100;
+        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth) / 100;
+        long amountOfCash = getAmountOfCash() / 100;
 
         pieEntries.add(new PieEntry(amountOfAutoPays, getString(R.string.auto_pay)));
         pieEntries.add(new PieEntry(amountOfCash, getString(R.string.label_cash)));
@@ -130,17 +134,40 @@ public class CockpitChartFragment extends Fragment {
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleRadius(75f);
         pieChart.invalidate();
+
+        setupPieChartSizes();
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueTextColor(Color.WHITE);
+
+        CurrencyEntryValueFormatter currencyEntryValueFormatter = new CurrencyEntryValueFormatter(getContext());
+        pieDataSet.setValueFormatter(currencyEntryValueFormatter);
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
         int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_dark), getResources().getColor(R.color.colorOrange)};
         pieDataSet.setColors(colors);
+    }
+
+    private void setupPieChartSizes(){
+        int margin = 100;
+        int height = (int) (getDefaultDisplayWidth() - margin);
+
+        pieChart.getLayoutParams().height = height;
+        pieChart.requestLayout();
+    }
+
+    private double getDefaultDisplayWidth(){
+        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        Point size = new Point();
+        display.getSize(size);
+
+        return size.x;
     }
 
     private void displayTextsOnTextFields(){
