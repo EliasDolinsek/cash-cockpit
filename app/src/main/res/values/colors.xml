@@ -12,6 +12,7 @@
     <color name="colorLightGray">#E0E0E0</color>
     <color name="colorGreen">#66bb6a</color>
     <color name="colorGray">#636363</color>
-    <color name="colorOrange">#ffab40</color>
+    <color name="colorOrange">#ef6c00</color>
     <color name="colorBlue">#0000ff</color>
+    <color name="colorCockpitChartHole">#ffe0b2</color>
 </resources>

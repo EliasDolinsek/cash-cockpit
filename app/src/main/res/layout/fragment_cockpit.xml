@@ -64,8 +64,8 @@
                             android:hint="@string/label_amount"
                             android:inputType="numberDecimal"
                             android:maxLength="15"
-                            android:maxLines="1"
                             android:textAlignment="center"
+                            android:singleLine="true"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -94,7 +94,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/label_description"
-                            android:lines="1"
+                            android:singleLine="true"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -173,11 +173,18 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <fragment
-                android:name="com.dolinsek.elias.cashcockpit.CockpitChartFragment"
+            <LinearLayout
+                android:id="@+id/ll_cockpit_container_of_chart"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="10"/>
+                android:layout_weight="10">
+
+                <fragment
+                    android:name="com.dolinsek.elias.cashcockpit.CockpitChartFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

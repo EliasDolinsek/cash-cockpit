@@ -3,17 +3,13 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.TextInputLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -35,17 +31,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -70,6 +56,7 @@ public class CockpitFragment extends Fragment {
     private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
+    private LinearLayout mLlCockpitChartContainer;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -91,6 +78,7 @@ public class CockpitFragment extends Fragment {
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
+        mLlCockpitChartContainer = inflatedView.findViewById(R.id.ll_cockpit_container_of_chart);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
 
@@ -229,6 +217,10 @@ public class CockpitFragment extends Fragment {
         outState.putInt(TYPE, currentlySelectedBillType);
     }
 
+    private void hideChart(){
+        mLlCockpitChartContainer.setVisibility(View.GONE);
+    }
+
     public void setBillToEdit(Bill billToEdit){
         this.bill = billToEdit;
         BankAccount bankAccount = getAssociatedBankAccountOfBill(billToEdit);
@@ -289,6 +281,7 @@ public class CockpitFragment extends Fragment {
         mEdtBillDescription.setText(bill.getDescription());
 
         displaySelectedSubcategory();
+        hideChart();
 
         mFbtnAdd.setVisibility(View.GONE);
         mSpnSelectBankAccount.setEnabled(false);

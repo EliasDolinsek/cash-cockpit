@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * Class what provides static methods for sorting categories
+ * Class which provides static methods for sorting categories
  * Created by elias on 13.02.2018.
  */
 
