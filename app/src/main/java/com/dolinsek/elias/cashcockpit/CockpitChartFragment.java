@@ -133,7 +133,7 @@ public class CockpitChartFragment extends Fragment {
         pieChart.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleRadius(75f);
-        pieChart.setHoleColor(getContext().getResources().getColor(R.color.colorCockpitChartHole));
+        //pieChart.setHoleColor(getContext().getResources().getColor(R.color.colorCockpitChartHole));
         pieChart.setTouchEnabled(false);
         pieChart.invalidate();
 

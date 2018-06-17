@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.dolinsek.elias.cashcockpit.CockpitFragment">
+    tools:context="com.dolinsek.elias.cashcockpit.CockpitFragment"
+    android:background="@drawable/gradient_primary">
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fbtn_cockpit_add"
@@ -35,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="8dp">
+                android:padding="8dp" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -66,6 +67,7 @@
                             android:maxLength="15"
                             android:textAlignment="center"
                             android:singleLine="true"
+                            android:textColor="@android:color/white"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -95,6 +97,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/label_description"
                             android:singleLine="true"
+                            android:textColor="@android:color/white"
                             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
 
                     </android.support.design.widget.TextInputLayout>
@@ -191,7 +194,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="bottom"
                 android:orientation="horizontal"
-                android:padding="10dp">
+                android:padding="10dp"
+                android:visibility="gone">
 
                 <Button
                     android:id="@+id/btn_cockpit_save"

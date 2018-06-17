@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -85,7 +86,9 @@ public class CockpitFragment extends Fragment {
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
 
-        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.bill_types_array));
+        setupSpinnersStyles();
+
+        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.bill_types_array));
         selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
@@ -221,6 +224,12 @@ public class CockpitFragment extends Fragment {
         mLlCockpitChartContainer.setVisibility(View.GONE);
     }
 
+
+    private void setupSpinnersStyles(){
+        mSpnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+        mSpnSelectBillType.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
+    }
+
     public void setBillToEdit(Bill billToEdit){
         this.bill = billToEdit;
         BankAccount bankAccount = getAssociatedBankAccountOfBill(billToEdit);
@@ -308,7 +317,7 @@ public class CockpitFragment extends Fragment {
     }
 
     private void setupBankAccountSpinner(){
-        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), android.R.layout.simple_spinner_item, getBankAccountsNames());
+        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), R.layout.costum_spinner_layout, getBankAccountsNames());
         selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
