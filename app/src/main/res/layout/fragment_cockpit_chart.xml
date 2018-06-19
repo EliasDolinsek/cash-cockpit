@@ -31,8 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textSize="22dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -42,8 +42,8 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_inputs"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textSize="18dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccentLight"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -51,8 +51,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textSize="30dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -62,8 +62,8 @@
             android:layout_marginStart="4dp"
             android:text="@string/label_cash"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textSize="22dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccentLight"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -71,8 +71,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textSize="30dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -82,8 +82,8 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_daily_limit"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textSize="18dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccentLight"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -91,8 +91,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:textSize="22dp"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/white"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -102,7 +102,7 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_installment"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textSize="18dp"/>
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccentLight" />
     </GridLayout>
 </android.support.constraint.ConstraintLayout>

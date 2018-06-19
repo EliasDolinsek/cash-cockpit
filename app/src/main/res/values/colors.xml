@@ -14,5 +14,9 @@
     <color name="colorGray">#636363</color>
     <color name="colorOrange">#ef6c00</color>
     <color name="colorBlue">#0000ff</color>
-    <color name="colorCockpitChartHole">#ffe0b2</color>
+
+    <!--Cockpit-Chart-Colors-->
+    <color name="colorCockpitChartEntries">#1b3039</color>
+    <color name="colorCockpitChartHole">@color/colorPrimary</color>
+
 </resources>

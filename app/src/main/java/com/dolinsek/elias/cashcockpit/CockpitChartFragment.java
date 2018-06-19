@@ -24,6 +24,7 @@ import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 
 import java.time.Year;
 import java.util.ArrayList;
@@ -129,37 +130,27 @@ public class CockpitChartFragment extends Fragment {
         description.setText("");
         pieChart.setDescription(description);
 
-        pieChart.setEntryLabelTextSize(17f);
-        pieChart.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
+        pieChart.setEntryLabelTextSize(12f);
+        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.white));
+        pieChart.setHoleColor(getContext().getResources().getColor(R.color.colorCockpitChartHole));
         pieChart.getLegend().setEnabled(false);
-        pieChart.setHoleRadius(75f);
-        //pieChart.setHoleColor(getContext().getResources().getColor(R.color.colorCockpitChartHole));
-        pieChart.setTouchEnabled(false);
+        pieChart.setHoleRadius(78f);
         pieChart.invalidate();
-
-        setupPieChartSizes();
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
-        pieDataSet.setValueTextSize(12f);
+        pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueTextColor(Color.WHITE);
+        pieDataSet.setSliceSpace(5f);
 
         CurrencyEntryValueFormatter currencyEntryValueFormatter = new CurrencyEntryValueFormatter(getContext());
         pieDataSet.setValueFormatter(currencyEntryValueFormatter);
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorOrange), getResources().getColor(android.R.color.holo_blue_dark), getResources().getColor(android.R.color.holo_red_dark)};
+        int[] colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntries)};
         pieDataSet.setColors(colors);
-    }
-
-    private void setupPieChartSizes(){
-        int margin = 100;
-        int height = (int) (getDefaultDisplayWidth() - margin);
-
-        pieChart.getLayoutParams().height = height;
-        pieChart.requestLayout();
     }
 
     private double getDefaultDisplayWidth(){

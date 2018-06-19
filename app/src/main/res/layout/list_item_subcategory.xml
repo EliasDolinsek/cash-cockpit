@@ -51,7 +51,7 @@
                 android:layout_marginStart="5dp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
-                android:background="@drawable/border_primary"
+                android:background="@drawable/border_primary_light"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"/>
 
