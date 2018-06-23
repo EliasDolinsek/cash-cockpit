@@ -24,7 +24,11 @@ public class Currency {
     public static final String CURRENCY_SYMBOL_DOLLAR = "$";
     public static final String CURRENCY_SYMBOL_POUND = "£";
 
-    private String currencySymbol;
+    public static final String CURRENCY_SHORTCUT_EURO = "EUR";
+    public static final String CURRENCY_SHORTCUT_DOLLAR = "USD";
+    public static final String CURRENCY_SHORTCUT_POUND = "GBP";
+
+    private String currencySymbol, currencyShortcut;
     private int currencyIndex;
 
     public Currency(){
@@ -45,6 +49,14 @@ public class Currency {
 
     private void setCurrencyIndex(int currencyIndex) {
         this.currencyIndex = currencyIndex;
+    }
+
+    public String getCurrencyShortcut() {
+        return currencyShortcut;
+    }
+
+    public void setCurrencyShortcut(String currencyShortcut) {
+        this.currencyShortcut = currencyShortcut;
     }
 
     public String formatAmountToReadableString(long amount){
@@ -83,6 +95,7 @@ public class Currency {
 
         euroCurrency.setCurrencySymbol(CURRENCY_SYMBOL_EURO);
         euroCurrency.setCurrencyIndex(CURRENCY_INDEX_EURO);
+        euroCurrency.setCurrencyShortcut(CURRENCY_SHORTCUT_EURO);
 
         return euroCurrency;
     }
@@ -92,6 +105,7 @@ public class Currency {
 
         dollarCurrency.setCurrencySymbol(CURRENCY_SYMBOL_DOLLAR);
         dollarCurrency.setCurrencyIndex(CURRENCY_INDEX_DOLLAR);
+        dollarCurrency.setCurrencyShortcut(CURRENCY_SHORTCUT_DOLLAR);
 
         return dollarCurrency;
     }
@@ -101,6 +115,7 @@ public class Currency {
 
         poundCurrency.setCurrencySymbol(CURRENCY_SYMBOL_POUND);
         poundCurrency.setCurrencyIndex(CURRENCY_INDEX_POUND);
+        poundCurrency.setCurrencyShortcut(CURRENCY_SHORTCUT_POUND);
 
         return poundCurrency;
     }

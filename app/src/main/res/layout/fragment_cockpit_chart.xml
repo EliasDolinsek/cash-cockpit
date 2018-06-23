@@ -27,12 +27,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/txv_cockpit_chart_input_amount"
+            android:id="@+id/txv_cockpit_chart_total_outputs_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorAccentTextColor"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -40,10 +40,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
-            android:text="@string/label_inputs"
+            android:text="@string/label_total_outputs"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccentLight"
+            android:textColor="@color/colorAccent"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorAccentTextColor"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -63,7 +63,7 @@
             android:text="@string/label_cash"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccentLight"
+            android:textColor="@color/colorAccent"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -72,7 +72,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorAccentTextColor"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -83,7 +83,7 @@
             android:text="@string/label_daily_limit"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccentLight"
+            android:textColor="@color/colorAccent"
             android:layout_marginBottom="4dp"/>
 
         <TextView
@@ -92,7 +92,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-            android:textColor="@android:color/white"
+            android:textColor="@color/colorAccentTextColor"
             android:layout_gravity="end"
             android:layout_marginBottom="4dp"/>
 
@@ -103,6 +103,6 @@
             android:text="@string/label_installment"
             android:textAlignment="center"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-            android:textColor="@color/colorAccentLight" />
+            android:textColor="@color/colorAccent" />
     </GridLayout>
 </android.support.constraint.ConstraintLayout>

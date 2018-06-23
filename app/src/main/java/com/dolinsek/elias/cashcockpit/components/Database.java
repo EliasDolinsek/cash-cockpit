@@ -7,9 +7,6 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 
 /**
  * This has static array lists of all components
@@ -250,6 +247,28 @@ public class Database {
             }
 
             return amount;
+        }
+
+        public static ArrayList<AutoPay> removeAutoPayBillTypeInputFromCollection(ArrayList<AutoPay> autoPays){
+            ArrayList<AutoPay> filteredAutoPays = new ArrayList<>();
+            for (AutoPay autoPay:autoPays){
+                if (autoPay.getBill().getType() != Bill.TYPE_INPUT){
+                    filteredAutoPays.add(autoPay);
+                }
+            }
+
+            return filteredAutoPays;
+        }
+
+        public static ArrayList<Bill> removeAutoPayBillsFromCollection(ArrayList<Bill> bills){
+            ArrayList<Bill> filteredBills = new ArrayList<>();
+            for (Bill bill:bills){
+                if (!bill.isAutoPayBill()){
+                    filteredBills.add(bill);
+                }
+            }
+
+            return filteredBills;
         }
     }
 }

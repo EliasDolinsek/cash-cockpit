@@ -13,6 +13,8 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,12 +54,12 @@ public class CockpitFragment extends Fragment {
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
-    private TextView mTxvSelectedSubcategory;
+    private TextView mTxvSelectedSubcategory, mTxvActiveCurrencyShortcut;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
-    private LinearLayout mLlCockpitChartContainer;
+    private CardView mCvChartContainer;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -79,13 +81,15 @@ public class CockpitFragment extends Fragment {
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
-        mLlCockpitChartContainer = inflatedView.findViewById(R.id.ll_cockpit_container_of_chart);
+        mCvChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
+        mTxvActiveCurrencyShortcut = (TextView) inflatedView.findViewById(R.id.txv_cockpit_active_currency_shortcut);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
 
+        setCurrencyShortcutDependingOnActiveCurrency();
         setupSpinnersStyles();
 
         final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.bill_types_array));
@@ -221,9 +225,13 @@ public class CockpitFragment extends Fragment {
     }
 
     private void hideChart(){
-        mLlCockpitChartContainer.setVisibility(View.GONE);
+        mCvChartContainer.setVisibility(View.GONE);
     }
 
+    private void setCurrencyShortcutDependingOnActiveCurrency(){
+        String currencyShortcut = Currency.getActiveCurrency(getContext()).getCurrencyShortcut();
+        mTxvActiveCurrencyShortcut.setText(currencyShortcut);
+    }
 
     private void setupSpinnersStyles(){
         mSpnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);

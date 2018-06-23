@@ -4,26 +4,52 @@
     android:layout_height="match_parent"
     tools:context="com.dolinsek.elias.cashcockpit.HistoryFragment"
     android:orientation="vertical"
-    android:layout_marginTop="5dp"
-    android:paddingBottom="5dp">
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:background="@drawable/gradient_primary">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp">
+        android:layout_marginBottom="4dp">
 
-        <Spinner
-            android:id="@+id/spn_history_filter_main"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/border_primary_light">
 
-        <Spinner
-            android:id="@+id/spn_history_filter_bill_type"
+            <Spinner
+                android:id="@+id/spn_history_filter_main"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="@drawable/border_primary_light">
+
+            <Spinner
+                android:id="@+id/spn_history_filter_bill_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginTop="4dp"/>
+
+        </LinearLayout>
     </LinearLayout>
 
     <TextView

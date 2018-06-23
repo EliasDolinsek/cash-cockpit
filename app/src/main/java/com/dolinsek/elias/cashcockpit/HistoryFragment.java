@@ -99,8 +99,9 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupSpinnerMain(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.filters_array));
+        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.filters_array));
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        setSpinnerArrowColorToWhite(mSpnFilterMain);
 
         mSpnFilterMain.setAdapter(filterItems);
         mSpnFilterMain.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -118,8 +119,9 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupSpinnerBillTypes(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, getBillsTypesAsStringIncludingAll());
+        ArrayAdapter<String> filterItems = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getBillsTypesAsStringIncludingAll());
         filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        setSpinnerArrowColorToWhite(mSpnFilterBillTypes);
 
         mSpnFilterBillTypes.setAdapter(filterItems);
         mSpnFilterBillTypes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -143,6 +145,10 @@ public class HistoryFragment extends Fragment {
 
             }
         });
+    }
+
+    private void setSpinnerArrowColorToWhite(Spinner spinner){
+        spinner.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     private ArrayList<Bill> filterBillsBillType(ArrayList<Bill> billsToFilter, int billTypeToFilter){

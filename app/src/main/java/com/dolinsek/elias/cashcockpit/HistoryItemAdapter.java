@@ -77,7 +77,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final Bill bill = billsToDisplay.get(position);
         final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
-        setupImvFromBillType(holder.mImvBillType, bill);
         displayDescription(bill.getDescription(), holder);
 
         String dateOfCreationDate = DateFormat.format("EEE dd.MM", bill.getCreationDate()).toString();
@@ -103,7 +102,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView mImvBillType;
         public TextView mTxvDescription, mTxvDetails;
 
         public HistoryViewHolder(View itemView) {
@@ -111,7 +109,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
             mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
-            mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_history_bill_type);
         }
     }
 

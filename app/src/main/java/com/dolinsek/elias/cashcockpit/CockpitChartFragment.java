@@ -19,6 +19,7 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
@@ -37,7 +38,7 @@ import java.util.Calendar;
 public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
-    private TextView txvInputAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
+    private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
 
 
     @Override
@@ -47,7 +48,7 @@ public class CockpitChartFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit_chart, container, false);;
 
         pieChart = inflatedView.findViewById(R.id.pc_cockpit);
-        txvInputAmount =  inflatedView.findViewById(R.id.txv_cockpit_chart_input_amount);
+        txvTotalOutputsAmount =  inflatedView.findViewById(R.id.txv_cockpit_chart_total_outputs_amount);
         txvCashAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_cash_amount);
         txvDailyLimitAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_daily_limit_amount);
         txvCreditRateAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_credit_rate_amount);
@@ -92,6 +93,7 @@ public class CockpitChartFragment extends Fragment {
             autoPays.addAll(autoPaysYearly);
         }
 
+        autoPays = Database.Toolkit.removeAutoPayBillTypeInputFromCollection(autoPays);
         return Database.Toolkit.getAmountOfAutoPays(autoPays);
     }
 
@@ -106,10 +108,13 @@ public class CockpitChartFragment extends Fragment {
 
         long amountOfAutoPays = getAmountOfAutoPaysWhichBelongToCurrentMonth() / 100;
         long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth) / 100;
-        long amountOfCash = getAmountOfCash() / 100;
 
-        pieEntries.add(new PieEntry(amountOfAutoPays, getString(R.string.auto_pay)));
-        pieEntries.add(new PieEntry(amountOfCash, getString(R.string.label_cash)));
+        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
+        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(billsOfMonth, Bill.TYPE_INPUT);
+        long amountOfInput = Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth) / 100;
+
+        pieEntries.add(new PieEntry(amountOfAutoPays, getString(R.string.label_fixed_costs)));
+        pieEntries.add(new PieEntry(amountOfInput, getString(R.string.label_input)));
         pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
 
         return pieEntries;
@@ -131,8 +136,7 @@ public class CockpitChartFragment extends Fragment {
         pieChart.setDescription(description);
 
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.white));
-        pieChart.setHoleColor(getContext().getResources().getColor(R.color.colorCockpitChartHole));
+        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.black));
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleRadius(78f);
         pieChart.invalidate();
@@ -141,7 +145,7 @@ public class CockpitChartFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueTextColor(Color.WHITE);
+        pieDataSet.setValueTextColor(Color.BLACK);
         pieDataSet.setSliceSpace(5f);
 
         CurrencyEntryValueFormatter currencyEntryValueFormatter = new CurrencyEntryValueFormatter(getContext());
@@ -149,24 +153,16 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntries)};
+        int[] colors = new int[]{getResources().getColor(R.color.colorAccentLight), getResources().getColor(R.color.colorPrimaryLight), getResources().getColor(R.color.colorAccent)};
         pieDataSet.setColors(colors);
-    }
-
-    private double getDefaultDisplayWidth(){
-        WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        Point size = new Point();
-        display.getSize(size);
-
-        return size.x;
     }
 
     private void displayTextsOnTextFields(){
         Currency activeCurrency = Currency.getActiveCurrency(getContext());
-        String formattedInputAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getTotalAmountOfInputBillsOfMonth());
-        txvInputAmount.setText(formattedInputAmount);
+
+        long totalOutputsAmount = Math.abs(getAmountOfTotalOutputsOfMonths());
+        String formattedTotalOutputsAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(totalOutputsAmount);
+        txvTotalOutputsAmount.setText(formattedTotalOutputsAmount);
 
         String formattedCash = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCash());
         txvCashAmount.setText(formattedCash);
@@ -177,6 +173,33 @@ public class CockpitChartFragment extends Fragment {
         String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getCreditRate());
         txvCreditRateAmount.setText(formattedCreditRate);
 
+    }
+
+    private long getAmountOfTotalOutputsOfMonths(){
+        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
+        ArrayList<Bill> filteredBillsOfMonth = Database.Toolkit.removeAutoPayBillsFromCollection(billsOfMonth);
+
+        ArrayList<AutoPay> autoPaysWithBillTypeOutputTransfer = getAutoPaysWithBillTypeOutputTransfer();
+        long amountOfAutoPays = Database.Toolkit.getAmountOfAutoPays(autoPaysWithBillTypeOutputTransfer);
+
+        long amountOfTotalOutputsOfMonth = Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
+        amountOfTotalOutputsOfMonth -= amountOfAutoPays;
+
+        return amountOfTotalOutputsOfMonth;
+    }
+
+    private ArrayList<AutoPay> getAutoPaysWithBillTypeOutputTransfer(){
+        ArrayList<AutoPay> autoPays = new ArrayList<>();
+
+        for (AutoPay autoPay:Database.getAutoPays()){
+            int autoPayBillType = autoPay.getBill().getType();
+
+            if (autoPayBillType == Bill.TYPE_OUTPUT || autoPayBillType == Bill.TYPE_TRANSFER){
+                autoPays.add(autoPay);
+            }
+        }
+
+        return autoPays;
     }
 
     private long getTotalAmountOfAutoPayBills(){
