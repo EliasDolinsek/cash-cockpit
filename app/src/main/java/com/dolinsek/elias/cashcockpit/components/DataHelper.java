@@ -283,7 +283,7 @@ public class DataHelper {
             autoPayBill.put(BILL_CREATION_DATE_JSON, autoPay.getBill().getCreationDate());
 
             //Adds type of bill
-            autoPayBill.put(BILL_TYPE_JSON, autoPay.getType());
+            autoPayBill.put(BILL_TYPE_JSON, autoPay.getBill().getType());
 
             //Adds if bill is an autoPayBill
             autoPayBill.put(BILL_AUTO_PAY_BILL_JSON, autoPay.getBill().isAutoPayBill());

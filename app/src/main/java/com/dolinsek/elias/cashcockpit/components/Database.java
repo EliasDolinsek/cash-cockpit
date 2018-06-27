@@ -249,17 +249,6 @@ public class Database {
             return amount;
         }
 
-        public static ArrayList<AutoPay> removeAutoPayBillTypeInputFromCollection(ArrayList<AutoPay> autoPays){
-            ArrayList<AutoPay> filteredAutoPays = new ArrayList<>();
-            for (AutoPay autoPay:autoPays){
-                if (autoPay.getBill().getType() != Bill.TYPE_INPUT){
-                    filteredAutoPays.add(autoPay);
-                }
-            }
-
-            return filteredAutoPays;
-        }
-
         public static ArrayList<Bill> removeAutoPayBillsFromCollection(ArrayList<Bill> bills){
             ArrayList<Bill> filteredBills = new ArrayList<>();
             for (Bill bill:bills){
@@ -269,6 +258,17 @@ public class Database {
             }
 
             return filteredBills;
+        }
+
+        public static ArrayList<AutoPay> filterAutoPaysOfAutoPayBillType(ArrayList<AutoPay> autoPays, int billType){
+            ArrayList<AutoPay> filteredAutoPays = new ArrayList<>();
+            for (AutoPay autoPay:autoPays){
+                if (autoPay.getBill().getType() == billType){
+                    filteredAutoPays.add(autoPay);
+                }
+            }
+
+            return filteredAutoPays;
         }
     }
 }

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -61,59 +62,53 @@ public class CockpitChartFragment extends Fragment {
         return inflatedView;
     }
 
-    private long getAmountOfOutputBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_OUTPUT);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
+    public void refreshData(){
+        loadPieChart();
+        pieChart.notifyDataSetChanged();
+        pieChart.invalidate();
     }
 
-    private long getAmountOfTransferBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_TRANSFER);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
+    private long getAmountOfBillsOfBillTypeOfMonth(int billType){
+        ArrayList<Bill> allBillsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
+        ArrayList<Bill> filteredBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, billType);
+        return Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
     }
 
-    private long getAmountOfInputBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> bills = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getAllBillsInDatabase(), Bill.TYPE_INPUT);
-        return Database.Toolkit.getTotalAmountOfBills(bills);
-    }
-
-    private long getAmountOfAutoPaysWhichBelongToCurrentMonth(){
-        ArrayList<AutoPay> autoPays = new ArrayList<>();
-
+    private long getAmountOfFixedCosts(){
         ArrayList<AutoPay> autoPaysYearly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_YEARLY);
         ArrayList<AutoPay> autoPaysMonthly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_MONTHLY);
         ArrayList<AutoPay> autoPaysWeekly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_WEEKLY);
 
-        autoPays.addAll(autoPaysMonthly);
+        ArrayList<AutoPay> autoPays = new ArrayList<>(autoPaysMonthly);
 
         for (int i = 0; i < 4; i++){
             autoPays.addAll(autoPaysWeekly);
         }
 
-        if (isCurrentMonthDescember()){
+        if (isCurrentMonthJanuary()){
             autoPays.addAll(autoPaysYearly);
         }
 
-        autoPays = Database.Toolkit.removeAutoPayBillTypeInputFromCollection(autoPays);
+        ArrayList<AutoPay> autoPaysWithBillTypeInput = Database.Toolkit.filterAutoPaysOfAutoPayBillType(autoPays, Bill.TYPE_INPUT);
+        autoPays.removeAll(autoPaysWithBillTypeInput);
+
         return Database.Toolkit.getAmountOfAutoPays(autoPays);
     }
 
-    private boolean isCurrentMonthDescember(){
+    private boolean isCurrentMonthJanuary(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
-        return calendar.get(Calendar.MONTH) == Calendar.DECEMBER;
+        return calendar.get(Calendar.MONTH) == Calendar.JANUARY;
     }
 
-    private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(long timeStampOfMonth){
+    private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfAutoPays = getAmountOfAutoPaysWhichBelongToCurrentMonth() / 100;
-        long amountOfOutput = getAmountOfOutputBillsOfMonth(timeStampOfMonth) / 100;
+        long amountOfFixedCosts = getAmountOfFixedCosts() / 100;
+        long amountOfOutput = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
+        long amountOfInput = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
 
-        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(billsOfMonth, Bill.TYPE_INPUT);
-        long amountOfInput = Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth) / 100;
-
-        pieEntries.add(new PieEntry(amountOfAutoPays, getString(R.string.label_fixed_costs)));
+        pieEntries.add(new PieEntry(amountOfFixedCosts, getString(R.string.label_fixed_costs)));
         pieEntries.add(new PieEntry(amountOfInput, getString(R.string.label_input)));
         pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
 
@@ -121,7 +116,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void loadPieChart(){
-        ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries(System.currentTimeMillis());
+        ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries();
 
         PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
         setupPieDataSet(pieDataSet);
@@ -136,7 +131,7 @@ public class CockpitChartFragment extends Fragment {
         pieChart.setDescription(description);
 
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.darker_gray));
+        pieChart.setEntryLabelColor(getResources().getColor(R.color.colorAccentTextColor));
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleRadius(78f);
         pieChart.invalidate();
@@ -145,7 +140,7 @@ public class CockpitChartFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.darker_gray));
+        pieDataSet.setValueTextColor(getResources().getColor(R.color.colorAccentTextColor));
         pieDataSet.setSliceSpace(5f);
 
         CurrencyEntryValueFormatter currencyEntryValueFormatter = new CurrencyEntryValueFormatter(getContext());
@@ -153,7 +148,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorAccentLight), getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorAccentDark)};
+        int[] colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
         pieDataSet.setColors(colors);
     }
 
@@ -167,10 +162,10 @@ public class CockpitChartFragment extends Fragment {
         String formattedCash = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCash());
         txvCashAmount.setText(formattedCash);
 
-        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getDailyLimit());
+        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfDailyLimitOfMonth());
         txvDailyLimitAmount.setText(formattedDailyLimit);
 
-        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getCreditRate());
+        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCreditRateOfMonth());
         txvCreditRateAmount.setText(formattedCreditRate);
 
     }
@@ -202,46 +197,65 @@ public class CockpitChartFragment extends Fragment {
         return autoPays;
     }
 
-    private long getTotalAmountOfAutoPayBills(){
-        ArrayList<Bill> payedAutoPayBillsOfMonths = Database.Toolkit.filterBillsOfAutoPayBill(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()));
-        return Database.Toolkit.getTotalAmountOfBills(payedAutoPayBillsOfMonths);
-    }
-
-    private long getTotalAmountOfOutputBillsOfMonth(){
-        ArrayList<Bill> outputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()), Bill.TYPE_OUTPUT);
-        return Database.Toolkit.getTotalAmountOfBills(outputBillsOfMonth);
-    }
-
-    private long getTotalAmountOfInputBillsOfMonth(){
-        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(Database.Toolkit.getBillsOfMonth(System.currentTimeMillis()), Bill.TYPE_INPUT);
-        return Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth);
+    private long getAmountToSaveEveryMonth(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+        return Long.parseLong(sharedPreferences.getString("preference_amount_to_save", "0")) * 100;
     }
 
     private long getAmountOfCash(){
-        long amountOfInputOfMonth = getTotalAmountOfInputBillsOfMonth();
-        long amountOfAutoPayBillsOfMonth = getTotalAmountOfAutoPayBills();
-        long amountOfOutputOfMonth = getTotalAmountOfOutputBillsOfMonth();
+        long amountOfTotalInputsOfMonth = getAmountOfTotalInputsOfMonthIncludingAutoPays();
+        long amountOfFixedCostsOfMonth = getAmountOfFixedCosts();
+        long amountOfOutputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
 
-        return amountOfInputOfMonth - amountOfAutoPayBillsOfMonth - amountOfOutputOfMonth;
+        long cash = amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
+
+        if (cash < 0){
+            return 0;
+        } else {
+            return cash;
+        }
     }
 
-    private long getAmountToSaveEveryMonth(){
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return Long.parseLong(sharedPreferences.getString("preference_amount_to_save", "0"));
+    private long getAmountOfTotalInputsOfMonthIncludingAutoPays(){
+        ArrayList<AutoPay> autoPaysWithBillTypeInput = Database.Toolkit.filterAutoPaysOfAutoPayBillType(Database.getAutoPays(), Bill.TYPE_INPUT);
+
+        long amountOfInputsOfMonth = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
+        long amountOfInputTypeAutoPaysOfMonth = Database.Toolkit.getAmountOfAutoPays(autoPaysWithBillTypeInput);
+        return amountOfInputsOfMonth + amountOfInputTypeAutoPaysOfMonth;
     }
 
-    private long getCreditRate(){
-        long amountOfCash = getAmountOfCash();
-        long amountToSave = getAmountToSaveEveryMonth();
+    private long getAmountOfOutputsOfMonth(){
+        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
+        ArrayList<Bill> filteredBillsOfMonth = new ArrayList<>(billsOfMonth);
+        filteredBillsOfMonth.removeAll(Database.Toolkit.filterBillsOfBillType(filteredBillsOfMonth, Bill.TYPE_INPUT));
 
-        return amountOfCash - amountToSave;
+        return Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
     }
 
-    private long getDailyLimit(){
-        long amountOfInputOfMonth = getTotalAmountOfInputBillsOfMonth();
-        long amountOfAutoPayBillsOfMonth = getTotalAmountOfAutoPayBills();
-        long amountToSave = getAmountToSaveEveryMonth();
+    private long getAmountOfCreditRateOfMonth(){
+        long amountOfCashOfMonth = getAmountOfCash();
+        long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
 
-        return amountOfInputOfMonth - amountOfAutoPayBillsOfMonth - amountToSave;
+        long creditRate =  amountOfCashOfMonth - amountToSaveEveryMonth;
+
+        if (creditRate < 0){
+            return 0;
+        } else {
+            return creditRate;
+        }
+    }
+
+    private long getAmountOfDailyLimitOfMonth(){
+        long totalInputsOfMonthIncludingAutoPays = getAmountOfTotalInputsOfMonthIncludingAutoPays();
+        long fixedCostsOfMonth = getAmountOfFixedCosts();
+        long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
+
+        long dailyLimit = totalInputsOfMonthIncludingAutoPays - fixedCostsOfMonth - amountToSaveEveryMonth;
+
+        if (dailyLimit < 0){
+            return 0;
+        } else {
+            return dailyLimit;
+        }
     }
 }
