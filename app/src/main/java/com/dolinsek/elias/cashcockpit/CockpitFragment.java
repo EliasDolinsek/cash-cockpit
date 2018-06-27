@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -58,8 +59,9 @@ public class CockpitFragment extends Fragment {
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
+    private RelativeLayout mRlChartContainer;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
-    private CardView mCvChartContainer;
+    private LinearLayout mLlBtnSaveDeleteContainer;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -81,7 +83,8 @@ public class CockpitFragment extends Fragment {
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
-        mCvChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
+        mRlChartContainer = inflatedView.findViewById(R.id.rl_cockpit_chart_container);
+        mLlBtnSaveDeleteContainer = inflatedView.findViewById(R.id.ll_cockpit_btn_save_delete_container);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
         mTxvActiveCurrencyShortcut = (TextView) inflatedView.findViewById(R.id.txv_cockpit_active_currency_shortcut);
@@ -112,8 +115,7 @@ public class CockpitFragment extends Fragment {
         if(editModeActive){
             setupForEditMode();
         } else {
-            mBtnSave.setVisibility(View.GONE);
-            mBtnDelete.setVisibility(View.GONE);
+            mLlBtnSaveDeleteContainer.setVisibility(View.GONE);
         }
 
         if(savedInstanceState != null){
@@ -225,7 +227,7 @@ public class CockpitFragment extends Fragment {
     }
 
     private void hideChart(){
-        mCvChartContainer.setVisibility(View.GONE);
+        mRlChartContainer.setVisibility(View.GONE);
     }
 
     private void setCurrencyShortcutDependingOnActiveCurrency(){
@@ -296,6 +298,7 @@ public class CockpitFragment extends Fragment {
         String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableString(bill.getAmount());
         mEdtBillAmount.setText(amountWithoutCurrencySymbol);
         mEdtBillDescription.setText(bill.getDescription());
+
 
         displaySelectedSubcategory();
         hideChart();

@@ -25,6 +25,7 @@
         <activity android:name=".SelectCategoryActivity" />
         <activity
             android:name=".StartActivity"
+            android:windowSoftInputMode="adjustResize"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

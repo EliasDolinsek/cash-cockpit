@@ -136,7 +136,7 @@ public class CockpitChartFragment extends Fragment {
         pieChart.setDescription(description);
 
         pieChart.setEntryLabelTextSize(12f);
-        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.black));
+        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.darker_gray));
         pieChart.getLegend().setEnabled(false);
         pieChart.setHoleRadius(78f);
         pieChart.invalidate();
@@ -145,7 +145,7 @@ public class CockpitChartFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueTextColor(Color.BLACK);
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.darker_gray));
         pieDataSet.setSliceSpace(5f);
 
         CurrencyEntryValueFormatter currencyEntryValueFormatter = new CurrencyEntryValueFormatter(getContext());
@@ -153,7 +153,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorAccentLight), getResources().getColor(R.color.colorPrimaryLight), getResources().getColor(R.color.colorAccent)};
+        int[] colors = new int[]{getResources().getColor(R.color.colorAccentLight), getResources().getColor(R.color.colorAccent), getResources().getColor(R.color.colorAccentDark)};
         pieDataSet.setColors(colors);
     }
 

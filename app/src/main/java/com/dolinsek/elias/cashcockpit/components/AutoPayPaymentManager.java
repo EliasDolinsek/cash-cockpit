@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit.components;
 
 import android.app.Notification;
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.support.v4.app.NotificationManagerCompat;
 
 import com.dolinsek.elias.cashcockpit.R;
@@ -23,6 +24,7 @@ public class AutoPayPaymentManager {
         ArrayList<AutoPay> autoPaysWherePaymentsAreRequired = Database.Toolkit.getAutoPaysWherePaymentsAreRequired();
         if (autoPaysWherePaymentsAreRequired.size() != 0){
             Database.Toolkit.manageAllPayments();
+            Database.save(context);
         }
 
         return autoPaysWherePaymentsAreRequired;
@@ -40,8 +42,7 @@ public class AutoPayPaymentManager {
     private Notification getAutoPayPaymentNotification(AutoPay autoPay){
         Notification.Builder notificationBuilder = new Notification.Builder(context);
         notificationBuilder.setSmallIcon(R.drawable.ic_notifications_24dp)
-                .setContentTitle("Yay! It works! (" + autoPay.getName() + ")")
-                .setContentText("TODO change texts!");
+                .setContentTitle(autoPay.getName() + " has got added to the database");
 
         return notificationBuilder.build();
     }
