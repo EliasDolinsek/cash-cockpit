@@ -148,6 +148,8 @@
     <string name="label_installment">Installment</string>
     <string name="label_fixed_costs">Fixed costs</string>
     <string name="label_total_outputs">Total outputs</string>
+    <string name="label_filters">Filters</string>
+    <string name="label_close">Close</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>
