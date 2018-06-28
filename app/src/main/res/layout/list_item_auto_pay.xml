@@ -33,7 +33,9 @@
                 android:textColor="@color/colorAccentTextColor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"/>
+                android:layout_marginBottom="2dp"
+                android:lines="1"
+                android:ellipsize="end"/>
 
             <TextView
                 android:id="@+id/txv_item_auto_pay_details"

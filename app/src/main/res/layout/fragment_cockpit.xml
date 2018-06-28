@@ -141,14 +141,14 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp" />
+                        android:layout_marginEnd="4dp"/>
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bill_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp"/>
+                        android:layout_marginEnd="12dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -187,7 +187,9 @@
                         android:background="@drawable/border_primary_light"
                         android:padding="4dp"
                         android:textColor="@android:color/white"
-                        android:visibility="invisible" />
+                        android:visibility="invisible"
+                        android:lines="1"
+                        android:ellipsize="end"/>
 
                 </LinearLayout>
 

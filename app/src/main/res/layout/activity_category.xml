@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:maxLength="20"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
         </android.support.design.widget.TextInputLayout>

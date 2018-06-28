@@ -36,7 +36,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/colorAccentTextColor"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp" />
 
         <TextView
             android:id="@+id/txv_item_bank_account_details"

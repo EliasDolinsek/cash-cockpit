@@ -29,7 +29,6 @@
                 android:hint="@string/hint_subcategory_name"
                 android:textAlignment="center"
                 android:singleLine="true"
-                android:maxLength="20"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
 
         </android.support.design.widget.TextInputLayout>
