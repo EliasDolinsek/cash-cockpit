@@ -54,7 +54,7 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private RecyclerView rvBillsOfSelectedMonth;
-    private LinearLayout llNotEnoughData, llBillTypeUsageChartContainer, llBillTypeUsageTextContainer, llPaymentHistoryChartContainer;
+    private LinearLayout llNotEnoughData, llBillTypeUsageTextContainer;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
     private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
@@ -72,9 +72,7 @@ public class BillsStatisticsFragment extends Fragment {
         rvBillsOfSelectedMonth = inflatedView.findViewById(R.id.rv_bills_statistics_bills_of_month);
 
         llNotEnoughData = inflatedView.findViewById(R.id.ll_bills_statistics_not_enough_data_container);
-        llBillTypeUsageChartContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_chart_container);
         llBillTypeUsageTextContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_texts_container);
-        llPaymentHistoryChartContainer = inflatedView.findViewById(R.id.ll_bills_statistics_payment_history_chart_container);
 
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
         txvBillsTypeOutputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_month);
@@ -94,9 +92,7 @@ public class BillsStatisticsFragment extends Fragment {
         } else {
             llNotEnoughData.setVisibility(View.VISIBLE);
             llSelectMonthFragment.setVisibility(View.GONE);
-            llBillTypeUsageChartContainer.setVisibility(View.GONE);
             llBillTypeUsageTextContainer.setVisibility(View.GONE);
-            llPaymentHistoryChartContainer.setVisibility(View.GONE);
         }
 
         return inflatedView;
@@ -119,15 +115,11 @@ public class BillsStatisticsFragment extends Fragment {
     private void displayStatisticsIfEnoughData(int sizeOfBills){
         if (sizeOfBills == 0){
             llNotEnoughData.setVisibility(View.VISIBLE);
-            llBillTypeUsageChartContainer.setVisibility(View.GONE);
             llBillTypeUsageTextContainer.setVisibility(View.GONE);
-            llPaymentHistoryChartContainer.setVisibility(View.GONE);
 
         } else {
             llNotEnoughData.setVisibility(View.GONE);
-            llBillTypeUsageChartContainer.setVisibility(View.VISIBLE);
             llBillTypeUsageTextContainer.setVisibility(View.VISIBLE);
-            llPaymentHistoryChartContainer.setVisibility(View.VISIBLE);
         }
     }
     private void setupSelectMonthFragment(){
@@ -141,21 +133,26 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void setupBillTypeUsageChart(){
         Description description = new Description();
-        description.setText("");
+        description.setText(getString(R.string.label_bill_types_usage));
+        description.setTextSize(14f);
         pcUsageOfBillTypes.setDescription(description);
 
         pcUsageOfBillTypes.setUsePercentValues(true);
         pcUsageOfBillTypes.setEntryLabelTextSize(17f);
         pcUsageOfBillTypes.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
         pcUsageOfBillTypes.getLegend().setEnabled(false);
-        pcUsageOfBillTypes.setHoleRadius(60f);
+        pcUsageOfBillTypes.setHoleRadius(70f);
+        pcUsageOfBillTypes.setExtraOffsets(2f,2f,2f,2f);
         pcUsageOfBillTypes.invalidate();
     }
 
     private void setupHistoryOfPaymentsChart(){
         bcHistoryOfPayments.getAxisRight().setEnabled(false);
         bcHistoryOfPayments.getLegend().setEnabled(false);
-        bcHistoryOfPayments.getDescription().setEnabled(false);
+        bcHistoryOfPayments.getDescription().setEnabled(true);
+        bcHistoryOfPayments.getDescription().setText(getString(R.string.label_history_of_added_bills));
+        bcHistoryOfPayments.getDescription().setTextSize(14f);
+        bcHistoryOfPayments.getDescription().setYOffset(4f);
 
         XAxis xAxis = bcHistoryOfPayments.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -168,7 +165,6 @@ public class BillsStatisticsFragment extends Fragment {
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
         pieDataSet.setValueLineWidth(2f);
-        pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 

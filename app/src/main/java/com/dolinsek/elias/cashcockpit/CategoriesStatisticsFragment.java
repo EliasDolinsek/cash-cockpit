@@ -48,7 +48,6 @@ public class CategoriesStatisticsFragment extends Fragment {
     private LinearLayout llNotEnoughDataForStatistic, llFilterFragmentsContainer;
     private SelectMonthFragment mSelectMonthFragment;
     private Spinner spnBillTypeFilter;
-    private TextView txvChartDescription;
     private ScrollView scrollView;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
@@ -68,7 +67,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         llNotEnoughDataForStatistic = (LinearLayout) inflatedView.findViewById(R.id.ll_categorise_statistics_not_enough_data);
         llFilterFragmentsContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_categories_statistics_filters_container);
         spnBillTypeFilter = (Spinner) inflatedView.findViewById(R.id.spn_categories_statistics_bill_type);
-        txvChartDescription = (TextView) inflatedView.findViewById(R.id.txv_categories_statistics_chart_description);
         scrollView = (ScrollView) inflatedView.findViewById(R.id.sv_categories_statistics);
         scrollView.scrollTo(0,0);
 
@@ -189,11 +187,9 @@ public class CategoriesStatisticsFragment extends Fragment {
         if (pieDataSet.getEntryCount() == 0){
             llNotEnoughDataForStatistic.setVisibility(View.VISIBLE);
             pcStatistics.setVisibility(View.GONE);
-            txvChartDescription.setVisibility(View.GONE);
         } else {
             llNotEnoughDataForStatistic.setVisibility(View.GONE);
             pcStatistics.setVisibility(View.VISIBLE);
-            txvChartDescription.setVisibility(View.VISIBLE);
         }
 
         PieData pieData = new PieData();
@@ -211,19 +207,21 @@ public class CategoriesStatisticsFragment extends Fragment {
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
         pieDataSet.setValueLineWidth(2f);
-        pieDataSet.setXValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
     private void setupChartStatistics(){
         Description description = new Description();
-        description.setText("");
-
+        description.setText(getString(R.string.label_categories_usage));
+        description.setTextSize(14f);
         pcStatistics.setDescription(description);
+
         pcStatistics.setUsePercentValues(true);
         pcStatistics.setEntryLabelTextSize(17f);
         pcStatistics.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
         pcStatistics.getLegend().setEnabled(false);
+        pcStatistics.setHoleRadius(70f);
+        pcStatistics.setExtraOffsets(2f,2f,2f,2f);
         pcStatistics.invalidate(); //Refreshes data
     }
 
@@ -289,11 +287,9 @@ public class CategoriesStatisticsFragment extends Fragment {
             llNotEnoughDataForStatistic.setVisibility(View.VISIBLE);
             pcStatistics.setVisibility(View.GONE);
             llFilterFragmentsContainer.setVisibility(View.GONE);
-            txvChartDescription.setVisibility(View.GONE);
         } else {
             llNotEnoughDataForStatistic.setVisibility(View.GONE);
             pcStatistics.setVisibility(View.VISIBLE);
-            txvChartDescription.setVisibility(View.VISIBLE);
         }
     }
 
