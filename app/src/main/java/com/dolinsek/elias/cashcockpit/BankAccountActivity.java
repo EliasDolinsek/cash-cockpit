@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -28,11 +29,11 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
     public static final String EXTRA_BANK_ACCOUNT_INDEX = "bankAccountIndex";
 
-    private TextInputLayout mTilAccountName, mTilAccountAmount;
     private RecyclerView mRvBills;
     private EditText mEdtAccountName, mEdtAccountAmount;
     private CheckBox mChbPrimaryAccount;
     private Button mBtnCreate, mBtnDelete;
+    private TextView mTxvActiveCurrencyShortcut;
 
     private BankAccount bankAccount = null;
 
@@ -41,11 +42,9 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_account);
 
-        mTilAccountName = (TextInputLayout) findViewById(R.id.til_bank_account_name);
-        mTilAccountAmount = (TextInputLayout) findViewById(R.id.til_bank_account_amount);
-
         mEdtAccountName = (EditText) findViewById(R.id.edt_bank_account_name);
         mEdtAccountAmount = (EditText) findViewById(R.id.edt_bank_account_amount);
+        mTxvActiveCurrencyShortcut = findViewById(R.id.txv_bank_account_active_currency_shortcut);
 
         mChbPrimaryAccount = (CheckBox) findViewById(R.id.chb_bank_account_primary_account);
         mBtnCreate = (Button) findViewById(R.id.btn_bank_account_create);
@@ -54,6 +53,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mRvBills = (RecyclerView) findViewById(R.id.rv_bank_account_bills);
         mRvBills.setLayoutManager(new LinearLayoutManager(this));
 
+        displayActiveCurrencyShortcut();
         if(getIntent().hasExtra(EXTRA_BANK_ACCOUNT_INDEX)){
             setupForEditMode();
         } else{
@@ -75,14 +75,13 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             @Override
             public void onClick(View view) {
                 boolean doesEnteredNameForAccountAlreadyExist = doesEnteredNameAlreadyExist();
-                hideErrors();
 
                 if(mEdtAccountName.getText().toString().trim().equals("")){
-                    mTilAccountName.setError(getResources().getString(R.string.label_enter_bank_account_name));
+                    //TODO add error message
                 } else if(mEdtAccountAmount.getText().toString().equals("")){
-                    mTilAccountAmount.setError(getResources().getString(R.string.label_enter_euros));;
+                    //TODO add error message
                 } else if(doesEnteredNameForAccountAlreadyExist && bankAccount == null){
-                    mTilAccountName.setError(getResources().getString(R.string.label_bank_account_already_exits));
+                    //TODO add error message
                 } else {
                     long balance = formatDisplayedToUsableAmount(mEdtAccountAmount.getText().toString());
                     //TODO continue here to refactor
@@ -149,6 +148,11 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         mEdtAccountAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAccountAmount));
 
+    }
+
+    private void displayActiveCurrencyShortcut(){
+        String activeCurrencyShortcut = Currency.getActiveCurrency(getApplicationContext()).getCurrencyShortcut();
+        mTxvActiveCurrencyShortcut.setText(activeCurrencyShortcut);
     }
 
     /**
@@ -226,11 +230,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         mChbPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
 
         mBtnCreate.setText(getResources().getString(R.string.btn_save));
-    }
-
-    private void hideErrors(){
-        mTilAccountName.setError(null);
-        mTilAccountAmount.setError(null);
     }
 
     private boolean doesEnteredNameAlreadyExist(){

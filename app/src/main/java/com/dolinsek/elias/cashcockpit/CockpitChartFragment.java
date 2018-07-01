@@ -108,11 +108,17 @@ public class CockpitChartFragment extends Fragment {
         long amountOfOutput = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
         long amountOfInput = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
 
-        pieEntries.add(new PieEntry(amountOfFixedCosts, getString(R.string.label_fixed_costs)));
-        pieEntries.add(new PieEntry(amountOfInput, getString(R.string.label_input)));
-        pieEntries.add(new PieEntry(Math.abs(amountOfOutput), getString(R.string.label_output)));
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInput, getString(R.string.label_input), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutput), getString(R.string.label_output), pieEntries);
 
         return pieEntries;
+    }
+
+    private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
+        if (amount != 0){
+            pieEntries.add(new PieEntry(amount, label));
+        }
     }
 
     private void loadPieChart(){
@@ -207,13 +213,7 @@ public class CockpitChartFragment extends Fragment {
         long amountOfFixedCostsOfMonth = getAmountOfFixedCosts();
         long amountOfOutputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
 
-        long cash = amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
-
-        if (cash < 0){
-            return 0;
-        } else {
-            return cash;
-        }
+        return amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
     }
 
     private long getAmountOfTotalInputsOfMonthIncludingAutoPays(){

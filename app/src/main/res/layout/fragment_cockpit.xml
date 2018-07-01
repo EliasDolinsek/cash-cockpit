@@ -196,37 +196,22 @@
             </android.support.v7.widget.CardView>
         </LinearLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_cockpit_chart_container"
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_cockpit_chart_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="10">
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
+            app:cardBackgroundColor="@android:color/white"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="0dp">
 
-            <View
+            <fragment
+                android:id="@+id/fgm_cockpit_chart"
+                android:name="com.dolinsek.elias.cashcockpit.CockpitChartFragment"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="27dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentStart="true"
-                android:background="@android:color/white" />
+                android:layout_height="match_parent"/>
 
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="12dp"
-                app:cardBackgroundColor="@android:color/white"
-                app:cardCornerRadius="15dp"
-                app:cardElevation="0dp" >
-
-                <fragment
-                    android:id="@+id/fgm_cockpit_chart"
-                    android:name="com.dolinsek.elias.cashcockpit.CockpitChartFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-            </android.support.v7.widget.CardView>
-
-        </RelativeLayout>
+        </android.support.v7.widget.CardView>
 
         <LinearLayout
             android:id="@+id/ll_cockpit_btn_save_delete_container"
