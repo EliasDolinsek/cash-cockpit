@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
@@ -104,17 +105,23 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView mImvBillType;
-        public TextView mTxvDescription, mTxvDetails;
+        public TextView mTxvDescription, mTxvDetails, mTxvAutoPayBillIndicator;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
             mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
+            mTxvAutoPayBillIndicator = itemView.findViewById(R.id.txv_item_history_auto_pay_bill_indicator);
             mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_history_bill_type);
         }
     }
 
+    private void showAutoPayBillIndicatorIfBillIsAutoPayBill(Bill bill, HistoryViewHolder holder){
+        if (bill.isAutoPayBill()){
+            holder.mTxvAutoPayBillIndicator.setVisibility(View.VISIBLE);
+        }
+    }
     private void displayDescription(String description, HistoryViewHolder holder){
         TextView txvDescription = holder.mTxvDescription;
         if (description.equals("")){
