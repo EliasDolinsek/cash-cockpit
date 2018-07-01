@@ -1,6 +1,8 @@
 package com.dolinsek.elias.cashcockpit.components;
 
 
+import android.content.Context;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -135,16 +137,16 @@ public class AutoPay {
         this.payments = payments;
     }
 
-    public void addFirstPayment(){
+    public void addPaymentTimestamp(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());
 
         switch (type){
             case TYPE_YEARLY: calendar.set(Calendar.DAY_OF_YEAR, calendar.getActualMinimum(Calendar.DAY_OF_YEAR));
                 break;
-            case TYPE_MONTHLY: calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMinimum(Calendar.DAY_OF_MONTH));
+            case TYPE_MONTHLY: calendar.set(Calendar.DAY_OF_MONTH, Calendar.JANUARY);
                 break;
-            case TYPE_WEEKLY: calendar.set(Calendar.DAY_OF_WEEK, calendar.getActualMinimum(Calendar.DAY_OF_WEEK));
+            case TYPE_WEEKLY: calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
                 break;
             default: throw new IllegalStateException("Couldn't resolve " + type + " as a valid auto-pay-type");
         }
@@ -157,50 +159,12 @@ public class AutoPay {
         payments.add(calendar.getTimeInMillis());
     }
 
-    public void managePayment(){
-        int paymentsToDo = getPaymentsToDo();
-        for (int i = 0; i<=paymentsToDo; i++){
-            addPayment();
-        }
-    }
-
-    private void addPayment(){
+    public void addPayment(Context context){
+        addPaymentTimestamp();
+        bill.setCreationDate(System.currentTimeMillis());
         bankAccount.addBill(bill);
-        payments.add(System.currentTimeMillis());
-    }
 
-    public boolean isPaymentRequired(){
-        return getPaymentsToDo() != 0;
-    }
-
-    private int getPaymentsToDo(){
-        long currentTimeStamp = payments.get(payments.size() - 1);
-        int paymentsToDo = 0;
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-
-        int currentYear = calendar.get(Calendar.YEAR), currentMonth = calendar.get(Calendar.MONTH), currentWeek = calendar.get(Calendar.WEEK_OF_MONTH);
-        calendar.setTimeInMillis(currentTimeStamp);
-
-        do {
-            paymentsToDo++;
-            addDurationOfPaymentDifferenceToCalendar(calendar);
-        } while (currentYear >= calendar.get(Calendar.YEAR) || currentMonth >= calendar.get(Calendar.MONTH) || currentWeek >= calendar.get(Calendar.WEEK_OF_MONTH));
-
-        return paymentsToDo;
-    }
-
-    private void addDurationOfPaymentDifferenceToCalendar(Calendar calendar){
-        switch (type){
-            case TYPE_WEEKLY: calendar.add(Calendar.WEEK_OF_MONTH, 1);
-                break;
-            case TYPE_MONTHLY: calendar.add(Calendar.MONTH, 1);
-                break;
-            case TYPE_YEARLY: calendar.add(Calendar.YEAR, 1);
-                break;
-            default: throw new IllegalArgumentException("Couldn't resolve " + type + " as a valid bill type");
-        }
+        Database.save(context);
     }
 
 }

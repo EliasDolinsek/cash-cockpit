@@ -85,8 +85,9 @@ BankAccountsStatisticsFragment extends Fragment {
         lcStatistics.getAxisRight().setEnabled(false);
         lcStatistics.getData().setHighlightEnabled(false);
         lcStatistics.getDescription().setEnabled(false);
-        lcStatistics.setExtraOffsets(25f,10f,25f,10f);
+        lcStatistics.setExtraOffsets(40f,10f,40f,10f);
         lcStatistics.setTouchEnabled(false);
+        lcStatistics.invalidate();
 
         XAxis xAxis = lcStatistics.getXAxis();
         xAxis.setDrawGridLines(false);

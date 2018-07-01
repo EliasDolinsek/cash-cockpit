@@ -207,6 +207,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
         pieDataSet.setValueLineWidth(2f);
+        pieDataSet.setSliceSpace(5f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 

@@ -18,9 +18,9 @@
     <color name="colorBlue">#0000ff</color>
 
     <!--Cockpit-Chart-Colors-->
-    <color name="colorCockpitChartEntriesInput">#43a047</color>
-    <color name="colorCockpitChartEntriesOutput">#e53935</color>
-    <color name="colorCockpitChartEntriesFixedCosts">#fb8c00</color>
+    <color name="colorCockpitChartEntriesInput">#388e3c</color>
+    <color name="colorCockpitChartEntriesOutput">#d32f2f</color>
+    <color name="colorCockpitChartEntriesFixedCosts">#d32f2f</color>
     <color name="colorCockpitChartHole">@color/colorPrimary</color>
 
 </resources>

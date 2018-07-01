@@ -111,7 +111,7 @@ public class AutoPayActivity extends AppCompatActivity {
                     autoPay.getBill().setDescription(autoPay.getName());
 
                     if(!editModeActive){
-                        autoPay.addFirstPayment();
+                        autoPay.addPaymentTimestamp();
                         Database.getAutoPays().add(autoPay);
                     }
 

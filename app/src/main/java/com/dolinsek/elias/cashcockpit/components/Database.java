@@ -175,34 +175,6 @@ public class Database {
             return filteredBills;
         }
 
-        public static ArrayList<Bill> filterBillsOfAutoPayBill(ArrayList<Bill> billsToFilter){
-            ArrayList<Bill> filteredBills = new ArrayList<>();
-            for (Bill bill:getAllBillsInDatabase()){
-                if (bill.isAutoPayBill()){
-                    filteredBills.add(bill);
-                }
-            }
-
-            return filteredBills;
-        }
-
-        public static void manageAllPayments(){
-            for (AutoPay autoPay:Database.getAutoPays()){
-                autoPay.managePayment();
-            }
-        }
-
-        public static ArrayList<AutoPay> getAutoPaysWherePaymentsAreRequired(){
-            ArrayList<AutoPay> autoPays = new ArrayList<>();
-            for (AutoPay autoPay:Database.getAutoPays()){
-                if (autoPay.isPaymentRequired()){
-                    autoPays.add(autoPay);
-                }
-            }
-
-            return autoPays;
-        }
-
         public static long getTotalAmountOfBills(ArrayList<Bill> bills){
             long amount = 0;
             for (Bill bill:bills){

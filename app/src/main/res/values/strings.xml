@@ -150,6 +150,7 @@
     <string name="label_total_outputs">Total outputs</string>
     <string name="label_filters">Filters</string>
     <string name="label_close">Close</string>
+    <string name="label_bills_in_databse">%1$d Bill(s) in database</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

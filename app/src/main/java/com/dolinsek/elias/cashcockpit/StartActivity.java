@@ -17,8 +17,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.dolinsek.elias.cashcockpit.components.AutoPay;
+import com.dolinsek.elias.cashcockpit.components.AutoPayPaymentManager;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 public class StartActivity extends AppCompatActivity {
@@ -60,6 +63,7 @@ public class StartActivity extends AppCompatActivity {
     private void login(){
         initDatabase();
         startMainActivity();
+        manageAutoPayPayments();
     }
 
     private void resetPassword(){
@@ -166,6 +170,12 @@ public class StartActivity extends AppCompatActivity {
 
     private void restorePrimaryCategories(){
         Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
+    }
+
+    private void manageAutoPayPayments(){
+        AutoPayPaymentManager autoPayPaymentManager = new AutoPayPaymentManager(getApplicationContext());
+        ArrayList<AutoPay> autoPaysWherePaymentsAreRequired = autoPayPaymentManager.getAutoPaysWherePaymentsAreRequired();
+        autoPayPaymentManager.performPaymentsForAutoPays(autoPaysWherePaymentsAreRequired);
     }
 
     private int timeMillisToHour(long timeMillis){

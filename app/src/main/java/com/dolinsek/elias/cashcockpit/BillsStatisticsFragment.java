@@ -164,6 +164,7 @@ public class BillsStatisticsFragment extends Fragment {
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueTextColor(Color.WHITE);
         pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
+        pieDataSet.setSliceSpace(5f);
         pieDataSet.setValueLineWidth(2f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
@@ -369,6 +370,7 @@ public class BillsStatisticsFragment extends Fragment {
 
         while (!doesMonthExceedsCurrentTime(calendar)){
             long currentMonthTimesStamp = calendar.getTimeInMillis();
+            System.out.println(currentMonthTimesStamp);
             ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(currentMonthTimesStamp);
 
             if (billsOfMonth.size() != 0){

@@ -74,6 +74,7 @@ public class HistoryFragment extends Fragment {
         setupHistoryFiltersDialogFragment();
         reloadRecyclerView(selectedIndexMainFilter);
         manageViews();
+        displayHowManyBillsAreInDatabaseOnSelectedFilterTxv();
     }
 
     @Override
@@ -81,6 +82,11 @@ public class HistoryFragment extends Fragment {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRA_SELECTED_INDEX_MAIN_FILTER, selectedIndexMainFilter);
         outState.putInt(EXTRA_SELECTED_INDEX_BILL_TYPE_FILTER, selectedIndexBillTypeFilter);
+    }
+
+    private void displayHowManyBillsAreInDatabaseOnSelectedFilterTxv(){
+        int billsInDatabase = Database.Toolkit.getAllBillsInDatabase().size();
+        mTxvSelectedFilters.setText(getString(R.string.label_bills_in_databse, billsInDatabase));
     }
 
     private void createHistoryFragmentFiltersDialogFragment(){
