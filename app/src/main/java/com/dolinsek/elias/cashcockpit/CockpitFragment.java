@@ -10,10 +10,12 @@ import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.text.format.DateFormat;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +38,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static android.app.Activity.RESULT_OK;
@@ -55,7 +58,7 @@ public class CockpitFragment extends Fragment {
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
-    private TextView mTxvSelectedSubcategory, mTxvActiveCurrencyShortcut;
+    private TextView mTxvSelectedSubcategory, mTxvActiveCurrencyShortcut, mTxvBillCreationDate;
     private EditText mEdtBillAmount, mEdtBillDescription;
     private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
@@ -63,6 +66,7 @@ public class CockpitFragment extends Fragment {
     private LinearLayout mLlBtnSaveDeleteContainer;
     private CockpitChartFragment mFgmCockpitChart;
     private CardView mCvCockpitChartContainer;
+    private ConstraintLayout mClContentContainer;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -87,9 +91,11 @@ public class CockpitFragment extends Fragment {
         mLlBtnSaveDeleteContainer = inflatedView.findViewById(R.id.ll_cockpit_btn_save_delete_container);
         mFgmCockpitChart = (CockpitChartFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart);
         mCvCockpitChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
+        mClContentContainer = inflatedView.findViewById(R.id.cl_cockpit_content_container);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
         mTxvActiveCurrencyShortcut = (TextView) inflatedView.findViewById(R.id.txv_cockpit_active_currency_shortcut);
+        mTxvBillCreationDate = inflatedView.findViewById(R.id.txv_cockpit_bill_creation_date);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
@@ -303,11 +309,22 @@ public class CockpitFragment extends Fragment {
         mEdtBillDescription.setText(bill.getDescription());
 
 
+        setBackgroundColorToWhite();
         displaySelectedSubcategory();
+        displayBillCreationDate();
         hideChart();
 
         mFbtnAdd.setVisibility(View.GONE);
         mSpnSelectBankAccount.setEnabled(false);
+    }
+
+    private void setBackgroundColorToWhite(){
+        mClContentContainer.setBackgroundColor(getResources().getColor(android.R.color.white));
+    }
+
+    private void displayBillCreationDate(){
+        String dateOfCreationDate = DateFormat.format("EEE dd.MM.yy kk.mm", bill.getCreationDate()).toString();
+        mTxvBillCreationDate.setText(getString(R.string.label_bill_creation_date, dateOfCreationDate));
     }
 
     private void refreshCockpitChart(){
