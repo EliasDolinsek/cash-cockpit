@@ -152,6 +152,7 @@
     <string name="label_close">Close</string>
     <string name="label_bills_in_database">%1$d Bill(s) found</string>
     <string name="label_bill_creation_date">Created on %1$s</string>
+    <string name="label_please_select_a_category">Please select a category"</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

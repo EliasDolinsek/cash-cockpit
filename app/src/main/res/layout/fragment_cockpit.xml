@@ -139,17 +139,18 @@
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bank_account"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_weight="10"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"/>
+                        android:layout_marginEnd="2dp"/>
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bill_type"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp" />
+                        android:layout_marginEnd="42dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -172,6 +173,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="4dp"
+                        android:layout_marginStart="2dp"
                         android:src="@drawable/ic_select_category" />
 
                     <Button

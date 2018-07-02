@@ -15,14 +15,14 @@
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" >
         </activity>
         <activity android:name=".BankAccountActivity" />
-        <activity android:name=".CategoryActivity" />
+        <activity android:name=".CategoryActivity"/>
         <activity
             android:name=".AutoPayActivity"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".BillEditorActivity"
             android:windowSoftInputMode="adjustResize" />
-        <activity android:name=".SelectCategoryActivity" />
+        <activity android:name=".SelectCategoryActivity"/>
         <activity
             android:name=".StartActivity"
             android:windowSoftInputMode="adjustResize"
