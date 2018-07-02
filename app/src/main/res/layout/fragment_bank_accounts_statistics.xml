@@ -35,25 +35,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="220dp"/>
 
-            <LinearLayout
-                android:id="@+id/ll_bank_accounts_statistics_not_enough_data"
+            <fragment
+                android:id="@+id/fgm_bank_account_statistics_not_enough_data"
+                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
                 android:layout_width="match_parent"
-                android:layout_height="210dp"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_info_outline_black_96dp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_not_enough_data_for_statistic"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="24dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"

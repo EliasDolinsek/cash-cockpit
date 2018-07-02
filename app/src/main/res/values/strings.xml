@@ -99,7 +99,7 @@
     <string name="btn_add_bill">Add Bill</string>
     <string name="toast_bill_added">Bill added successfully!</string>
     <string name="label_no_category_selected">No category selected</string>
-    <string name="label_no_data_for_history">Not enough data for a history</string>
+    <string name="label_not_enough_data_for_history">Not enough data for a history</string>
     <string name="dialog_msg_delete_bill">Do you really want to delete this bill?</string>
     <string name="tab_bills">Bills</string>
     <string name="tab_goals">Goals</string>
@@ -150,7 +150,7 @@
     <string name="label_total_outputs">Total outputs</string>
     <string name="label_filters">Filters</string>
     <string name="label_close">Close</string>
-    <string name="label_bills_in_databse">%1$d Bill(s) in database</string>
+    <string name="label_bills_in_database">%1$d Bill(s) found</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

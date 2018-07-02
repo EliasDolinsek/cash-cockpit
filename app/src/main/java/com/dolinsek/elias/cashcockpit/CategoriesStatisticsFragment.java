@@ -45,10 +45,11 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
-    private LinearLayout llNotEnoughDataForStatistic, llFilterFragmentsContainer;
+    private LinearLayout llFilterFragmentsContainer;
     private SelectMonthFragment mSelectMonthFragment;
     private Spinner spnBillTypeFilter;
     private ScrollView scrollView;
+    private NotEnoughDataFragment fgmNotEnoughData;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private ArrayList<Bill> billsToUse;
@@ -64,9 +65,10 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
         pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
-        llNotEnoughDataForStatistic = (LinearLayout) inflatedView.findViewById(R.id.ll_categorise_statistics_not_enough_data);
         llFilterFragmentsContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_categories_statistics_filters_container);
         spnBillTypeFilter = (Spinner) inflatedView.findViewById(R.id.spn_categories_statistics_bill_type);
+        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_categories_statistics_not_enough_data);
+
         scrollView = (ScrollView) inflatedView.findViewById(R.id.sv_categories_statistics);
         scrollView.scrollTo(0,0);
 
@@ -185,10 +187,10 @@ public class CategoriesStatisticsFragment extends Fragment {
         setupPieDataSet(pieDataSet);
 
         if (pieDataSet.getEntryCount() == 0){
-            llNotEnoughDataForStatistic.setVisibility(View.VISIBLE);
+            fgmNotEnoughData.show();
             pcStatistics.setVisibility(View.GONE);
         } else {
-            llNotEnoughDataForStatistic.setVisibility(View.GONE);
+            fgmNotEnoughData.hide();
             pcStatistics.setVisibility(View.VISIBLE);
         }
 
@@ -285,11 +287,11 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private void manageViews(){
         if (getAllBillsInDatabase().size() == 0){
-            llNotEnoughDataForStatistic.setVisibility(View.VISIBLE);
+            fgmNotEnoughData.show();
             pcStatistics.setVisibility(View.GONE);
             llFilterFragmentsContainer.setVisibility(View.GONE);
         } else {
-            llNotEnoughDataForStatistic.setVisibility(View.GONE);
+            fgmNotEnoughData.hide();
             pcStatistics.setVisibility(View.VISIBLE);
         }
     }

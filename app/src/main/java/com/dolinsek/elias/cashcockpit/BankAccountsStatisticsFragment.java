@@ -44,7 +44,7 @@ BankAccountsStatisticsFragment extends Fragment {
     private RecyclerView rvBills;
     private LineChart lcStatistics;
     private BankAccount currentBankAccount;
-    private LinearLayout llNotEnoughData;
+    private NotEnoughDataFragment fgmNotEnoughData;
     private Spinner spnSelectBankAccount;
     private TextView txvNoBills;
 
@@ -58,7 +58,7 @@ BankAccountsStatisticsFragment extends Fragment {
 
         rvBills = inflatedView.findViewById(R.id.rv_bank_account_statistics);
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
-        llNotEnoughData = inflatedView.findViewById(R.id.ll_bank_accounts_statistics_not_enough_data);
+        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
         txvNoBills = inflatedView.findViewById(R.id.txv_bank_accounts_statistics_no_bills);
 
@@ -66,11 +66,11 @@ BankAccountsStatisticsFragment extends Fragment {
         rvBills.setNestedScrollingEnabled(false);
 
         if (Database.getBankAccounts().size() != 0){
-            llNotEnoughData.setVisibility(View.GONE);
+            fgmNotEnoughData.hide();
             loadBankAccount(savedInstanceState);
             setupSelectBankAccountSpinner();
         } else {
-            llNotEnoughData.setVisibility(View.VISIBLE);
+            fgmNotEnoughData.show();
             lcStatistics.setVisibility(View.GONE);
             spnSelectBankAccount.setVisibility(View.GONE);
             txvNoBills.setVisibility(View.GONE);
@@ -185,10 +185,10 @@ BankAccountsStatisticsFragment extends Fragment {
                     setupChartStyle();
 
                     lcStatistics.setVisibility(View.VISIBLE);
-                    llNotEnoughData.setVisibility(View.GONE);
+                    fgmNotEnoughData.hide();
                 } else {
                     lcStatistics.setVisibility(View.GONE);
-                    llNotEnoughData.setVisibility(View.VISIBLE);
+                    fgmNotEnoughData.show();
                 }
 
                 if (selectedBankAccount.getBills().size() == 0){

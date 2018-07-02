@@ -17,6 +17,7 @@
             android:text="@string/label_filters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
 
         <TextView
@@ -27,14 +28,28 @@
             android:textColor="@color/colorAccentTextColor"/>
 
     </LinearLayout>
-    <TextView
-        android:id="@+id/txv_history_no_data_for_history"
-        android:text="@string/label_no_data_for_history"
-        android:textAlignment="center"
-        android:gravity="center"
+
+    <LinearLayout
+        android:id="@+id/ll_not_enough_data_for_history_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+        android:layout_height="260dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_info_outline_black_96dp"/>
+
+        <TextView
+            android:text="@string/label_not_enough_data_for_history"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textAlignment="center"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
+
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_history"

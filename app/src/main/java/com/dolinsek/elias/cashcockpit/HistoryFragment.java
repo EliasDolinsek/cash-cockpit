@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -35,10 +36,11 @@ public class HistoryFragment extends Fragment {
     private static final String EXTRA_SELECTED_INDEX_BILL_TYPE_FILTER = "selected_index_bill_type_filter";
 
     private RecyclerView mRvHistory;
-    private TextView mTxvNoDataForHistory, mTxvSelectedFilters;
+    private TextView mTxvSelectedFilters;
     private ArrayList<Bill> billsToDisplay;
     private Button mBtnShowFilters;
     private HistoryFragmentFiltersDialogFragment historyFragmentFiltersDialogFragment;
+    private LinearLayout mLlNotEnoughDataForHistory;
     private int selectedIndexMainFilter, selectedIndexBillTypeFilter;
 
     @Override
@@ -48,7 +50,7 @@ public class HistoryFragment extends Fragment {
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
-        mTxvNoDataForHistory = inflatedView.findViewById(R.id.txv_history_no_data_for_history);
+        mLlNotEnoughDataForHistory = inflatedView.findViewById(R.id.ll_not_enough_data_for_history_container);
         mTxvSelectedFilters = inflatedView.findViewById(R.id.txv_history_selected_filters);
         mBtnShowFilters = inflatedView.findViewById(R.id.btn_history_show_filters);
 
@@ -86,7 +88,7 @@ public class HistoryFragment extends Fragment {
 
     private void displayHowManyBillsAreInDatabaseOnSelectedFilterTxv(){
         int billsInDatabase = Database.Toolkit.getAllBillsInDatabase().size();
-        mTxvSelectedFilters.setText(getString(R.string.label_bills_in_databse, billsInDatabase));
+        mTxvSelectedFilters.setText(getString(R.string.label_bills_in_database, billsInDatabase));
     }
 
     private void createHistoryFragmentFiltersDialogFragment(){
@@ -165,9 +167,9 @@ public class HistoryFragment extends Fragment {
 
     private void manageViews(){
         if (getSizeOfBillsInDatabase() != 0){
-            mTxvNoDataForHistory.setVisibility(View.GONE);
+            mLlNotEnoughDataForHistory.setVisibility(View.GONE);
         } else {
-            mTxvNoDataForHistory.setVisibility(View.VISIBLE);
+            mLlNotEnoughDataForHistory.setVisibility(View.VISIBLE);
         }
     }
 

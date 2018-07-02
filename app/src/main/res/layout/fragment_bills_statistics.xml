@@ -27,27 +27,12 @@
                 android:orientation="horizontal"
                 android:background="@drawable/border_primary_light" />
 
-            <LinearLayout
-                android:id="@+id/ll_bills_statistics_not_enough_data_container"
+            <fragment
+                android:id="@+id/fgm_bills_statistics_not_enough_data"
+                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
                 android:layout_width="match_parent"
-                android:layout_height="265dp"
-                android:orientation="vertical"
-                android:paddingBottom="20dp"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_info_outline_black_96dp"/>
-
-                <TextView
-                    android:text="@string/label_not_enough_data_for_statistic"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp" />
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pc_bills_statistics_bill_type_usage"

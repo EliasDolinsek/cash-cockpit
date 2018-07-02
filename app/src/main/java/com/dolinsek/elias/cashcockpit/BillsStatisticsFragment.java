@@ -54,7 +54,8 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private RecyclerView rvBillsOfSelectedMonth;
-    private LinearLayout llNotEnoughData, llBillTypeUsageTextContainer;
+    private LinearLayout llBillTypeUsageTextContainer;
+    private NotEnoughDataFragment fgmNotEnoughData;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
     private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
@@ -70,8 +71,8 @@ public class BillsStatisticsFragment extends Fragment {
         pcUsageOfBillTypes = inflatedView.findViewById(R.id.pc_bills_statistics_bill_type_usage);
         bcHistoryOfPayments = inflatedView.findViewById(R.id.bc_bills_statistics_history_of_payments);
         rvBillsOfSelectedMonth = inflatedView.findViewById(R.id.rv_bills_statistics_bills_of_month);
+        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bills_statistics_not_enough_data);
 
-        llNotEnoughData = inflatedView.findViewById(R.id.ll_bills_statistics_not_enough_data_container);
         llBillTypeUsageTextContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_texts_container);
 
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
@@ -89,10 +90,13 @@ public class BillsStatisticsFragment extends Fragment {
             displayBillsTypeUsage(Database.Toolkit.getAllBillsInDatabase(), DISPLAY_BILL_USAGE_TYPE_OVERALL);
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
+            fgmNotEnoughData.hide();
         } else {
-            llNotEnoughData.setVisibility(View.VISIBLE);
             llSelectMonthFragment.setVisibility(View.GONE);
             llBillTypeUsageTextContainer.setVisibility(View.GONE);
+            pcUsageOfBillTypes.setVisibility(View.GONE);
+            bcHistoryOfPayments.setVisibility(View.GONE);
+            fgmNotEnoughData.show();
         }
 
         return inflatedView;
@@ -114,11 +118,9 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void displayStatisticsIfEnoughData(int sizeOfBills){
         if (sizeOfBills == 0){
-            llNotEnoughData.setVisibility(View.VISIBLE);
             llBillTypeUsageTextContainer.setVisibility(View.GONE);
 
         } else {
-            llNotEnoughData.setVisibility(View.GONE);
             llBillTypeUsageTextContainer.setVisibility(View.VISIBLE);
         }
     }

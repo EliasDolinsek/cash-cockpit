@@ -38,10 +38,11 @@ public class GoalsStatisticsFragment extends Fragment {
     private RecyclerView mRvCategories;
     private ProgressBar mPgbMonth, mPgbAverage;
     private TextView mTxvMonth, mTxvAverage;
-    private LinearLayout mLlNotEnoughData, mLLContent;
+    private LinearLayout mLLContent;
     private long timeStampOfMonthToLoadStatistics;
     private SelectMonthFragment mSelectMonthFragment;
     private LinearLayout mLlSelectMonthFragmentContainer;
+    private NotEnoughDataFragment mFgmNotEnoughData;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
@@ -58,7 +59,7 @@ public class GoalsStatisticsFragment extends Fragment {
         mTxvMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_month);
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
 
-        mLlNotEnoughData = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_not_enough_data);
+        mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_goals_statistics_not__enough_data);
         mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
         mLlSelectMonthFragmentContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_select_month_container);
 
@@ -242,11 +243,11 @@ public class GoalsStatisticsFragment extends Fragment {
         ArrayList<Bill> billsWhatBelongToGoals = filterBillsWhatBelongToGoals(Database.Toolkit.getAllBillsInDatabase());
         if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0 || billsWhatBelongToGoals.size() == 0){
             mLLContent.setVisibility(View.GONE);
-            mLlNotEnoughData.setVisibility(View.VISIBLE);
+            mFgmNotEnoughData.show();
             mLlSelectMonthFragmentContainer.setVisibility(View.GONE);
         } else {
             mLLContent.setVisibility(View.VISIBLE);
-            mLlNotEnoughData.setVisibility(View.GONE);
+            mFgmNotEnoughData.hide();
         }
     }
 
