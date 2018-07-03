@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Database;
 
 import org.json.JSONException;
@@ -128,6 +129,7 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
     @Override
     public void onPause() {
         super.onPause();
+        CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
         Database.save(getContext());
     }
 

@@ -14,12 +14,14 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
@@ -35,7 +37,7 @@ import java.util.ArrayList;
 
 public class SubcategoryEditorDialogFragment extends DialogFragment{
 
-    private LinearLayout mLlDeleteInformations;
+    private LinearLayout mLlDeleteInformations, mLlEdtGoalAmountContainer;
     private PrimaryCategory mPrimaryCategory;
     private Subcategory mSubcategory;
     private boolean mEditMode = false;
@@ -58,6 +60,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         View inflatedView = inflater.inflate(R.layout.dialog_subcategory_editor, null);
 
         mLlDeleteInformations = (LinearLayout) inflatedView.findViewById(R.id.ll_item_subcategory_deletion_informations);
+        mLlEdtGoalAmountContainer = inflatedView.findViewById(R.id.ll_subcategory_editor_edt_goal_amount_container);
         mTilSubcategoryName = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_name);
         mTilGoalAmount = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_goal_amount);
 
@@ -70,6 +73,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
 
         setupButtonClickListener();
         setupTextWatcherForCurrency();
+        setupFmlEdtGoalAmountOnClickToEnableGoal();
 
         if(mEditMode){
             displaySubcategoryDetails();
@@ -143,6 +147,15 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         dialog.setOnDismissListener(mOnDismissListener);
 
         return dialog;
+    }
+
+    private void setupFmlEdtGoalAmountOnClickToEnableGoal(){
+        mLlEdtGoalAmountContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChbGoalEnabled.setChecked(true);
+            }
+        });
     }
 
     @Override

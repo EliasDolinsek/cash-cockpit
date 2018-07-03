@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -40,10 +42,9 @@ public class AutoPayActivity extends AppCompatActivity {
     public static final String EXTRA_AUTO_PAY_INDEX = "auto_pay";
     private static final int RQ_SELECT_CATEGORY = 439;
 
-    private TextInputLayout mTilAutoPayName, mTilAmount;
-    private TextInputEditText mEdtAutoPayName, mEdtAmount;
+    private EditText mEdtAutoPayName, mEdtAmount;
     private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
-    private TextView mTxvSelectedCategory;
+    private TextView mTxvSelectedCategory, mTxvCurrencyShortcut;
 
     private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType, mSpnSelectAutoPayBillType;
 
@@ -55,13 +56,12 @@ public class AutoPayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_pay);
 
-        mTilAutoPayName = (TextInputLayout) findViewById(R.id.til_auto_pay_name);
-        mTilAmount = (TextInputLayout) findViewById(R.id.til_auto_pay_amount);
-
-        mEdtAutoPayName = (TextInputEditText) findViewById(R.id.edt_auto_pay_name);
-        mEdtAmount = (TextInputEditText) findViewById(R.id.edt_auto_pay_amount);
+        mEdtAutoPayName = findViewById(R.id.edt_auto_pay_name);
+        mEdtAmount = findViewById(R.id.edt_auto_pay_amount);
         mEdtAmount.setSelection(mEdtAmount.getText().length());
+
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
+        mTxvCurrencyShortcut = findViewById(R.id.txv_auto_pay_active_currency_shortcut);
 
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
@@ -72,6 +72,7 @@ public class AutoPayActivity extends AppCompatActivity {
         mSpnSelectAutoPayBillType = (Spinner) findViewById(R.id.spn_auto_pay_select_bill_type);
 
         setupSpinners();
+        displayCurrencyShortcut();
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
             editModeActive = true;
@@ -149,6 +150,11 @@ public class AutoPayActivity extends AppCompatActivity {
         deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
     }
 
+    private void displayCurrencyShortcut(){
+        String currencyShortcut = Currency.getActiveCurrency(getApplicationContext()).getCurrencyShortcut();
+        mTxvCurrencyShortcut.setText(currencyShortcut);
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -213,9 +219,9 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private void setupSpinners(){
-        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getNamesOfBankAccountsInDatabase());
-        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.auto_pay_types_array));
-        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, getResources().getTextArray(R.array.bill_types_array));
+        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
+        final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getResources().getTextArray(R.array.auto_pay_types_array));
+        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getResources().getTextArray(R.array.bill_types_array));
 
         bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoPayTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -256,12 +262,20 @@ public class AutoPayActivity extends AppCompatActivity {
         });
 
         mSpnSelectBankAccount.setSelection(0);
-        mSpnSelectAutoPayBillType.setSelection(0);
+        mSpnSelectAutoPayBillType.setSelection(1); //Bill-Type output
         mSpnSelectAutoPayType.setSelection(1); //AutoPay type monthly
 
         mSpnSelectBankAccount.setAdapter(bankAccountsAdapter);
         mSpnSelectAutoPayType.setAdapter(autoPayTypesAdapter);
         mSpnSelectAutoPayBillType.setAdapter(billTypesAdapter);
+
+        setSpinnerArrowColorToWhite(mSpnSelectBankAccount);
+        setSpinnerArrowColorToWhite(mSpnSelectAutoPayType);
+        setSpinnerArrowColorToWhite(mSpnSelectAutoPayBillType);
+    }
+
+    private void setSpinnerArrowColorToWhite(Spinner spinner){
+        spinner.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
     private ArrayList<CharSequence> getNamesOfBankAccountsInDatabase(){
