@@ -27,6 +27,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 
@@ -96,11 +97,11 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
 
                         boolean nameAlreadyExits = doesNameForSubcategoryAlreadyExist();
                         if(mEdtSubcategoryName.getText().toString().trim().equals("")){
-                            mTilSubcategoryName.setError(getResources().getString(R.string.label_enter_category_name));
+                            Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else if(nameAlreadyExits && !mEditMode) {
-                            mTilSubcategoryName.setError(getResources().getString(R.string.label_category_name_already_exists));
+                            Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else if(mChbGoalEnabled.isChecked() && mEdtGoalAmount.getText().toString().equals("")){
-                            mTilGoalAmount.setError(getResources().getString(R.string.label_enter_euros));
+                            Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else {
 
                             String name = mEdtSubcategoryName.getText().toString();

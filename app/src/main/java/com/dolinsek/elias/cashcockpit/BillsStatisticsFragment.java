@@ -392,7 +392,7 @@ public class BillsStatisticsFragment extends Fragment {
         int currentYear = currentMonthCalendar.get(Calendar.YEAR);
         int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
 
-        return currentYear < calendar.get(Calendar.YEAR) || currentMonth < calendar.get(Calendar.MONTH);
+        return currentYear < calendar.get(Calendar.YEAR) && currentMonth < calendar.get(Calendar.MONTH);
     }
 
     private long[] arrayListToLongArray(ArrayList<Long> arrayList){

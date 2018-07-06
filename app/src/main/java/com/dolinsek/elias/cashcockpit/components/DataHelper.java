@@ -392,7 +392,7 @@ public class DataHelper {
                     }
                 }
 
-                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), false, billCreationDate));
+                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getBoolean(BILL_AUTO_PAY_BILL_JSON), billCreationDate));
             }
 
             //Adds name

@@ -37,6 +37,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -172,6 +173,8 @@ public class CockpitFragment extends Fragment {
                     clearFieldsFromUserInputs();
                     hideKeyboard();
                     refreshCockpitChart();
+                } else {
+                    Toolkit.displayPleaseCheckInputsToast(getContext());
                 }
             }
         });
@@ -189,6 +192,8 @@ public class CockpitFragment extends Fragment {
 
                     Database.save(getContext());
                     getActivity().finish();
+                } else {
+                    Toolkit.displayPleaseCheckInputsToast(getContext());
                 }
             }
         });

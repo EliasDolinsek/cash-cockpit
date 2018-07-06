@@ -1,7 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.support.v4.app.DialogFragment;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,7 +12,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +20,7 @@ import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 
@@ -74,68 +73,30 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
             @Override
             public void onClick(View view) {
-                boolean doesEnteredNameForAccountAlreadyExist = doesEnteredNameAlreadyExist();
-
-                if(mEdtAccountName.getText().toString().trim().equals("")){
-                    //TODO add error message
-                } else if(mEdtAccountAmount.getText().toString().equals("")){
-                    //TODO add error message
-                } else if(doesEnteredNameForAccountAlreadyExist && bankAccount == null){
-                    //TODO add error message
-                } else {
-                    long balance = formatDisplayedToUsableAmount(mEdtAccountAmount.getText().toString());
-                    //TODO continue here to refactor
-                    //When it's not in edit mode it creates a new bank account and saves it
+                if (isEverythingFilledOutCorrectly()){
                     if(bankAccount == null){
-
-                        //Sets this account as primary account it the user wants it
                         if(mChbPrimaryAccount.isChecked()){
-                            for(int i = 0; i<Database.getBankAccounts().size(); i++){
-                                Database.getBankAccounts().get(i).setPrimaryAccount(false);
-                            }
+                            setPrimaryAccountInAllBankAccountsInDatabseToFalse();
                         }
 
-                        //Create and save it
-                        Database.getBankAccounts().add(new BankAccount(mEdtAccountName.getText().toString(), balance, mChbPrimaryAccount.isChecked()));
-                        Database.save(getApplicationContext());
-
-                        //Displays that everything went ok
+                        createAndSaveBankAccount();
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_created), Toast.LENGTH_LONG).show();
-
-                        //Go back to MainActivity
                         finish();
                     } else {
+                        saveEnteredChanges();
 
-                        //Saves bank account changes
-                        bankAccount.setName(mEdtAccountName.getText().toString());
-                        bankAccount.setBalance(balance);
-                        bankAccount.getBalanceChanges().add(new BalanceChange(System.currentTimeMillis(), balance));
-
-                        //Sets this account as primary account it the user wants it
-                        if(mChbPrimaryAccount.isChecked()){
-                            for(int i = 0; i<Database.getBankAccounts().size(); i++){
-                                Database.getBankAccounts().get(i).setPrimaryAccount(false);
-                            }
-
-                            bankAccount.setPrimaryAccount(true);
-                        }
-
-                        //Displays that everything went ok
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_changed), Toast.LENGTH_LONG).show();
-
-                        //Saves changes into file
                         Database.save(getApplicationContext());
-
-                        //Go back to MainActivity
                         finish();
                     }
+                } else  {
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 }
 
             }
 
         });
 
-        //Displays a DeleteBankAccountDialogFragment
         mBtnDelete.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -148,6 +109,61 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
         mEdtAccountAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAccountAmount));
 
+    }
+
+    private void createAndSaveBankAccount(){
+        long balance = getEnteredBalance();
+        String enteredName = getEnteredBankAccountName();
+        boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
+
+        BankAccount newBankAccount = new BankAccount(enteredName, balance, isAccountPrimaryAccount);
+        Database.getBankAccounts().add(newBankAccount);
+        Database.save(getApplicationContext());
+    }
+
+    private void saveEnteredChanges(){
+        long balance = getEnteredBalance();
+        String enteredName = getEnteredBankAccountName();
+        boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
+
+        bankAccount.setName(enteredName);
+        bankAccount.setBalance(balance);
+        bankAccount.getBalanceChanges().add(new BalanceChange(System.currentTimeMillis(), balance));
+
+        if (isAccountPrimaryAccount){
+            setPrimaryAccountInAllBankAccountsInDatabseToFalse();
+            bankAccount.setPrimaryAccount(true);
+        }
+    }
+
+    private boolean isAccountSetToBePrimaryAccount(){
+        return mChbPrimaryAccount.isChecked();
+    }
+
+    private String getEnteredBankAccountName(){
+        return mEdtAccountName.getText().toString();
+    }
+
+    private long getEnteredBalance(){
+        return formatDisplayedToUsableAmount(mEdtAccountAmount.getText().toString());
+    }
+
+    private void setPrimaryAccountInAllBankAccountsInDatabseToFalse(){
+        for(int i = 0; i<Database.getBankAccounts().size(); i++){
+            Database.getBankAccounts().get(i).setPrimaryAccount(false);
+        }
+    }
+
+    private boolean isEverythingFilledOutCorrectly(){
+        if(mEdtAccountName.getText().toString().trim().equals("")){
+            return false;
+        } else if(mEdtAccountAmount.getText().toString().equals("")){
+            return false;
+        } else if(doesEnteredNameAlreadyExist() && bankAccount == null){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     private void displayActiveCurrencyShortcut(){
@@ -181,8 +197,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        //Go back to MainActivity
         if(item.getItemId() == android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
@@ -194,21 +208,15 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
      */
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-
-        //Deletes AutoPays
         ArrayList<AutoPay> autoPays = getAutoPays();
         for(int i = 0; i<getAutoPays().size(); i++){
             Database.getAutoPays().remove(autoPays.get(i));
         }
 
-        //Delete bank account
         Database.getBankAccounts().remove(bankAccount);
         Database.save(getApplicationContext());
 
-        //Displays that the bank account got deleted successfully
         Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_deleted), Toast.LENGTH_LONG).show();
-
-        //Go back to MainActivity
         finish();
     }
 

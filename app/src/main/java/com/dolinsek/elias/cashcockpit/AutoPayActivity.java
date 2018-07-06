@@ -30,6 +30,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import org.json.JSONException;
 
@@ -118,6 +119,8 @@ public class AutoPayActivity extends AppCompatActivity {
 
                     Database.save(getApplicationContext());
                     finish();
+                } else {
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 }
             }
         });

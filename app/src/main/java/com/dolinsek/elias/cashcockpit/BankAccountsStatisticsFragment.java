@@ -235,7 +235,7 @@ BankAccountsStatisticsFragment extends Fragment {
         int month = calendar.get(Calendar.MONTH);
 
         calendar.setTimeInMillis(firstBalanceChangeDate);
-        while (calendar.get(Calendar.YEAR) <= year && calendar.get(Calendar.MONTH) <= month){
+        while (calendar.get(Calendar.YEAR) <= year || calendar.get(Calendar.MONTH) <= month){
             int balanceChangesOfMonthSize = getSizeOfBalanceChangesOfMonth(bankAccount, calendar.getTimeInMillis());
             if (balanceChangesOfMonthSize != 0){
                 BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());

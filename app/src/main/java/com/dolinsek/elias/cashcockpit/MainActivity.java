@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initDatabaseIfNecessary();
+
         if(savedInstanceState == null){
             //Show CockpitFragment
             replaceFragment(cockpitFragment);
@@ -99,5 +101,17 @@ public class MainActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.options_activity_main, menu);
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    private void initDatabaseIfNecessary(){
+        if (!Database.isLoaded()){
+            try {
+                Database.load(getApplicationContext());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

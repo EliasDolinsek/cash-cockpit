@@ -78,6 +78,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final Bill bill = billsToDisplay.get(position);
         final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
+        showAutoPayBillIndicatorIfBillIsAutoPayBill(bill, holder);
         displayDescription(bill.getDescription(), holder);
         setupImvFromBillType(holder.mImvBillType, bill);
 

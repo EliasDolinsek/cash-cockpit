@@ -22,6 +22,7 @@ import com.dolinsek.elias.cashcockpit.components.CategoriesSorter;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import org.json.JSONException;
 
@@ -80,9 +81,9 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
                 boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(mEdtCategoryName.getText().toString());
 
                 if (mEdtCategoryName.getText().toString().trim().equals("")) {
-                    mTextInputLayout.setError(getResources().getString(R.string.label_enter_category_name));
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 } else if (nameAlreadyExists && !mEditMode) {
-                    mTextInputLayout.setError(getResources().getString(R.string.label_category_name_already_exists));
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 } else {
                     primaryCategory.setName(mEdtCategoryName.getText().toString());
 
