@@ -46,7 +46,6 @@ BankAccountsStatisticsFragment extends Fragment {
     private BankAccount currentBankAccount;
     private NotEnoughDataFragment fgmNotEnoughData;
     private Spinner spnSelectBankAccount;
-    private TextView txvNoBills;
 
     private BankAccount selectedBankAccount;
 
@@ -60,7 +59,6 @@ BankAccountsStatisticsFragment extends Fragment {
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
-        txvNoBills = inflatedView.findViewById(R.id.txv_bank_accounts_statistics_no_bills);
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBills.setNestedScrollingEnabled(false);
@@ -73,7 +71,6 @@ BankAccountsStatisticsFragment extends Fragment {
             fgmNotEnoughData.show();
             lcStatistics.setVisibility(View.GONE);
             spnSelectBankAccount.setVisibility(View.GONE);
-            txvNoBills.setVisibility(View.GONE);
         }
 
         return inflatedView;
@@ -192,10 +189,8 @@ BankAccountsStatisticsFragment extends Fragment {
                 }
 
                 if (selectedBankAccount.getBills().size() == 0){
-                    txvNoBills.setVisibility(View.VISIBLE);
                     rvBills.setVisibility(View.GONE);
                 } else {
-                    txvNoBills.setVisibility(View.GONE);
                     rvBills.setVisibility(View.VISIBLE);
                 }
             }

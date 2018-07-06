@@ -141,7 +141,7 @@ public class BillsStatisticsFragment extends Fragment {
 
         pcUsageOfBillTypes.setUsePercentValues(true);
         pcUsageOfBillTypes.setEntryLabelTextSize(17f);
-        pcUsageOfBillTypes.setEntryLabelColor(getResources().getColor(R.color.colorPrimary));
+        pcUsageOfBillTypes.setEntryLabelColor(getResources().getColor(android.R.color.black));
         pcUsageOfBillTypes.getLegend().setEnabled(false);
         pcUsageOfBillTypes.setHoleRadius(70f);
         pcUsageOfBillTypes.setExtraOffsets(2f,2f,2f,2f);
@@ -164,8 +164,7 @@ public class BillsStatisticsFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueTextColor(Color.WHITE);
-        pieDataSet.setValueLineColor(getResources().getColor(R.color.colorPrimary));
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.black));
         pieDataSet.setSliceSpace(5f);
         pieDataSet.setValueLineWidth(2f);
         pieDataSet.setValueFormatter(new PercentFormatter());
@@ -177,7 +176,7 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorGreen), getResources().getColor(android.R.color.holo_red_light), getResources().getColor(R.color.colorOrange)};
+        int[] colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
         pieDataSet.setColors(colors);
     }
 
@@ -186,7 +185,7 @@ public class BillsStatisticsFragment extends Fragment {
         ArrayList<BarEntry> barEntries = billsToBarEntryForDailyStatistic(billsOfSelectedMonth, timeStampOfMonth);
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "");
-        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
 
         BarData barData = new BarData(barDataSet);
         setupBarData(barData);

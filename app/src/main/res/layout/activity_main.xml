@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="0dp"
         android:layout_marginStart="0dp"
-        android:background="?android:attr/windowBackground"
+        android:background="@color/colorPrimary"
         app:menu="@menu/navigation"
         android:layout_gravity="bottom"
         app:itemBackground="@color/colorPrimary"

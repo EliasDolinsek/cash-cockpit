@@ -17,10 +17,15 @@
     <color name="colorOrange">#ef6c00</color>
     <color name="colorBlue">#0000ff</color>
 
-    <!--Cockpit-Chart-Colors-->
+    <!--cockpit-chart-colors-->
     <color name="colorCockpitChartEntriesInput">#388e3c</color>
     <color name="colorCockpitChartEntriesOutput">#d32f2f</color>
     <color name="colorCockpitChartEntriesFixedCosts">#d32f2f</color>
     <color name="colorCockpitChartHole">@color/colorPrimary</color>
+
+    <!-- bill-types-colors -->
+    <color name="colorBillTypeInput">#43a047</color>
+    <color name="colorBillTypeOutput">#e53935</color>
+    <color name="colorBillTypeTransfer">#f4511e</color>
 
 </resources>

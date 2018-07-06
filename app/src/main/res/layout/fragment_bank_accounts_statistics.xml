@@ -49,14 +49,6 @@
                 android:layout_height="0dp"
                 android:layout_weight="10"/>
 
-            <TextView
-                android:id="@+id/txv_bank_accounts_statistics_no_bills"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="10"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textAlignment="center"
-                android:text="@string/label_no_bills"/>
         </LinearLayout>
 
     </ScrollView>

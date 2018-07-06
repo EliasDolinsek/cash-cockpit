@@ -36,7 +36,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
     private Button mBtnCreate, mBtnDelete, mBtnSetGoal, mBtnAddSubcategory;
     private EditText mEdtCategoryName;
-    private TextInputLayout mTextInputLayout;
 
     private PrimaryCategory primaryCategory;
 
@@ -58,7 +57,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         mBtnAddSubcategory = (Button) findViewById(R.id.btn_category_add_subcategory);
 
         mEdtCategoryName = (EditText) findViewById(R.id.edt_category_name);
-        mTextInputLayout = (TextInputLayout) findViewById(R.id.til_category_name);
 
         mRvSubcategories = (RecyclerView) findViewById(R.id.rv_category_subcategories);
         mRvSubcategories.setLayoutManager(new LinearLayoutManager(getApplicationContext()));

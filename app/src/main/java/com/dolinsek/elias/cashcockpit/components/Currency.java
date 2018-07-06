@@ -205,8 +205,8 @@ public class Currency {
     private static String formatAmountToReadableStringCurrencyEuro(long amount){
         long euros = amount / 100;
         long cents = Math.abs(amount % 100);
-        String result;
 
+        String result;
         result = String.valueOf(euros) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
 
@@ -216,8 +216,8 @@ public class Currency {
     private static String formatAmountToReadableStringCurrencyDollar(long amount){
         long dollar = amount / 100;
         long cents = Math.abs(amount % 100);
-        String result;
 
+        String result;
         result = String.valueOf(dollar) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
 
@@ -227,8 +227,8 @@ public class Currency {
     private static String formatAmountToReadableStringCurrencyPound(long amount){
         long pounds = amount / 100;
         long cents = Math.abs(amount % 100);
-        String result;
 
+        String result;
         result = String.valueOf(pounds) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
 
