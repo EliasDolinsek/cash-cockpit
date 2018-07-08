@@ -422,7 +422,7 @@ public class BillsStatisticsFragment extends Fragment {
                 long selectionTimeStamp = timeStampsWithBills[position];
                 ArrayList<Bill> billsOfSelectedMonth = Database.Toolkit.getBillsOfMonth(selectionTimeStamp);
 
-                HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBillsStatisticsHisotryItemAdapter(billsOfSelectedMonth);
+                HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBillsStatisticsHistoryItemAdapter(billsOfSelectedMonth);
                 rvBillsOfSelectedMonth.setAdapter(historyItemAdapter);
 
                 loadBillTypeUsageStatistic(selectionTimeStamp);

@@ -1,9 +1,20 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_weight="10">
+
+    <fragment
+        android:id="@+id/fgm_cockpit_chart_not_enough_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
+        app:text="@string/label_not_enough_data_for_statistic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginBottom="36dp"/>
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/pc_cockpit"
@@ -15,7 +26,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <GridLayout
-        android:id="@+id/gridLayout"
+        android:id="@+id/gl_cockpit_chart_texts_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:columnCount="2"

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.GridLayout;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -40,6 +41,8 @@ public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
     private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
+    private NotEnoughDataFragment fgmNotEnoughData;
+    private GridLayout glTextsContainer;
 
 
     @Override
@@ -54,15 +57,32 @@ public class CockpitChartFragment extends Fragment {
         txvDailyLimitAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_daily_limit_amount);
         txvCreditRateAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_credit_rate_amount);
 
+        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_not_enough_data);
+        glTextsContainer = inflatedView.findViewById(R.id.gl_cockpit_chart_texts_container);
+
         setupPieChart();
         loadPieChart();
 
         displayTextsOnTextFields();
+        manageViewsDependingOnAvailableData();
 
         return inflatedView;
     }
 
+    private void manageViewsDependingOnAvailableData(){
+        if (isAmountOfFixCostsGreaterThanNull() || isAmountOfInputsGreaterThanNull() || isAmountOfOutputsGreaterThanNull()){
+            fgmNotEnoughData.hide();
+            pieChart.setVisibility(View.VISIBLE);
+            glTextsContainer.setVisibility(View.VISIBLE);
+        } else {
+            fgmNotEnoughData.show();
+            pieChart.setVisibility(View.GONE);
+            glTextsContainer.setVisibility(View.GONE);
+        }
+    }
+
     public void refreshData(){
+        manageViewsDependingOnAvailableData();
         displayTextsOnTextFields();
         loadPieChart();
         pieChart.notifyDataSetChanged();
@@ -145,7 +165,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColors(pieDataSet);
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull());
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueTextColor(getResources().getColor(R.color.colorAccentTextColor));
         pieDataSet.setSliceSpace(5f);
@@ -154,9 +174,39 @@ public class CockpitChartFragment extends Fragment {
         pieDataSet.setValueFormatter(currencyEntryValueFormatter);
     }
 
-    private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
+        int[] colors;
+        if (amountOfFixCostsGreaterThanNull && amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        } else if (amountOfFixCostsGreaterThanNull && amountOfInputsGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput)};
+        } else if (amountOfFixCostsGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        } else if (amountOfInputsGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesInput)};
+        } else if (amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        } else if (amountOfFixCostsGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts)};
+        } else {
+            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        }
+
         pieDataSet.setColors(colors);
+    }
+
+    private boolean isAmountOfFixCostsGreaterThanNull(){
+        return getAmountOfFixedCosts() != 0;
+    }
+
+    private boolean isAmountOfOutputsGreaterThanNull(){
+        return Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) != 0;
+    }
+
+    private boolean isAmountOfInputsGreaterThanNull(){
+        return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) != 0;
     }
 
     private void displayTextsOnTextFields(){

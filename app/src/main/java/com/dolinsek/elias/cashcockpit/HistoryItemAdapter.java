@@ -17,6 +17,7 @@ import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,6 +44,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         historyItemAdapter.billsToDisplay = billsToDisplay;
         historyItemAdapter.allowToEditBill = true;
         historyItemAdapter.filterBills(historyItemAdapter.filterType);
+        historyItemAdapter.cleanUpBillsToDisplay();
 
         return historyItemAdapter;
     }
@@ -53,16 +55,18 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         historyItemAdapter.billsToDisplay = bankAccount.getBills();
         historyItemAdapter.allowToEditBill = false;
         historyItemAdapter.filterBills(historyItemAdapter.filterType);
+        historyItemAdapter.cleanUpBillsToDisplay();
 
         return historyItemAdapter;
     }
 
-    public static HistoryItemAdapter getBillsStatisticsHisotryItemAdapter(ArrayList<Bill> billsToDisplay){
+    public static HistoryItemAdapter getBillsStatisticsHistoryItemAdapter(ArrayList<Bill> billsToDisplay){
         HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
         historyItemAdapter.filterType = FILTER_NEWEST_ITEM_FIRST;
         historyItemAdapter.billsToDisplay = billsToDisplay;
         historyItemAdapter.allowToEditBill = false;
         historyItemAdapter.filterBills(historyItemAdapter.filterType);
+        historyItemAdapter.cleanUpBillsToDisplay();
 
         return historyItemAdapter;
     }
@@ -116,6 +120,18 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             mTxvAutoPayBillIndicator = itemView.findViewById(R.id.txv_item_history_auto_pay_bill_indicator);
             mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_history_bill_type);
         }
+    }
+
+    private void cleanUpBillsToDisplay(){
+        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
+        ArrayList<Bill> cleanedUpBillsToDisplay = new ArrayList<>();
+        for (Bill bill:billsToDisplay){
+            if (allBillsInDatabase.contains(bill)){
+                cleanedUpBillsToDisplay.add(bill);
+            }
+        }
+
+        billsToDisplay = cleanedUpBillsToDisplay;
     }
 
     private void showAutoPayBillIndicatorIfBillIsAutoPayBill(Bill bill, HistoryViewHolder holder){

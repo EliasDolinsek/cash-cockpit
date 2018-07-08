@@ -15,13 +15,14 @@
         <EditTextPreference
             android:key="preference_amount_to_save"
             android:summary="@string/label_amount_to_save_preference_description"
-            android:title="@string/label_amount_to_save" />
+            android:title="@string/label_amount_to_save"
+            android:inputType="numberSigned"/>
 
         <CheckBoxPreference
             android:key="preference_show_notification_on_auto_pay_payed"
             android:title="@string/label_auto_pay_notifications"
             android:summary="@string/label_auto_pay_notification_preference_description"
-            android:defaultValue="true"/>
+            android:inputType="textPassword"/>
 </PreferenceCategory>
 
     <PreferenceCategory
