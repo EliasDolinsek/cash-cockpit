@@ -43,7 +43,7 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_total_outputs"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:layout_marginBottom="4dp"/>
@@ -65,7 +65,7 @@
             android:layout_marginStart="4dp"
             android:text="@string/label_cash"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:layout_marginBottom="4dp"/>
@@ -87,7 +87,7 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_daily_limit"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textColor="@color/colorAccent"
             android:textStyle="bold"
             android:layout_marginBottom="4dp"/>
@@ -109,7 +109,7 @@
             android:layout_marginStart="3dp"
             android:text="@string/label_installment"
             android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textStyle="bold"
             android:textColor="@color/colorAccent" />
     </GridLayout>

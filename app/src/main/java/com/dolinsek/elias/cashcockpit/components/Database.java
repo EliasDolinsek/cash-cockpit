@@ -90,7 +90,6 @@ public class Database {
      * @param context context to get access to files
      */
     public static void save(Context context){
-
         if (dataHelper == null){
             dataHelper = new DataHelper(context);
         }

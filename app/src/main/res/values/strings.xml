@@ -154,6 +154,7 @@
     <string name="label_bill_creation_date">Created on %1$s</string>
     <string name="label_please_select_a_category">Please select a category"</string>
     <string name="label_check_inputs">Please check your inputs! Something seems to be wrong&#8230;</string>
+    <string name="label_no_categories_found">No categories found</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

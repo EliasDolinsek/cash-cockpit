@@ -12,7 +12,7 @@
         android:src="@drawable/ic_info_outline_black_96dp"/>
 
     <TextView
-        android:text="@string/label_not_enough_data_for_statistic"
+        android:id="@+id/txv_not_enough_data_text_to_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"

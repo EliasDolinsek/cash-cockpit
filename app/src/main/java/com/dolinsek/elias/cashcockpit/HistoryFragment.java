@@ -40,7 +40,7 @@ public class HistoryFragment extends Fragment {
     private ArrayList<Bill> billsToDisplay;
     private Button mBtnShowFilters;
     private HistoryFragmentFiltersDialogFragment historyFragmentFiltersDialogFragment;
-    private LinearLayout mLlNotEnoughDataForHistory;
+    private NotEnoughDataFragment mFgmNotEnoughData;
     private int selectedIndexMainFilter, selectedIndexBillTypeFilter;
 
     @Override
@@ -50,13 +50,12 @@ public class HistoryFragment extends Fragment {
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
-        mLlNotEnoughDataForHistory = inflatedView.findViewById(R.id.ll_not_enough_data_for_history_container);
+        mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_history_not_enough_data_for_history);
         mTxvSelectedFilters = inflatedView.findViewById(R.id.txv_history_selected_filters);
         mBtnShowFilters = inflatedView.findViewById(R.id.btn_history_show_filters);
 
-        createHistoryFragmentFiltersDialogFragment();
-
         billsToDisplay = Database.Toolkit.getAllBillsInDatabase();
+        createHistoryFragmentFiltersDialogFragment();
         setupBillsToDisplayFromSavedInstanceState(savedInstanceState);
 
         mBtnShowFilters.setOnClickListener(new View.OnClickListener() {
@@ -167,9 +166,9 @@ public class HistoryFragment extends Fragment {
 
     private void manageViews(){
         if (getSizeOfBillsInDatabase() != 0){
-            mLlNotEnoughDataForHistory.setVisibility(View.GONE);
+            mFgmNotEnoughData.hide();
         } else {
-            mLlNotEnoughDataForHistory.setVisibility(View.VISIBLE);
+            mFgmNotEnoughData.show();
         }
     }
 

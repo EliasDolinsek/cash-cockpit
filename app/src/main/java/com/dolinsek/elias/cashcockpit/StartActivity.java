@@ -61,7 +61,6 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private void login(){
-        initDatabase();
         startMainActivity();
         manageAutoPayPayments();
     }
@@ -135,17 +134,6 @@ public class StartActivity extends AppCompatActivity {
     private void startMainActivity(){
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
-    }
-
-    private void initDatabase(){
-        try {
-            Database.load(getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-            if (Database.getPrimaryCategories().size() == 0){
-                restorePrimaryCategories();
-            }
-        }
     }
 
     private String getPasswordForLogin(){

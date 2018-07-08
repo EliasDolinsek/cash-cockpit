@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -20,7 +21,9 @@ public class SelectCategoryActivity extends AppCompatActivity {
     public static final String SELECTED_PRIMARY_CATEGORY_INDEX = "selected_private_category";
     public static final String SELECTED_SUBCATEGORY_INDEX = "selected_subcategory";
 
+    private TextView mTxvSelectCategory;
     private RecyclerView mRecyclerView;
+    private NotEnoughDataFragment mFgmNoCategoriesFound;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private int selectedPrimaryCategoryIndex, selectedSubcategoryIndex;
 
@@ -30,6 +33,8 @@ public class SelectCategoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_category);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
+        mFgmNoCategoriesFound = (NotEnoughDataFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_select_category_no_categories_found);
+        mTxvSelectCategory = findViewById(R.id.txv_select_category);
 
         SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
             @Override
@@ -51,6 +56,20 @@ public class SelectCategoryActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         mRecyclerView.setAdapter(primaryCategoryItemAdapter);
         mRecyclerView.setHasFixedSize(false);
+
+        setupViewsVisibilities();
+    }
+
+    private void setupViewsVisibilities(){
+        if (Database.getPrimaryCategories().size() == 0){
+            mFgmNoCategoriesFound.show();
+            mTxvSelectCategory.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mFgmNoCategoriesFound.hide();
+            mTxvSelectCategory.setVisibility(View.VISIBLE);
+            mTxvSelectCategory.setVisibility(View.VISIBLE);
+        }
     }
 
     private void setResultsAndFinishActivity(){

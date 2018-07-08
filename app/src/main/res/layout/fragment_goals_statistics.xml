@@ -1,5 +1,8 @@
-<LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-    xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
     <!--To avoid scroll view from scrolling to the bottom automatically-->
     <View android:layout_width="match_parent" android:id="@+id/focus_view" android:layout_height="0dp" android:focusable="true" android:focusableInTouchMode="true"><requestFocus/></View>
@@ -24,11 +27,12 @@
                 android:background="@drawable/border_primary_light"/>
 
             <fragment
-                android:id="@+id/fgm_goals_statistics_not__enough_data"
+                android:id="@+id/fgm_goals_statistics_not_enough_data"
                 class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                app:text="@string/label_not_enough_data_for_statistic"/>
 
             <LinearLayout
                 android:id="@+id/ll_goals_statistics_content"

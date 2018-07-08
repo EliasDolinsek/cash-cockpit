@@ -63,6 +63,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     public void refreshData(){
+        displayTextsOnTextFields();
         loadPieChart();
         pieChart.notifyDataSetChanged();
         pieChart.invalidate();

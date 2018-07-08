@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.dolinsek.elias.cashcockpit.HistoryFragment"
     android:orientation="vertical"
     android:paddingTop="4dp"
@@ -29,27 +30,12 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/ll_not_enough_data_for_history_container"
+    <fragment
+        android:id="@+id/fgm_history_not_enough_data_for_history"
         android:layout_width="match_parent"
-        android:layout_height="260dp"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_info_outline_black_96dp"/>
-
-        <TextView
-            android:text="@string/label_not_enough_data_for_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:textAlignment="center"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"/>
-
-    </LinearLayout>
+        android:layout_height="wrap_content"
+        class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
+        app:text="@string/label_not_enough_data_for_history"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_history"

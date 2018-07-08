@@ -1,5 +1,7 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import java.util.Objects;
+
 /**
  * Represents a bill what usually get added to a bank account
  * Created by elias on 06.01.2018.
@@ -125,5 +127,24 @@ public class Bill {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Bill)) return false;
+        Bill bill = (Bill) o;
+        return amount == bill.amount &&
+                creationDate == bill.creationDate &&
+                type == bill.type &&
+                autoPayBill == bill.autoPayBill &&
+                Objects.equals(description, bill.description) &&
+                Objects.equals(subcategory, bill.subcategory);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(amount, description, subcategory, creationDate, type, autoPayBill);
     }
 }

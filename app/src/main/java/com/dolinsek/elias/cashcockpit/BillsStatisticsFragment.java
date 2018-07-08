@@ -54,7 +54,7 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private RecyclerView rvBillsOfSelectedMonth;
-    private LinearLayout llBillTypeUsageTextContainer;
+    private LinearLayout llBillTypeOverallUsageTextsContainer, llBillTypeSelectedMonthUsageTextsContainer;
     private NotEnoughDataFragment fgmNotEnoughData;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
@@ -73,7 +73,8 @@ public class BillsStatisticsFragment extends Fragment {
         rvBillsOfSelectedMonth = inflatedView.findViewById(R.id.rv_bills_statistics_bills_of_month);
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bills_statistics_not_enough_data);
 
-        llBillTypeUsageTextContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_texts_container);
+        llBillTypeOverallUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_overall_texts_container);
+        llBillTypeSelectedMonthUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_selected_month_texts_container);
 
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
         txvBillsTypeOutputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_month);
@@ -93,9 +94,9 @@ public class BillsStatisticsFragment extends Fragment {
             fgmNotEnoughData.hide();
         } else {
             llSelectMonthFragment.setVisibility(View.GONE);
-            llBillTypeUsageTextContainer.setVisibility(View.GONE);
             pcUsageOfBillTypes.setVisibility(View.GONE);
             bcHistoryOfPayments.setVisibility(View.GONE);
+            hideBillTypeUsageContainers();
             fgmNotEnoughData.show();
         }
 
@@ -118,11 +119,21 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void displayStatisticsIfEnoughData(int sizeOfBills){
         if (sizeOfBills == 0){
-            llBillTypeUsageTextContainer.setVisibility(View.GONE);
+            hideBillTypeUsageContainers();
 
         } else {
-            llBillTypeUsageTextContainer.setVisibility(View.VISIBLE);
+            showBillTypeUsageContainers();
         }
+    }
+
+    private void hideBillTypeUsageContainers(){
+        llBillTypeOverallUsageTextsContainer.setVisibility(View.GONE);
+        llBillTypeSelectedMonthUsageTextsContainer.setVisibility(View.GONE);
+    }
+
+    private void showBillTypeUsageContainers(){
+        llBillTypeOverallUsageTextsContainer.setVisibility(View.VISIBLE);
+        llBillTypeSelectedMonthUsageTextsContainer.setVisibility(View.VISIBLE);
     }
     private void setupSelectMonthFragment(){
         selectMonthFragment = new SelectMonthFragment();

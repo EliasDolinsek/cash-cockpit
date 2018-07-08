@@ -59,7 +59,7 @@ public class GoalsStatisticsFragment extends Fragment {
         mTxvMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_month);
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
 
-        mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_goals_statistics_not__enough_data);
+        mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_goals_statistics_not_enough_data);
         mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
         mLlSelectMonthFragmentContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_select_month_container);
 

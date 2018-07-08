@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".BillsStatisticsFragment"
     android:orientation="vertical">
 
@@ -27,27 +28,12 @@
                 android:orientation="horizontal"
                 android:background="@drawable/border_primary_light" />
 
-            <fragment
-                android:id="@+id/fgm_bills_statistics_not_enough_data"
-                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp" />
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pc_bills_statistics_bill_type_usage"
-                android:layout_width="match_parent"
-                android:layout_height="325dp"
-                android:padding="4dp"
-                android:layout_marginBottom="12dp"/>
-
             <LinearLayout
-                android:id="@+id/ll_bills_statistics_bill_type_usage_texts_container"
+                android:id="@+id/ll_bills_statistics_bill_type_overall_texts_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="4dp"
-                android:layout_marginTop="8dp">
+                android:padding="4dp">
 
                 <TextView
                     android:text="@string/label_overall"
@@ -97,6 +83,28 @@
                         android:textColor="@color/colorBillTypeTransfer"
                         android:textStyle="bold"/>
                 </LinearLayout>
+            </LinearLayout>
+
+            <fragment
+                android:id="@+id/fgm_bills_statistics_not_enough_data"
+                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:text="@string/label_not_enough_data_for_statistic"/>
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/pc_bills_statistics_bill_type_usage"
+                android:layout_width="match_parent"
+                android:layout_height="325dp"
+                android:padding="4dp"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:id="@+id/ll_bills_statistics_bill_type_usage_selected_month_texts_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <TextView
                     android:text="@string/label_selected_month"
