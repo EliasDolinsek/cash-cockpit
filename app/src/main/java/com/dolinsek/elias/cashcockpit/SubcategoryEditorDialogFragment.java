@@ -8,6 +8,8 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -73,7 +75,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         setupImage(mSubcategory.isFavoured());
 
         setupButtonClickListener();
-        setupTextWatcherForCurrency();
+        setupGoalAmountTxv();
         setupFmlEdtGoalAmountOnClickToEnableGoal();
 
         if(mEditMode){
@@ -190,8 +192,8 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     private void setupButtonClickListener(){
         mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean checked) {
-                mEdtGoalAmount.setEnabled(checked);
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mEdtGoalAmount.setEnabled(!isChecked);
             }
         });
 
@@ -228,8 +230,24 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
     }
 
-    private void setupTextWatcherForCurrency(){
+    private void setupGoalAmountTxv(){
         mEdtGoalAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtGoalAmount));
+        mEdtGoalAmount.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mChbGoalEnabled.setChecked(true);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
     }
 
     private void removeAllErrorsFromViews(){

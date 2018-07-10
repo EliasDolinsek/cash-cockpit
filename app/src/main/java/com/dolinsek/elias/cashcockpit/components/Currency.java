@@ -209,8 +209,6 @@ public class Currency {
         String result;
         result = String.valueOf(euros) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
-        result = addZeroIfCentsWithinTenSteps(result);
-
         return result;
     }
 
@@ -221,7 +219,6 @@ public class Currency {
         String result;
         result = String.valueOf(dollar) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
-        result = addZeroIfCentsWithinTenSteps(result);
 
         return result;
     }
@@ -233,30 +230,23 @@ public class Currency {
         String result;
         result = String.valueOf(pounds) + "." + String.valueOf(cents);
         result = addZeroIfCentsAreLessThanTen(result);
-        result = addZeroIfCentsWithinTenSteps(result);
 
         return result;
     }
 
-    private static String addZeroIfCentsWithinTenSteps(String input){
-        double amount = Double.valueOf(input);
+    private static String addZeroIfCentsAreLessThanTen(String input){
+        String amountBeforeComma = input.substring(0, input.indexOf("."));
+        String cents = getCentsOutOfAmount(input);
+        long centsAsLong = Long.valueOf(cents);
 
-        if (amount % 10 == 0){
-            return input + "0";
+        if (centsAsLong < 10){
+            return amountBeforeComma + ".0" + cents;
         } else {
             return input;
         }
     }
 
-    private static String addZeroIfCentsAreLessThanTen(String input){
-        double amount = Double.valueOf(input);
-        long pounds = (long) (amount / 100);
-        long cents = (long) Math.abs(amount % 100);
-
-        if (cents < 10){
-            return pounds + ".0" + cents;
-        } else {
-            return input;
-        }
+    private static String getCentsOutOfAmount(String amount){
+        return amount.substring(amount.indexOf(".") + 1, amount.length());
     }
 }
