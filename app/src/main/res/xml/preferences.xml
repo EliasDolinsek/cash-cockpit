@@ -25,7 +25,6 @@
             android:summary="@string/label_auto_pay_notification_preference_description"
             android:inputType="textPassword"/>
 
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -50,6 +49,16 @@
             android:textAlignment="center"
             android:password="true"
             android:persistent="true" /> />
+
+        <Preference
+            android:title="@string/label_password_for_login"
+            android:summary="@string/label_password_for_login_preference_description">
+
+            <intent android:action="android.intent.action.VIEW"
+                android:targetPackage="com.dolinsek.elias.cashcockpit"
+                android:targetClass="com.dolinsek.elias.cashcockpit.PasswordPreferenceActivity"/>
+
+        </Preference>
 
     </PreferenceCategory>
 </PreferenceScreen>
