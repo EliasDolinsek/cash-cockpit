@@ -382,7 +382,6 @@ public class BillsStatisticsFragment extends Fragment {
 
         while (!doesMonthExceedsCurrentTime(calendar)){
             long currentMonthTimesStamp = calendar.getTimeInMillis();
-            System.out.println(currentMonthTimesStamp);
             ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(currentMonthTimesStamp);
 
             if (billsOfMonth.size() != 0){

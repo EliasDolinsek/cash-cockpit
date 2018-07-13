@@ -12,12 +12,12 @@
             android:title="@string/label_currency"
             android:defaultValue="1"/>
 
-        <EditTextPreference
-            android:key="preference_amount_to_save"
-            android:summary="@string/label_amount_to_save_preference_description"
-            android:title="@string/label_amount_to_save"
-            android:inputType="number"
-            android:maxLength="5"/>
+        <Preference
+            android:title="@string/label_amount_to_save">
+
+            <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.AmountToSavePreferenceActivity"/>
+
+        </Preference>
 
         <CheckBoxPreference
             android:key="preference_show_notification_on_auto_pay_payed"

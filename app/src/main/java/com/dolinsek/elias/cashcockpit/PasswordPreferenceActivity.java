@@ -62,9 +62,7 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
                 } else if(enteredNewPassword.trim().equals("")){
                     displayNoNewPasswordEnteredError();
                 } else {
-                    saveNewPassword();
-                    displayToastThatNewPasswordGotSavedSuccessfully();
-                    removeInputsFromEditTexts();
+                    saveNewPasswordAndReSetupViews();
                 }
             }
         });
@@ -83,6 +81,15 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
         editor.putString("preference_password_for_login", newEnteredPassword);
         editor.apply();
+    }
+
+    private void saveNewPasswordAndReSetupViews(){
+        saveNewPassword();
+        displayToastThatNewPasswordGotSavedSuccessfully();
+        removeInputsFromEditTexts();
+
+        swUsePasswordForLogin.setEnabled(true);
+        setupCurrentPasswordViews();
     }
 
     private void setupCurrentPasswordViews(){

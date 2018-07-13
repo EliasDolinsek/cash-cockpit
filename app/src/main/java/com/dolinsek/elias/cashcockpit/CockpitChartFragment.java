@@ -256,7 +256,7 @@ public class CockpitChartFragment extends Fragment {
 
     private long getAmountToSaveEveryMonth(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return Long.parseLong(sharedPreferences.getString("preference_amount_to_save", "0")) * 100;
+        return sharedPreferences.getLong("preference_amount_to_save", 0) * 100;
     }
 
     private long getAmountOfCash(){

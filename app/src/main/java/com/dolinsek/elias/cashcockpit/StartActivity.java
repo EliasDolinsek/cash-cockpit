@@ -64,11 +64,7 @@ public class StartActivity extends AppCompatActivity {
             }
         }
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        System.out.println(sharedPreferences.getLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, 0));
-
         setupViews();
-
     }
 
     private void setupViews(){

@@ -169,6 +169,8 @@
     <string name="label_days_and_hoursuntil_password_reset">%1$d Days and %2$d Hours until password reset</string>
     <string name="label_hours_and_minutes_until_password_reset">%1$d Hours and %2$d Minutes until password reset</string>
     <string name="label_password_got_successfully_reset">Password got successfully rest</string>
+    <string name="label_amount_to_save_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
+    <string name="label_new_amount_to_save_saved_successfully">New amount to save got saved successfully</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

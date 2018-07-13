@@ -12,7 +12,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"></activity>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity android:name=".BankAccountActivity" />
         <activity android:name=".CategoryActivity" />
         <activity
@@ -32,7 +32,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PasswordPreferenceActivity"></activity>
+        <activity android:name=".PasswordPreferenceActivity" />
+        <activity android:name=".AmountToSavePreferenceActivity"
+            android:windowSoftInputMode="stateAlwaysVisible" />
     </application>
 
 </manifest>

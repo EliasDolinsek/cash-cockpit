@@ -40,7 +40,9 @@
             <TextView
                 android:id="@+id/txv_item_auto_pay_details"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:ellipsize="middle"/>
         </LinearLayout>
     </LinearLayout>
 
