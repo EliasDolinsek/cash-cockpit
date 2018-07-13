@@ -155,9 +155,10 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private boolean isEverythingFilledOutCorrectly(){
+        String enteredBalance = mEdtAccountAmount.getText().toString();
         if(mEdtAccountName.getText().toString().trim().equals("")){
             return false;
-        } else if(mEdtAccountAmount.getText().toString().equals("")){
+        } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
             return false;
         } else if(doesEnteredNameAlreadyExist() && bankAccount == null){
             return false;

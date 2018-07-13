@@ -35,24 +35,8 @@
             android:summary="@string/label_backup_database_regularly_preference_description"
             android:defaultValue="true"/>
 
-        <CheckBoxPreference
-            android:key="preference_password_required_for_login"
-            android:title="@string/label_use_password_for_login"
-            android:summary="@string/label_use_password_for_login_preference_description"
-            android:defaultValue="false"/>
-
-        <EditTextPreference
-            android:key="preference_password_for_login"
-            android:title="@string/label_password_for_login"
-            android:summary="@string/label_password_for_login_preference_description"
-            android:inputType="textPassword"
-            android:textAlignment="center"
-            android:password="true"
-            android:persistent="true" /> />
-
         <Preference
-            android:title="@string/label_password_for_login"
-            android:summary="@string/label_password_for_login_preference_description">
+            android:title="@string/label_password_settings">
 
             <intent android:action="android.intent.action.VIEW"
                 android:targetPackage="com.dolinsek.elias.cashcockpit"

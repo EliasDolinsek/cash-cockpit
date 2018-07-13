@@ -62,16 +62,16 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View inflatedView = inflater.inflate(R.layout.dialog_subcategory_editor, null);
 
-        mLlDeleteInformations = (LinearLayout) inflatedView.findViewById(R.id.ll_item_subcategory_deletion_informations);
+        mLlDeleteInformations = inflatedView.findViewById(R.id.ll_item_subcategory_deletion_informations);
         mLlEdtGoalAmountContainer = inflatedView.findViewById(R.id.ll_subcategory_editor_edt_goal_amount_container);
-        mTilSubcategoryName = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_name);
-        mTilGoalAmount = (TextInputLayout) inflatedView.findViewById(R.id.til_item_subcategory_editor_goal_amount);
+        mTilSubcategoryName = inflatedView.findViewById(R.id.til_item_subcategory_editor_name);
+        mTilGoalAmount = inflatedView.findViewById(R.id.til_item_subcategory_editor_goal_amount);
 
-        mEdtSubcategoryName = (EditText) inflatedView.findViewById(R.id.edt_item_subcategory_editor_name);
-        mEdtGoalAmount = (EditText) inflatedView.findViewById(R.id.edt_item_subcategory_editor_goal_amount);
+        mEdtSubcategoryName = inflatedView.findViewById(R.id.edt_item_subcategory_editor_name);
+        mEdtGoalAmount = inflatedView.findViewById(R.id.edt_item_subcategory_editor_goal_amount);
 
-        mChbGoalEnabled = (CheckBox) inflatedView.findViewById(R.id.chb_item_subcategory_editor_goal_enabled);
-        mImvFavored = (ImageView) inflatedView.findViewById(R.id.imv_item_subcategory_editor_favored);
+        mChbGoalEnabled = inflatedView.findViewById(R.id.chb_item_subcategory_editor_goal_enabled);
+        mImvFavored = inflatedView.findViewById(R.id.imv_item_subcategory_editor_favored);
         setupImage(mSubcategory.isFavoured());
 
         setupButtonClickListener();
@@ -91,18 +91,19 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                Button mBtnPositive = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                Button mBtnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
                 mBtnPositive.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         removeAllErrorsFromViews();
 
                         boolean nameAlreadyExits = doesNameForSubcategoryAlreadyExist();
+                        String enteredGoalAmount = mEdtGoalAmount.getText().toString();
                         if(mEdtSubcategoryName.getText().toString().trim().equals("")){
                             Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else if(nameAlreadyExits && !mEditMode) {
                             Toolkit.displayPleaseCheckInputsToast(getContext());
-                        } else if(mChbGoalEnabled.isChecked() && mEdtGoalAmount.getText().toString().equals("")){
+                        } else if(mChbGoalEnabled.isChecked() && (enteredGoalAmount.equals("") || enteredGoalAmount.equals("."))){
                             Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else {
 
@@ -121,7 +122,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                     }
                 });
 
-                final Button mBtnNegative = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+                final Button mBtnNegative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
                 if(mBtnNegative != null){
                     mBtnNegative.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -193,7 +194,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mEdtGoalAmount.setEnabled(!isChecked);
+                mEdtGoalAmount.setEnabled(true);
             }
         });
 

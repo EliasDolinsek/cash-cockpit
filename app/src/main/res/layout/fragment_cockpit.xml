@@ -127,8 +127,7 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:weightSum="8">
+                    android:layout_margin="4dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -144,6 +143,12 @@
                         android:layout_weight="10"
                         android:layout_gravity="center_vertical"
                         android:layout_marginEnd="2dp"/>
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_bill_type"
+                        android:layout_marginEnd="12dp"/>
 
                     <Spinner
                         android:id="@+id/spn_cockpit_select_bill_type"

@@ -10,12 +10,14 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.AutoPayPaymentManager;
@@ -28,6 +30,9 @@ public class StartActivity extends AppCompatActivity {
 
     private static final String TAG = StartActivity.class.getSimpleName();
     private static final String PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP = "resetPasswordTimeStamp";
+    private static final String PREFERENCE_KEY_PASSWORD_RESET_OPTION = "preference_password_reset_time_option";
+    private static final int PASSWORD_RESET_OPTION_NEVER = 5;
+    private static final long[] resetOptionsAsTimeStamps = new long[]{21600000 /*6 Hours*/, 43200000 /*12 Hours*/, 86400000 /*1 Day*/, 259200000 /*3 Days*/, 604800000 /*1 Week*/};
 
     private EditText edtPassword;
     private Button btnLogin;
@@ -58,6 +63,21 @@ public class StartActivity extends AppCompatActivity {
                 login();
             }
         }
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        System.out.println(sharedPreferences.getLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, 0));
+
+        setupViews();
+
+    }
+
+    private void setupViews(){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        int passwordResetOption = sharedPreferences.getInt(PREFERENCE_KEY_PASSWORD_RESET_OPTION, 0);
+
+        if (isPasswordResetOptionNever(passwordResetOption)){
+            txvForgotPassword.setEnabled(false);
+        }
     }
 
     private void login(){
@@ -74,6 +94,8 @@ public class StartActivity extends AppCompatActivity {
         editor.putString("preference_password_for_login", "");
 
         editor.commit();
+
+        Toast.makeText(this, getString(R.string.label_password_got_successfully_reset), Toast.LENGTH_SHORT).show();
     }
 
     private void setupForPasswordResettingMode(){
@@ -108,6 +130,7 @@ public class StartActivity extends AppCompatActivity {
                     }
                 } else {
                     edtPassword.setText("");
+                    Toast.makeText(StartActivity.this, getString(R.string.label_wrong_password), Toast.LENGTH_SHORT).show();
                 }
             }
         };
@@ -126,6 +149,7 @@ public class StartActivity extends AppCompatActivity {
                         }
                     }
                 });
+
                 resetPasswordDialogFragment.show(getFragmentManager(), "reset_password");
             }
         };
@@ -143,7 +167,16 @@ public class StartActivity extends AppCompatActivity {
 
     private String getTimeUntilPasswordResetAsReadableString(){
         long timeUntilPasswordReset = getTimeStampWhenPasswordGetsReset() - System.currentTimeMillis();
-        return timeMillisToHour(timeUntilPasswordReset) + " " + getString(R.string.label_hours_until_password_reset);
+
+        long daysUntilPasswordReset = timeMillisToDays(timeUntilPasswordReset);
+        long hoursUntilPasswordReset = timeMillisToHour(timeUntilPasswordReset) % 24;
+        int minutesUntilPasswordReset = timeMillisToMinutes(timeUntilPasswordReset) % 60;
+
+        if (hoursUntilPasswordReset > 24){
+            return  getString(R.string.label_days_and_hoursuntil_password_reset, daysUntilPasswordReset, hoursUntilPasswordReset);
+        } else {
+            return getString(R.string.label_hours_and_minutes_until_password_reset, hoursUntilPasswordReset, minutesUntilPasswordReset);
+        }
     }
 
     private long getTimeStampWhenPasswordGetsReset(){
@@ -156,10 +189,6 @@ public class StartActivity extends AppCompatActivity {
         return sharedPreferences.getBoolean("preference_password_required_for_login", false);
     }
 
-    private void restorePrimaryCategories(){
-        Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
-    }
-
     private void manageAutoPayPayments(){
         AutoPayPaymentManager autoPayPaymentManager = new AutoPayPaymentManager(getApplicationContext());
         ArrayList<AutoPay> autoPaysWherePaymentsAreRequired = autoPayPaymentManager.getAutoPaysWherePaymentsAreRequired();
@@ -168,6 +197,18 @@ public class StartActivity extends AppCompatActivity {
 
     private int timeMillisToHour(long timeMillis){
         return (int) (timeMillis / 1000 / 60 / 60);
+    }
+
+    private int timeMillisToDays(long timeMillis){
+        return (int) (timeMillis / 1000 / 60 / 60) / 24;
+    }
+
+    private int timeMillisToMinutes(long timeMillis){
+        return (int) (timeMillis / 1000 / 60);
+    }
+
+    private boolean isPasswordResetOptionNever(int passwordResetOption){
+        return passwordResetOption == PASSWORD_RESET_OPTION_NEVER;
     }
 
     public static class ResetPasswordDialogFragment extends DialogFragment{
@@ -182,7 +223,7 @@ public class StartActivity extends AppCompatActivity {
             alertBuilder.setPositiveButton(R.string.dialog_action_reset_password, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    long timeStampAtReset = addTwoHoursToTimeStamp(System.currentTimeMillis());
+                    long timeStampAtReset = addResetTimeToTimeStamp(System.currentTimeMillis());
                     SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     sharedPreferences.edit().putLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, timeStampAtReset).commit();
                 }
@@ -191,12 +232,18 @@ public class StartActivity extends AppCompatActivity {
             return alertBuilder.create();
         }
 
-        private long addTwoHoursToTimeStamp(long timeStamp){
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(timeStamp);
-            calendar.add(Calendar.HOUR, 12);
+        private long addResetTimeToTimeStamp(long timeStamp){
+            return timeStamp + getResetTimeForPassword();
+        }
 
-            return calendar.getTimeInMillis();
+        private long getResetTimeForPassword(){
+            SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            int resetOptionIndex = sharedPreferences.getInt(PREFERENCE_KEY_PASSWORD_RESET_OPTION, 0);
+            if (resetOptionIndex < 5){
+                return resetOptionsAsTimeStamps[resetOptionIndex];
+            } else {
+                return 0;
+            }
         }
 
         @Override

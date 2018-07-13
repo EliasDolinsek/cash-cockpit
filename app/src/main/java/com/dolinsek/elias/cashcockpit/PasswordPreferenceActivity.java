@@ -59,7 +59,7 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
                     displayCurrentEnteredPasswordError();
                 } else if (!doEnteredNewPasswordAndEnteredConformationOfNewPasswordMatch()){
                     displayNewPasswordViewsErrors();
-                } else if(enteredNewPassword.equals("")){
+                } else if(enteredNewPassword.trim().equals("")){
                     displayNoNewPasswordEnteredError();
                 } else {
                     saveNewPassword();
@@ -187,6 +187,9 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
 
     private void setupSwUsePasswordForLogin(){
         swUsePasswordForLogin.setChecked(getIfPasswordIsRequiredForLogin());
+        if (getPasswordForLogin().trim().equals("")){
+            swUsePasswordForLogin.setEnabled(false);
+        }
     }
 
     private boolean getIfPasswordIsRequiredForLogin(){

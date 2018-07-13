@@ -265,7 +265,8 @@ public class CockpitFragment extends Fragment {
     }
 
     private boolean everythingFilledCorrectly(){
-        if(mEdtBillAmount.getText().toString().equals("")){
+        String enteredBillAmount = mEdtBillAmount.getText().toString();
+        if(enteredBillAmount.equals("") || enteredBillAmount.equals(".")){
             return false;
         } else if(selectedSubcategory == null){
             return false;

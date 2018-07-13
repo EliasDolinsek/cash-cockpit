@@ -127,8 +127,7 @@
     <string name="label_safety">Safety</string>
     <string name="label_backup_database_regularly">Backup database regularly</string>
     <string name="label_backup_database_regularly_preference_description">Creates weekly backup of database</string>
-    <string name="label_password_for_login">Password for login</string>
-    <string name="label_password_for_login_preference_description">Password what has to be entered on launch</string>
+    <string name="label_password_settings">Password settings</string>
     <string name="label_use_password_for_login">Use password for login</string>
     <string name="label_use_password_for_login_preference_description">Password has to be entered on login</string>
     <string name="label_input">Input</string>
@@ -140,7 +139,6 @@
     <string name="dialog_title_reset_password">Reset password</string>
     <string name="dialog_msg_reset_password_description">Your password will be reset in 12 hours</string>
     <string name="dialog_action_reset_password">Reset password</string>
-    <string name="label_hours_until_password_reset">Hours until password reset</string>
     <string name="label_amount_to_save_preference_description">Sets how much you want to save every month for the cockpit page</string>
     <string name="label_amount_to_save">Amount to save</string>
     <string name="label_inputs">Inputs</string>
@@ -167,6 +165,10 @@
     <string name="label_password_reset_time">Password reset time:</string>
     <string name="label_new_password_got_saved_successfully">New password got saved successfully!</string>
     <string name="label_security_settings_got_saved_successfully">Security settings got saved successfully!</string>
+    <string name="label_no_bank_account_found">No bank account found</string>
+    <string name="label_days_and_hoursuntil_password_reset">%1$d Days and %2$d Hours until password reset</string>
+    <string name="label_hours_and_minutes_until_password_reset">%1$d Hours and %2$d Minutes until password reset</string>
+    <string name="label_password_got_successfully_reset">Password got successfully rest</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>
@@ -224,7 +226,6 @@
         <item>1 Day</item>
         <item>3 Days</item>
         <item>1 Week</item>
-        <item>1 Month</item>
         <item>Never</item>
     </array>
     <!-- TODO: Remove or change this placeholder text -->

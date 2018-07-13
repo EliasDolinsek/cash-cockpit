@@ -136,9 +136,10 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private boolean everythingFilledOutCorrectly() {
+        String enteredAmount = mEdtAmount.getText().toString();
         if(mEdtAutoPayName.getText().toString().trim().equals("")){
             return false;
-        } else if(mEdtAmount.getText().toString().equals("")){
+        } else if(enteredAmount.equals("") || enteredAmount.equals(".")){
             return false;
         } else if(autoPay.getBill().getSubcategory() == null){
             return false;

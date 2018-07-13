@@ -44,7 +44,7 @@ BankAccountsStatisticsFragment extends Fragment {
     private RecyclerView rvBills;
     private LineChart lcStatistics;
     private BankAccount currentBankAccount;
-    private NotEnoughDataFragment fgmNotEnoughData;
+    private NotEnoughDataFragment fgmNotEnoughData, fgmNotEnoughBills;
     private Spinner spnSelectBankAccount;
 
     private BankAccount selectedBankAccount;
@@ -57,8 +57,10 @@ BankAccountsStatisticsFragment extends Fragment {
 
         rvBills = inflatedView.findViewById(R.id.rv_bank_account_statistics);
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
-        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
+
+        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
+        fgmNotEnoughBills = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_no_bills);
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBills.setNestedScrollingEnabled(false);
@@ -69,6 +71,7 @@ BankAccountsStatisticsFragment extends Fragment {
             setupSelectBankAccountSpinner();
         } else {
             fgmNotEnoughData.show();
+            fgmNotEnoughBills.hide();
             lcStatistics.setVisibility(View.GONE);
             spnSelectBankAccount.setVisibility(View.GONE);
         }
@@ -165,7 +168,7 @@ BankAccountsStatisticsFragment extends Fragment {
     }
 
     private void setupSelectBankAccountSpinner(){
-        ArrayAdapter<String> bankAccountsAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
+        final ArrayAdapter<String> bankAccountsAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
         bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
         spnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
@@ -177,7 +180,7 @@ BankAccountsStatisticsFragment extends Fragment {
                 selectedBankAccount = Database.getBankAccounts().get(index);
                 displayBillsOfBankAccount(selectedBankAccount);
 
-                if (selectedBankAccount.getBalanceChanges().size() != 0){
+                if (doesBankAccountOwnBalanceChanges(selectedBankAccount)){
                     loadChartData(selectedBankAccount);
                     setupChartStyle();
 
@@ -190,8 +193,14 @@ BankAccountsStatisticsFragment extends Fragment {
 
                 if (selectedBankAccount.getBills().size() == 0){
                     rvBills.setVisibility(View.GONE);
+                    if (doesBankAccountOwnBalanceChanges(selectedBankAccount)){
+                        fgmNotEnoughBills.show();
+                    } else {
+                        fgmNotEnoughBills.hide();
+                    }
                 } else {
                     rvBills.setVisibility(View.VISIBLE);
+                    fgmNotEnoughBills.hide();
                 }
             }
 
@@ -202,6 +211,9 @@ BankAccountsStatisticsFragment extends Fragment {
         });
     }
 
+    private boolean doesBankAccountOwnBalanceChanges(BankAccount bankAccount){
+        return bankAccount.getBalanceChanges().size() != 0;
+    }
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccountToSearch){
         for (int i = 0; i<Database.getBankAccounts().size(); i++){
             if (Database.getBankAccounts().get(i).equals(bankAccountToSearch)){
