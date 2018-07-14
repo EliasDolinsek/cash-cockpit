@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
@@ -81,7 +82,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
                 if (mEdtCategoryName.getText().toString().trim().equals("")) {
                     Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 } else if (nameAlreadyExists && !mEditMode) {
-                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+                    Toast.makeText(CategoryActivity.this, getString(R.string.label_category_name_already_exists), Toast.LENGTH_SHORT).show();
                 } else {
                     primaryCategory.setName(mEdtCategoryName.getText().toString());
 

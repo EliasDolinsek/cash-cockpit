@@ -13,6 +13,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -44,8 +46,9 @@ public class AutoPayActivity extends AppCompatActivity {
     private static final int RQ_SELECT_CATEGORY = 439;
 
     private EditText mEdtAutoPayName, mEdtAmount;
-    private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete;
+    private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete, mBtnCreateBankAccount;
     private TextView mTxvSelectedCategory, mTxvCurrencyShortcut;
+    private ImageView mImvAutoPay;
 
     private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType, mSpnSelectAutoPayBillType;
 
@@ -63,10 +66,12 @@ public class AutoPayActivity extends AppCompatActivity {
 
         mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
         mTxvCurrencyShortcut = findViewById(R.id.txv_auto_pay_active_currency_shortcut);
+        mImvAutoPay = findViewById(R.id.imv_auto_pay_bill_type);
 
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
         mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
         mBtnDelete = (Button) findViewById(R.id.btn_auto_pay_delete);
+        mBtnCreateBankAccount = findViewById(R.id.btn_auto_pay_create_bank_account);
 
         mSpnSelectBankAccount = (Spinner) findViewById(R.id.spn_auto_pay_select_bank_account);
         mSpnSelectAutoPayType = (Spinner) findViewById(R.id.spn_auto_pay_select_type);
@@ -131,8 +136,34 @@ public class AutoPayActivity extends AppCompatActivity {
                 showDeleteAutoPayDialog();
             }
         });
-
         mEdtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAmount));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (Database.getBankAccounts().size() == 0){
+            mBtnCreateBankAccount.setVisibility(View.VISIBLE);
+            mImvAutoPay.setVisibility(View.GONE);
+            mSpnSelectBankAccount.setVisibility(View.GONE);
+            mSpnSelectAutoPayBillType.setVisibility(View.GONE);
+
+            mBtnCreateBankAccount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), BankAccountActivity.class);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            mBtnCreateBankAccount.setVisibility(View.GONE);
+            mImvAutoPay.setVisibility(View.VISIBLE);
+            mSpnSelectBankAccount.setVisibility(View.VISIBLE);
+            mSpnSelectAutoPayBillType.setVisibility(View.VISIBLE);
+
+            setupSpinners();
+        }
     }
 
     private boolean everythingFilledOutCorrectly() {

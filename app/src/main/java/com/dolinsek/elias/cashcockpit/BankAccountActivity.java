@@ -73,7 +73,14 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
             @Override
             public void onClick(View view) {
-                if (isEverythingFilledOutCorrectly()){
+                String enteredBalance = mEdtAccountAmount.getText().toString();
+                if(mEdtAccountName.getText().toString().trim().equals("")){
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+                } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
+                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+                } else if(doesEnteredNameAlreadyExist() && bankAccount == null){
+                    Toast.makeText(BankAccountActivity.this, getString(R.string.label_bank_account_already_exits), Toast.LENGTH_SHORT).show();
+                } else {
                     if(bankAccount == null){
                         if(mChbPrimaryAccount.isChecked()){
                             setPrimaryAccountInAllBankAccountsInDatabseToFalse();
@@ -89,8 +96,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                         Database.save(getApplicationContext());
                         finish();
                     }
-                } else  {
-                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
                 }
 
             }
@@ -171,19 +176,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     private void setPrimaryAccountInAllBankAccountsInDatabseToFalse(){
         for(int i = 0; i<Database.getBankAccounts().size(); i++){
             Database.getBankAccounts().get(i).setPrimaryAccount(false);
-        }
-    }
-
-    private boolean isEverythingFilledOutCorrectly(){
-        String enteredBalance = mEdtAccountAmount.getText().toString();
-        if(mEdtAccountName.getText().toString().trim().equals("")){
-            return false;
-        } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
-            return false;
-        } else if(doesEnteredNameAlreadyExist() && bankAccount == null){
-            return false;
-        } else {
-            return true;
         }
     }
 

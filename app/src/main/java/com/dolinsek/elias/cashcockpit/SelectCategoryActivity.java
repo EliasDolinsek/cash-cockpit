@@ -7,10 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SubscriptionManager;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -28,6 +30,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
     private NotEnoughDataFragment mFgmNoCategoriesFound;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private int selectedPrimaryCategoryIndex, selectedSubcategoryIndex;
+    private Button mBtnCreateCategory, mBtnRestoreDefaultCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,28 +39,38 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
         mFgmNoCategoriesFound = (NotEnoughDataFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_select_category_no_categories_found);
+        mBtnCreateCategory = findViewById(R.id.btn_select_category_create_category);
+        mBtnRestoreDefaultCategories = findViewById(R.id.btn_select_category_restore_default_categories);
 
-        SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
+        mBtnCreateCategory.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSelected(int primaryCategoryIndex, int subcategoryIndex) {
-                selectedPrimaryCategoryIndex = primaryCategoryIndex;
-                selectedSubcategoryIndex = subcategoryIndex;
-                setResultsAndFinishActivity();
+            public void onClick(View view) {
+                Intent intentStartCategoryActivity = new Intent(getApplicationContext(), CategoryActivity.class);
+                startActivityForResult(intentStartCategoryActivity, 0);
             }
-        };
+        });
 
-        Intent intent = getIntent();
-        if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
-            Subcategory selectedSubcategory = getSelectedSubcategoryFromIntentExtras();
-            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), selectedSubcategory, onSubcategorySelectedListener);
-        } else {
-            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), onSubcategorySelectedListener);
-        }
+        mBtnRestoreDefaultCategories.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    addDefaultPrimaryCategoriesToPrimaryCategories();
+                    Database.save(getApplicationContext());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
-        mRecyclerView.setHasFixedSize(false);
+                setupRecyclerView();
+                setupViewsVisibilities();
+            }
+        });
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        setupRecyclerView();
         setupViewsVisibilities();
     }
 
@@ -81,12 +94,46 @@ public class SelectCategoryActivity extends AppCompatActivity {
         }
     }
 
+    private void setupRecyclerView(){
+        final SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
+            @Override
+            public void onSelected(int primaryCategoryIndex, int subcategoryIndex) {
+                selectedPrimaryCategoryIndex = primaryCategoryIndex;
+                selectedSubcategoryIndex = subcategoryIndex;
+                setResultsAndFinishActivity();
+            }
+        };
+
+        final Intent intent = getIntent();
+        setupPrimaryCategoryItemAdapter(intent, onSubcategorySelectedListener);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        mRecyclerView.setAdapter(primaryCategoryItemAdapter);
+        mRecyclerView.setHasFixedSize(false);
+    }
+
+    private void addDefaultPrimaryCategoriesToPrimaryCategories(){
+        Database.getPrimaryCategories().addAll(Database.getDefaultPrimaryCategories());
+    }
+
     private void setupViewsVisibilities(){
         if (Database.getPrimaryCategories().size() == 0){
             mFgmNoCategoriesFound.show();
             mRecyclerView.setVisibility(View.GONE);
+            mBtnRestoreDefaultCategories.setEnabled(true);
         } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
             mFgmNoCategoriesFound.hide();
+            mBtnRestoreDefaultCategories.setEnabled(false);
+        }
+    }
+
+    private void setupPrimaryCategoryItemAdapter(Intent intent, SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener){
+        if (intent != null && intent.hasExtra(SELECTED_PRIMARY_CATEGORY_INDEX) && intent.hasExtra(SELECTED_SUBCATEGORY_INDEX)) {
+            Subcategory selectedSubcategory = getSelectedSubcategoryFromIntentExtras();
+            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), selectedSubcategory, onSubcategorySelectedListener);
+        } else {
+            primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getSelectCategoryPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), onSubcategorySelectedListener);
         }
     }
 

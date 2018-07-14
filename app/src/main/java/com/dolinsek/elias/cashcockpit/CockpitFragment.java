@@ -364,22 +364,26 @@ public class CockpitFragment extends Fragment {
     }
 
     private void restoreFromSavedInstanceState(Bundle savedInstanceState){
-        currentlySelectedBillType = savedInstanceState.getInt(TYPE, Bill.TYPE_OUTPUT);
-        mSpnSelectBillType.setSelection(currentlySelectedBillType);
+        try {
+            currentlySelectedBillType = savedInstanceState.getInt(TYPE, Bill.TYPE_OUTPUT);
+            mSpnSelectBillType.setSelection(currentlySelectedBillType);
 
-        if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE && savedInstanceState.getInt(SUBCATEGORY, NO_VALUE) != NO_VALUE){
-            selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
-            displaySelectedSubcategory();
-        }
+            if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE && savedInstanceState.getInt(SUBCATEGORY, NO_VALUE) != NO_VALUE){
+                selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
+                displaySelectedSubcategory();
+            }
 
-        if (savedInstanceState.getInt(ACCOUNT, NO_VALUE) != NO_VALUE){
-            int bankAccountIndex = savedInstanceState.getInt(ACCOUNT);
+            if (savedInstanceState.getInt(ACCOUNT, NO_VALUE) != NO_VALUE){
+                int bankAccountIndex = savedInstanceState.getInt(ACCOUNT);
 
-            mSpnSelectBankAccount.setSelection(bankAccountIndex);
-            bankAccountOfBill = Database.getBankAccounts().get(bankAccountIndex);
-        } else {
-            mSpnSelectBankAccount.setSelection(0);
-            bankAccountOfBill = Database.getBankAccounts().get(0);
+                mSpnSelectBankAccount.setSelection(bankAccountIndex);
+                bankAccountOfBill = Database.getBankAccounts().get(bankAccountIndex);
+            } else {
+                mSpnSelectBankAccount.setSelection(0);
+                bankAccountOfBill = Database.getBankAccounts().get(0);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 

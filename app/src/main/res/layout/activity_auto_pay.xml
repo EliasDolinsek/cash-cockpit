@@ -112,36 +112,54 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_margin="4dp" >
+                android:orientation="horizontal" >
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_account"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginStart="2dp"
-                    android:layout_marginEnd="10dp"/>
+                    android:layout_marginStart="4dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"/>
 
                 <Spinner
                     android:id="@+id/spn_auto_pay_select_bank_account"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="10"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="10dp"/>
+
+                <Button
+                    android:id="@+id/btn_auto_pay_create_bank_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:text="@string/btn_create_account"
+                    style="@style/Widget.AppCompat.Button.Borderless.Colored"
+                    android:layout_marginStart="4dp"/>
 
                 <ImageView
+                    android:id="@+id/imv_auto_pay_bill_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_bill_type"
                     android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="12dp"/>
+                    android:layout_marginEnd="12dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"/>
 
                 <Spinner
                     android:id="@+id/spn_auto_pay_select_bill_type"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginEnd="4dp"/>
 
             </LinearLayout>
 
