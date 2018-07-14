@@ -13,9 +13,9 @@
             android:defaultValue="1"/>
 
         <Preference
-            android:title="@string/label_amount_to_save">
+            android:title="@string/label_cockpit_chart_preferences">
 
-            <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.AmountToSavePreferenceActivity"/>
+            <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.CockpitChartPreferencesActivity"/>
 
         </Preference>
 

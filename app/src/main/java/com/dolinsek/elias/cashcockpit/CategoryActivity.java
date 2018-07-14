@@ -150,25 +150,22 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         ActionBar actionBar = getSupportActionBar();
-
-        if (actionBar != null)
+        if (actionBar != null){
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
-        if (item.getItemId() == android.R.id.home) {
-            discardChanges();
+        if (item.getItemId() == android.R.id.home){
             finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
         }
-
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

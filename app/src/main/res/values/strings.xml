@@ -68,6 +68,7 @@
     <string name="dialog_msg_delete_primary_category">Delete Category including all associated Bills and AutoPays?</string>
     <string name="dialog_title_edit_subcategory">Edit Subcategory</string>
     <string name="btn_create_autopay">Create AutoPay</string>
+    <string name="label_create_auto_pay">@string/btn_create_autopay</string>
     <string name="label_unknown">Unknown</string>
     <string name="label_weekly">Weekly</string>
     <string name="label_monthly">Monthly</string>
@@ -76,6 +77,7 @@
     <string name="label_amount">Amount</string>
     <string name="label_bank_account_already_exits">Bank account already exists!</string>
     <string name="btn_select_category">Select Category</string>
+    <string name="label_select_category">@string/btn_select_category</string>
     <string name="btn_select_date">Select Date</string>
     <string name="hint_amount">Amount</string>
     <string name="hint_auto_pay_name">Name</string>
@@ -141,6 +143,7 @@
     <string name="dialog_action_reset_password">Reset password</string>
     <string name="label_amount_to_save_preference_description">Sets how much you want to save every month for the cockpit page</string>
     <string name="label_amount_to_save">Amount to save</string>
+    <string name="label_cockpit_chart_preferences">Cockpit-Chart preferences</string>
     <string name="label_inputs">Inputs</string>
     <string name="label_daily_limit">Daily limit</string>
     <string name="label_installment">Installment</string>
@@ -171,6 +174,7 @@
     <string name="label_password_got_successfully_reset">Password got successfully rest</string>
     <string name="label_amount_to_save_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
     <string name="label_new_amount_to_save_saved_successfully">New amount to save got saved successfully</string>
+    <string name="label_amount_to_save_settings">Cockpit Chart Settings</string>
 
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>

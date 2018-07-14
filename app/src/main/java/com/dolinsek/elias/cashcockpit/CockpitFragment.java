@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
@@ -61,13 +62,14 @@ public class CockpitFragment extends Fragment {
 
     private TextView mTxvSelectedSubcategory, mTxvActiveCurrencyShortcut, mTxvBillCreationDate;
     private EditText mEdtBillAmount, mEdtBillDescription;
-    private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
+    private Button mBtnSelectCategory, mBtnSave, mBtnDelete, mBtnClickToCreateBankAccount;
     private FloatingActionButton mFbtnAdd;
     private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
     private LinearLayout mLlBtnSaveDeleteContainer;
     private CockpitChartFragment mFgmCockpitChart;
     private CardView mCvCockpitChartContainer;
     private ConstraintLayout mClContentContainer;
+    private ImageView mImvBillType;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -93,10 +95,12 @@ public class CockpitFragment extends Fragment {
         mFgmCockpitChart = (CockpitChartFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart);
         mCvCockpitChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
         mClContentContainer = inflatedView.findViewById(R.id.cl_cockpit_content_container);
+        mImvBillType = inflatedView.findViewById(R.id.imv_cockpit_bill_type);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
         mTxvActiveCurrencyShortcut = (TextView) inflatedView.findViewById(R.id.txv_cockpit_active_currency_shortcut);
         mTxvBillCreationDate = inflatedView.findViewById(R.id.txv_cockpit_bill_creation_date);
+        mBtnClickToCreateBankAccount = inflatedView.findViewById(R.id.btn_cockpit_click_to_create_bank_account);
 
         mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
         mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
@@ -129,10 +133,6 @@ public class CockpitFragment extends Fragment {
 
         if(savedInstanceState != null){
             restoreFromSavedInstanceState(savedInstanceState);
-        }
-
-        if(Database.getBankAccounts().size() != 0) {
-            setupBankAccountSpinner();
         }
 
         mEdtBillAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtBillAmount));
@@ -220,6 +220,32 @@ public class CockpitFragment extends Fragment {
     private void hideKeyboard(){
         InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        if(Database.getBankAccounts().size() == 0) {
+            mBtnClickToCreateBankAccount.setVisibility(View.VISIBLE);
+            mSpnSelectBillType.setVisibility(View.GONE);
+            mSpnSelectBankAccount.setVisibility(View.GONE);
+            mImvBillType.setVisibility(View.GONE);
+
+            mBtnClickToCreateBankAccount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), BankAccountActivity.class);
+                    startActivity(intent);
+                }
+            });
+        } else {
+            setupBankAccountSpinner();
+            mBtnClickToCreateBankAccount.setVisibility(View.GONE);
+            mSpnSelectBillType.setVisibility(View.VISIBLE);
+            mSpnSelectBankAccount.setVisibility(View.VISIBLE);
+            mImvBillType.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

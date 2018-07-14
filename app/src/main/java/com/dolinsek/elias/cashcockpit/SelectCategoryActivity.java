@@ -2,11 +2,14 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,7 +24,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
     public static final String SELECTED_PRIMARY_CATEGORY_INDEX = "selected_private_category";
     public static final String SELECTED_SUBCATEGORY_INDEX = "selected_subcategory";
 
-    private TextView mTxvSelectCategory;
     private RecyclerView mRecyclerView;
     private NotEnoughDataFragment mFgmNoCategoriesFound;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
@@ -34,7 +36,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
         mFgmNoCategoriesFound = (NotEnoughDataFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_select_category_no_categories_found);
-        mTxvSelectCategory = findViewById(R.id.txv_select_category);
 
         SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
             @Override
@@ -60,15 +61,32 @@ public class SelectCategoryActivity extends AppCompatActivity {
         setupViewsVisibilities();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null){
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            finish();
+            return true;
+        } else {
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
     private void setupViewsVisibilities(){
         if (Database.getPrimaryCategories().size() == 0){
             mFgmNoCategoriesFound.show();
-            mTxvSelectCategory.setVisibility(View.GONE);
             mRecyclerView.setVisibility(View.GONE);
         } else {
             mFgmNoCategoriesFound.hide();
-            mTxvSelectCategory.setVisibility(View.VISIBLE);
-            mTxvSelectCategory.setVisibility(View.VISIBLE);
         }
     }
 
