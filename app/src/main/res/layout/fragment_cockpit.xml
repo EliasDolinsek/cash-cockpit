@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,7 +7,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.dolinsek.elias.cashcockpit.CockpitFragment"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    android:padding="8dp">
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fbtn_cockpit_add"
@@ -31,173 +33,46 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="8dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp" >
+            android:orientation="vertical" >
+
+            <fragment
+                android:id="@+id/fgm_cockpit_amount_input"
+                class="com.dolinsek.elias.cashcockpit.AmountInputFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"/>
+
+            <fragment
+                android:id="@+id/fgm_cockpit_description_input"
+                class="com.dolinsek.elias.cashcockpit.DescriptionInputFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"/>
+
+            <fragment
+                android:id="@+id/fgm_cockpit_bank_account_and_bill_type_selection"
+                class="com.dolinsek.elias.cashcockpit.BankAccountAndBillSelectionFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"/>
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/colorPrimaryLight"
-                android:layout_margin="2dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_money" />
-
-                    <EditText
-                        android:id="@+id/edt_cockpit_bill_amount"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:hint="@string/label_amount"
-                        android:layout_gravity="center_vertical"
-                        android:inputType="numberDecimal"
-                        android:maxLength="15"
-                        android:singleLine="true"
-                        android:textColor="@color/colorPrimaryTextColor"
-                        android:textColorHint="@color/colorPrimaryTextColor"
-                        android:background="@null"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-
-                    <TextView
-                        android:id="@+id/txv_cockpit_active_currency_shortcut"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="@android:color/darker_gray"
-                        android:layout_marginEnd="12dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:cardBackgroundColor="@color/colorPrimaryLight"
-                android:layout_margin="2dp"
-                app:cardElevation="0dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="12dp"
-                        android:src="@drawable/ic_description" />
-
-                    <EditText
-                        android:id="@+id/edt_cockpit_bill_description"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:hint="@string/label_description"
-                        android:singleLine="true"
-                        android:background="@null"
-                        android:textColor="@color/colorPrimaryTextColor"
-                        android:textColorHint="@color/colorPrimaryTextColor"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="2dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/colorPrimaryLight">
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:layout_marginStart="4dp"
-                        android:src="@drawable/ic_account" />
-
-                    <Spinner
-                        android:id="@+id/spn_cockpit_select_bank_account"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="10"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="2dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:layout_marginStart="12dp"/>
-
-                    <Button
-                        android:id="@+id/btn_cockpit_click_to_create_bank_account"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:text="@string/btn_create_account"
-                        style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                        android:layout_marginStart="4dp"/>
-
-                    <ImageView
-                        android:id="@+id/imv_cockpit_bill_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_bill_type"
-                        android:layout_marginEnd="12dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"/>
-
-                    <Spinner
-                        android:id="@+id/spn_cockpit_select_bill_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="4dp"
-                        android:layout_marginEnd="4dp"/>
-                </LinearLayout>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="2dp"
-                app:cardElevation="0dp"
+                android:layout_marginBottom="4dp"
                 app:cardBackgroundColor="@color/colorPrimaryLight">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="2dp"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="4dp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginStart="2dp"
                         android:src="@drawable/ic_select_category" />
 
                     <Button
@@ -213,7 +88,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/border_primary_light"
-                        android:padding="4dp"
                         android:textColor="@android:color/white"
                         android:visibility="invisible"
                         android:lines="1"
@@ -228,7 +102,6 @@
             android:id="@+id/cv_cockpit_chart_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="12dp"
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="15dp"
             app:cardElevation="0dp">
@@ -246,9 +119,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="bottom"
-            android:orientation="horizontal"
-            android:layout_marginTop="4dp"
-            android:layout_marginStart="6dp">
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btn_cockpit_save"

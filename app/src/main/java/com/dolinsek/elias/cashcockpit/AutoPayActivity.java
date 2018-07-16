@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -46,7 +47,7 @@ public class AutoPayActivity extends AppCompatActivity {
     private static final int RQ_SELECT_CATEGORY = 439;
 
     private EditText mEdtAutoPayName, mEdtAmount;
-    private Button mBtnSelectSubcategory, mBtnCreate, mBtnDelete, mBtnCreateBankAccount;
+    private Button mBtnSelectSubcategory, mBtnCreateBankAccount;
     private TextView mTxvSelectedCategory, mTxvCurrencyShortcut;
     private ImageView mImvAutoPay;
 
@@ -69,8 +70,6 @@ public class AutoPayActivity extends AppCompatActivity {
         mImvAutoPay = findViewById(R.id.imv_auto_pay_bill_type);
 
         mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
-        mBtnCreate = (Button) findViewById(R.id.btn_auto_pay_create);
-        mBtnDelete = (Button) findViewById(R.id.btn_auto_pay_delete);
         mBtnCreateBankAccount = findViewById(R.id.btn_auto_pay_create_bank_account);
 
         mSpnSelectBankAccount = (Spinner) findViewById(R.id.spn_auto_pay_select_bank_account);
@@ -82,12 +81,11 @@ public class AutoPayActivity extends AppCompatActivity {
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
             editModeActive = true;
-
             int indexOfAutoPayInDatabase = getIntent().getIntExtra(EXTRA_AUTO_PAY_INDEX, 0);
             autoPay = Database.getAutoPays().get(indexOfAutoPayInDatabase);
+            mSpnSelectAutoPayType.setSelection(autoPay.getType());
 
             displayAutoPayDetails();
-            setupViewsForActiveEditMode();
         } else {
             autoPay = new AutoPay();
             autoPay.setBill(new Bill());
@@ -107,35 +105,7 @@ public class AutoPayActivity extends AppCompatActivity {
             }
         });
 
-        mBtnCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (everythingFilledOutCorrectly()){
-                    long amount = getAmountInputAsLong();
 
-                    autoPay.setName(mEdtAutoPayName.getText().toString());
-                    autoPay.getBill().setAmount(amount);
-                    autoPay.getBill().setDescription(autoPay.getName());
-
-                    if(!editModeActive){
-                        autoPay.addPaymentTimestamp();
-                        Database.getAutoPays().add(autoPay);
-                    }
-
-                    Database.save(getApplicationContext());
-                    finish();
-                } else {
-                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
-                }
-            }
-        });
-
-        mBtnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDeleteAutoPayDialog();
-            }
-        });
         mEdtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAmount));
     }
 
@@ -163,6 +133,26 @@ public class AutoPayActivity extends AppCompatActivity {
             mSpnSelectAutoPayBillType.setVisibility(View.VISIBLE);
 
             setupSpinners();
+        }
+    }
+
+    private void createOrSaveAutoPayIfPossible(){
+        if (everythingFilledOutCorrectly()){
+            long amount = getAmountInputAsLong();
+
+            autoPay.setName(mEdtAutoPayName.getText().toString());
+            autoPay.getBill().setAmount(amount);
+            autoPay.getBill().setDescription(autoPay.getName());
+
+            if(!editModeActive){
+                autoPay.addPaymentTimestamp();
+                Database.getAutoPays().add(autoPay);
+            }
+
+            Database.save(getApplicationContext());
+            finish();
+        } else {
+            Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         }
     }
 
@@ -210,10 +200,6 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private void setupViewsForActiveEditMode() {
-        mSpnSelectAutoPayType.setSelection(autoPay.getType());
-
-        mBtnCreate.setText(getResources().getString(R.string.btn_save));
-        mBtnDelete.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -223,16 +209,24 @@ public class AutoPayActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        MenuInflater menuInflater = getMenuInflater();
+        if (editModeActive){
+            menuInflater.inflate(R.menu.save_delete_menu, menu);
+        } else {
+            menuInflater.inflate(R.menu.create_menu, menu);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home: finish(); return true;
+            case R.id.menu_create: createOrSaveAutoPayIfPossible(); return true;
+            case R.id.menu_save: createOrSaveAutoPayIfPossible(); return true;
+            case R.id.menu_delete: showDeleteAutoPayDialog(); return true;
+            default: return super.onOptionsItemSelected(item);
         }
     }
 

@@ -95,14 +95,6 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.options_activity_main, menu);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
     private void initDatabase(){
         try {
             Database.load(getApplicationContext());

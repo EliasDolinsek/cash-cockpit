@@ -60,16 +60,17 @@ public class CockpitFragment extends Fragment {
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
-    private TextView mTxvSelectedSubcategory, mTxvActiveCurrencyShortcut, mTxvBillCreationDate;
-    private EditText mEdtBillAmount, mEdtBillDescription;
-    private Button mBtnSelectCategory, mBtnSave, mBtnDelete, mBtnClickToCreateBankAccount;
+    private TextView mTxvSelectedSubcategory, mTxvBillCreationDate;
+    private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
     private FloatingActionButton mFbtnAdd;
-    private Spinner mSpnSelectBankAccount, mSpnSelectBillType;
     private LinearLayout mLlBtnSaveDeleteContainer;
     private CockpitChartFragment mFgmCockpitChart;
     private CardView mCvCockpitChartContainer;
     private ConstraintLayout mClContentContainer;
-    private ImageView mImvBillType;
+
+    private AmountInputFragment mFgmBillAmountInput;
+    private DescriptionInputFragment mFgmDescriptionInput;
+    private BankAccountAndBillSelectionFragment mFgmBillTypeAndBankAccountSelection;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -84,39 +85,39 @@ public class CockpitFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit, container, false);
 
-        mEdtBillAmount = (EditText) inflatedView.findViewById(R.id.edt_cockpit_bill_amount);
-        mEdtBillDescription = (EditText) inflatedView.findViewById(R.id.edt_cockpit_bill_description);
-
         mBtnSelectCategory = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_category);
         mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
         mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
         mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
         mLlBtnSaveDeleteContainer = inflatedView.findViewById(R.id.ll_cockpit_btn_save_delete_container);
+
         mFgmCockpitChart = (CockpitChartFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart);
+        mFgmBillAmountInput = (AmountInputFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_amount_input);
+        mFgmDescriptionInput = (DescriptionInputFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_description_input);
+        mFgmBillTypeAndBankAccountSelection = (BankAccountAndBillSelectionFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_bank_account_and_bill_type_selection);
+
         mCvCockpitChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
         mClContentContainer = inflatedView.findViewById(R.id.cl_cockpit_content_container);
-        mImvBillType = inflatedView.findViewById(R.id.imv_cockpit_bill_type);
 
         mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
-        mTxvActiveCurrencyShortcut = (TextView) inflatedView.findViewById(R.id.txv_cockpit_active_currency_shortcut);
         mTxvBillCreationDate = inflatedView.findViewById(R.id.txv_cockpit_bill_creation_date);
-        mBtnClickToCreateBankAccount = inflatedView.findViewById(R.id.btn_cockpit_click_to_create_bank_account);
 
-        mSpnSelectBankAccount = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bank_account);
-        mSpnSelectBillType = (Spinner) inflatedView.findViewById(R.id.spn_cockpit_select_bill_type);
-
-        setCurrencyShortcutDependingOnActiveCurrency();
-        setupSpinnersStyles();
-
-        final ArrayAdapter<String> selectBillTypeAdapter = new ArrayAdapter<>(getContext(), R.layout.costum_spinner_layout, getResources().getStringArray(R.array.bill_types_array));
-        selectBillTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        mSpnSelectBillType.setAdapter(selectBillTypeAdapter);
-        mSpnSelectBillType.setSelection(currentlySelectedBillType);
-        mSpnSelectBillType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mFgmBillTypeAndBankAccountSelection.setupBillTypeSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 currentlySelectedBillType = i;
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+        mFgmBillTypeAndBankAccountSelection.setBillTypeSelectionSpinnerSelection(currentlySelectedBillType);
+        mFgmBillTypeAndBankAccountSelection.setBankAccountSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                bankAccountOfBill = Database.getBankAccounts().get(i);
             }
 
             @Override
@@ -134,8 +135,6 @@ public class CockpitFragment extends Fragment {
         if(savedInstanceState != null){
             restoreFromSavedInstanceState(savedInstanceState);
         }
-
-        mEdtBillAmount.addTextChangedListener(Currency.getActiveCurrency(getContext()).getCurrencyTextWatcher(mEdtBillAmount));
 
         mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,8 +158,8 @@ public class CockpitFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(everythingFilledCorrectly()) {
-                    long amount = formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString());
-                    String description = mEdtBillDescription.getText().toString();
+                    long amount = mFgmBillAmountInput.getEnteredAmountAsLong();
+                    String description = mFgmDescriptionInput.getEnteredDescriptionAsString();
                     bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory));
 
                     try {
@@ -227,24 +226,9 @@ public class CockpitFragment extends Fragment {
         super.onStart();
 
         if(Database.getBankAccounts().size() == 0) {
-            mBtnClickToCreateBankAccount.setVisibility(View.VISIBLE);
-            mSpnSelectBillType.setVisibility(View.GONE);
-            mSpnSelectBankAccount.setVisibility(View.GONE);
-            mImvBillType.setVisibility(View.GONE);
-
-            mBtnClickToCreateBankAccount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getContext(), BankAccountActivity.class);
-                    startActivity(intent);
-                }
-            });
+            mFgmBillTypeAndBankAccountSelection.hide();
         } else {
-            setupBankAccountSpinner();
-            mBtnClickToCreateBankAccount.setVisibility(View.GONE);
-            mSpnSelectBillType.setVisibility(View.VISIBLE);
-            mSpnSelectBankAccount.setVisibility(View.VISIBLE);
-            mImvBillType.setVisibility(View.VISIBLE);
+            mFgmBillTypeAndBankAccountSelection.show();
         }
     }
 
@@ -270,16 +254,6 @@ public class CockpitFragment extends Fragment {
         mCvCockpitChartContainer.setVisibility(View.GONE);
     }
 
-    private void setCurrencyShortcutDependingOnActiveCurrency(){
-        String currencyShortcut = Currency.getActiveCurrency(getContext()).getCurrencyShortcut();
-        mTxvActiveCurrencyShortcut.setText(currencyShortcut);
-    }
-
-    private void setupSpinnersStyles(){
-        mSpnSelectBankAccount.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        mSpnSelectBillType.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-    }
-
     public void setBillToEdit(Bill billToEdit){
         this.bill = billToEdit;
         BankAccount bankAccount = getAssociatedBankAccountOfBill(billToEdit);
@@ -291,7 +265,7 @@ public class CockpitFragment extends Fragment {
     }
 
     private boolean everythingFilledCorrectly(){
-        String enteredBillAmount = mEdtBillAmount.getText().toString();
+        String enteredBillAmount = mFgmBillAmountInput.getEnteredAmountAsString();
         if(enteredBillAmount.equals("") || enteredBillAmount.equals(".")){
             return false;
         } else if(selectedSubcategory == null){
@@ -337,8 +311,8 @@ public class CockpitFragment extends Fragment {
 
     private void setupForEditMode(){
         String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableString(bill.getAmount());
-        mEdtBillAmount.setText(amountWithoutCurrencySymbol);
-        mEdtBillDescription.setText(bill.getDescription());
+        mFgmBillAmountInput.getEdtAmount().setText(amountWithoutCurrencySymbol);
+        mFgmDescriptionInput.getEdtDescription().setText(bill.getDescription());
 
 
         setBackgroundColorToWhite();
@@ -347,7 +321,7 @@ public class CockpitFragment extends Fragment {
         hideChart();
 
         mFbtnAdd.setVisibility(View.GONE);
-        mSpnSelectBankAccount.setEnabled(false);
+        mFgmBillTypeAndBankAccountSelection.getSpnBankAccountSelection().setEnabled(false);
     }
 
     private void setBackgroundColorToWhite(){
@@ -366,7 +340,7 @@ public class CockpitFragment extends Fragment {
     private void restoreFromSavedInstanceState(Bundle savedInstanceState){
         try {
             currentlySelectedBillType = savedInstanceState.getInt(TYPE, Bill.TYPE_OUTPUT);
-            mSpnSelectBillType.setSelection(currentlySelectedBillType);
+            mFgmBillTypeAndBankAccountSelection.setBillTypeSelectionSpinnerSelection(currentlySelectedBillType);
 
             if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE && savedInstanceState.getInt(SUBCATEGORY, NO_VALUE) != NO_VALUE){
                 selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
@@ -376,43 +350,15 @@ public class CockpitFragment extends Fragment {
             if (savedInstanceState.getInt(ACCOUNT, NO_VALUE) != NO_VALUE){
                 int bankAccountIndex = savedInstanceState.getInt(ACCOUNT);
 
-                mSpnSelectBankAccount.setSelection(bankAccountIndex);
+                mFgmBillTypeAndBankAccountSelection.setBankAccountSelectionSpinnerSelection(bankAccountIndex);
                 bankAccountOfBill = Database.getBankAccounts().get(bankAccountIndex);
             } else {
-                mSpnSelectBankAccount.setSelection(0);
+                mFgmBillTypeAndBankAccountSelection.setBankAccountSelectionSpinnerSelection(0);
                 bankAccountOfBill = Database.getBankAccounts().get(0);
             }
         } catch (Exception e){
             e.printStackTrace();
         }
-    }
-
-    private void setupBankAccountSpinner(){
-        final ArrayAdapter<CharSequence> selectBankAccountAdapter = new ArrayAdapter<CharSequence>(getContext(), R.layout.costum_spinner_layout, getBankAccountsNames());
-        selectBankAccountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        mSpnSelectBankAccount.setAdapter(selectBankAccountAdapter);
-        mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                bankAccountOfBill = Database.getBankAccounts().get(i);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }
-
-    private String[] getBankAccountsNames(){
-        String[] bankAccountsNames = new String[Database.getBankAccounts().size()];
-
-        for (int i = 0; i<Database.getBankAccounts().size(); i++){
-            bankAccountsNames[i] = Database.getBankAccounts().get(i).getName();
-        }
-
-        return bankAccountsNames;
     }
 
     private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
@@ -448,9 +394,9 @@ public class CockpitFragment extends Fragment {
     }
 
     private void updateBillWithUserInputs(){
-        bill.setDescription(mEdtBillDescription.getText().toString());
+        bill.setDescription(mFgmDescriptionInput.getEnteredDescriptionAsString());
         bill.setSubcategory(selectedSubcategory);
-        bill.setAmount(formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString()));
+        bill.setAmount(mFgmBillAmountInput.getEnteredAmountAsLong());
         bill.setType(currentlySelectedBillType);
     }
 
@@ -461,13 +407,9 @@ public class CockpitFragment extends Fragment {
             return false;
     }
 
-    private long formatDisplayedAmountToUsableAmount(String displayAmount){
-        return ((long) (Double.valueOf(displayAmount) * 100));
-    }
-
     private void updateBankAccountBalanceAfterBillTypeChanged(){
         int oldBillType = bill.getType(), newBillType = currentlySelectedBillType;
-        long newAmount = formatDisplayedAmountToUsableAmount(mEdtBillAmount.getText().toString());
+        long newAmount = mFgmBillAmountInput.getEnteredAmountAsLong();
 
         if(oldBillType == Bill.TYPE_INPUT && newBillType != Bill.TYPE_INPUT){
             bankAccountOfBill.setBalance(bankAccountOfBill.getBalance() - newAmount);
@@ -477,9 +419,9 @@ public class CockpitFragment extends Fragment {
     }
 
     private void clearFieldsFromUserInputs(){
-        mEdtBillAmount.setText("");
-        mEdtBillDescription.setText("");
-        mEdtBillAmount.requestFocus();
+        mFgmBillAmountInput.getEdtAmount().setText("");
+        mFgmDescriptionInput.getEdtDescription().setText("");
+        mFgmBillAmountInput.getEdtAmount().requestFocus();
     }
 
     private BankAccount getAssociatedBankAccountOfBill(Bill bill){
