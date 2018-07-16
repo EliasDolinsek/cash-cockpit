@@ -18,6 +18,9 @@ import android.support.v7.widget.CardView;
 import android.text.format.DateFormat;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -60,17 +63,16 @@ public class CockpitFragment extends Fragment {
     private static final String ACCOUNT = "account";
     private static final String TYPE = "type";
 
-    private TextView mTxvSelectedSubcategory, mTxvBillCreationDate;
-    private Button mBtnSelectCategory, mBtnSave, mBtnDelete;
-    private FloatingActionButton mFbtnAdd;
-    private LinearLayout mLlBtnSaveDeleteContainer;
+    private TextView mTxvBillCreationDate;
+    private Button mBtnAdd;
     private CockpitChartFragment mFgmCockpitChart;
     private CardView mCvCockpitChartContainer;
-    private ConstraintLayout mClContentContainer;
+    private LinearLayout mLlContentContainer;
 
     private AmountInputFragment mFgmBillAmountInput;
     private DescriptionInputFragment mFgmDescriptionInput;
     private BankAccountAndBillSelectionFragment mFgmBillTypeAndBankAccountSelection;
+    private SelectCategoryFragment mFgmSelectCategory;
 
     private BankAccount bankAccountOfBill;
     private Subcategory selectedSubcategory;
@@ -85,21 +87,15 @@ public class CockpitFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit, container, false);
 
-        mBtnSelectCategory = (Button) inflatedView.findViewById(R.id.btn_cockpit_select_category);
-        mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_cockpit_add);
-        mBtnSave = (Button) inflatedView.findViewById(R.id.btn_cockpit_save);
-        mBtnDelete = (Button) inflatedView.findViewById(R.id.btn_cockpit_delete);
-        mLlBtnSaveDeleteContainer = inflatedView.findViewById(R.id.ll_cockpit_btn_save_delete_container);
-
+        mBtnAdd = inflatedView.findViewById(R.id.btn_cockpit_add_bill);
         mFgmCockpitChart = (CockpitChartFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart);
         mFgmBillAmountInput = (AmountInputFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_amount_input);
         mFgmDescriptionInput = (DescriptionInputFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_description_input);
         mFgmBillTypeAndBankAccountSelection = (BankAccountAndBillSelectionFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_bank_account_and_bill_type_selection);
+        mFgmSelectCategory = (SelectCategoryFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_select_category);
 
         mCvCockpitChartContainer = inflatedView.findViewById(R.id.cv_cockpit_chart_container);
-        mClContentContainer = inflatedView.findViewById(R.id.cl_cockpit_content_container);
-
-        mTxvSelectedSubcategory = (TextView) inflatedView.findViewById(R.id.txv_cockpit_selected_subcategory);
+        mLlContentContainer = inflatedView.findViewById(R.id.ll_cockpit_content_container);
         mTxvBillCreationDate = inflatedView.findViewById(R.id.txv_cockpit_bill_creation_date);
 
         mFgmBillTypeAndBankAccountSelection.setupBillTypeSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -126,35 +122,22 @@ public class CockpitFragment extends Fragment {
             }
         });
 
+        mFgmSelectCategory.setOnCategorySelectedListener(new SelectCategoryFragment.OnCategorySelectedListener() {
+            @Override
+            public void onSubcategorySelected(Subcategory subcategory) {
+                selectedSubcategory = subcategory;
+            }
+        });
+
         if(editModeActive){
             setupForEditMode();
-        } else {
-            mLlBtnSaveDeleteContainer.setVisibility(View.GONE);
         }
 
         if(savedInstanceState != null){
             restoreFromSavedInstanceState(savedInstanceState);
         }
 
-        mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
-
-                if (selectedSubcategory != null){
-                    try {
-                        intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
-                        intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
-                    } catch (Exception e){
-                        selectedSubcategory = null;
-                    }
-                }
-
-                startActivityForResult(intent, RQ_SELECT_CATEGORY);
-            }
-        });
-
-        mFbtnAdd.setOnClickListener(new View.OnClickListener() {
+        mBtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(everythingFilledCorrectly()) {
@@ -178,40 +161,42 @@ public class CockpitFragment extends Fragment {
             }
         });
 
-        mBtnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(everythingFilledCorrectly()){
+        if (getActivity() instanceof BillEditorActivity){
+            mFgmSelectCategory.setSelectedSubcategory(selectedSubcategory);
 
-                    if(hasBillTypeChanged(bill.getType(), currentlySelectedBillType)){
-                        updateBankAccountBalanceAfterBillTypeChanged();
-                    }
+            ((BillEditorActivity) getActivity()).setOnSaveOrDeleteActionRequired(new BillEditorActivity.OnSaveOrDeleteActionRequired() {
+                @Override
+                public void onSaveRequested() {
+                    if(everythingFilledCorrectly()){
 
-                    updateBillWithUserInputs();
+                        if(hasBillTypeChanged(bill.getType(), currentlySelectedBillType)){
+                            updateBankAccountBalanceAfterBillTypeChanged();
+                        }
 
-                    Database.save(getContext());
-                    getActivity().finish();
-                } else {
-                    Toolkit.displayPleaseCheckInputsToast(getContext());
-                }
-            }
-        });
+                        updateBillWithUserInputs();
 
-        mBtnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DeleteBillDialogFragment deleteBillDialogFragment = new DeleteBillDialogFragment();
-                deleteBillDialogFragment.setOnPositiveClickListener(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        getAssociatedBankAccountOfBill(bill).getBills().remove(bill);
                         Database.save(getContext());
                         getActivity().finish();
+                    } else {
+                        Toolkit.displayPleaseCheckInputsToast(getContext());
                     }
-                });
-                deleteBillDialogFragment.show(getFragmentManager(), "delete_bill");
-            }
-        });
+                }
+
+                @Override
+                public void onDeleteRequested() {
+                    DeleteBillDialogFragment deleteBillDialogFragment = new DeleteBillDialogFragment();
+                    deleteBillDialogFragment.setOnPositiveClickListener(new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            getAssociatedBankAccountOfBill(bill).getBills().remove(bill);
+                            Database.save(getContext());
+                            getActivity().finish();
+                        }
+                    });
+                    deleteBillDialogFragment.show(getFragmentManager(), "delete_bill");
+                }
+            });
+        }
 
         return inflatedView;
     }
@@ -294,21 +279,6 @@ public class CockpitFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == RQ_SELECT_CATEGORY && resultCode == RESULT_OK){
-            selectedSubcategory = Database.getPrimaryCategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0)).getSubcategories().get(data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0));
-            displaySelectedSubcategory();
-        }
-    }
-
-    private void displaySelectedSubcategory(){
-        mTxvSelectedSubcategory.setVisibility(View.VISIBLE);
-        mTxvSelectedSubcategory.setText(selectedSubcategory.getName());
-    }
-
     private void setupForEditMode(){
         String amountWithoutCurrencySymbol = Currency.getActiveCurrency(getContext()).formatAmountToReadableString(bill.getAmount());
         mFgmBillAmountInput.getEdtAmount().setText(amountWithoutCurrencySymbol);
@@ -316,16 +286,15 @@ public class CockpitFragment extends Fragment {
 
 
         setBackgroundColorToWhite();
-        displaySelectedSubcategory();
         displayBillCreationDate();
         hideChart();
 
-        mFbtnAdd.setVisibility(View.GONE);
+        mBtnAdd.setVisibility(View.GONE);
         mFgmBillTypeAndBankAccountSelection.getSpnBankAccountSelection().setEnabled(false);
     }
 
     private void setBackgroundColorToWhite(){
-        mClContentContainer.setBackgroundColor(getResources().getColor(android.R.color.white));
+        mLlContentContainer.setBackgroundColor(getResources().getColor(android.R.color.white));
     }
 
     private void displayBillCreationDate(){
@@ -344,7 +313,7 @@ public class CockpitFragment extends Fragment {
 
             if(savedInstanceState.getInt(PRIMARY_CATEGORY, NO_VALUE) != NO_VALUE && savedInstanceState.getInt(SUBCATEGORY, NO_VALUE) != NO_VALUE){
                 selectedSubcategory = Database.getPrimaryCategories().get(savedInstanceState.getInt(PRIMARY_CATEGORY, 0)).getSubcategories().get(savedInstanceState.getInt(SUBCATEGORY, 0));
-                displaySelectedSubcategory();
+                mFgmSelectCategory.setSelectedSubcategory(selectedSubcategory);
             }
 
             if (savedInstanceState.getInt(ACCOUNT, NO_VALUE) != NO_VALUE){
@@ -435,5 +404,4 @@ public class CockpitFragment extends Fragment {
 
         throw new Resources.NotFoundException("Couldn't find associated bank account of bill!");
     }
-
 }

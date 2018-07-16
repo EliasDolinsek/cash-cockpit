@@ -20,7 +20,7 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" android:theme="@style/AppTheme.ActionBarEnabled"/>
         <activity
             android:name=".BillEditorActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize" android:theme="@style/AppTheme.ActionBarEnabled"/>
         <activity android:name=".SelectCategoryActivity" android:theme="@style/AppTheme.ActionBarEnabled" android:label="@string/label_select_category"/>
         <activity
             android:name=".StartActivity"

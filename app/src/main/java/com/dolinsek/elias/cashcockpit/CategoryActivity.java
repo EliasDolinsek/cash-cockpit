@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,7 +36,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
     public static final String EXTRA_PRIMARY_CATEGORY_INDEX = "primaryCategoryIndex";
     public static final String EXTRA_SUBCATEGORY_TO_SHOW_INDEX = "subcategoryToShow";
 
-    private Button mBtnCreate, mBtnDelete, mBtnSetGoal, mBtnAddSubcategory;
+    private Button mBtnSetGoal, mBtnAddSubcategory;
     private EditText mEdtCategoryName;
 
     private PrimaryCategory primaryCategory;
@@ -51,9 +52,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        mBtnCreate = (Button) findViewById(R.id.btn_category_create);
-        mBtnDelete = (Button) findViewById(R.id.btn_category_delete);
-
         mBtnSetGoal = (Button) findViewById(R.id.btn_category_set_goal);
         mBtnAddSubcategory = (Button) findViewById(R.id.btn_category_add_subcategory);
 
@@ -68,36 +66,9 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             mEdtCategoryName.setText(primaryCategory.getName());
         } else {
             primaryCategory = new PrimaryCategory("", null);
-            mBtnCreate.setText(getResources().getString(R.string.btn_create));
-            mBtnDelete.setVisibility(View.GONE);
         }
 
         setupSubcategoriesAdapter();
-
-        mBtnCreate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(mEdtCategoryName.getText().toString());
-
-                if (mEdtCategoryName.getText().toString().trim().equals("")) {
-                    Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
-                } else if (nameAlreadyExists && !mEditMode) {
-                    Toast.makeText(CategoryActivity.this, getString(R.string.label_category_name_already_exists), Toast.LENGTH_SHORT).show();
-                } else {
-                    primaryCategory.setName(mEdtCategoryName.getText().toString());
-
-                    if (mEditMode) {
-                        Database.save(getApplicationContext());
-                    } else {
-                        Database.getPrimaryCategories().add(primaryCategory);
-                        Database.save(getApplicationContext());
-                    }
-
-                    changesSaved = true;
-                    finish();
-                }
-            }
-        });
 
         mBtnAddSubcategory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,15 +92,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
                 GoalDialogFragment goalDialogFragment = new GoalDialogFragment();
                 goalDialogFragment.setPrimaryAccount(primaryCategory);
                 goalDialogFragment.show(getSupportFragmentManager(), "goal");
-            }
-        });
-
-        mBtnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DeletePrimaryCategoryDialogFragment deletePrimaryCategoryDialogFragment = new DeletePrimaryCategoryDialogFragment();
-                deletePrimaryCategoryDialogFragment.setAutoPaysToDelete(getAutoPays());
-                deletePrimaryCategoryDialogFragment.show(getSupportFragmentManager(), "delete_category");
             }
         });
     }
@@ -156,16 +118,24 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        MenuInflater menuInflater = getMenuInflater();
+        if (mEditMode){
+            menuInflater.inflate(R.menu.save_delete_menu, menu);
+        } else {
+            menuInflater.inflate(R.menu.create_menu, menu);
+        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home: finish(); return true;
+            case R.id.menu_create: createOrSaveCategoryIfPossible(); return true;
+            case R.id.menu_save: createOrSaveCategoryIfPossible(); return true;
+            case R.id.menu_delete: showDeleteCategoryDialog(); return true;
+            default: return super.onOptionsItemSelected(item);
         }
     }
 
@@ -200,6 +170,34 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void createOrSaveCategoryIfPossible(){
+        boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(mEdtCategoryName.getText().toString());
+
+        if (mEdtCategoryName.getText().toString().trim().equals("")) {
+            Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+        } else if (nameAlreadyExists && !mEditMode) {
+            Toast.makeText(CategoryActivity.this, getString(R.string.label_category_name_already_exists), Toast.LENGTH_SHORT).show();
+        } else {
+            primaryCategory.setName(mEdtCategoryName.getText().toString());
+
+            if (mEditMode) {
+                Database.save(getApplicationContext());
+            } else {
+                Database.getPrimaryCategories().add(primaryCategory);
+                Database.save(getApplicationContext());
+            }
+
+            changesSaved = true;
+            finish();
+        }
+    }
+
+    private void showDeleteCategoryDialog(){
+        DeletePrimaryCategoryDialogFragment deletePrimaryCategoryDialogFragment = new DeletePrimaryCategoryDialogFragment();
+        deletePrimaryCategoryDialogFragment.setAutoPaysToDelete(getAutoPays());
+        deletePrimaryCategoryDialogFragment.show(getSupportFragmentManager(), "delete_category");
     }
 
     @Override
