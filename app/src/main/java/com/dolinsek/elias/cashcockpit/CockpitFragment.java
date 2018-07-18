@@ -28,6 +28,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -55,8 +56,6 @@ import static android.app.Activity.RESULT_OK;
 public class CockpitFragment extends Fragment {
 
     private static final int NO_VALUE = -1;
-
-    private static final int RQ_SELECT_CATEGORY = 35;
 
     private static final String PRIMARY_CATEGORY = "primary_category";
     private static final String SUBCATEGORY = "subcategory";

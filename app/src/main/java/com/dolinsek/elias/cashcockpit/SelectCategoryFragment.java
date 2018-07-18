@@ -32,7 +32,6 @@ public class SelectCategoryFragment extends Fragment {
     private OnCategorySelectedListener onCategorySelectedListener;
     private TextView txvSelectedSubcategory;
     private ImageView imvSelectedPrimaryCategoryIcon;
-    private Button btnSelectCategory;
     private Subcategory selectedSubcategory;
 
     @Override
@@ -42,8 +41,7 @@ public class SelectCategoryFragment extends Fragment {
 
         txvSelectedSubcategory = inflatedView.findViewById(R.id.txv_select_category_subcategory_name);
         imvSelectedPrimaryCategoryIcon = inflatedView.findViewById(R.id.imv_select_category_category_icon);
-        btnSelectCategory = inflatedView.findViewById(R.id.btn_select_category_select);
-        btnSelectCategory.setOnClickListener(new View.OnClickListener() {
+        txvSelectedSubcategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
@@ -120,7 +118,7 @@ public class SelectCategoryFragment extends Fragment {
             int resource = getResources().getIdentifier(primaryCategoryIconName, "drawable", packageName);
             imvSelectedPrimaryCategoryIcon.setBackgroundResource(resource);
         } catch (Exception e) {
-            imvSelectedPrimaryCategoryIcon.setBackgroundResource(R.drawable.ic_default_category_image);
+            imvSelectedPrimaryCategoryIcon.setBackgroundResource(R.drawable.ic_select_category);
         }
     }
 
@@ -134,10 +132,6 @@ public class SelectCategoryFragment extends Fragment {
 
     public ImageView getImvSelectedPrimaryCategoryIcon() {
         return imvSelectedPrimaryCategoryIcon;
-    }
-
-    public Button getBtnSelectCategory() {
-        return btnSelectCategory;
     }
 
     public Subcategory getSelectedSubcategory() {

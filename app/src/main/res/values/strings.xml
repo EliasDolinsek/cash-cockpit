@@ -175,7 +175,7 @@
     <string name="label_amount_to_save_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
     <string name="label_new_amount_to_save_saved_successfully">New amount to save got saved successfully</string>
     <string name="label_amount_to_save_settings">Cockpit Chart Settings</string>
-
+    <string name="label_click_to_select_a_category">Click to select a category</string>
     <string name="euro">Euro</string>
     <string name="dollar">Dollar</string>
     <string name="pounds">Pounds</string>
