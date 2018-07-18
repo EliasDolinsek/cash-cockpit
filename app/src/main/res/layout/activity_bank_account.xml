@@ -5,103 +5,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.dolinsek.elias.cashcockpit.BankAccountActivity">
+    tools:context="com.dolinsek.elias.cashcockpit.BankAccountActivity"
+    android:padding="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="8dp">
+        android:orientation="vertical">
+
+        <fragment
+            android:id="@+id/fgm_bank_account_amount_input"
+            class="com.dolinsek.elias.cashcockpit.AmountInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"/>
+
+        <fragment
+            android:id="@+id/fgm_bank_account_name_input"
+            class="com.dolinsek.elias.cashcockpit.DescriptionInputFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            app:hintText="@string/hint_bank_account_name"/>
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardBackgroundColor="@color/colorPrimaryLight"
-            android:layout_margin="2dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_money" />
-
-                <EditText
-                    android:id="@+id/edt_bank_account_amount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="10"
-                    android:hint="@string/label_balance"
-                    android:inputType="numberSigned|numberDecimal"
-                    android:maxLength="15"
-                    android:textColor="@color/colorPrimaryTextColor"
-                    android:textColorHint="@color/colorPrimaryTextColor"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:background="@null"
-                    android:layout_gravity="center_vertical"/>
-
-                <TextView
-                    android:id="@+id/txv_bank_account_active_currency_shortcut"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:textColor="@android:color/darker_gray"
-                    android:layout_marginEnd="12dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
-
-            </LinearLayout>
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/colorPrimaryLight"
-            android:layout_margin="2dp"
-            app:cardElevation="0dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="4dp"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="12dp"
-                    android:src="@drawable/ic_account" />
-
-                <EditText
-                    android:id="@+id/edt_bank_account_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:hint="@string/hint_bank_account_name"
-                    android:singleLine="true"
-                    android:textColor="@color/colorPrimaryTextColor"
-                    android:textColorHint="@color/colorPrimaryTextColor"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:background="@null"/>
-
-            </LinearLayout>
-
-        </android.support.v7.widget.CardView>
-
-        <android.support.v7.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardBackgroundColor="@color/colorPrimaryLight"
-            android:layout_margin="2dp"
-            app:cardElevation="0dp">
+            app:cardElevation="0dp"
+            android:layout_marginBottom="6dp">
 
             <CheckBox
                 android:id="@+id/chb_bank_account_primary_account"

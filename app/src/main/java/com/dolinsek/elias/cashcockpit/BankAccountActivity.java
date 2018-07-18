@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.app.Fragment;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -30,10 +31,9 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     public static final String EXTRA_BANK_ACCOUNT_INDEX = "bankAccountIndex";
 
     private RecyclerView mRvBills;
-    private EditText mEdtAccountName, mEdtAccountAmount;
     private CheckBox mChbPrimaryAccount;
-    private TextView mTxvActiveCurrencyShortcut;
-
+    private AmountInputFragment mFgmAmountInput;
+    private DescriptionInputFragment mFgmNameInput;
     private BankAccount bankAccount = null;
 
     @Override
@@ -41,16 +41,14 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_account);
 
-        mEdtAccountName = (EditText) findViewById(R.id.edt_bank_account_name);
-        mEdtAccountAmount = (EditText) findViewById(R.id.edt_bank_account_amount);
-        mTxvActiveCurrencyShortcut = findViewById(R.id.txv_bank_account_active_currency_shortcut);
+        mFgmNameInput = (DescriptionInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_bank_account_name_input);
+        mFgmAmountInput = (AmountInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_bank_account_amount_input);
 
         mChbPrimaryAccount = (CheckBox) findViewById(R.id.chb_bank_account_primary_account);
 
         mRvBills = (RecyclerView) findViewById(R.id.rv_bank_account_bills);
         mRvBills.setLayoutManager(new LinearLayoutManager(this));
 
-        displayActiveCurrencyShortcut();
         if(isEditModeRequired()){
             setupForEditMode();
         }
@@ -64,9 +62,6 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             mChbPrimaryAccount.setChecked(true);
             mChbPrimaryAccount.setEnabled(false);
         }
-
-        mEdtAccountAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAccountAmount));
-
     }
 
     @Override
@@ -100,8 +95,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void createOrSaveBankAccountIfPossible(){
-        String enteredBalance = mEdtAccountAmount.getText().toString();
-        if(mEdtAccountName.getText().toString().trim().equals("")){
+        String enteredBalance = mFgmAmountInput.getEnteredAmountAsString();
+        if(mFgmNameInput.getEnteredDescriptionAsString().trim().equals("")){
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
@@ -136,8 +131,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void createAndSaveBankAccount(){
-        long balance = getEnteredBalance();
-        String enteredName = getEnteredBankAccountName();
+        long balance = mFgmAmountInput.getEnteredAmountAsLong();
+        String enteredName = mFgmNameInput.getEnteredDescriptionAsString();
         boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
 
         BankAccount newBankAccount = new BankAccount(enteredName, balance, isAccountPrimaryAccount);
@@ -146,8 +141,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void saveEnteredChanges(){
-        long balance = getEnteredBalance();
-        String enteredName = getEnteredBankAccountName();
+        long balance = mFgmAmountInput.getEnteredAmountAsLong();
+        String enteredName = mFgmNameInput.getEnteredDescriptionAsString();
         boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
 
         bankAccount.setName(enteredName);
@@ -164,25 +159,11 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         return mChbPrimaryAccount.isChecked();
     }
 
-    private String getEnteredBankAccountName(){
-        return mEdtAccountName.getText().toString();
-    }
-
-    private long getEnteredBalance(){
-        return formatDisplayedToUsableAmount(mEdtAccountAmount.getText().toString());
-    }
-
     private void setPrimaryAccountInAllBankAccountsInDatabseToFalse(){
         for(int i = 0; i<Database.getBankAccounts().size(); i++){
             Database.getBankAccounts().get(i).setPrimaryAccount(false);
         }
     }
-
-    private void displayActiveCurrencyShortcut(){
-        String activeCurrencyShortcut = Currency.getActiveCurrency(getApplicationContext()).getCurrencyShortcut();
-        mTxvActiveCurrencyShortcut.setText(activeCurrencyShortcut);
-    }
-
     /**
      * Returns a ArrayList of all AutoPays what belong to this account
      * @return associated AutoPays
@@ -224,15 +205,15 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void displayBankAccountDetails(){
-        mEdtAccountName.setText(bankAccount.getName());
-        mEdtAccountAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
+        mFgmNameInput.getEdtDescription().setText(bankAccount.getName());
+        mFgmAmountInput.getEdtAmount().setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
 
         mChbPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
         mChbPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
     }
 
     private boolean doesEnteredNameAlreadyExist(){
-        String enteredNameForBankAccount = mEdtAccountName.getText().toString();
+        String enteredNameForBankAccount = mFgmNameInput.getEnteredDescriptionAsString();
         for (BankAccount bankAccount:Database.getBankAccounts()){
             if (bankAccount.getName().equals(enteredNameForBankAccount)){
                 return true;
@@ -240,9 +221,5 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         }
 
         return false;
-    }
-
-    private long formatDisplayedToUsableAmount(String displayedAmount){
-        return  (long) (Double.valueOf(displayedAmount) * 100);
     }
 }
