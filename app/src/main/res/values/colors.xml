@@ -4,9 +4,9 @@
     <color name="colorPrimaryLight">#397378</color>
     <color name="colorPrimaryDark">#002024</color>
 
-    <color name="colorAccent">#870d4e</color>
-    <color name="colorAccentLight">#bb467a</color>
-    <color name="colorAccentDark">#550026</color>
+    <color name="colorAccent">#ad1357</color>
+    <color name="colorAccentLight">#e35083</color>
+    <color name="colorAccentDark">#78002e</color>
 
     <color name="colorPrimaryTextColor">#ffffff</color>
     <color name="colorAccentTextColor">#000000</color>
@@ -21,7 +21,6 @@
     <color name="colorCockpitChartEntriesInput">@color/colorPrimary</color>
     <color name="colorCockpitChartEntriesOutput">#b71c1c</color>
     <color name="colorCockpitChartEntriesFixedCosts">#bf360c</color>
-    <color name="colorCockpitChartHole">@color/colorPrimary</color>
 
     <!-- bill-types-colors -->
     <color name="colorBillTypeInput">#43a047</color>

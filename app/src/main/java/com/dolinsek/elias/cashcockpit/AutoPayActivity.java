@@ -55,6 +55,8 @@ public class AutoPayActivity extends AppCompatActivity {
     private AutoPay autoPay;
     private BankAccount bankAccountToAddBill;
     private Subcategory selectedSubcategory;
+    private int selectedAutoPayBillType;
+
     private boolean editModeActive;
 
     @Override
@@ -75,6 +77,9 @@ public class AutoPayActivity extends AppCompatActivity {
             int indexOfAutoPayInDatabase = getIntent().getIntExtra(EXTRA_AUTO_PAY_INDEX, 0);
             autoPay = Database.getAutoPays().get(indexOfAutoPayInDatabase);
             mSpnSelectAutoPayType.setSelection(autoPay.getType());
+
+            selectedAutoPayBillType = autoPay.getBill().getType();
+            selectedSubcategory = autoPay.getBill().getSubcategory();
 
             displayAutoPayDetails();
         } else {
@@ -115,7 +120,7 @@ public class AutoPayActivity extends AppCompatActivity {
             autoPay.setBankAccount(bankAccountToAddBill);
             autoPay.getBill().setDescription(autoPay.getName());
             autoPay.getBill().setSubcategory(selectedSubcategory);
-
+            autoPay.getBill().setType(selectedAutoPayBillType);
             if(!editModeActive){
                 autoPay.addPaymentTimestamp();
                 Database.getAutoPays().add(autoPay);
@@ -134,7 +139,7 @@ public class AutoPayActivity extends AppCompatActivity {
             return false;
         } else if(enteredAmount.equals("") || enteredAmount.equals(".")){
             return false;
-        } else if(autoPay.getBill().getSubcategory() == null){
+        } else if(selectedSubcategory == null){
             return false;
         } else {
             return true;
@@ -175,17 +180,6 @@ public class AutoPayActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        try {
-            //Restores AutoPay so that unwanted changes don't get saved
-            Database.load(getApplicationContext());
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void setupSpinners(){
         final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getResources().getTextArray(R.array.auto_pay_types_array));
         autoPayTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -204,7 +198,7 @@ public class AutoPayActivity extends AppCompatActivity {
         mFgmBankAccountAndBillSelection.setupBillTypeSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                autoPay.getBill().setType(index);
+                selectedAutoPayBillType = index;
             }
 
             @Override
@@ -241,7 +235,7 @@ public class AutoPayActivity extends AppCompatActivity {
         mFgmAmountInput.getEdtAmount().setText(formattedAmountOfAutoPay);
 
         int indexOfBankAccountInDatabase = getIndexOfBankAccountInDatabase(autoPay.getBankAccount());
-        mFgmBankAccountAndBillSelection.setBillTypeSelectionSpinnerSelection(autoPay.getBill().getType());
+        mFgmBankAccountAndBillSelection.setBillTypeSelectionSpinnerSelection(selectedAutoPayBillType);
         mSpnSelectAutoPayType.setSelection(autoPay.getType());
         mFgmBankAccountAndBillSelection.setBankAccountSelectionSpinnerSelection(indexOfBankAccountInDatabase);
     }
@@ -254,28 +248,6 @@ public class AutoPayActivity extends AppCompatActivity {
         }
 
         throw new IllegalArgumentException("Couldn't find bank account in database!");
-    }
-
-    private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
-        ArrayList<PrimaryCategory> primaryCategoriesInDatabase = Database.getPrimaryCategories();
-        for (int i = 0; i<primaryCategoriesInDatabase.size(); i++){
-            System.out.println(primaryCategory + " " + primaryCategoriesInDatabase.get(i));
-            if (primaryCategory.equals(primaryCategoriesInDatabase.get(i))){
-                return i;
-            }
-        }
-
-        throw new Resources.NotFoundException("Couldn't find primary category in database!");
-    }
-
-    private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
-        for (int i = 0; i<subcategory.getPrimaryCategory().getSubcategories().size(); i++){
-            if (subcategory.equals(subcategory.getPrimaryCategory().getSubcategories().get(i))){
-                return i;
-            }
-        }
-
-        throw new Resources.NotFoundException("Couldn't find subcategory in database!");
     }
 
     public static class DeleteAutoPayDialogFragment extends DialogFragment {

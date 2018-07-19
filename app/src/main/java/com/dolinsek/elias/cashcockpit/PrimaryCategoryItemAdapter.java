@@ -76,7 +76,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     public static PrimaryCategoryItemAdapter getSelectCategoryPrimaryCategoryItemAdapter(ArrayList<PrimaryCategory> primaryCategoriesToDisplay, SubcategoryItemAdapter.OnCategorySelectedListener onCategorySelectedListener){
         PrimaryCategoryItemAdapter primaryCategoryItemAdapter = new PrimaryCategoryItemAdapter();
         primaryCategoryItemAdapter.adapterType = TYPE_SELECT_CATEGORY;
-        primaryCategoryItemAdapter.primaryCategoriesToDisplay = filterPrimaryCategoriesWithSubcategories(primaryCategoriesToDisplay);
+        primaryCategoryItemAdapter.primaryCategoriesToDisplay = primaryCategoriesToDisplay;
         primaryCategoryItemAdapter.onCategorySelectedListener = onCategorySelectedListener;
         primaryCategoryItemAdapter.timeStampOfMonthToLoadStatistics = System.currentTimeMillis();
 
@@ -128,6 +128,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             manageGoalViews(primaryCategory, holder);
         } else if (adapterType == TYPE_SELECT_CATEGORY){
             manageGoalViews(primaryCategory, holder);
+            manageViewsIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
         } else if (adapterType == TYPE_CATEGORIES_STATISTICS){
             loadPrimaryCategoryStatisticInGoalViews(primaryCategory, holder);
         }
@@ -304,17 +305,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return primaryCategoriesWithGoals;
     }
 
-    private static ArrayList<PrimaryCategory> filterPrimaryCategoriesWithSubcategories(ArrayList<PrimaryCategory> primaryCategories){
-        ArrayList<PrimaryCategory> primaryCategoriesToReturn = new ArrayList<>();
-        for (PrimaryCategory primaryCategory:primaryCategories){
-            if (primaryCategory.getSubcategories().size() != 0){
-                primaryCategoriesToReturn.add(primaryCategory);
-            }
-        }
-
-        return primaryCategoriesToReturn;
-    }
-
     private SubcategoryItemAdapter createSubcategoriesItemAdapter(PrimaryCategory primaryCategoryWhatContainsSubcategories){
         switch (adapterType){
             case TYPE_NORMAL: return SubcategoryItemAdapter.getNormalSubcategoryItemAdapter(primaryCategoryWhatContainsSubcategories, SubcategoryItemAdapter.ON_SUBCATEGORY_CLICK_ACTION_OPEN_EDITOR);
@@ -349,6 +339,13 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
         holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
         holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);
+    }
+
+    private void manageViewsIfPrimaryCategoryHasNoSubcategories(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
+        if (primaryCategory.getSubcategories().size() == 0){
+            holder.mBtnShowHideSubcategories.setVisibility(View.INVISIBLE);
+            holder.mTxvCategoryName.setEnabled(false);
+        }
     }
 
     private long getTotalAmountOfBills(ArrayList<Bill> bills){

@@ -137,12 +137,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        discardChanges();
-    }
-
-    @Override
     public void onDialogPositiveClick() {
         //Deletes AutoPay
         ArrayList<AutoPay> autoPaysToDelete = getAutoPays();
@@ -159,14 +153,6 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
         //Go back to MainActivity
         finish();
-    }
-
-    private void discardChanges() {
-        try {
-            Database.load(getApplicationContext());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void createOrSaveCategoryIfPossible(){
