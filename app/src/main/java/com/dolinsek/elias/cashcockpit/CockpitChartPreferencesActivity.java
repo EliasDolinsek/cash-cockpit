@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
 import android.text.TextWatcher;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -20,34 +21,17 @@ public class CockpitChartPreferencesActivity extends AppCompatActivity {
 
     private static final String PREFERENCE_KEY_AMOUNT_TO_SAVE = "preference_amount_to_save";
 
-    private EditText edtAmountToSave;
-    private TextView txvActiveCurrencyShortcut;
-    private Button btnSave;
+    private AmountInputFragment mFgmAmountToSaveInput;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cockpit_chart_preferences);
 
-        edtAmountToSave = findViewById(R.id.edt_amount_to_save_amount);
-        txvActiveCurrencyShortcut = findViewById(R.id.txv_amount_to_save_active_currency_shortcut);
-        btnSave = findViewById(R.id.btn_amount_to_save_save);
+        mFgmAmountToSaveInput = (AmountInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_preferences_amount);
 
-        displayActiveCurrencyShortcut();
-        setupEdtAmountToSave();
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String enteredAmount = edtAmountToSave.getText().toString();
-                if (!enteredAmount.trim().equals("") || enteredAmount.trim().equals(".")){
-                    long formattedAmountToSave = (long) (Double.valueOf(enteredAmount) * 100);
-                    saveNewAmountToSave(formattedAmountToSave);
-                    Toast.makeText(CockpitChartPreferencesActivity.this, getString(R.string.label_new_amount_to_save_saved_successfully), Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            }
-        });
+        String setAmountToSave = Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(getSetAmountToSave());
+        mFgmAmountToSaveInput.getEdtAmount().setText(setAmountToSave);
     }
 
     @Override
@@ -57,30 +41,31 @@ public class CockpitChartPreferencesActivity extends AppCompatActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.save_menu, menu);
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
+        switch (item.getItemId()){
+            case android.R.id.home: finish(); return true;
+            case R.id.menu_save: saveChangesIfPossible(); return true;
+            default: return super.onOptionsItemSelected(item);
         }
     }
 
-    private void displayActiveCurrencyShortcut(){
-        String currencyShortcut = Currency.getActiveCurrency(getApplicationContext()).getCurrencyShortcut();
-        txvActiveCurrencyShortcut.setText(currencyShortcut);
-    }
-
-    private void setupEdtAmountToSave(){
-        long setAmountToSave = getSetAmountToSave();
-        TextWatcher textWatcher = Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(edtAmountToSave);
-
-        edtAmountToSave.addTextChangedListener(textWatcher);
-        edtAmountToSave.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(setAmountToSave));
+    private void saveChangesIfPossible(){
+        String enteredAmount = mFgmAmountToSaveInput.getEnteredAmountAsString();
+        if (!enteredAmount.trim().equals("") && !enteredAmount.trim().equals(".")){
+            long formattedAmountToSave = mFgmAmountToSaveInput.getEnteredAmountAsLong();
+            saveNewAmountToSave(formattedAmountToSave);
+            Toast.makeText(CockpitChartPreferencesActivity.this, getString(R.string.label_new_amount_to_save_saved_successfully), Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Toast.makeText(this, getString(R.string.label_check_inputs), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void saveNewAmountToSave(long amountToSave){

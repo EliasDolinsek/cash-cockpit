@@ -109,7 +109,7 @@ public class CockpitFragment extends Fragment {
             }
         });
         mFgmBillTypeAndBankAccountSelection.setBillTypeSelectionSpinnerSelection(currentlySelectedBillType);
-        mFgmBillTypeAndBankAccountSelection.setBankAccountSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mFgmBillTypeAndBankAccountSelection.setupBankAccountSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 bankAccountOfBill = Database.getBankAccounts().get(i);

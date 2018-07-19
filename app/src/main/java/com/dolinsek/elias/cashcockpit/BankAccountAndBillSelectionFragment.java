@@ -90,7 +90,7 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
         spnBankAccountSelection.setAdapter(selectBankAccountAdapter);
     }
 
-     public void setBankAccountSelectionSpinnerOnItemSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener){
+     public void setupBankAccountSelectionSpinnerOnItemSelectedListener(AdapterView.OnItemSelectedListener onItemSelectedListener){
         spnBankAccountSelection.setOnItemSelectedListener(onItemSelectedListener);
      }
 

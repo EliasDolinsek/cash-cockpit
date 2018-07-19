@@ -44,16 +44,17 @@ import java.util.ArrayList;
 public class AutoPayActivity extends AppCompatActivity {
 
     public static final String EXTRA_AUTO_PAY_INDEX = "auto_pay";
-    private static final int RQ_SELECT_CATEGORY = 439;
 
-    private EditText mEdtAutoPayName, mEdtAmount;
-    private Button mBtnSelectSubcategory, mBtnCreateBankAccount;
-    private TextView mTxvSelectedCategory, mTxvCurrencyShortcut;
-    private ImageView mImvAutoPay;
+    private AmountInputFragment mFgmAmountInput;
+    private DescriptionInputFragment mFgmNameInput;
+    private BankAccountAndBillSelectionFragment mFgmBankAccountAndBillSelection;
+    private SelectCategoryFragment mFgmCategorySelection;
 
-    private Spinner mSpnSelectBankAccount, mSpnSelectAutoPayType, mSpnSelectAutoPayBillType;
+    private Spinner mSpnSelectAutoPayType;
 
     private AutoPay autoPay;
+    private BankAccount bankAccountToAddBill;
+    private Subcategory selectedSubcategory;
     private boolean editModeActive;
 
     @Override
@@ -61,23 +62,13 @@ public class AutoPayActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auto_pay);
 
-        mEdtAutoPayName = findViewById(R.id.edt_auto_pay_name);
-        mEdtAmount = findViewById(R.id.edt_auto_pay_amount);
-        mEdtAmount.setSelection(mEdtAmount.getText().length());
+        mFgmNameInput = (DescriptionInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_auto_pay_name_input);
+        mFgmAmountInput = (AmountInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_auto_pay_amount_input);
+        mFgmBankAccountAndBillSelection = (BankAccountAndBillSelectionFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_auto_pay_bank_account_and_bill_type_selection);
+        mFgmCategorySelection = (SelectCategoryFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_auto_pay_category_selection);
 
-        mTxvSelectedCategory = (TextView) findViewById(R.id.txv_auto_pay_selected_category);
-        mTxvCurrencyShortcut = findViewById(R.id.txv_auto_pay_active_currency_shortcut);
-        mImvAutoPay = findViewById(R.id.imv_auto_pay_bill_type);
-
-        mBtnSelectSubcategory = (Button) findViewById(R.id.btn_auto_pay_select_subcategory);
-        mBtnCreateBankAccount = findViewById(R.id.btn_auto_pay_create_bank_account);
-
-        mSpnSelectBankAccount = (Spinner) findViewById(R.id.spn_auto_pay_select_bank_account);
-        mSpnSelectAutoPayType = (Spinner) findViewById(R.id.spn_auto_pay_select_type);
-        mSpnSelectAutoPayBillType = (Spinner) findViewById(R.id.spn_auto_pay_select_bill_type);
-
+        mSpnSelectAutoPayType = findViewById(R.id.spn_auto_pay_select_type);
         setupSpinners();
-        displayCurrencyShortcut();
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
             editModeActive = true;
@@ -91,22 +82,16 @@ public class AutoPayActivity extends AppCompatActivity {
             autoPay.setBill(new Bill());
         }
 
-        mBtnSelectSubcategory.setOnClickListener(new View.OnClickListener() {
+        if (editModeActive){
+            mFgmCategorySelection.setSelectedSubcategory(autoPay.getBill().getSubcategory());
+        }
+
+        mFgmCategorySelection.setOnCategorySelectedListener(new SelectCategoryFragment.OnCategorySelectedListener() {
             @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SelectCategoryActivity.class);
-
-                if (autoPay.getBill().getSubcategory() != null){
-                    Subcategory subcategoryOfAutoPay = autoPay.getBill().getSubcategory();
-                    putSelectedSubcategoryIndexIntoIntent(subcategoryOfAutoPay, intent);
-                }
-
-                startActivityForResult(intent, RQ_SELECT_CATEGORY);
+            public void onSubcategorySelected(Subcategory selectedSubcategory) {
+                AutoPayActivity.this.selectedSubcategory = selectedSubcategory;
             }
         });
-
-
-        mEdtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(mEdtAmount));
     }
 
     @Override
@@ -114,35 +99,22 @@ public class AutoPayActivity extends AppCompatActivity {
         super.onStart();
 
         if (Database.getBankAccounts().size() == 0){
-            mBtnCreateBankAccount.setVisibility(View.VISIBLE);
-            mImvAutoPay.setVisibility(View.GONE);
-            mSpnSelectBankAccount.setVisibility(View.GONE);
-            mSpnSelectAutoPayBillType.setVisibility(View.GONE);
-
-            mBtnCreateBankAccount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getApplicationContext(), BankAccountActivity.class);
-                    startActivity(intent);
-                }
-            });
+            mFgmBankAccountAndBillSelection.hide();
         } else {
-            mBtnCreateBankAccount.setVisibility(View.GONE);
-            mImvAutoPay.setVisibility(View.VISIBLE);
-            mSpnSelectBankAccount.setVisibility(View.VISIBLE);
-            mSpnSelectAutoPayBillType.setVisibility(View.VISIBLE);
-
+            mFgmBankAccountAndBillSelection.show();
             setupSpinners();
         }
     }
 
     private void createOrSaveAutoPayIfPossible(){
         if (everythingFilledOutCorrectly()){
-            long amount = getAmountInputAsLong();
+            long amount = mFgmAmountInput.getEnteredAmountAsLong();
 
-            autoPay.setName(mEdtAutoPayName.getText().toString());
+            autoPay.setName(mFgmNameInput.getEnteredDescriptionAsString());
             autoPay.getBill().setAmount(amount);
+            autoPay.setBankAccount(bankAccountToAddBill);
             autoPay.getBill().setDescription(autoPay.getName());
+            autoPay.getBill().setSubcategory(selectedSubcategory);
 
             if(!editModeActive){
                 autoPay.addPaymentTimestamp();
@@ -157,8 +129,8 @@ public class AutoPayActivity extends AppCompatActivity {
     }
 
     private boolean everythingFilledOutCorrectly() {
-        String enteredAmount = mEdtAmount.getText().toString();
-        if(mEdtAutoPayName.getText().toString().trim().equals("")){
+        String enteredAmount = mFgmAmountInput.getEnteredAmountAsString();
+        if(mFgmNameInput.getEnteredDescriptionAsString().trim().equals("")){
             return false;
         } else if(enteredAmount.equals("") || enteredAmount.equals(".")){
             return false;
@@ -173,33 +145,6 @@ public class AutoPayActivity extends AppCompatActivity {
         DeleteAutoPayDialogFragment deleteAutoPayDialogFragment = new DeleteAutoPayDialogFragment();
         deleteAutoPayDialogFragment.setAutoPay(autoPay);
         deleteAutoPayDialogFragment.show(getSupportFragmentManager(), "delete_auto_pay");
-    }
-
-    private void displayCurrencyShortcut(){
-        String currencyShortcut = Currency.getActiveCurrency(getApplicationContext()).getCurrencyShortcut();
-        mTxvCurrencyShortcut.setText(currencyShortcut);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RQ_SELECT_CATEGORY && resultCode == RESULT_OK){
-            int indexOfPrimaryCategoryInDatabase = data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0);
-            int indexOfSubcategoryInPrimaryCategory = data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0);
-
-            Subcategory selectedSubcategory = Database.getPrimaryCategories().get(indexOfPrimaryCategoryInDatabase).getSubcategories().get(indexOfSubcategoryInPrimaryCategory);
-            autoPay.getBill().setSubcategory(selectedSubcategory);
-            updateTxtForSelectedSubcategory();
-        }
-    }
-
-    private void updateTxtForSelectedSubcategory(){
-        Subcategory selectedSubcategory = autoPay.getBill().getSubcategory();
-        mTxvSelectedCategory.setVisibility(View.VISIBLE);
-        mTxvSelectedCategory.setText(selectedSubcategory.getName());
-    }
-
-    private void setupViewsForActiveEditMode() {
     }
 
     @Override
@@ -241,34 +186,10 @@ public class AutoPayActivity extends AppCompatActivity {
         }
     }
 
-    private void putSelectedSubcategoryIndexIntoIntent(Subcategory subcategory, Intent intent){
-        int indexOfPrimaryCategoryInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
-        int indexOfSubcategoryInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
-
-        intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, indexOfPrimaryCategoryInDatabase);
-        intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, indexOfSubcategoryInDatabase);
-    }
-
     private void setupSpinners(){
-        final ArrayAdapter<CharSequence> bankAccountsAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getNamesOfBankAccountsInDatabase());
         final ArrayAdapter<CharSequence> autoPayTypesAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getResources().getTextArray(R.array.auto_pay_types_array));
-        final ArrayAdapter<CharSequence> billTypesAdapter = new ArrayAdapter<>(this, R.layout.costum_spinner_layout, getResources().getTextArray(R.array.bill_types_array));
-
-        bankAccountsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoPayTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        billTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpnSelectBankAccount.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                autoPay.setBankAccount(Database.getBankAccounts().get(i));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
         mSpnSelectAutoPayType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -280,7 +201,7 @@ public class AutoPayActivity extends AppCompatActivity {
 
             }
         });
-        mSpnSelectAutoPayBillType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mFgmBankAccountAndBillSelection.setupBillTypeSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
                 autoPay.getBill().setType(index);
@@ -291,44 +212,38 @@ public class AutoPayActivity extends AppCompatActivity {
 
             }
         });
+        mFgmBankAccountAndBillSelection.setupBankAccountSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                bankAccountToAddBill = Database.getBankAccounts().get(position);
+            }
 
-        mSpnSelectBankAccount.setSelection(0);
-        mSpnSelectAutoPayBillType.setSelection(1); //Bill-Type output
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
         mSpnSelectAutoPayType.setSelection(1); //AutoPay type monthly
-
-        mSpnSelectBankAccount.setAdapter(bankAccountsAdapter);
         mSpnSelectAutoPayType.setAdapter(autoPayTypesAdapter);
-        mSpnSelectAutoPayBillType.setAdapter(billTypesAdapter);
-
-        setSpinnerArrowColorToWhite(mSpnSelectBankAccount);
         setSpinnerArrowColorToWhite(mSpnSelectAutoPayType);
-        setSpinnerArrowColorToWhite(mSpnSelectAutoPayBillType);
     }
 
     private void setSpinnerArrowColorToWhite(Spinner spinner){
         spinner.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
     }
 
-    private ArrayList<CharSequence> getNamesOfBankAccountsInDatabase(){
-        ArrayList<CharSequence> bankAccountNames = new ArrayList<>();
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            bankAccountNames.add(bankAccount.getName());
-        }
-
-        return bankAccountNames;
-    }
 
     private void displayAutoPayDetails() {
-        mEdtAutoPayName.setText(autoPay.getName());
-        updateTxtForSelectedSubcategory();
+        mFgmNameInput.getEdtDescription().setText(autoPay.getName());
 
         String formattedAmountOfAutoPay = Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(autoPay.getBill().getAmount());
-        mEdtAmount.setText(formattedAmountOfAutoPay);
+        mFgmAmountInput.getEdtAmount().setText(formattedAmountOfAutoPay);
 
         int indexOfBankAccountInDatabase = getIndexOfBankAccountInDatabase(autoPay.getBankAccount());
-        mSpnSelectAutoPayBillType.setSelection(autoPay.getBill().getType());
+        mFgmBankAccountAndBillSelection.setBillTypeSelectionSpinnerSelection(autoPay.getBill().getType());
         mSpnSelectAutoPayType.setSelection(autoPay.getType());
-        mSpnSelectBankAccount.setSelection(indexOfBankAccountInDatabase);
+        mFgmBankAccountAndBillSelection.setBankAccountSelectionSpinnerSelection(indexOfBankAccountInDatabase);
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccountToSearch){
@@ -361,10 +276,6 @@ public class AutoPayActivity extends AppCompatActivity {
         }
 
         throw new Resources.NotFoundException("Couldn't find subcategory in database!");
-    }
-
-    private long getAmountInputAsLong(){
-        return ((long) (Double.valueOf(mEdtAmount.getText().toString()) * 100));
     }
 
     public static class DeleteAutoPayDialogFragment extends DialogFragment {

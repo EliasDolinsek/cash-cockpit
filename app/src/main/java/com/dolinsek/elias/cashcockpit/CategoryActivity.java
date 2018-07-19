@@ -36,11 +36,9 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
     public static final String EXTRA_PRIMARY_CATEGORY_INDEX = "primaryCategoryIndex";
     public static final String EXTRA_SUBCATEGORY_TO_SHOW_INDEX = "subcategoryToShow";
 
+    private DescriptionInputFragment mFgmCategoryName;
     private Button mBtnSetGoal, mBtnAddSubcategory;
-    private EditText mEdtCategoryName;
-
     private PrimaryCategory primaryCategory;
-
     private RecyclerView mRvSubcategories;
     private SubcategoryItemAdapter mSubcategoryItemAdapter;
     private boolean mEditMode, changesSaved = false;
@@ -52,10 +50,9 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        mFgmCategoryName = (DescriptionInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_category_name);
         mBtnSetGoal = (Button) findViewById(R.id.btn_category_set_goal);
         mBtnAddSubcategory = (Button) findViewById(R.id.btn_category_add_subcategory);
-
-        mEdtCategoryName = (EditText) findViewById(R.id.edt_category_name);
 
         mRvSubcategories = (RecyclerView) findViewById(R.id.rv_category_subcategories);
         mRvSubcategories.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -63,7 +60,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         if (getIntent().hasExtra(EXTRA_PRIMARY_CATEGORY_INDEX)) {
             mEditMode = true;
             primaryCategory = Database.getPrimaryCategories().get(getIntent().getIntExtra(EXTRA_PRIMARY_CATEGORY_INDEX, 0));
-            mEdtCategoryName.setText(primaryCategory.getName());
+            mFgmCategoryName.getEdtDescription().setText(primaryCategory.getName());
         } else {
             primaryCategory = new PrimaryCategory("", null);
         }
@@ -173,14 +170,15 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
     }
 
     private void createOrSaveCategoryIfPossible(){
-        boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(mEdtCategoryName.getText().toString());
+        String enteredName = mFgmCategoryName.getEnteredDescriptionAsString();
+        boolean nameAlreadyExists = doesPrimaryCategoryNameAlreadyExist(enteredName);
 
-        if (mEdtCategoryName.getText().toString().trim().equals("")) {
+        if (enteredName.trim().equals("")) {
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         } else if (nameAlreadyExists && !mEditMode) {
             Toast.makeText(CategoryActivity.this, getString(R.string.label_category_name_already_exists), Toast.LENGTH_SHORT).show();
         } else {
-            primaryCategory.setName(mEdtCategoryName.getText().toString());
+            primaryCategory.setName(enteredName);
 
             if (mEditMode) {
                 Database.save(getApplicationContext());
