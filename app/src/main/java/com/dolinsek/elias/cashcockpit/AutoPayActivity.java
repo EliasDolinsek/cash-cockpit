@@ -99,18 +99,6 @@ public class AutoPayActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (Database.getBankAccounts().size() == 0){
-            mFgmBankAccountAndBillSelection.hide();
-        } else {
-            mFgmBankAccountAndBillSelection.show();
-            setupSpinners();
-        }
-    }
-
     private void createOrSaveAutoPayIfPossible(){
         if (everythingFilledOutCorrectly()){
             long amount = mFgmAmountInput.getEnteredAmountAsLong();

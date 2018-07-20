@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "715477694071",
+    "firebase_url": "https://cash-cockpit.firebaseio.com",
+    "project_id": "cash-cockpit",
+    "storage_bucket": "cash-cockpit.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715477694071:android:1dbfd5ea3a5a2328",
+        "android_client_info": {
+          "package_name": "com.dolinsek.elias.cashcockpit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715477694071-62fpo6otfcuo4t4fo6pqkn6fsnuvas67.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dolinsek.elias.cashcockpit",
+            "certificate_hash": "fbc5ec67f8de694a49c41ac119eb76ac13606b7c"
+          }
+        },
+        {
+          "client_id": "715477694071-1p28qs9dr8hhv6huqp6cq15cf6s5g23g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCiORcFFGvZ-RxYftvEtRr_kZiykpJ8YL4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715477694071-1p28qs9dr8hhv6huqp6cq15cf6s5g23g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

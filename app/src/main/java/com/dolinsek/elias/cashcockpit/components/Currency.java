@@ -71,8 +71,22 @@ public class Currency {
         }
     }
 
+    public String formatAmountToReadableStringWithoutCents(long amount){
+        String formattedAmountWithCent = formatAmountToReadableString(amount);
+        if (formattedAmountWithCent.contains(".")){
+            String[] amounts = formattedAmountWithCent.split("\\.");
+            return amounts[0];
+        } else {
+            throw new IllegalArgumentException("Amount isn't splittable");
+        }
+    }
+
     public String formatAmountToReadableStringWithCurrencySymbol(long amount){
         return formatAmountToReadableString(amount) + getCurrencySymbol();
+    }
+
+    public String formatAmountToReadableStringWithoutCentsWithCurrencySymbol(long amount){
+        return formatAmountToReadableStringWithoutCents(amount) + getCurrencySymbol();
     }
 
     public static Currency getActiveCurrency(Context context){

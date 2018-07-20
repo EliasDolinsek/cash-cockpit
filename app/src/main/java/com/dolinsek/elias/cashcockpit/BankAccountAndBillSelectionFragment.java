@@ -41,12 +41,17 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
         btnCreateBankAccount = inflatedView.findViewById(R.id.btn_bank_account_and_bill_selection_click_to_create_bank_account);
         imvBillType = inflatedView.findViewById(R.id.imv_bank_account_and_bill_selection_bill);
 
-        setupSpinnersStyles();
-        setupBillTypeSelectionSpinner();
-        setupBankAccountSelectionSpinner();
+        return inflatedView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
 
         if (Database.getBankAccounts().size() == 0){
             imvBillType.setVisibility(View.GONE);
+            spnBankAccountSelection.setVisibility(View.GONE);
+            spnBillSelection.setVisibility(View.GONE);
             btnCreateBankAccount.setVisibility(View.VISIBLE);
             btnCreateBankAccount.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -56,11 +61,15 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
                 }
             });
         } else {
-            imvBillType.setVisibility(View.VISIBLE);
             btnCreateBankAccount.setVisibility(View.GONE);
+            imvBillType.setVisibility(View.VISIBLE);
+            spnBankAccountSelection.setVisibility(View.VISIBLE);
+            spnBillSelection.setVisibility(View.VISIBLE);
         }
 
-        return inflatedView;
+        setupSpinnersStyles();
+        setupBillTypeSelectionSpinner();
+        setupBankAccountSelectionSpinner();
     }
 
     private void setupSpinnersStyles(){

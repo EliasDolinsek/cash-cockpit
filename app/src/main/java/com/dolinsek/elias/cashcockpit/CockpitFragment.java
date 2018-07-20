@@ -206,17 +206,6 @@ public class CockpitFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        if(Database.getBankAccounts().size() == 0) {
-            mFgmBillTypeAndBankAccountSelection.hide();
-        } else {
-            mFgmBillTypeAndBankAccountSelection.show();
-        }
-    }
-
-    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 

@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.GridLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -44,6 +46,7 @@ public class CockpitChartFragment extends Fragment {
     private TextView txvInputs, txvOutputs, txvFixedCosts;
     private NotEnoughDataFragment fgmNotEnoughData;
     private GridLayout glTextsContainer;
+    private ImageView imvCockpitChartSettings;
 
 
     @Override
@@ -64,6 +67,15 @@ public class CockpitChartFragment extends Fragment {
 
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_not_enough_data);
         glTextsContainer = inflatedView.findViewById(R.id.gl_cockpit_chart_texts_container);
+
+        imvCockpitChartSettings = inflatedView.findViewById(R.id.imv_cockpit_chart_settings);
+        imvCockpitChartSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CockpitChartPreferencesActivity.class);
+                startActivity(intent);
+            }
+        });
 
         setupPieChart();
         loadPieChart();
@@ -135,13 +147,13 @@ public class CockpitChartFragment extends Fragment {
         long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
 
         Currency activeCurrency = Currency.getActiveCurrency(getActivity());
-        String formattedAmountOfFixedCosts = getString(R.string.label_fixed_costs) + ": " + activeCurrency.formatAmountToReadableStringWithCurrencySymbol(amountOfFixedCosts);
+        String formattedAmountOfFixedCosts = getString(R.string.label_fixed_costs) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfFixedCosts);
         txvFixedCosts.setText(formattedAmountOfFixedCosts);
 
-        String formattedAmountOfOutputs = getString(R.string.label_output) + ": " + activeCurrency.formatAmountToReadableStringWithCurrencySymbol(amountOfOutputs);
+        String formattedAmountOfOutputs = getString(R.string.label_output) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfOutputs);
         txvOutputs.setText(formattedAmountOfOutputs);
 
-        String formattedAmountOfInputs = getString(R.string.label_input) + ": " + activeCurrency.formatAmountToReadableStringWithCurrencySymbol(amountOfInputs);
+        String formattedAmountOfInputs = getString(R.string.label_input) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfInputs);
         txvInputs.setText(formattedAmountOfInputs);
 
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, pieEntries);
@@ -223,16 +235,16 @@ public class CockpitChartFragment extends Fragment {
         Currency activeCurrency = Currency.getActiveCurrency(getContext());
 
         long totalOutputsAmount = Math.abs(getAmountOfTotalOutputsOfMonths());
-        String formattedTotalOutputsAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(totalOutputsAmount);
+        String formattedTotalOutputsAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(totalOutputsAmount);
         txvTotalOutputsAmount.setText(formattedTotalOutputsAmount);
 
-        String formattedCash = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCash());
+        String formattedCash = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfCash());
         txvCashAmount.setText(formattedCash);
 
-        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfDailyLimitOfMonth());
+        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfDailyLimitOfMonth());
         txvDailyLimitAmount.setText(formattedDailyLimit);
 
-        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(getAmountOfCreditRateOfMonth());
+        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfCreditRateOfMonth());
         txvCreditRateAmount.setText(formattedCreditRate);
 
     }
@@ -266,7 +278,7 @@ public class CockpitChartFragment extends Fragment {
 
     private long getAmountToSaveEveryMonth(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return sharedPreferences.getLong("preference_amount_to_save", 0) * 100;
+        return sharedPreferences.getLong("preference_amount_to_save", 100) * 100;
     }
 
     private long getAmountOfCash(){
