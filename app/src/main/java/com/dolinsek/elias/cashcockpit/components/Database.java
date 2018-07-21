@@ -85,6 +85,29 @@ public class Database {
         loaded = true;
     }
 
+    public static void deleteDatabase(){
+        bankAccounts = new ArrayList<>();
+        primaryCategories = new ArrayList<>();
+        autoPays = new ArrayList<>();
+    }
+
+    public static String getDataAsString(){
+        StringBuilder dataAsString = new StringBuilder();
+        for (BankAccount bankAccount:bankAccounts){
+            dataAsString.append(bankAccount.toString());
+        }
+
+        for (AutoPay autoPay:autoPays){
+            dataAsString.append(autoPay.toString());
+        }
+
+        for (PrimaryCategory primaryCategory:primaryCategories){
+            dataAsString.append(primaryCategory);
+        }
+
+        return dataAsString.toString();
+    }
+
     /**
      * Saves all data
      * @param context context to get access to files

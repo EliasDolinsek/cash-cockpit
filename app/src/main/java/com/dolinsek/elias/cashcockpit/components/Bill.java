@@ -24,6 +24,18 @@ public class Bill {
      */
     private long amount;
 
+    @Override
+    public String toString() {
+        return "Bill{" +
+                "amount=" + amount +
+                ", description='" + description + '\'' +
+                ", subcategory=" + subcategory +
+                ", creationDate=" + creationDate +
+                ", type=" + type +
+                ", autoPayBill=" + autoPayBill +
+                '}';
+    }
+
     /**
      * Contains a little description what helps the user to remember what this bill was for
      */

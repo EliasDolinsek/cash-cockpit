@@ -25,6 +25,14 @@ public class PrimaryCategory extends Category{
      */
     private String iconName;
 
+    @Override
+    public String toString() {
+        return "PrimaryCategory{" +
+                "subcategories=" + subcategories +
+                ", iconName='" + iconName + '\'' +
+                '}';
+    }
+
     /**
      * Creates a new primary category
      * @param name name of the primary category

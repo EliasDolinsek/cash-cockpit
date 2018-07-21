@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory
-        android:title="@string/label_general">
+    <PreferenceCategory android:title="@string/label_account">
+        <Preference android:key="preference_sign_out" android:title="@string/label_sign_out" android:summary="@string/label_sign_out_description"/>
+        <Preference android:key="preference_delete_data" android:title="@string/label_delete_data" android:summary="@string/label_delete_data_description" />
+        <CheckBoxPreference android:key="preference_synchronize_data" android:title="@string/label_synchronize_data" android:summary="@string/label_synchronize_data_description" />
+        <Preference android:key="preference_show_data" android:title="@string/label_show_data" android:summary="@string/label_show_data_description" />
+    </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/label_general">
         <ListPreference
             android:key="preference_currency"
             android:summary="@string/label_currency_preference_description"
@@ -13,36 +18,13 @@
             android:defaultValue="1"/>
 
         <Preference
-            android:title="@string/label_cockpit_chart_preferences">
-
+            android:title="@string/label_cockpit_chart">
             <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.CockpitChartPreferencesActivity"/>
-
         </Preference>
-
-        <CheckBoxPreference
-            android:key="preference_show_notification_on_auto_pay_payed"
-            android:title="@string/label_auto_pay_notifications"
-            android:summary="@string/label_auto_pay_notification_preference_description"
-            android:inputType="textPassword"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="@string/label_safety">
-
-        <CheckBoxPreference
-            android:title="@string/label_backup_database_regularly"
-            android:summary="@string/label_backup_database_regularly_preference_description"
-            android:defaultValue="true"/>
 
         <Preference
             android:title="@string/label_password_settings">
-
-            <intent android:action="android.intent.action.VIEW"
-                android:targetPackage="com.dolinsek.elias.cashcockpit"
-                android:targetClass="com.dolinsek.elias.cashcockpit.PasswordPreferenceActivity"/>
-
+            <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.PasswordPreferenceActivity"/>
         </Preference>
-
     </PreferenceCategory>
 </PreferenceScreen>

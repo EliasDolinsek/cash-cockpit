@@ -8,6 +8,14 @@ public class BalanceChange {
     private long timeStampOfChange;
     private long newBalance;
 
+    @Override
+    public String toString() {
+        return "BalanceChange{" +
+                "timeStampOfChange=" + timeStampOfChange +
+                ", newBalance=" + newBalance +
+                '}';
+    }
+
     public BalanceChange(long timeStampOfChange, long newBalance) {
         this.timeStampOfChange = timeStampOfChange;
         this.newBalance = newBalance;
