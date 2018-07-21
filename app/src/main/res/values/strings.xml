@@ -234,6 +234,9 @@
         <item>1 Week</item>
         <item>Never</item>
     </array>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="facebook_application_id" translatable="false">483192538792641</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb483192538792641</string>
+    <string name="twitter_consumer_key" translatable="false">uH3wt6S3x2yNdxt6fyF202uQr</string>
+    <string name="twitter_consumer_secret" translatable="false">YMX87YsaAnoftQdV3Zart233cPjl5ojlZEJAwtS5Ns2g67MdON</string>
 </resources>
