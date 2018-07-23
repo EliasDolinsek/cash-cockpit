@@ -357,10 +357,14 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long billsTotalAmount = 0;
         for (Bill bill:bills){
-            billsTotalAmount += bill.getAmount();
+            if (bill.getType() == Bill.TYPE_INPUT){
+                billsTotalAmount += bill.getAmount();
+            } else {
+                billsTotalAmount -= bill.getAmount();
+            }
         }
 
-        return billsTotalAmount;
+        return Math.abs(billsTotalAmount);
     }
 
     private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){

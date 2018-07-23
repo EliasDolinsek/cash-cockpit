@@ -202,17 +202,16 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        pieDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
         pieDataSet.setDrawValues(false);
-        pieDataSet.setSliceSpace(5f);
+        pieDataSet.setSliceSpace(3f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
     private void setupChartStatistics(){
         pcStatistics.setDescription(null);
         pcStatistics.setUsePercentValues(true);
-        pcStatistics.setEntryLabelTextSize(15f);
-        pcStatistics.setEntryLabelColor(getResources().getColor(android.R.color.black));
+        pcStatistics.setDrawEntryLabels(false);
         pcStatistics.setHoleRadius(70f);
         pcStatistics.setExtraOffsets(0,0,0,-8f);
         pcStatistics.invalidate(); //Refreshes data

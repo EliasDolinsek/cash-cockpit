@@ -17,14 +17,6 @@ public class Subcategory extends Category{
      */
     private PrimaryCategory primaryCategory;
 
-    @Override
-    public String toString() {
-        return "Subcategory{" +
-                "favoured=" + favoured +
-                ", primaryCategory=" + primaryCategory +
-                '}';
-    }
-
     /**
      * Creates a new subcategory
      * @param name name of the subcategory

@@ -137,18 +137,6 @@ public class AutoPay {
         this.payments = payments;
     }
 
-    @Override
-    public String toString() {
-        return "AutoPay{" +
-                "bill=" + bill +
-                ", type=" + type +
-                ", name='" + name + '\'' +
-                ", creationDate=" + creationDate +
-                ", bankAccount=" + bankAccount +
-                ", payments=" + payments +
-                '}';
-    }
-
     public void addPaymentTimestamp(){
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(System.currentTimeMillis());

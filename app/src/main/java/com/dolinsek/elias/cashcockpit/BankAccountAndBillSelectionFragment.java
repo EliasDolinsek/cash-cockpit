@@ -43,7 +43,6 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
 
         setupSpinnersStyles();
         setupBillTypeSelectionSpinner();
-        setupBankAccountSelectionSpinner();
 
         return inflatedView;
     }
@@ -52,6 +51,7 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
+        setupBankAccountSelectionSpinner();
         if (Database.getBankAccounts().size() == 0){
             imvBillType.setVisibility(View.GONE);
             spnBankAccountSelection.setVisibility(View.GONE);

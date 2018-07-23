@@ -190,10 +190,14 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         long usedMoney = 0;
 
         for (Bill bill:bills){
-            usedMoney += bill.getAmount();
+            if (bill.getType() == Bill.TYPE_INPUT){
+                usedMoney += bill.getAmount();
+            } else {
+                usedMoney -= bill.getAmount();
+            }
         }
 
-        return usedMoney;
+        return Math.abs(usedMoney);
     }
 
     private ArrayList<Bill> getBillsWithSameCreationDateAndCategory(PrimaryCategory primaryCategory, long creationDateMonth){

@@ -31,7 +31,6 @@ import java.util.Calendar;
 public class GoalsStatisticsFragment extends Fragment {
 
     private static final int STEP_ONE_MONTH_FORWARD = 1;
-    private static final int STEP_ONE_MONTH_BACK = -1;
 
     private static final String EXTRA_MONTH = "month";
 
@@ -192,8 +191,14 @@ public class GoalsStatisticsFragment extends Fragment {
             ArrayList<Bill> billsOfCurrentMonth = Database.Toolkit.getBillsOfMonth(calendar.getTimeInMillis());
             ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(billsOfCurrentMonth);
 
-            totalAmount += getTotalAmountOfBills(filteredBillsWhatSubcategoriesHaveGoals);
-            calendar.add(Calendar.MONTH, STEP_ONE_MONTH_FORWARD);
+            long totalAmountOfBills = getTotalAmountOfBills(filteredBillsWhatSubcategoriesHaveGoals);
+            if (totalAmountOfBills >= 0){
+                totalAmount -= totalAmountOfBills;
+            } else {
+                totalAmount += totalAmountOfBills;
+            }
+
+            calendar.add(Calendar.MONTH, 1);
             months++;
         }
 
@@ -305,7 +310,7 @@ public class GoalsStatisticsFragment extends Fragment {
         int currentYear = currentMonthCalendar.get(Calendar.YEAR);
         int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
 
-        return currentYear < calendar.get(Calendar.YEAR) && currentMonth < calendar.get(Calendar.MONTH);
+        return currentYear <= calendar.get(Calendar.YEAR) && currentMonth < calendar.get(Calendar.MONTH);
     }
 
     private ArrayList<Bill> filterBillsWhatBelongToGoals(ArrayList<Bill> billsToFilter){

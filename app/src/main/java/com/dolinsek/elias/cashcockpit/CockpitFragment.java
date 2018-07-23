@@ -221,7 +221,7 @@ public class CockpitFragment extends Fragment {
 
             outState.putInt(PRIMARY_CATEGORY, primaryCategoryIndexInDatabase);
             outState.putInt(SUBCATEGORY, subcategoryIndexInDatabase);
-        } else if(bankAccountOfBill != null){
+        } else if(bankAccountOfBill != null && Database.getBankAccounts().size() != 0){
             int bankAccountIndexInDatabase = getIndexOfBankAccountInDatabase(bankAccountOfBill);
             outState.putInt(ACCOUNT, bankAccountIndexInDatabase);
         }

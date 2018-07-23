@@ -164,7 +164,7 @@ public class BillsStatisticsFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setSliceSpace(5f);
+        pieDataSet.setSliceSpace(3f);
         pieDataSet.setValueLineWidth(2f);
         pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
         pieDataSet.setValueFormatter(new PercentFormatter());
@@ -185,7 +185,7 @@ public class BillsStatisticsFragment extends Fragment {
         ArrayList<BarEntry> barEntries = billsToBarEntryForDailyStatistic(billsOfSelectedMonth, timeStampOfMonth);
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "");
-        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
 
         BarData barData = new BarData(barDataSet);
         setupBarData(barData);

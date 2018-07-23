@@ -4,6 +4,7 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.icu.text.UnicodeSetSpanner;
@@ -15,8 +16,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -34,6 +37,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 
 /**
@@ -43,6 +47,7 @@ public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
     private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
+    private LinearLayout llCockpitChartRoot;
     private NotEnoughDataFragment fgmNotEnoughData;
     private GridLayout glTextsContainer;
     private ImageView imvCockpitChartSettings;
@@ -62,6 +67,7 @@ public class CockpitChartFragment extends Fragment {
 
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_not_enough_data);
         glTextsContainer = inflatedView.findViewById(R.id.gl_cockpit_chart_texts_container);
+        llCockpitChartRoot = inflatedView.findViewById(R.id.ll_cockpit_chart_root);
 
         imvCockpitChartSettings = inflatedView.findViewById(R.id.imv_cockpit_chart_settings);
         imvCockpitChartSettings.setOnClickListener(new View.OnClickListener() {
@@ -137,9 +143,9 @@ public class CockpitChartFragment extends Fragment {
     private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfFixedCosts = getAmountOfFixedCosts()/ 100;
-        long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
-        long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
+        long amountOfFixedCosts = getAmountOfFixedCosts();
+        long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT));
+        long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
 
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, getString(R.string.label_inputs), pieEntries);
@@ -150,7 +156,8 @@ public class CockpitChartFragment extends Fragment {
 
     private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
         if (amount != 0){
-            pieEntries.add(new PieEntry(amount, label));
+            String textToDisplay = label + " (" + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amount) + ") ";
+            pieEntries.add(new PieEntry(amount, textToDisplay));
         }
     }
 
@@ -175,10 +182,8 @@ public class CockpitChartFragment extends Fragment {
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull());
-        pieDataSet.setSliceSpace(5f);
-        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.black));
-        pieDataSet.setValueFormatter(new CurrencyEntryValueFormatter(getActivity()));
-        pieDataSet.setValueTextSize(15f);
+        pieDataSet.setSliceSpace(3f);
+        pieDataSet.setDrawValues(false);
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
