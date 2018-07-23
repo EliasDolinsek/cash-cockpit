@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.dolinsek.elias.cashcockpit.HistoryFragment"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:layout_margin="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,6 @@
             android:text="@string/label_filters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
 
         <TextView

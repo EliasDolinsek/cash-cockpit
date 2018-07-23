@@ -43,7 +43,6 @@ public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
     private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
-    private TextView txvInputs, txvOutputs, txvFixedCosts;
     private NotEnoughDataFragment fgmNotEnoughData;
     private GridLayout glTextsContainer;
     private ImageView imvCockpitChartSettings;
@@ -60,10 +59,6 @@ public class CockpitChartFragment extends Fragment {
         txvCashAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_cash_amount);
         txvDailyLimitAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_daily_limit_amount);
         txvCreditRateAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_credit_rate_amount);
-
-        txvInputs = inflatedView.findViewById(R.id.txv_cockpit_chart_inputs);
-        txvOutputs = inflatedView.findViewById(R.id.txv_cockpit_chart_outputs);
-        txvFixedCosts = inflatedView.findViewById(R.id.txv_cockpit_chart_fixed_costs);
 
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_not_enough_data);
         glTextsContainer = inflatedView.findViewById(R.id.gl_cockpit_chart_texts_container);
@@ -142,30 +137,20 @@ public class CockpitChartFragment extends Fragment {
     private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfFixedCosts = getAmountOfFixedCosts();
-        long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT));
-        long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
+        long amountOfFixedCosts = getAmountOfFixedCosts()/ 100;
+        long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
+        long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
 
-        Currency activeCurrency = Currency.getActiveCurrency(getActivity());
-        String formattedAmountOfFixedCosts = getString(R.string.label_fixed_costs) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfFixedCosts);
-        txvFixedCosts.setText(formattedAmountOfFixedCosts);
-
-        String formattedAmountOfOutputs = getString(R.string.label_output) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfOutputs);
-        txvOutputs.setText(formattedAmountOfOutputs);
-
-        String formattedAmountOfInputs = getString(R.string.label_input) + ": " + activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amountOfInputs);
-        txvInputs.setText(formattedAmountOfInputs);
-
-        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, pieEntries);
-        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, pieEntries);
-        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutputs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, getString(R.string.label_inputs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutputs), getString(R.string.label_output), pieEntries);
 
         return pieEntries;
     }
 
-    private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, ArrayList<PieEntry> pieEntries){
+    private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
         if (amount != 0){
-            pieEntries.add(new PieEntry(amount));
+            pieEntries.add(new PieEntry(amount, label));
         }
     }
 
@@ -180,20 +165,20 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieChart(){
-        Description description = new Description();
-        description.setText("");
-        pieChart.setDescription(description);
-
+        pieChart.setDescription(null);
         pieChart.setDrawEntryLabels(false);
-        pieChart.getLegend().setEnabled(false);
+        pieChart.getLegend().setTextSize(12f);
         pieChart.setHoleRadius(78f);
+        pieChart.setExtraOffsets(0,0,0,-10);
         pieChart.invalidate();
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull());
-        pieDataSet.setDrawValues(false);
         pieDataSet.setSliceSpace(5f);
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.black));
+        pieDataSet.setValueFormatter(new CurrencyEntryValueFormatter(getActivity()));
+        pieDataSet.setValueTextSize(15f);
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){

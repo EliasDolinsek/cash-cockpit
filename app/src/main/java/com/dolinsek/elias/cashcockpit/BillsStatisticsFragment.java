@@ -53,7 +53,6 @@ public class BillsStatisticsFragment extends Fragment {
     private LinearLayout llSelectMonthFragment;
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
-    private RecyclerView rvBillsOfSelectedMonth;
     private LinearLayout llBillTypeOverallUsageTextsContainer, llBillTypeSelectedMonthUsageTextsContainer;
     private NotEnoughDataFragment fgmNotEnoughData;
 
@@ -70,7 +69,6 @@ public class BillsStatisticsFragment extends Fragment {
         llSelectMonthFragment = inflatedView.findViewById(R.id.ll_bills_statistics_select_month_fragment_container);
         pcUsageOfBillTypes = inflatedView.findViewById(R.id.pc_bills_statistics_bill_type_usage);
         bcHistoryOfPayments = inflatedView.findViewById(R.id.bc_bills_statistics_history_of_payments);
-        rvBillsOfSelectedMonth = inflatedView.findViewById(R.id.rv_bills_statistics_bills_of_month);
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bills_statistics_not_enough_data);
 
         llBillTypeOverallUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_overall_texts_container);
@@ -83,9 +81,6 @@ public class BillsStatisticsFragment extends Fragment {
         txvBillsTypeInputUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_overall);
         txvBillsTypeOutputUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_overall);
         txvBillsTypeTransferUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_transfer_usage_overall);
-
-        rvBillsOfSelectedMonth.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvBillsOfSelectedMonth.setHasFixedSize(false);
 
         if (Database.Toolkit.getAllBillsInDatabase().size() != 0){
             displayBillsTypeUsage(Database.Toolkit.getAllBillsInDatabase(), DISPLAY_BILL_USAGE_TYPE_OVERALL);
@@ -145,17 +140,11 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void setupBillTypeUsageChart(){
-        Description description = new Description();
-        description.setText(getString(R.string.label_bill_types_usage));
-        description.setTextSize(14f);
-        pcUsageOfBillTypes.setDescription(description);
-
+        pcUsageOfBillTypes.setDescription(null);
         pcUsageOfBillTypes.setUsePercentValues(true);
-        pcUsageOfBillTypes.setEntryLabelTextSize(17f);
-        pcUsageOfBillTypes.setEntryLabelColor(getResources().getColor(android.R.color.black));
-        pcUsageOfBillTypes.getLegend().setEnabled(false);
+        pcUsageOfBillTypes.setDrawEntryLabels(false);
         pcUsageOfBillTypes.setHoleRadius(70f);
-        pcUsageOfBillTypes.setExtraOffsets(2f,2f,2f,2f);
+        pcUsageOfBillTypes.setExtraOffsets(2f,2f,2f,-8f);
         pcUsageOfBillTypes.invalidate();
     }
 
@@ -175,9 +164,9 @@ public class BillsStatisticsFragment extends Fragment {
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColors(pieDataSet);
         pieDataSet.setValueTextSize(15f);
-        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.black));
         pieDataSet.setSliceSpace(5f);
         pieDataSet.setValueLineWidth(2f);
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
@@ -420,9 +409,6 @@ public class BillsStatisticsFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 long selectionTimeStamp = timeStampsWithBills[position];
                 ArrayList<Bill> billsOfSelectedMonth = Database.Toolkit.getBillsOfMonth(selectionTimeStamp);
-
-                HistoryItemAdapter historyItemAdapter = HistoryItemAdapter.getBillsStatisticsHistoryItemAdapter(billsOfSelectedMonth);
-                rvBillsOfSelectedMonth.setAdapter(historyItemAdapter);
 
                 loadBillTypeUsageStatistic(selectionTimeStamp);
                 loadPaymentsHistory(selectionTimeStamp);

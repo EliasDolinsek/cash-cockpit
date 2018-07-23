@@ -29,7 +29,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="2dp"/>
+            android:layout_marginTop="2dp" />
 
         <ImageView
             android:id="@+id/imv_cockpit_chart_settings"
@@ -51,7 +51,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginBottom="14dp">
 
             <TextView
                 android:id="@+id/txv_cockpit_chart_total_outputs_amount"
@@ -141,45 +142,4 @@
                 android:textColor="@color/colorAccent" />
         </GridLayout>
     </android.support.constraint.ConstraintLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="4dp"
-        android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/txv_cockpit_chart_outputs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorCockpitChartEntriesOutput"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" · "
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/txv_cockpit_chart_inputs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorCockpitChartEntriesInput"
-            android:textStyle="bold"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=" · "
-            android:textStyle="bold"/>
-
-        <TextView
-            android:id="@+id/txv_cockpit_chart_fixed_costs"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/colorCockpitChartEntriesFixedCosts"
-            android:textStyle="bold"/>
-    </LinearLayout>
 </LinearLayout>

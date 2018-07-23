@@ -127,16 +127,20 @@ public class HistoryFragment extends Fragment {
     }
 
     private void displaySelectedFilters(){
-        String selectedBillTypeInFilterAsString = getSelectedBillTypeInFilterAsString(historyFragmentFiltersDialogFragment);
+        String selectedBillTypeInFilterAsString = getSelectedBillTypeInFilterAsString();
         String selectedMainFilterSelection = getSelectionOfMainFilterAsString();
         String activeFilters = selectedBillTypeInFilterAsString + " " + Character.toString((char)0x00B7) + " " + selectedMainFilterSelection;
 
         mTxvSelectedFilters.setText(activeFilters);
     }
 
-    private String getSelectedBillTypeInFilterAsString(HistoryFragmentFiltersDialogFragment historyFragmentFiltersDialogFragment){
-        String[] billTypeSelections = historyFragmentFiltersDialogFragment.getBillsTypesAsStringIncludingAll();
-        return billTypeSelections[selectedIndexBillTypeFilter];
+    private String getSelectedBillTypeInFilterAsString(){
+        String[] billTypeSelections = getResources().getStringArray(R.array.bill_types_array);
+        if (selectedIndexBillTypeFilter == 0){
+            return getString(R.string.label_all_bill_types);
+        } else {
+            return billTypeSelections[selectedIndexBillTypeFilter + 1];
+        }
     }
 
     private void filterBillsToDisplayDependingOnSelectedBillTypeFilter(int selectedIndexBillTypeFilter){

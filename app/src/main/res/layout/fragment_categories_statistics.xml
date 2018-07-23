@@ -16,31 +16,32 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="4dp">
 
             <LinearLayout
                 android:id="@+id/ll_categories_statistics_filters_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="4dp">
 
                 <LinearLayout
                     android:id="@+id/ll_categories_statistics_select_date_fragment_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@drawable/border_primary_light"
                     android:padding="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/border_primary_light"/>
+                    android:layout_marginEnd="4dp"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginStart="4dp"
-                    android:background="@drawable/border_accent">
+                    android:background="@drawable/border_accent"
+                    android:padding="4dp">
 
                     <Spinner
                         android:id="@+id/spn_categories_statistics_bill_type"
@@ -54,8 +55,7 @@
                 android:id="@+id/pc_categories_statistics"
                 android:layout_width="match_parent"
                 android:layout_height="325dp"
-                android:padding="4dp"
-                android:layout_marginBottom="12dp"/>
+                android:layout_margin="4dp"/>
 
         <fragment
             android:id="@+id/fgm_categories_statistics_not_enough_data"
@@ -64,13 +64,14 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             app:text="@string/label_not_enough_data_for_statistic"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginBottom="8dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_categories_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="10"/>
+                android:layout_height="wrap_content"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

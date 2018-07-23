@@ -21,6 +21,6 @@ public class CurrencyEntryValueFormatter implements IValueFormatter{
     @Override
     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
         long formattedLongValue = ((long) value) * 100;
-        return Currency.getActiveCurrency(context).formatAmountToReadableStringWithCurrencySymbol(formattedLongValue);
+        return Currency.getActiveCurrency(context).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(formattedLongValue);
     }
 }

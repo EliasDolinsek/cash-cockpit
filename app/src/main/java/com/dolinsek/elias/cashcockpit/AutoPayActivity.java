@@ -55,7 +55,7 @@ public class AutoPayActivity extends AppCompatActivity {
     private AutoPay autoPay;
     private BankAccount bankAccountToAddBill;
     private Subcategory selectedSubcategory;
-    private int selectedAutoPayBillType;
+    private int selectedAutoPayBillType = Bill.TYPE_OUTPUT;
 
     private boolean editModeActive;
 
@@ -97,6 +97,12 @@ public class AutoPayActivity extends AppCompatActivity {
                 AutoPayActivity.this.selectedSubcategory = selectedSubcategory;
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mFgmBankAccountAndBillSelection.setBillTypeSelectionSpinnerSelection(selectedAutoPayBillType);
     }
 
     private void createOrSaveAutoPayIfPossible(){

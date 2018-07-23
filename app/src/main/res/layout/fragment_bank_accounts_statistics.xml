@@ -17,20 +17,20 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_margin="8dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:background="@drawable/border_primary_light"
-                android:layout_margin="4dp">
+                android:padding="4dp">
 
                 <Spinner
                     android:id="@+id/spn_bank_accounts_statistics_select_bank_account"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="4dp"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -45,22 +45,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginTop="24dp"
                 app:text="@string/label_not_enough_data_for_statistic"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="10"/>
+                android:layout_height="wrap_content"/>
 
             <fragment
                 android:id="@+id/fgm_bank_account_statistics_no_bills"
                 class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:text="@string/label_no_bills"
-                android:layout_marginTop="22dp"/>
+                app:text="@string/label_no_bills"/>
 
         </LinearLayout>
 

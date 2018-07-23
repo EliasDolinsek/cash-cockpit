@@ -41,6 +41,10 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
         btnCreateBankAccount = inflatedView.findViewById(R.id.btn_bank_account_and_bill_selection_click_to_create_bank_account);
         imvBillType = inflatedView.findViewById(R.id.imv_bank_account_and_bill_selection_bill);
 
+        setupSpinnersStyles();
+        setupBillTypeSelectionSpinner();
+        setupBankAccountSelectionSpinner();
+
         return inflatedView;
     }
 
@@ -66,10 +70,6 @@ public class BankAccountAndBillSelectionFragment extends Fragment {
             spnBankAccountSelection.setVisibility(View.VISIBLE);
             spnBillSelection.setVisibility(View.VISIBLE);
         }
-
-        setupSpinnersStyles();
-        setupBillTypeSelectionSpinner();
-        setupBankAccountSelectionSpinner();
     }
 
     private void setupSpinnersStyles(){

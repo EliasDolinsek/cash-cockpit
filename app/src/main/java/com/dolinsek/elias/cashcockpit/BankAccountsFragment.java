@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -60,8 +61,6 @@ public class BankAccountsFragment extends Fragment {
         mFbtnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                //Start CreateBankAccountsActivity
                 Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
                 startActivity(intent);
             }

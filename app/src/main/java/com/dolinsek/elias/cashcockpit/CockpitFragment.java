@@ -108,7 +108,7 @@ public class CockpitFragment extends Fragment {
 
             }
         });
-        mFgmBillTypeAndBankAccountSelection.setBillTypeSelectionSpinnerSelection(currentlySelectedBillType);
+
         mFgmBillTypeAndBankAccountSelection.setupBankAccountSelectionSpinnerOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -198,6 +198,12 @@ public class CockpitFragment extends Fragment {
         }
 
         return inflatedView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFgmBillTypeAndBankAccountSelection.setBillTypeSelectionSpinnerSelection(currentlySelectedBillType);
     }
 
     private void hideKeyboard(){
