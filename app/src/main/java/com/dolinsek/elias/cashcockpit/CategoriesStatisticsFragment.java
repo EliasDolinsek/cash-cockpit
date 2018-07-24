@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -41,14 +42,13 @@ public class CategoriesStatisticsFragment extends Fragment {
     private static final String EXTRA_TIME_STAMP_OF_MONTH = "timeStampOfMonth";
 
     private static final int STEP_ONE_MONTH_FORWARD = 1;
-    private static final int STEP_ONE_MONTH_BACKWARD = -1;
 
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
     private LinearLayout llFilterFragmentsContainer;
     private SelectMonthFragment mSelectMonthFragment;
     private Spinner spnBillTypeFilter;
-    private ScrollView scrollView;
+    private NestedScrollView scrollView;
     private NotEnoughDataFragment fgmNotEnoughData;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
@@ -69,7 +69,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         spnBillTypeFilter = (Spinner) inflatedView.findViewById(R.id.spn_categories_statistics_bill_type);
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_categories_statistics_not_enough_data);
 
-        scrollView = (ScrollView) inflatedView.findViewById(R.id.sv_categories_statistics);
+        scrollView = inflatedView.findViewById(R.id.sv_categories_statistics);
         scrollView.scrollTo(0,0);
 
         timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills());
@@ -203,8 +203,9 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
-        pieDataSet.setDrawValues(false);
         pieDataSet.setSliceSpace(3f);
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
+        pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 

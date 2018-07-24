@@ -100,7 +100,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
-        } else if(doesEnteredNameAlreadyExist() && bankAccount == null){
+        } else if(doesEnteredNameAlreadyExist()){
             Toast.makeText(BankAccountActivity.this, getString(R.string.label_bank_account_already_exits), Toast.LENGTH_SHORT).show();
         } else {
             if(bankAccount == null){
@@ -215,7 +215,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     private boolean doesEnteredNameAlreadyExist(){
         String enteredNameForBankAccount = mFgmNameInput.getEnteredDescriptionAsString();
         for (BankAccount bankAccount:Database.getBankAccounts()){
-            if (bankAccount.getName().equals(enteredNameForBankAccount)){
+            if (bankAccount.getName().equals(enteredNameForBankAccount) && !bankAccount.equals(this.bankAccount)){
                 return true;
             }
         }

@@ -11,6 +11,6 @@ import com.dolinsek.elias.cashcockpit.R;
 public class Toolkit {
 
     public static void displayPleaseCheckInputsToast(Context context){
-        Toast.makeText(context, context.getString(R.string.label_check_inputs), Toast.LENGTH_LONG).show();
+        Toast.makeText(context, context.getString(R.string.label_check_inputs), Toast.LENGTH_SHORT).show();
     }
 }

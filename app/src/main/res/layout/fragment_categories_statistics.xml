@@ -7,11 +7,10 @@
     <!--To avoid scroll view from scrolling to the bottom automatically-->
     <View android:layout_width="match_parent" android:id="@+id/focus_view" android:layout_height="0dp" android:focusable="true" android:focusableInTouchMode="true"><requestFocus/></View>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:id="@+id/sv_categories_statistics"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10">
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -71,7 +70,9 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_categories_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:paddingBottom="8dp"/>
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

@@ -101,7 +101,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                         String enteredGoalAmount = mEdtGoalAmount.getText().toString();
                         if(mEdtSubcategoryName.getText().toString().trim().equals("")){
                             Toolkit.displayPleaseCheckInputsToast(getContext());
-                        } else if(nameAlreadyExits && !mEditMode) {
+                        } else if(nameAlreadyExits) {
                             Toolkit.displayPleaseCheckInputsToast(getContext());
                         } else if(mChbGoalEnabled.isChecked() && (enteredGoalAmount.equals("") || enteredGoalAmount.equals("."))){
                             Toolkit.displayPleaseCheckInputsToast(getContext());
@@ -256,8 +256,10 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     }
 
     private boolean doesNameForSubcategoryAlreadyExist(){
+        String enteredName = mEdtSubcategoryName.getText().toString();
         for(int i = 0; i<mPrimaryCategory.getSubcategories().size(); i++){
-            if(mPrimaryCategory.getSubcategories().get(i).getName().equals(mEdtSubcategoryName.getText().toString()))
+            Subcategory currentSubcategory = mPrimaryCategory.getSubcategories().get(i);
+            if(currentSubcategory.getName().equals(enteredName) && !currentSubcategory.equals(mSubcategory))
                 return true;
         }
 

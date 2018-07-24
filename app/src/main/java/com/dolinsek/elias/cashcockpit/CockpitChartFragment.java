@@ -33,6 +33,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.time.Year;
 import java.util.ArrayList;
@@ -146,10 +147,12 @@ public class CockpitChartFragment extends Fragment {
         long amountOfFixedCosts = getAmountOfFixedCosts();
         long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT));
         long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
+        long amountOfTransfers = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER);
 
-        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, getString(R.string.label_inputs), pieEntries);
         addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutputs), getString(R.string.label_output), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfTransfers), getString(R.string.label_transfer), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
 
         return pieEntries;
     }
@@ -181,29 +184,40 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull());
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull(), isAmountOfTransfersGreaterThanNull());
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setDrawValues(false);
     }
 
-    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull, boolean amountOfTransfersGreaterThanNull){
         int[] colors;
-        if (amountOfFixCostsGreaterThanNull && amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
-        } else if (amountOfFixCostsGreaterThanNull && amountOfInputsGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput)};
-        } else if (amountOfFixCostsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+        int colorInputs = getResources().getColor(R.color.colorCockpitChartEntriesInput), colorOutputs = getResources().getColor(R.color.colorCockpitChartEntriesOutput), colorTransfers = getResources().getColor(R.color.colorCockpitChartEntriesTransfer), colorFixedCosts = getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts);
+        if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull  && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorInputs, colorOutputs, colorTransfers, colorFixedCosts};
+        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull){
+            colors = new int[]{colorInputs, colorOutputs, colorTransfers};
+        } else if (amountOfInputsGreaterThanNull && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorInputs, colorTransfers, colorFixedCosts};
+        } else if (amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorOutputs, colorTransfers, colorFixedCosts};
         } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
-        } else if (amountOfInputsGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesInput)};
+            colors = new int[]{colorInputs, colorOutputs};
+        } else if (amountOfInputsGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorInputs, colorFixedCosts};
+        } else if (amountOfOutputGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorOutputs, colorFixedCosts};
+        } else if (amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull){
+            colors = new int[]{colorOutputs, colorTransfers};
+        } else if (amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
+            colors = new int[]{colorTransfers, colorFixedCosts};
         } else if (amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
-        } else if (amountOfFixCostsGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts)};
+            colors = new int[]{colorOutputs};
+        } else if (amountOfInputsGreaterThanNull){
+            colors = new int[]{colorInputs};
+        } else if (amountOfTransfersGreaterThanNull){
+            colors = new int[]{colorTransfers};
         } else {
-            colors = new int[]{getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts), getResources().getColor(R.color.colorCockpitChartEntriesInput), getResources().getColor(R.color.colorCockpitChartEntriesOutput)};
+            colors = new int[]{colorFixedCosts};
         }
 
         pieDataSet.setColors(colors);
@@ -219,6 +233,10 @@ public class CockpitChartFragment extends Fragment {
 
     private boolean isAmountOfInputsGreaterThanNull(){
         return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) != 0;
+    }
+
+    private boolean isAmountOfTransfersGreaterThanNull(){
+        return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER) != 0;
     }
 
     private void displayTextsOnTextFields(){

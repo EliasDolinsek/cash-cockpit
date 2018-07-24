@@ -4,7 +4,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:layout_marginBottom="4dp">
+    android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:layout_marginBottom="4dp" android:layout_marginTop="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -20,8 +20,8 @@
 
             <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/imv_item_primary_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="4dp" />
 
@@ -71,7 +71,8 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_marginEnd="4dp"
-                    android:background="@drawable/ic_keyboard_arrow_down_gray"/>
+                    android:background="@drawable/ic_keyboard_arrow_down_gray"
+                    android:layout_gravity="center_vertical"/>
             </LinearLayout>
 
         </LinearLayout>
