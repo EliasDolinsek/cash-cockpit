@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-            app:text="@string/label_not_enough_data_for_statistic"
+            app:text="@string/label_no_data_for_statistic"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

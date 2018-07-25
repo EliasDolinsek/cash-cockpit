@@ -45,7 +45,7 @@
                     android:id="@+id/txv_item_history_auto_pay_bill_indicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/auto_pay"
+                    android:text="@string/label_auto_pays"
                     android:textColor="@android:color/white"
                     android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
                     android:background="@drawable/border_accent"

@@ -4,26 +4,26 @@
     <item
         android:id="@+id/navigation_cockpit"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_cockpit" />
+        android:title="@string/tab_cockpit" />
 
     <item
         android:id="@+id/navigation_history"
         android:icon="@drawable/ic_navigation_history_24dp"
-        android:title="@string/title_history" />
+        android:title="@string/tab_history" />
 
     <item
         android:id="@+id/navigation_statistics"
         android:icon="@drawable/ic_statistics_black_24dp"
-        android:title="@string/title_statistics" />
+        android:title="@string/tab_statistics" />
 
     <item
         android:id="@+id/navigation_database"
         android:icon="@drawable/ic_database"
-        android:title="@string/title_database"/>
+        android:title="@string/tab_database"/>
 
     <item
         android:id="@+id/navigation_settings"
         android:icon="@drawable/ic_settings"
-        android:title="@string/settings"/>
+        android:title="@string/tab_settings"/>
 
 </menu>

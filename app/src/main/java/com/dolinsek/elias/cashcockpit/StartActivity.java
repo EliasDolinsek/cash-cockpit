@@ -33,7 +33,7 @@ public class StartActivity extends AppCompatActivity {
     private static final String PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP = "resetPasswordTimeStamp";
     private static final String PREFERENCE_KEY_PASSWORD_RESET_OPTION = "preference_password_reset_time_option";
     private static final int PASSWORD_RESET_OPTION_NEVER = 5;
-    private static final long[] resetOptionsAsTimeStamps = new long[]{21600000 /*6 Hours*/, 43200000 /*12 Hours*/, 86400000 /*1 Day*/, 259200000 /*3 Days*/, 604800000 /*1 Week*/};
+    private static final long[] RESET_OPTIONS_AS_TIME_STAMPS = new long[]{21600000 /*6 Hours*/, 43200000 /*12 Hours*/, 86400000 /*1 Day*/, 259200000 /*3 Days*/, 604800000 /*1 Week*/};
 
     private EditText edtPassword;
     private Button btnLogin;
@@ -92,7 +92,7 @@ public class StartActivity extends AppCompatActivity {
 
         editor.commit();
 
-        Toast.makeText(this, getString(R.string.label_password_got_successfully_reset), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.toast_password_got_reset_successfully), Toast.LENGTH_SHORT).show();
     }
 
     private void setupForPasswordResettingMode(){
@@ -170,7 +170,7 @@ public class StartActivity extends AppCompatActivity {
         int minutesUntilPasswordReset = timeMillisToMinutes(timeUntilPasswordReset) % 60;
 
         if (hoursUntilPasswordReset > 24){
-            return  getString(R.string.label_days_and_hoursuntil_password_reset, daysUntilPasswordReset, hoursUntilPasswordReset);
+            return  getString(R.string.label_days_and_hours_until_password_reset, daysUntilPasswordReset, hoursUntilPasswordReset);
         } else {
             return getString(R.string.label_hours_and_minutes_until_password_reset, hoursUntilPasswordReset, minutesUntilPasswordReset);
         }
@@ -215,9 +215,9 @@ public class StartActivity extends AppCompatActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
-            alertBuilder.setTitle(R.string.dialog_title_reset_password).setMessage(R.string.dialog_msg_reset_password_description);
+            alertBuilder.setTitle(R.string.dialog_title_reset_password).setMessage(R.string.dialog_msg_reset_password_conformation);
 
-            alertBuilder.setPositiveButton(R.string.dialog_action_reset_password, new DialogInterface.OnClickListener() {
+            alertBuilder.setPositiveButton(R.string.dialog_action_reset, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     long timeStampAtReset = addResetTimeToTimeStamp(System.currentTimeMillis());
@@ -237,7 +237,7 @@ public class StartActivity extends AppCompatActivity {
             SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
             int resetOptionIndex = sharedPreferences.getInt(PREFERENCE_KEY_PASSWORD_RESET_OPTION, 0);
             if (resetOptionIndex < 5){
-                return resetOptionsAsTimeStamps[resetOptionIndex];
+                return RESET_OPTIONS_AS_TIME_STAMPS[resetOptionIndex];
             } else {
                 return 0;
             }

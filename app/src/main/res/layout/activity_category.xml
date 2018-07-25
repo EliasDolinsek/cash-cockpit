@@ -19,7 +19,7 @@
             class="com.dolinsek.elias.cashcockpit.DescriptionInputFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hintText="@string/hint_category_name"
+            app:hintText="@string/hint_name"
             android:layout_marginBottom="4dp"/>
 
         <LinearLayout

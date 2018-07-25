@@ -37,7 +37,7 @@
             android:layout_gravity="center_vertical"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
             android:textColor="@color/colorPrimaryTextColor"
-            android:text="@string/label_click_to_select_a_category"
+            android:text="@string/label_select_category"
             android:singleLine="true"
             android:ellipsize="end" />
 

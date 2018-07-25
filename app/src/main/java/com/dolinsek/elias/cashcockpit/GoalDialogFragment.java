@@ -50,7 +50,7 @@ public class GoalDialogFragment extends DialogFragment{
 
             builder.setTitle(getResources().getString(R.string.dialog_title_edit_goal));
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_save), null);
-            builder.setNegativeButton(getResources().getString(R.string.dialog_action_delete_goal), null);
+            builder.setNegativeButton(getResources().getString(R.string.dialog_action_delete), null);
         } else {
             builder.setTitle(getResources().getString(R.string.dialog_title_create_goal));
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_create), null);
@@ -77,7 +77,7 @@ public class GoalDialogFragment extends DialogFragment{
                         if(mEdtGoalAmount.getText().toString().trim().equals("") || mEdtGoalAmount.getText().toString().equals("0"))
                             mTextInputLayout.setError(getResources().getString(R.string.label_enter_valid_amount));
                         else if(subcategoriesGoalAmount > ((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))){
-                            mTextInputLayout.setError(getResources().getString(R.string.label_more_goal_amount));
+                            mTextInputLayout.setError(getResources().getString(R.string.label_enter_higher_goal_amount));
                         } else {
                             primaryCategory.setGoal(new Goal(((long) (Double.valueOf(mEdtGoalAmount.getText().toString()) * 100))));
 

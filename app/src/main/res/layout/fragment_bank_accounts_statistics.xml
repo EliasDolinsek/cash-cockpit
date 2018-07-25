@@ -20,6 +20,7 @@
             android:layout_margin="8dp">
 
             <LinearLayout
+                android:id="@+id/ll_bank_account_statistics_bank_accounts_spn_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -44,7 +45,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:text="@string/label_not_enough_data_for_statistic"/>
+                app:text="@string/label_no_data_for_statistic"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"
@@ -58,7 +59,7 @@
                 class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:text="@string/label_no_bills"/>
+                app:text="@string/label_no_bills_found"/>
 
         </LinearLayout>
 

@@ -1,207 +1,164 @@
 <resources>
+
+    <!-- App-Name -->
     <string name="app_name">CashCockpit</string>
-    <string name="title_cockpit">Cockpit</string>
-    <string name="title_history">History</string>
-    <string name="title_statistics">Statistics</string>
-    <string name="title_database">Database</string>
-    <string name="settings">Settings</string>
-    <string name="help">Help</string>
-    <string name="about">About</string>
-    <string name="name">Name</string>
-    <string name="balance">Balance</string>
-    <string name="creation_date">Creation Date</string>
-    <string name="priamry_account">Primary Account</string>
-    <string name="accounts">Accounts</string>
-    <string name="categories">Categories</string>
-    <string name="auto_pay">Auto Pay</string>
-    <string name="goals">Goals</string>
-    <string name="account_name">Account Name</string>
-    <string name="set_primary_account">Set as primary account</string>
-    <string name="create_account">Create Account</string>
-    <string name="created_bank_account">New bank account successfully created!</string>
-    <string name="edited_bank_account">Bank account edited successfully!</string>
-    <string name="delete_bank_account">Bank account successfully deleted!</string>
-    <string name="enter_name">You need to enter a name!</string>
-    <string name="enter_balance">You need to enter a balance!</string>
-    <string name="balance_to_hight">Your balance is too high!</string>
-    <string name="save">Save</string>
-    <string name="delete">Delete</string>
-    <string name="label_balance">Balance</string>
-    <string name="label_creation_date">Creation Date</string>
-    <string name="btn_restore_default_categories">Restore default categories</string>
 
+    <!-- ActionBar titles-->
+    <string name="title_select_category">Select Category</string>
+    <string name="title_password_settings">Password Settings</string>
+    <string name="title_cockpit_chart">Cockpit-Chart</string>
 
-    <!--New strings-->
-    <string name="hint_bank_account_name">Account name</string>
-    <string name="btn_create">Create</string>
-    <string name="btn_save">Save</string>
-    <string name="btn_delete">Delete</string>
-    <string name="btn_create_account">Create Account</string>
-    <string name="label_enter_bank_account_name">Please enter a name!</string>
-    <string name="label_enter_euros">Please enter some balance!</string>
-    <string name="label_too_much_cents">Enter a value under 100!</string>
-    <string name="toast_bank_account_created">Bank Account created successfully</string>
-    <string name="toast_bank_account_changed">Bank Account edited successfully</string>
-    <string name="toast_bank_account_deleted">Bank Account deleted successfully</string>
-    <string name="btn_create_category">Create Category</string>
-    <string name="dialog_msg_delete_account">Delete account including all associated Bills?</string>
-    <string name="dialog_action_delete">Delete</string>
-    <string name="dialog_action_cancel">Cancel</string>
-    <string name="tab_accounts">Accounts</string>
+    <!-- Tab texts -->
+    <string name="tab_cockpit">Cockpit</string>
+    <string name="tab_history">History</string>
+    <string name="tab_statistics">Statistics</string>
+    <string name="tab_database">Database</string>
+    <string name="tab_settings">Settings</string>
+    <string name="tab_bills">Bills</string>
+    <string name="tab_goals">Goals</string>
+
+    <string name="tab_bank_accounts">Bank Accounts</string>
+    <string name="tab_auto_pays">AutoPays</string>
     <string name="tab_categories">Categories</string>
-    <string name="tab_auto_pay">Auto Pay</string>
-    <string name="hint_category_name">Category name</string>
+
+    <!-- ActionBar buttons texts -->
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+
+    <!-- Button texts -->
+    <string name="btn_restore_default_categories">Restore default Categories</string>
+    <string name="btn_create_account">Create Account</string>
+    <string name="btn_create_category">Create Category</string>
     <string name="btn_set_goal">Set Goal</string>
-    <string name="label_enter_category_name">Please enter a name!</string>
-    <string name="dialog_title_create_goal">Create Goal</string>
-    <string name="dialog_action_create">Create</string>
-    <string name="dialog_action_save">Save</string>
-    <string name="hint_goal_amount">Goal Amount</string>
-    <string name="dialog_title_edit_goal">Edit Goal</string>
-    <string name="label_enter_valid_amount">Please enter a valid amount!</string>
-    <string name="dialog_action_delete_goal">Delete Goal</string>
     <string name="btn_add_subcategory">Add Subcategory</string>
-    <string name="hint_subcategory_name">Subcategory name</string>
-    <string name="dialog_title_create_subcategory">Create Subcategory</string>
-    <string name="label_category_name_already_exists">This name already exits!</string>
-    <string name="label_more_goal_amount">Too less!</string>
-    <string name="dialog_msg_delete_primary_category">Delete Category including all associated Bills and AutoPays?</string>
-    <string name="dialog_title_edit_subcategory">Edit Subcategory</string>
-    <string name="btn_create_autopay">Create AutoPay</string>
-    <string name="label_create_auto_pay">@string/btn_create_autopay</string>
-    <string name="label_unknown">Unknown</string>
+    <string name="btn_create_auto_pay">Create AutoPay</string>
+    <string name="btn_select">Select</string>
+    <string name="btn_add_bill">Add Bill</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_filters">Filters</string>
+    <string name="btn_save_password">Save Password</string>
+    <string name="btn_save_security_settings">Save Security Settings</string>
+
+    <!-- Hint texts -->
+    <string name="hint_name">Name</string>
+    <string name="hint_bank_account_name">Name of Bank Account</string>
+    <string name="hint_goal_amount">Goal Amount</string>
+    <string name="hint_amount">Amount</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_current_password">Current Password</string>
+    <string name="hint_new_password">New Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+
+    <!-- Texts for views -->
+    <string name="label_primary_account">Primary Account</string>
+    <string name="label_accounts">Accounts</string>
+    <string name="label_categories">Categories</string>
+    <string name="label_auto_pays">AutoPays</string>
+    <string name="label_goals">Goals</string>
+    <string name="label_enter_valid_amount">Enter a valid amount</string>
+    <string name="label_enter_higher_goal_amount">You need to enter a higher Goal-Amount</string>
     <string name="label_weekly">Weekly</string>
     <string name="label_monthly">Monthly</string>
     <string name="label_yearly">Yearly</string>
-    <string name="label_type">Type</string>
-    <string name="label_amount">Amount</string>
-    <string name="label_bank_account_already_exits">Bank account already exists!</string>
-    <string name="btn_select_category">Select Category</string>
-    <string name="label_select_category">@string/btn_select_category</string>
-    <string name="btn_select_date">Select Date</string>
-    <string name="hint_amount">Amount</string>
-    <string name="hint_auto_pay_name">Name</string>
-    <string name="btn_select">Select</string>
-    <string name="label_enter_name">Please enter a name!</string>
-    <string name="label_none">None</string>
     <string name="label_bills">Bill(s)</string>
-    <string name="label_primary_account">Primary Account</string>
-    <string name="label_no_bank_accounts">There are no bank accounts!</string>
-    <string name="label_no_categories">There are no categories!</string>
-    <string name="dialog_action_restore">Restore</string>
-    <string name="dialog_msg_delete_auto_pay">Do you really want to delete this AutoPay?</string>
     <string name="label_subcategory_delete_information">When deleting, all AutoPays and bills are also removed!</string>
-    <string name="dialog_action_confirm_deletion">Confirm deletion</string>
-    <string name="label_need_to_select_category">You need to select a category!</string>
-    <string name="label_need_to_select_bank_account">You need to select an account!</string>
     <string name="label_currency">Currency</string>
-    <string name="label_currency_preference_description">Currency what is used to display amounts and balances</string>
-    <string name="label_description">Description</string>
-    <string name="label_enter_amount">Please enter an amount!</string>
-    <string name="btn_add_bill">Add Bill</string>
-    <string name="toast_bill_added">Bill added successfully!</string>
-    <string name="label_no_category_selected">No category selected</string>
-    <string name="label_not_enough_data_for_history">Not enough data for a history</string>
-    <string name="dialog_msg_delete_bill">Do you really want to delete this bill?</string>
-    <string name="tab_bills">Bills</string>
-    <string name="tab_goals">Goals</string>
-    <string name="label_selected_month">Selected Month</string>
-    <string name="label_overall">Overall</string>
-    <string name="label_average">Average</string>
-    <string name="label_not_enough_data_for_statistic">Not enough data for a statistic</string>
-    <string name="label_current_bank_account">Current bank account</string>
     <string name="label_cash">Cash</string>
     <string name="label_cockpit">Cockpit</string>
-    <string name="label_loading_data">Loading data&#8230;</string>
-    <string name="label_beta">Beta</string>
-    <string name="label_monthly_balance">Monthly balance</string>
-    <string name="label_goals_statistics_charts_description">Used goal amounts in percent</string>
-    <string name="label_all_bill_types">All types</string>
-    <string name="label_categories_statistics_chart_description">Usage of categories</string>
-    <string name="label_no_bills">No bills found</string>
+    <string name="label_no_data_for_statistic">No data for statistic</string>
+    <string name="label_summary">Summary</string>
+    <string name="label_selected_month">Selected Month</string>
+    <string name="label_average">Average</string>
+    <string name="label_no_bills_found">No Bills found!</string>
+    <string name="label_goals_usage">Goals usage</string>
+    <string name="label_all_bill_types">All Bill-Types</string>
     <string name="label_no_description">No description</string>
-    <string name="label_bill_types_usage">Usage of Bill-Types</string>
-    <string name="label_categories_usage">Usage of Categories</string>
-    <string name="label_history_of_added_bills">History of added bills of month</string>
+    <string name="label_password_for_login_required">Password for Login required</string>
     <string name="label_general">General</string>
-    <string name="label_auto_pay_notifications">Auto Pay Notifications</string>
-    <string name="label_auto_pay_notification_preference_description">Shows notification when an auto pay gets added</string>
-    <string name="label_safety">Safety</string>
-    <string name="label_backup_database_regularly">Backup database regularly</string>
-    <string name="label_backup_database_regularly_preference_description">Creates weekly backup of database</string>
-    <string name="label_password_settings">Password settings</string>
-    <string name="label_use_password_for_login">Use password for login</string>
-    <string name="label_use_password_for_login_preference_description">Password has to be entered on login</string>
+    <string name="label_added_bills_history">Added Bills history</string>
+    <string name="label_password_settings">Password Settings</string>
     <string name="label_input">Input</string>
     <string name="label_output">Output</string>
     <string name="label_transfer">Transfer</string>
-    <string name="label_password">Password</string>
-    <string name="label_login">Login</string>
-    <string name="label_forgot_password">Forgot password?</string>
-    <string name="dialog_title_reset_password">Reset password</string>
-    <string name="dialog_msg_reset_password_description">Your password will be reset in 12 hours</string>
-    <string name="dialog_action_reset_password">Reset password</string>
-    <string name="label_amount_to_save_preference_description">Sets how much you want to save every month for the cockpit page</string>
-    <string name="label_amount_to_save">Amount to save</string>
-    <string name="label_cockpit_chart">Cockpit-Chart</string>
-    <string name="label_inputs">Inputs</string>
-    <string name="label_daily_limit">Daily limit</string>
+    <string name="label_forgot_password">Forgot Password</string>
+    <string name="label_total_outputs">Total Outputs</string>
+    <string name="label_daily_limit">Daily Limit</string>
     <string name="label_installment">Installment</string>
-    <string name="label_fixed_costs">Fixed costs</string>
-    <string name="label_total_outputs">Total outputs</string>
-    <string name="label_filters">Filters</string>
-    <string name="label_close">Close</string>
-    <string name="label_bills_in_database">%1$d Bill(s) found</string>
-    <string name="label_bill_creation_date">Created on %1$s</string>
-    <string name="label_please_select_a_category">Please select a category"</string>
-    <string name="label_check_inputs">Please check your inputs! Something seems to be wrong&#8230;</string>
-    <string name="label_no_categories_found">No categories found</string>
-    <string name="label_current_password">Current password</string>
-    <string name="label_new_password">New password</string>
-    <string name="label_confirm_new_password">Confirm new password</string>
-    <string name="btn_save_new_password">Save new password</string>
-    <string name="label_password_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text an can be easily stolen by other people who have access to this app\'s preferences by e.g. other apps!</string>
-    <string name="label_save_security_settings">Save security settings</string>
-    <string name="label_entered_passwords_dont_match">Entered passwords don\'t match</string>
-    <string name="label_wrong_password">Wrong password</string>
-    <string name="label_please_enter_a_password">Please enter a password</string>
-    <string name="label_password_reset_time">Password reset time:</string>
-    <string name="label_new_password_got_saved_successfully">New password got saved successfully!</string>
-    <string name="label_security_settings_got_saved_successfully">Security settings got saved successfully!</string>
-    <string name="label_no_bank_account_found">No bank account found</string>
-    <string name="label_days_and_hoursuntil_password_reset">%1$d Days and %2$d Hours until password reset</string>
-    <string name="label_hours_and_minutes_until_password_reset">%1$d Hours and %2$d Minutes until password reset</string>
-    <string name="label_password_got_successfully_reset">Password got successfully rest</string>
-    <string name="label_amount_to_save_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
-    <string name="label_new_amount_to_save_saved_successfully">New amount to save got saved successfully</string>
-    <string name="label_amount_to_save_settings">Cockpit Chart Settings</string>
-    <string name="label_click_to_select_a_category">Click to select a category</string>
+    <string name="label_inputs">Inputs</string>
+    <string name="label_outputs">Outputs</string>
+    <string name="label_transfers">Transfers</string>
+    <string name="label_fixed_costs">Fixed Costs</string>
+    <string name="label_bills_found">%1$d Bill(s) found</string>
+    <string name="label_no_categories_found">No Categories found!</string>
+    <string name="label_display_bill_creation_date">Bill created on: %1$s</string>
+    <string name="label_entered_passwords_dont_match">Entered Password doesn\'t match</string>
+    <string name="label_password_reset_time">Password reset time</string>
+    <string name="label_wrong_password">Wrong Password</string>
+    <string name="label_please_enter_a_password">Please enter a Password</string>
+    <string name="label_days_and_hours_until_password_reset">%1$d Day(s) and %2$d Hour(s) until password gets reset</string>
+    <string name="label_hours_and_minutes_until_password_reset">%1$d Hour(s) and %2$d Minute(s) until password gets reset</string>
+    <string name="label_select_category">Select Category</string>
     <string name="label_account">Account</string>
-    <string name="label_sign_out">Sign out</string>
-    <string name="label_sign_out_description">Sings you out and removes all your locally saved data</string>
-    <string name="label_delete_account">Delete Account</string>
-    <string name="label_signed_out_successfully">Signed out successfully!</string>
-    <string name="label_data_got_deleted_successfully">Data got deleted successfully!</string>
-    <string name="label_do_you_want_to_delete_all_data">Do you really want to delete all your data?</string>
-    <string name="label_all_your_saved_data">All your saved data</string>
-
-    <string name="label_synchronize_data">Synchronize Data</string>
-    <string name="label_synchronize_data_description">By checking this checkbox you agree that CashCockpit is allowed to store all your data on a server to synchronize it over all your devices</string>
-
+    <string name="label_sing_out">Sign Out</string>
+    <string name="label_sing_out_preference_description">You will get signed out and all your locally saved data will be deleted!</string>
     <string name="label_delete_data">Delete Data</string>
     <string name="label_delete_data_description">Deletes all your data on the server and locally</string>
-
     <string name="label_show_data">Show Data</string>
-    <string name="label_show_data_description">Displays you all your available data</string>
+    <string name="label_show_data_description">Displays you all your available Data</string>
+    <string name="label_euro">Euro</string>
+    <string name="label_dollar">Dollar</string>
+    <string name="label_pounds">Pounds</string>
 
-    <string name="euro">Euro</string>
-    <string name="dollar">Dollar</string>
-    <string name="pounds">Pounds</string>
+    <!-- Toast texts -->
+    <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
+    <string name="toast_bank_account_got_deleted_successfully">Bank Account got deleted successfully</string>
+    <string name="toast_category_already_exists">Category already exists</string>
+    <string name="toast_bank_account_already_exists">Bank Account already exists</string>
+    <string name="toast_new_bill_got_added">New Bill got added</string>
+    <string name="toast_please_check_inputs">Please check your inputs!</string>
+    <string name="toast_amount_to_save_got_saved_successfully">Amount to save got saved successfully</string>
+    <string name="toast_password_got_saved_successfully">Password got saved successfully</string>
+    <string name="toast_security_settings_got_saved_successfully">Security Setting got saved successfully</string>
+    <string name="toast_password_got_reset_successfully">Password got reset successfully</string>
+    <string name="toast_singed_out_successfully">Signed Out successfully</string>
+    <string name="toast_data_got_deleted_successfully">All your Data got deleted successfully</string>
 
+    <!-- Dialog actions -->
+    <string name="dialog_action_delete">Delete</string>
+    <string name="dialog_action_cancel">Cancel</string>
+    <string name="dialog_action_save">Save</string>
+    <string name="dialog_action_create">Create</string>
+    <string name="dialog_action_confirm_deletion">Confirm Deletion</string>
+    <string name="dialog_action_reset">Reset</string>
+    <string name="dialog_action_close">Close</string>
+
+    <!-- Dialog messages -->
+    <string name="dialog_msg_confirm_primary_category_deletion">Delete this Primary Category including all associated Bills and AutoPays?</string>
+    <string name="dialog_msg_confirm_auto_pay_deletion">Delete this AutoPay?</string>
+    <string name="dialog_msg_confirm_bill_deletion">Delete this Bill?</string>
+    <string name="dialog_msg_reset_password_conformation">Do you really want to reset your password?</string>
+    <string name="dialog_msg_delete_all_data_conformation">Do you really want to delete all your Data? This effects locally saved data and Backups!</string>
+
+    <!-- Dialog titles -->
+    <string name="dialog_title_create_goal">Create Goal</string>
+    <string name="dialog_title_edit_goal">Edit Goal</string>
+    <string name="dialog_title_create_subcategory">Create Subcategory</string>
+    <string name="dialog_title_edit_subcategory">Edit Subcategory</string>
+    <string name="dialog_title_reset_password">Reset Password</string>
+    <string name="dialog_title_filters">Filters</string>
+    <string name="dialog_title_delete_all_data">Delete all Data</string>
+    <string name="dialog_title_all_your_saved_data">All your saved Data</string>
+
+    <!-- Longer texts -->
+    <string name="text_password_preferences_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text an can be easily stolen by other people who have access to this app\'s preferences by e.g. other apps!</string>
+    <string name="text_amount_to_save_preference_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
+
+    <!-- Arrays -->
     <array name="currencies_array">
-        <item>@string/euro</item>
-        <item>@string/dollar</item>
-        <item>@string/pounds</item>
+        <item>@string/label_euro</item>
+        <item>@string/label_dollar</item>
+        <item>@string/label_pounds</item>
     </array>
 
     <string-array name="currencies_values_array">
@@ -253,6 +210,7 @@
         <item>Never</item>
     </array>
 
+    <!-- Other strings -->
     <string name="facebook_application_id" translatable="false">483192538792641</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb483192538792641</string>
     <string name="twitter_consumer_key" translatable="false">uH3wt6S3x2yNdxt6fyF202uQr</string>

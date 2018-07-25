@@ -45,6 +45,7 @@ BankAccountsStatisticsFragment extends Fragment {
     private LineChart lcStatistics;
     private BankAccount currentBankAccount;
     private NotEnoughDataFragment fgmNotEnoughData, fgmNotEnoughBills;
+    private LinearLayout mLlSpnSelectBankAccountContainer;
     private Spinner spnSelectBankAccount;
 
     private BankAccount selectedBankAccount;
@@ -58,6 +59,7 @@ BankAccountsStatisticsFragment extends Fragment {
         rvBills = inflatedView.findViewById(R.id.rv_bank_account_statistics);
         lcStatistics = inflatedView.findViewById(R.id.lc_bank_accounts_statistics);
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
+        mLlSpnSelectBankAccountContainer = inflatedView.findViewById(R.id.ll_bank_account_statistics_bank_accounts_spn_container);
 
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
         fgmNotEnoughBills = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_no_bills);
@@ -74,6 +76,7 @@ BankAccountsStatisticsFragment extends Fragment {
             fgmNotEnoughBills.hide();
             lcStatistics.setVisibility(View.GONE);
             spnSelectBankAccount.setVisibility(View.GONE);
+            mLlSpnSelectBankAccountContainer.setVisibility(View.GONE);
         }
 
         return inflatedView;

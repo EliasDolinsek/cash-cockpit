@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        app:hintText="@string/name"/>
+        app:hintText="@string/hint_name"/>
 
     <fragment
         android:id="@+id/fgm_auto_pay_bank_account_and_bill_type_selection"

@@ -71,7 +71,7 @@ public class StatisticsFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position){
-                case 0: return getString(R.string.tab_accounts);
+                case 0: return getString(R.string.tab_bank_accounts);
                 case 1: return getString(R.string.tab_bills);
                 case 2: return getString(R.string.tab_categories);
                 default: return getString(R.string.tab_goals);

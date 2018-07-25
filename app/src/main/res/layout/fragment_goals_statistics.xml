@@ -36,7 +36,7 @@
                 android:layout_marginTop="24dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:text="@string/label_not_enough_data_for_statistic"/>
+                app:text="@string/label_no_data_for_statistic"/>
 
             <LinearLayout
                 android:id="@+id/ll_goals_statistics_content"
@@ -128,7 +128,7 @@
                 </LinearLayout>
 
                 <TextView
-                    android:text="@string/label_goals_statistics_charts_description"
+                    android:text="@string/label_goals_usage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="textEnd"

@@ -31,7 +31,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SelectCategoryActivity"
-            android:label="@string/label_select_category"
+            android:label="@string/title_select_category"
             android:theme="@style/AppTheme.ActionBarEnabled" />
         <activity
             android:name=".StartActivity"
@@ -45,11 +45,11 @@
         </activity>
         <activity
             android:name=".PasswordPreferenceActivity"
-            android:label="@string/label_password_settings"
+            android:label="@string/title_password_settings"
             android:theme="@style/AppTheme.ActionBarEnabled" />
         <activity
             android:name=".CockpitChartPreferencesActivity"
-            android:label="@string/label_cockpit_chart"
+            android:label="@string/title_cockpit_chart"
             android:theme="@style/AppTheme.ActionBarEnabled"
             android:windowSoftInputMode="stateAlwaysVisible" />
     </application>

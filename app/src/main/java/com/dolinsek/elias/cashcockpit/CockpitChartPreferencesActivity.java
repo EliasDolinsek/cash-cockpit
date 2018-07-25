@@ -61,10 +61,9 @@ public class CockpitChartPreferencesActivity extends AppCompatActivity {
         if (!enteredAmount.trim().equals("") && !enteredAmount.trim().equals(".")){
             long formattedAmountToSave = mFgmAmountToSaveInput.getEnteredAmountAsLong();
             saveNewAmountToSave(formattedAmountToSave);
-            Toast.makeText(CockpitChartPreferencesActivity.this, getString(R.string.label_new_amount_to_save_saved_successfully), Toast.LENGTH_SHORT).show();
-            finish();
+            Toast.makeText(CockpitChartPreferencesActivity.this, getString(R.string.toast_amount_to_save_got_saved_successfully), Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(this, getString(R.string.label_check_inputs), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.toast_please_check_inputs), Toast.LENGTH_SHORT).show();
         }
     }
 

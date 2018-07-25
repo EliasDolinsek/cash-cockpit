@@ -34,7 +34,7 @@ public class DeleteBankAccountDialogFragment extends DialogFragment{
             public void onClick(DialogInterface dialogInterface, int i) {
                 mListener.onDialogPositiveClick(DeleteBankAccountDialogFragment.this);
             }
-        }).setMessage(getResources().getString(R.string.dialog_msg_delete_account));
+        }).setMessage(getResources().getString(R.string.dialog_action_delete));
 
         return builder.create();
     }

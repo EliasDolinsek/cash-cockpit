@@ -54,6 +54,7 @@ public class BillsStatisticsFragment extends Fragment {
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private LinearLayout llBillTypeOverallUsageTextsContainer, llBillTypeSelectedMonthUsageTextsContainer;
+    private View vwSeparationOne, vwSeparationTwo;
     private NotEnoughDataFragment fgmNotEnoughData;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
@@ -74,6 +75,9 @@ public class BillsStatisticsFragment extends Fragment {
         llBillTypeOverallUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_overall_texts_container);
         llBillTypeSelectedMonthUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_selected_month_texts_container);
 
+        vwSeparationOne = inflatedView.findViewById(R.id.vw_bills_statistics_separation_one);
+        vwSeparationTwo = inflatedView.findViewById(R.id.vw_bills_statistics_separation_two);
+
         txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
         txvBillsTypeOutputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_month);
         txvBillsTypeTransferUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_transfer_usage_month);
@@ -88,6 +92,8 @@ public class BillsStatisticsFragment extends Fragment {
             setupHistoryOfPaymentsChart();
             fgmNotEnoughData.hide();
         } else {
+            vwSeparationOne.setVisibility(View.GONE);
+            vwSeparationTwo.setVisibility(View.GONE);
             llSelectMonthFragment.setVisibility(View.GONE);
             pcUsageOfBillTypes.setVisibility(View.GONE);
             bcHistoryOfPayments.setVisibility(View.GONE);
@@ -152,7 +158,7 @@ public class BillsStatisticsFragment extends Fragment {
         bcHistoryOfPayments.getAxisRight().setEnabled(false);
         bcHistoryOfPayments.getLegend().setEnabled(false);
         bcHistoryOfPayments.getDescription().setEnabled(true);
-        bcHistoryOfPayments.getDescription().setText(getString(R.string.label_history_of_added_bills));
+        bcHistoryOfPayments.getDescription().setText(getString(R.string.label_added_bills_history));
         bcHistoryOfPayments.getDescription().setTextSize(14f);
         bcHistoryOfPayments.getDescription().setYOffset(4f);
 

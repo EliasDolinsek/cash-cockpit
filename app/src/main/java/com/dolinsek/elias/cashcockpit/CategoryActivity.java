@@ -162,7 +162,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         if (enteredName.trim().equals("")) {
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         } else if (nameAlreadyExists && !mEditMode) {
-            Toast.makeText(CategoryActivity.this, getString(R.string.label_category_name_already_exists), Toast.LENGTH_SHORT).show();
+            Toast.makeText(CategoryActivity.this, getString(R.string.toast_category_already_exists), Toast.LENGTH_SHORT).show();
         } else {
             primaryCategory.setName(enteredName);
 

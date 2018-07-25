@@ -82,7 +82,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             displaySubcategoryDetails();
             setupButtonsForEditMode(builder);
         } else {
-            setupButtonsForCreateMode(builder);
+            setupViewsForCreateMode(builder);
         }
 
         builder.setView(inflatedView);
@@ -226,7 +226,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         builder.setTitle(getResources().getString(R.string.dialog_title_edit_subcategory));
     }
 
-    private void setupButtonsForCreateMode(AlertDialog.Builder builder){
+    private void setupViewsForCreateMode(AlertDialog.Builder builder){
         builder.setPositiveButton(getResources().getString(R.string.dialog_action_create), null);
         builder.setTitle(getResources().getString(R.string.dialog_title_create_subcategory));
     }

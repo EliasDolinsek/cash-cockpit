@@ -43,7 +43,7 @@
                 android:layout_marginBottom="6dp"
                 android:layout_marginStart="4dp"
                 android:layout_gravity="center_vertical"
-                android:text="@string/priamry_account"
+                android:text="@string/label_primary_account"
                 android:textColor="@android:color/white" />
 
         </android.support.v7.widget.CardView>

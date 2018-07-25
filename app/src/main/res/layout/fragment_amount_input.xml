@@ -24,7 +24,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="10"
-            android:hint="@string/label_amount"
+            android:hint="@string/hint_amount"
             android:layout_gravity="center_vertical"
             android:inputType="numberDecimal"
             android:maxLength="15"

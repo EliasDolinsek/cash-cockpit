@@ -87,7 +87,7 @@ public class HistoryFragment extends Fragment {
 
     private void displayHowManyBillsAreInDatabaseOnSelectedFilterTxv(){
         int billsInDatabase = Database.Toolkit.getAllBillsInDatabase().size();
-        mTxvSelectedFilters.setText(getString(R.string.label_bills_in_database, billsInDatabase));
+        mTxvSelectedFilters.setText(getString(R.string.label_bills_found, billsInDatabase));
     }
 
     private void createHistoryFragmentFiltersDialogFragment(){
@@ -207,8 +207,8 @@ public class HistoryFragment extends Fragment {
             mSpnFilterMain.setSelection(selectedIndexMainFilter);
             mSpnFilterBillTypes.setSelection(selectedIndexBillTypeFilter);
 
-            builder.setTitle(R.string.label_filters);
-            builder.setPositiveButton(R.string.label_close, new DialogInterface.OnClickListener() {
+            builder.setTitle(R.string.dialog_title_filters);
+            builder.setPositiveButton(R.string.dialog_action_close, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dismiss();

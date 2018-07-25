@@ -101,7 +101,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
             Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
         } else if(doesEnteredNameAlreadyExist()){
-            Toast.makeText(BankAccountActivity.this, getString(R.string.label_bank_account_already_exits), Toast.LENGTH_SHORT).show();
+            Toast.makeText(BankAccountActivity.this, getString(R.string.toast_bank_account_already_exists), Toast.LENGTH_SHORT).show();
         } else {
             if(bankAccount == null){
                 if(mChbPrimaryAccount.isChecked()){
@@ -109,12 +109,11 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
                 }
 
                 createAndSaveBankAccount();
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_created), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_got_created_successfully), Toast.LENGTH_LONG).show();
                 finish();
             } else {
                 saveEnteredChanges();
 
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_changed), Toast.LENGTH_LONG).show();
                 Database.save(getApplicationContext());
                 finish();
             }
@@ -192,7 +191,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         Database.getBankAccounts().remove(bankAccount);
         Database.save(getApplicationContext());
 
-        Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_deleted), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_got_deleted_successfully), Toast.LENGTH_LONG).show();
         finish();
     }
 

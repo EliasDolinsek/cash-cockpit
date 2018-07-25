@@ -252,7 +252,7 @@ public class AutoPayActivity extends AppCompatActivity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(getResources().getString(R.string.dialog_msg_delete_auto_pay));
+            builder.setMessage(getResources().getString(R.string.dialog_msg_confirm_auto_pay_deletion));
 
             builder.setPositiveButton(getResources().getString(R.string.dialog_action_delete), new DialogInterface.OnClickListener() {
                 @Override

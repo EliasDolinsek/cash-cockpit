@@ -233,10 +233,10 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
     }
 
     private void displayToastThatNewPasswordGotSavedSuccessfully(){
-        Toast.makeText(getApplicationContext(), getString(R.string.label_new_password_got_saved_successfully), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.toast_password_got_saved_successfully), Toast.LENGTH_SHORT).show();
     }
 
     private void displayToastThatSecuritySettingsGotSavedSuccessfully(){
-        Toast.makeText(getApplicationContext(), getString(R.string.label_security_settings_got_saved_successfully), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), getString(R.string.toast_security_settings_got_saved_successfully), Toast.LENGTH_SHORT).show();
     }
 }

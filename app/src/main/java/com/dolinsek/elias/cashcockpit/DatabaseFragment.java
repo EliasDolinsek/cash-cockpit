@@ -78,8 +78,8 @@ public class DatabaseFragment extends Fragment {
         @Override
         public CharSequence getPageTitle(int position) {
             switch (position){
-                case 0: return getString(R.string.tab_accounts);
-                case 1: return getString(R.string.tab_auto_pay);
+                case 0: return getString(R.string.tab_bank_accounts);
+                case 1: return getString(R.string.tab_auto_pays);
                 case 2: return getString(R.string.tab_categories);
             }
 

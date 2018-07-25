@@ -150,7 +150,7 @@ public class CockpitFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    Toast.makeText(getContext(), getResources().getString(R.string.toast_bill_added), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getResources().getString(R.string.toast_new_bill_got_added), Toast.LENGTH_SHORT).show();
                     clearFieldsFromUserInputs();
                     hideKeyboard();
                     refreshCockpitChart();
@@ -262,7 +262,7 @@ public class CockpitFragment extends Fragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
-            alertBuilder.setMessage(R.string.dialog_msg_delete_bill);
+            alertBuilder.setMessage(R.string.dialog_msg_confirm_bill_deletion);
             alertBuilder.setPositiveButton(R.string.dialog_action_delete, onClickListenerListener);
 
             return alertBuilder.create();
@@ -293,7 +293,7 @@ public class CockpitFragment extends Fragment {
 
     private void displayBillCreationDate(){
         String dateOfCreationDate = DateFormat.format("EEE dd.MM.yy kk.mm", bill.getCreationDate()).toString();
-        mTxvBillCreationDate.setText(getString(R.string.label_bill_creation_date, dateOfCreationDate));
+        mTxvBillCreationDate.setText(getString(R.string.label_display_bill_creation_date, dateOfCreationDate));
     }
 
     private void refreshCockpitChart(){

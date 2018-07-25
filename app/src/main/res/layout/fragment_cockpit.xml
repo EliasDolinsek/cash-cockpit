@@ -86,6 +86,6 @@
         android:text="@string/btn_add_bill"
         android:src="@drawable/ic_add"
         android:layout_marginStart="3dp"
-        android:layout_marginEnd="3dp"/>
+        android:layout_marginEnd="2dp"/>
 
 </LinearLayout>

@@ -14,7 +14,7 @@
 
         <Button
             android:id="@+id/btn_history_show_filters"
-            android:text="@string/label_filters"
+            android:text="@string/btn_filters"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
@@ -33,7 +33,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-        app:text="@string/label_not_enough_data_for_history"/>
+        app:text="@string/label_no_data_for_statistic"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_history"

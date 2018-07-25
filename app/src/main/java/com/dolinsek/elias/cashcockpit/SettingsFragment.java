@@ -36,7 +36,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         findPreference("preference_sign_out").setOnPreferenceClickListener(preference -> {
             AuthUI.getInstance().signOut(getContext());
-            Toast.makeText(getContext(), getString(R.string.label_signed_out_successfully), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.toast_singed_out_successfully), Toast.LENGTH_SHORT).show();
             getActivity().finish();
             return true;
         });
@@ -59,11 +59,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle(getString(R.string.label_do_you_want_to_delete_all_data))
-            .setPositiveButton(R.string.delete, (dialog, which) -> {
+            builder.setTitle(getString(R.string.dialog_title_delete_all_data)).setMessage(R.string.dialog_msg_delete_all_data_conformation)
+            .setPositiveButton(R.string.action_delete, (dialog, which) -> {
                 Database.deleteDatabase();
                 Database.save(getContext());
-                Toast.makeText(getContext(), getString(R.string.label_data_got_deleted_successfully), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.toast_data_got_deleted_successfully), Toast.LENGTH_SHORT).show();
             }).setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> dismiss());
 
             return builder.create();
@@ -76,7 +76,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle(R.string.label_all_your_saved_data).setPositiveButton(R.string.label_close, (dialog, which) -> dismiss()).setMessage(Database.getDataAsString());
+            builder.setTitle(R.string.dialog_title_all_your_saved_data).setPositiveButton(R.string.dialog_action_close, (dialog, which) -> dismiss()).setMessage(Database.getDataAsString());
             return builder.create();
         }
     }

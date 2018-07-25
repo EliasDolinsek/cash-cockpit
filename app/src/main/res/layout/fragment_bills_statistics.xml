@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:text="@string/label_not_enough_data_for_statistic"/>
+                app:text="@string/label_no_data_for_statistic"/>
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pc_bills_statistics_bill_type_usage"
@@ -44,6 +44,7 @@
                 android:layout_marginBottom="4dp"/>
 
             <View
+                android:id="@+id/vw_bills_statistics_separation_one"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"
@@ -57,7 +58,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:text="@string/label_overall"
+                    android:text="@string/label_summary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/colorAccentTextColor"
@@ -162,6 +163,7 @@
             </LinearLayout>
 
             <View
+                android:id="@+id/vw_bills_statistics_separation_two"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"

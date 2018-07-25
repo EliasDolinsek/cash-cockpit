@@ -40,7 +40,7 @@ public class DeletePrimaryCategoryDialogFragment extends DialogFragment {
             public void onClick(DialogInterface dialogInterface, int i) {
                 mListener.onDialogPositiveClick();
             }
-        }).setNegativeButton(R.string.dialog_action_cancel, null).setMessage(getResources().getString(R.string.dialog_msg_delete_primary_category));
+        }).setNegativeButton(R.string.dialog_action_cancel, null).setMessage(getResources().getString(R.string.dialog_msg_confirm_primary_category_deletion));
 
         return alertDialog.create();
     }
