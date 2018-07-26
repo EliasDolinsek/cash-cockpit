@@ -62,7 +62,7 @@
     <string name="label_monthly">Monthly</string>
     <string name="label_yearly">Yearly</string>
     <string name="label_bills">Bill(s)</string>
-    <string name="label_subcategory_delete_information">When deleting, all AutoPays and bills are also removed!</string>
+    <string name="label_subcategory_delete_information">When deleting, all AutoPays and Bills are also removed!</string>
     <string name="label_currency">Currency</string>
     <string name="label_cash">Cash</string>
     <string name="label_cockpit">Cockpit</string>
@@ -91,7 +91,7 @@
     <string name="label_fixed_costs">Fixed Costs</string>
     <string name="label_bills_found">%1$d Bill(s) found</string>
     <string name="label_no_categories_found">No Categories found!</string>
-    <string name="label_display_bill_creation_date">Bill created on: %1$s</string>
+    <string name="label_display_bill_creation_date">Bill created on %1$s</string>
     <string name="label_entered_passwords_dont_match">Entered Password doesn\'t match</string>
     <string name="label_password_reset_time">Password reset time</string>
     <string name="label_wrong_password">Wrong Password</string>
@@ -105,7 +105,7 @@
     <string name="label_delete_data">Delete Data</string>
     <string name="label_delete_data_description">Deletes all your data on the server and locally</string>
     <string name="label_show_data">Show Data</string>
-    <string name="label_show_data_description">Displays you all your available Data</string>
+    <string name="label_show_data_description">Displays you all your Data</string>
     <string name="label_euro">Euro</string>
     <string name="label_dollar">Dollar</string>
     <string name="label_pounds">Pounds</string>
@@ -151,7 +151,7 @@
     <string name="dialog_title_all_your_saved_data">All your saved Data</string>
 
     <!-- Longer texts -->
-    <string name="text_password_preferences_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text an can be easily stolen by other people who have access to this app\'s preferences by e.g. other apps!</string>
+    <string name="text_password_preferences_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text!</string>
     <string name="text_amount_to_save_preference_notices">You can edit the amount which is used for calculations on the Cockpit-Page in order to output correct values. Please notice that the entered value doesn\'t has to do anything with Goals.</string>
 
     <!-- Arrays -->
