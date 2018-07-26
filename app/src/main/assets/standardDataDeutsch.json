@@ -1,0 +1,173 @@
+{
+  "bankAccounts": [],
+  "primaryCategories": [
+    {
+      "name": "Wohnen",
+      "goalAmount": 0,
+      "icon": "ic_category_living",
+      "subcategories": [
+        {
+          "name": "Miete",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Darlehensrückzahlung",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Heizung",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Wasser",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Reparaturen",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Gebühren",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Telefon und Internet",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Strom",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    },
+    {
+      "name": "Haushalt",
+      "goalAmount": 0,
+      "icon": "ic_category_household",
+      "subcategories": [
+        {
+          "name": "Reinigungsmittel",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Essen und Drinken",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Medikamente",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Hygieneprodukte",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Reparaturen",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    },{
+      "name": "Free Time",
+      "goalAmount": 0,
+      "icon": "ic_category_free_time",
+      "subcategories": [
+        {
+          "name": "Haustiere",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Hobbys",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Spiele",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Urlaub",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    },{
+      "name": "Auto",
+      "goalAmount": 0,
+      "icon": "ic_category_car",
+      "subcategories": [
+        {
+          "name": "Benzin",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Versicherungen",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Steuern",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Reparaturen",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Pflege",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    },{
+      "name": "Schule",
+      "goalAmount": 0,
+      "icon": "ic_category_school",
+      "subcategories": [
+        {
+          "name": "Studiengebühren",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Schulgebühr",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Fahrtkosten",
+          "goalAmount": 0,
+          "favoured": false
+        },
+        {
+          "name": "Lehrmittel",
+          "goalAmount": 0,
+          "favoured": false
+        }
+      ]
+    },{
+      "name":"Anderes",
+      "goalAmount": 0,
+      "icon": "ic_category_more",
+      "subcategories": []
+    }
+  ],
+  "autoPays": []
+}
