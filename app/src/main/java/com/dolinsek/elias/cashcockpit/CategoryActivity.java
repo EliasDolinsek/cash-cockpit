@@ -144,8 +144,12 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             Database.getAutoPays().remove(autoPaysToDelete.get(i));
 
         //Deletes associated bills
-        for(int i = 0; i<Database.getBankAccounts().size(); i++){
-            Database.getBankAccounts().get(i).setBills(new ArrayList<Bill>());
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (int i = 0; i<=bankAccount.getBills().size(); i++){
+                if (bankAccount.getBills().get(i).getSubcategory().getPrimaryCategory().equals(primaryCategory)){
+                    bankAccount.getBills().remove(i);
+                }
+            }
         }
 
         Database.getPrimaryCategories().remove(primaryCategory);
@@ -195,7 +199,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
             subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
                 @Override
                 public void onDismiss(DialogInterface dialogInterface) {
-                    CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
+                    CategoriesSorter.sortPrimaryCategoriesIfPreferenceIsChecked(getApplicationContext(), Database.getPrimaryCategories());
                     setupSubcategoriesAdapter();
 
                 }

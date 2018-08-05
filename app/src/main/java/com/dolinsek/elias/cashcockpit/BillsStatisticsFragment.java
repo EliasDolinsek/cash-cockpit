@@ -167,8 +167,11 @@ public class BillsStatisticsFragment extends Fragment {
         xAxis.setValueFormatter(new HistoryOfPaymentsXAxisValueFormatter());
     }
 
-    private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColors(pieDataSet);
+    private void setupPieDataSet(PieDataSet pieDataSet, ArrayList<PieEntry> entries){
+        boolean areInputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_INPUT), areOutputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_OUTPUT),
+                areTransfersGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_TRANSFER);
+
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, areTransfersGreaterThanNull, areInputsGreaterThanNull, areOutputsGreaterThanNull);
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setValueLineWidth(2f);
@@ -176,13 +179,42 @@ public class BillsStatisticsFragment extends Fragment {
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
+    private boolean isUsageOfBillTypeGreaterThanNullFromEntries(ArrayList<PieEntry> entries, int billType){
+        for (PieEntry entry:entries){
+            String billTypeAsString = billTypeToString(billType);
+            if (billTypeAsString.equals(entry.getLabel())){
+                return entry.getValue() != 0;
+            }
+        }
+
+        return false;
+    }
+
     private void setupBarData(BarData barData){
         barData.setValueFormatter(new HistoryOfPaymentsValueFormatter());
         barData.setValueTextSize(15f);
     }
 
-    private void setupPieDataSetColors(PieDataSet pieDataSet){
-        int[] colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfTransferGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
+        int[] colors;
+        if (amountOfTransferGreaterThanNull && amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
+        } else if (amountOfTransferGreaterThanNull && amountOfInputsGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeTransfer)};
+        } else if (amountOfTransferGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
+        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput)};
+        } else if (amountOfInputsGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput)};
+        } else if (amountOfOutputGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeOutput)};
+        } else if (amountOfTransferGreaterThanNull){
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeTransfer)};
+        } else {
+            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
+        }
+
         pieDataSet.setColors(colors);
     }
 
@@ -236,7 +268,7 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void loadUsageOfBillTypeChart(ArrayList<PieEntry> entries){
         PieDataSet pieDataSet = new PieDataSet(entries, "");
-        setupPieDataSet(pieDataSet);
+        setupPieDataSet(pieDataSet, entries);
 
         PieData pieData = new PieData();
         pieData.setDataSet(pieDataSet);

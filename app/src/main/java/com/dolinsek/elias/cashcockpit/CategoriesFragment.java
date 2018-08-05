@@ -129,7 +129,7 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
     @Override
     public void onPause() {
         super.onPause();
-        CategoriesSorter.sortPrimaryCategories(Database.getPrimaryCategories());
+        CategoriesSorter.sortPrimaryCategoriesIfPreferenceIsChecked(getActivity(), Database.getPrimaryCategories());
         Database.save(getContext());
     }
 

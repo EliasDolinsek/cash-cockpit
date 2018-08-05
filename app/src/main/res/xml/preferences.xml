@@ -15,6 +15,12 @@
             android:title="@string/label_currency"
             android:defaultValue="1"/>
 
+        <CheckBoxPreference
+            android:key="preference_sort_categories_by_name"
+            android:title="@string/label_sort_categories"
+            android:summary="@string/label_sort_categories_by_name_preference_description"
+            android:defaultValue="true"/>
+
         <Preference
             android:title="@string/title_cockpit_chart">
             <intent android:action="android.intent.action.VIEW" android:targetPackage="com.dolinsek.elias.cashcockpit" android:targetClass="com.dolinsek.elias.cashcockpit.CockpitChartPreferencesActivity"/>

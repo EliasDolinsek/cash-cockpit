@@ -109,6 +109,8 @@
     <string name="label_euro">Euro</string>
     <string name="label_dollar">Dollar</string>
     <string name="label_pounds">Pounds</string>
+    <string name="label_sort_categories">Sort categories</string>
+    <string name="label_sort_categories_by_name_preference_description">Sort categories automatically by name</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>

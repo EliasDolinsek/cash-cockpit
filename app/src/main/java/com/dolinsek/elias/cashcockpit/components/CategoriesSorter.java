@@ -1,5 +1,8 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import android.content.Context;
+import android.preference.PreferenceManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -10,6 +13,14 @@ import java.util.Comparator;
  */
 
 public class CategoriesSorter {
+
+    public static void sortPrimaryCategoriesIfPreferenceIsChecked(Context context, ArrayList<PrimaryCategory> primaryCategories){
+        boolean sortCategories = PreferenceManager.getDefaultSharedPreferences(context).getBoolean("preference_sort_categories_by_name", true);
+
+        if (sortCategories){
+            sortPrimaryCategories(primaryCategories);
+        }
+    }
 
     public static void sortPrimaryCategories(ArrayList<PrimaryCategory> primaryCategories){
         Collections.sort(primaryCategories, new Comparator<PrimaryCategory>() {

@@ -1,3 +1,4 @@
+
 package com.dolinsek.elias.cashcockpit;
 
 import android.app.Dialog;

@@ -71,7 +71,7 @@ public class Database {
         bankAccounts = dataHelper.readBankAccounts();
         autoPays = dataHelper.readAutoPays();
 
-        CategoriesSorter.sortPrimaryCategories(primaryCategories);
+        CategoriesSorter.sortPrimaryCategoriesIfPreferenceIsChecked(context, primaryCategories);
 
         //Sorts the primary bank account to the first position
         for(int i = 0; i<getBankAccounts().size(); i++){

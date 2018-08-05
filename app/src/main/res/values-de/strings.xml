@@ -129,4 +129,6 @@
     <string name="dialog_title_all_your_saved_data">All Ihre gespeicherten Daten</string>
     <string name="text_password_preferences_notices">Sie können Ihr Passwort hier bearbeiten und ihre Login-Einstellungen ändern. Bitte beachten Sie das ihr Passwort als unverschlüselter Text gespeichert wird!</string>
     <string name="text_amount_to_save_preference_notices">Sie könne hier den Sparbetrag setzen der für die Berechnungen auf der Cockpit-Seite genutzt wird um korrekte Zahlen anzeigen zu können. Dieser Betrag hat aber nichts mit den Goal-Beträgen zu tun.</string>
+    <string name="label_sort_categories">Kategorien sortieren</string>
+    <string name="label_sort_categories_by_name_preference_description">Kategorien nach Name sortieren</string>
 </resources>
