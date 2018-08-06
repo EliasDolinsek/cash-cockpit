@@ -11,6 +11,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
+import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +50,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         findPreference("preference_show_data").setOnPreferenceClickListener(preference -> {
             Toast.makeText(getContext(), "Not implemented yet!", Toast.LENGTH_SHORT).show();
             //new ShowDataDialogFragment().show(getChildFragmentManager(), "show_data");
+            return true;
+        });
+
+        findPreference("preference_make_backup").setOnPreferenceClickListener(preference -> {
+            new BackupHelper(getActivity()).createBackup();
             return true;
         });
     }

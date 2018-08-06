@@ -7,6 +7,15 @@
         <Preference android:key="preference_show_data" android:title="@string/label_show_data" android:summary="@string/label_show_data_description" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/label_backup">
+        <CheckBoxPreference android:key="preference_backup_data" android:title="@string/label_backup_data" android:summary="@string/label_backup_data_preference_description"
+            android:defaultValue="true"/>
+        <ListPreference android:key="preference_backup_location" android:title="@string/label_backup_location" android:summary="@string/label_backup_location_preference_description"
+            android:entries="@array/backup_locations_array" android:entryValues="@array/backup_locations_values_array" android:defaultValue="1"/>
+        <Preference android:key="preference_make_backup" android:title="@string/label_make_backup" android:summary="@string/label_make_backup_preference_description" />
+        <Preference android:key="preference_synchronize_from_backup" android:title="@string/label_synchronize_data" android:summary="@string/label_synchronize_data_preference_description" />
+    </PreferenceCategory>
+
     <PreferenceCategory android:title="@string/label_general">
         <ListPreference
             android:key="preference_currency"

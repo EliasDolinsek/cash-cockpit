@@ -111,6 +111,17 @@
     <string name="label_pounds">Pounds</string>
     <string name="label_sort_categories">Sort categories</string>
     <string name="label_sort_categories_by_name_preference_description">Sort categories automatically by name</string>
+    <string name="label_backup">Backup</string>
+    <string name="label_backup_data">Backup Data</string>
+    <string name="label_backup_data_preference_description">Backups your Data weekly automatically</string>
+    <string name="label_backup_location">Backup Location</string>
+    <string name="label_backup_location_preference_description">Location where the Backup is saved</string>
+    <string name="label_make_backup">Make Backup</string>
+    <string name="label_make_backup_preference_description">Manually makes a backup of your Data</string>
+    <string name="label_synchronize_data">Synch Data</string>
+    <string name="label_synchronize_data_preference_description">Overrides your Data with the most recent Backup</string>
+    <string name="label_on_your_mobile_phone">On your mobile phone</string>
+    <string name="label_on_the_server">On the server</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
@@ -167,6 +178,16 @@
         <item>1</item>
         <item>2</item>
         <item>3</item>
+    </string-array>
+
+    <array name="backup_locations_array">
+        <item>@string/label_on_your_mobile_phone</item>
+        <item>@string/label_on_the_server</item>
+    </array>
+
+    <string-array name="backup_locations_values_array">
+        <item>1</item>
+        <item>2</item>
     </string-array>
 
     <array name="bill_types_array">
