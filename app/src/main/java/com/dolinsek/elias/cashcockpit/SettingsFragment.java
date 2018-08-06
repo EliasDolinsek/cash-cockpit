@@ -57,6 +57,11 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             new BackupHelper(getActivity()).createBackup();
             return true;
         });
+
+        findPreference("preference_synchronize_from_backup").setOnPreferenceClickListener(preference -> {
+            new BackupHelper(getActivity()).overrideDataWithLocalBackup();
+            return true;
+        });
     }
 
     public static class DeleteDataDialogFragment extends DialogFragment{

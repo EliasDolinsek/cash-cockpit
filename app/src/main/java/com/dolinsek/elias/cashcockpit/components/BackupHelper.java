@@ -8,9 +8,10 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Logger;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -32,6 +33,8 @@ public class BackupHelper {
     private static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
     private static final String AUTO_PAYS_REFERENCE = "autoPays";
     private static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
+    public static final String BACKUP_LOCATION_LOCAL = "1";
+    public static final String BACKUP_LOCATION_SERVER = "2";
 
     Context context;
     FirebaseAuth firebaseAuth;
@@ -52,25 +55,58 @@ public class BackupHelper {
     }
 
     public void createBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
-        String backupLocation = PreferenceManager.getDefaultSharedPreferences(context).getString("preference_backup_location", "1");
+        String backupLocation = getBackupLocation();
         switch (backupLocation){
-            case "1": createLocalBackup(bankAccounts, autoPays, primaryCategories); return;
-            case "2": createServerBackup(bankAccounts, autoPays, primaryCategories); return;
+            case BACKUP_LOCATION_LOCAL: createLocalBackup(bankAccounts, autoPays, primaryCategories); return;
+            case BACKUP_LOCATION_SERVER: createServerBackup(bankAccounts, autoPays, primaryCategories); return;
             default: throw new IllegalArgumentException("Couldn't resolve backup location!");
         }
     }
 
     public void createLocalBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
         try {
-            String dataFromDatabaseFile = getDataFromDatabaseFile();
-            writeDataToDatabaseBackup(dataFromDatabaseFile);
+            String dataFromDatabaseFile = getDataFromFile(DATABASE_FILE_NAME);
+            writeDataToFile(DATABASE_BACKUP_FILE_NAME, dataFromDatabaseFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String getDataFromDatabaseFile() throws IOException {
-        InputStreamReader inputStreamReader = new InputStreamReader(context.openFileInput(DATABASE_FILE_NAME));
+
+    public void createServerBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
+        //TODO implement
+    }
+
+    public void overrideDataWithBackup(){
+        String backupLocation = getBackupLocation();
+        if (backupLocation.equals(BACKUP_LOCATION_LOCAL)){
+            overrideDataWithLocalBackup();
+        } else {
+            //TODO implement
+        }
+    }
+
+    public void overrideDataWithLocalBackup(){
+        try {
+            String dataFromBackup = getDataFromFile(DATABASE_BACKUP_FILE_NAME);
+            writeDataToFile(dataFromBackup, DATABASE_FILE_NAME);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeDataToFile(String dataAsString, String fileName) throws IOException {
+        FileOutputStream fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+
+        outputStreamWriter.write(dataAsString);
+
+        outputStreamWriter.close();
+        fileOutputStream.close();
+    }
+
+    private String getDataFromFile(String fileName) throws IOException {
+        InputStreamReader inputStreamReader = new InputStreamReader(context.openFileInput(fileName));
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
         String currentLine;
@@ -81,25 +117,8 @@ public class BackupHelper {
 
         return stringBuilder.toString();
     }
-
-    private void writeDataToDatabaseBackup(String dataAsString) throws IOException {
-        FileOutputStream fileOutputStream = context.openFileOutput(DATABASE_BACKUP_FILE_NAME, Context.MODE_PRIVATE);
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-
-        outputStreamWriter.write(dataAsString);
-
-        outputStreamWriter.close();
-        fileOutputStream.close();
-    }
-
-    public void createServerBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference().child(firebaseUser.getUid());
-
-        DatabaseReference bankAccountsReference = databaseReference.child(BANK_ACCOUNTS_REFERENCE);
-        DatabaseReference autoPaysReference = databaseReference.child(AUTO_PAYS_REFERENCE);
-        DatabaseReference primaryCategoriesReference = databaseReference.child(PRIMARY_CATEGORIES_REFERENCE);
-
-        autoPaysReference.push().setValue(autoPays);
+    
+    private String getBackupLocation(){
+        return PreferenceManager.getDefaultSharedPreferences(context).getString("preference_backup_location", BACKUP_LOCATION_LOCAL);
     }
 }
