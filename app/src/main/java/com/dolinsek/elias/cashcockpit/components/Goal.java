@@ -14,12 +14,8 @@ public class Goal {
 
     private long creationDate;
 
-    @Override
-    public String toString() {
-        return "Goal{" +
-                "amount=" + amount +
-                ", creationDate=" + creationDate +
-                '}';
+    public Goal(){
+
     }
 
     /**

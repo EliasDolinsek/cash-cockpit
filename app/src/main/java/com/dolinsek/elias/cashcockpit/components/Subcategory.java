@@ -15,31 +15,31 @@ public class Subcategory extends Category{
     /**
      * Primary category what this belong to
      */
-    private PrimaryCategory primaryCategory;
+    private String primaryCategoryName;
 
     /**
      * Creates a new subcategory
      * @param name name of the subcategory
      * @param goal goal of the subcategory
-     * @param primaryCategory primary category what this belongs to
+     * @param primaryCategoryName primary category what this belongs to
      * @param favoured if the subcategory is favored or not
      */
-    public Subcategory(String name, Goal goal, PrimaryCategory primaryCategory, boolean favoured) {
+    public Subcategory(String name, Goal goal, String primaryCategoryName, boolean favoured) {
         super(name, goal);
         this.favoured = favoured;
-        this.primaryCategory = primaryCategory;
+        this.primaryCategoryName = primaryCategoryName;
     }
 
     /**
      * Creates a new subcategory
      * @param name name of the subcategory
-     * @param primaryCategory primary category what this belongs to
+     * @param primaryCategoryName primary category what this belongs to
      * @param favoured if the subcategory is favored or not
      */
-    public Subcategory(String name, boolean favoured, PrimaryCategory primaryCategory) {
+    public Subcategory(String name, boolean favoured, String primaryCategoryName) {
         super(name);
         this.favoured = favoured;
-        this.primaryCategory = primaryCategory;
+        this.primaryCategoryName = primaryCategoryName;
     }
 
     /**
@@ -47,16 +47,7 @@ public class Subcategory extends Category{
      */
     @Override
     public void deleteCategory() {
-        primaryCategory.getSubcategories().remove(this);
-    }
-
-    /**
-     * Changes the primary category what this belongs to
-     * @param newPrimaryCategory new primary category
-     */
-    public void changePrimaryCategory(PrimaryCategory newPrimaryCategory){
-        this.primaryCategory.getSubcategories().remove(this);
-        this.primaryCategory = newPrimaryCategory;
+        getPrimaryCategoryByName().getSubcategories().remove(this);
     }
 
     public boolean isFavoured() {
@@ -68,10 +59,21 @@ public class Subcategory extends Category{
     }
 
     public PrimaryCategory getPrimaryCategory() {
-        return primaryCategory;
+        return getPrimaryCategoryByName();
     }
 
     public void setPrimaryCategory(PrimaryCategory primaryCategory) {
-        this.primaryCategory = primaryCategory;
+        this.primaryCategoryName = primaryCategory.getName();
     }
+
+    private PrimaryCategory getPrimaryCategoryByName(){
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            if (primaryCategory.getName().equals(primaryCategoryName)){
+                return primaryCategory;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find primary category by name!");
+    }
+
 }

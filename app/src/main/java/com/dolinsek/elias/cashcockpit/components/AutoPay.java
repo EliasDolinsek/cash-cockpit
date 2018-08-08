@@ -47,7 +47,7 @@ public class AutoPay {
     /**
      * AutoPay get added to this specified bank account
      */
-    private BankAccount bankAccount;
+    private String bankAccountName;
 
     /**
      * Contains time-stamps when the AutoPay got payed
@@ -59,14 +59,14 @@ public class AutoPay {
      * @param bill bill what get duplicated
      * @param type if the bill get duplicated weekly, monthly or yearly
      * @param name name of the AutoPay
-     * @param bankAccount bill get duplicated to this bank account
+     * @param bankAccountName bill get duplicated to this bank account
      * @param creationDate date of creation of this AutoPay
      */
-    public AutoPay(Bill bill, int type, String name, BankAccount bankAccount, long creationDate) {
+    public AutoPay(Bill bill, int type, String name, String bankAccountName, long creationDate) {
         this.bill = bill;
         this.type = type;
         this.name = name;
-        this.bankAccount = bankAccount;
+        this.bankAccountName = bankAccountName;
         this.creationDate = creationDate;
     }
 
@@ -75,13 +75,13 @@ public class AutoPay {
      * @param bill bill what get duplicated
      * @param type if the bill get duplicated weekly, monthly or yearly
      * @param name name of the AutoPay
-     * @param bankAccount bill get duplicated to this bank account
+     * @param bankAccountName bill get duplicated to this bank account
      */
-    public AutoPay(Bill bill, int type, String name, BankAccount bankAccount) {
+    public AutoPay(Bill bill, int type, String name, String bankAccountName) {
         this.bill = bill;
         this.type = type;
         this.name = name;
-        this.bankAccount = bankAccount;
+        this.bankAccountName = bankAccountName;
         creationDate = System.currentTimeMillis();
     }
 
@@ -122,11 +122,19 @@ public class AutoPay {
     }
 
     public BankAccount getBankAccount() {
-        return bankAccount;
+        return getBankAccountByName();
     }
 
     public void setBankAccount(BankAccount bankAccount) {
-        this.bankAccount = bankAccount;
+        this.bankAccountName = bankAccount.getName();
+    }
+
+    public String getBankAccountName() {
+        return bankAccountName;
+    }
+
+    public void setBankAccountName(String bankAccountName) {
+        this.bankAccountName = bankAccountName;
     }
 
     public ArrayList<Long> getPayments() {
@@ -162,9 +170,19 @@ public class AutoPay {
     public void addPayment(Context context){
         addPaymentTimestamp();
         bill.setCreationDate(System.currentTimeMillis());
-        bankAccount.addBill(bill);
+        getBankAccountByName().addBill(bill);
 
         Database.save(context);
+    }
+
+    private BankAccount getBankAccountByName(){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            if (bankAccount.getName().equals(bankAccountName)){
+                return bankAccount;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account by name");
     }
 
 }

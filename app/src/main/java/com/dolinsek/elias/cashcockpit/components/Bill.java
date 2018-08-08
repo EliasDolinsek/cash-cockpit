@@ -32,7 +32,7 @@ public class Bill {
     /**
      * Subcategory what helps the app to make better statistics
      */
-    private Subcategory subcategory;
+    private String subcategoryName, primaryCategoryName;
 
     /**
      * Creation date of the bill
@@ -46,18 +46,21 @@ public class Bill {
 
     private boolean autoPayBill;
 
+    public Bill(){ }
+
     /**
      * Creates a new Bill
      * @param amount amount what get added or removed from the bank account
      * @param description a short description what can help the user to remember what this bill was for
      * @param type type of the bill
-     * @param subcategory subcategory
+     * @param subcategoryName subcategory
      * @param creationDate creation date of the bill
      */
-    public Bill(long amount, String description, Subcategory subcategory, int type, boolean autoPayBill, long creationDate) {
+    public Bill(long amount, String description, String subcategoryName, String primaryCategoryName, int type, boolean autoPayBill, long creationDate) {
         this.amount = amount;
         this.description = description;
-        this.subcategory = subcategory;
+        this.subcategoryName = subcategoryName;
+        this.primaryCategoryName = primaryCategoryName;
         this.creationDate = creationDate;
         this.autoPayBill = autoPayBill;
         this.type = type;
@@ -68,18 +71,17 @@ public class Bill {
      * @param amount amount what get added or removed from the bank account
      * @param description a short description what can help the user to remember what this bill was for
      * @param type type of the bill
-     * @param subcategory subcategory
+     * @param subcategoryName subcategory
      */
-    public Bill(long amount, String description, int type, boolean autoPayBill, Subcategory subcategory) {
+    public Bill(long amount, String description, int type, boolean autoPayBill, String subcategoryName, String primaryCategoryName) {
         this.amount = amount;
         this.description = description;
-        this.subcategory = subcategory;
+        this.subcategoryName = subcategoryName;
+        this.primaryCategoryName = primaryCategoryName;
         this.type = type;
         this.autoPayBill = autoPayBill;
         creationDate = System.currentTimeMillis();
     }
-
-    public Bill(){ }
 
     public long getAmount() {
         return amount;
@@ -106,11 +108,27 @@ public class Bill {
     }
 
     public Subcategory getSubcategory() {
-        return subcategory;
+        return getSubcategoryByName();
     }
 
     public void setSubcategory(Subcategory subcategory) {
-        this.subcategory = subcategory;
+        this.subcategoryName = subcategory.getName();
+    }
+
+    public String getSubcategoryName() {
+        return subcategoryName;
+    }
+
+    public void setSubcategoryName(String subcategoryName) {
+        this.subcategoryName = subcategoryName;
+    }
+
+    public String getPrimaryCategoryName() {
+        return primaryCategoryName;
+    }
+
+    public void setPrimaryCategoryName(String primaryCategoryName) {
+        this.primaryCategoryName = primaryCategoryName;
     }
 
     public long getCreationDate() {
@@ -129,22 +147,17 @@ public class Bill {
         this.type = type;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Bill)) return false;
-        Bill bill = (Bill) o;
-        return amount == bill.amount &&
-                creationDate == bill.creationDate &&
-                type == bill.type &&
-                autoPayBill == bill.autoPayBill &&
-                Objects.equals(description, bill.description) &&
-                Objects.equals(subcategory, bill.subcategory);
-    }
+    private Subcategory getSubcategoryByName(){
+        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
+            if (primaryCategory.getName().equals(primaryCategoryName)){
+                for (Subcategory subcategory:primaryCategory.getSubcategories()){
+                    if (subcategory.getName().equals(subcategoryName)){
+                        return subcategory;
+                    }
+                }
+            }
+        }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(amount, description, subcategory, creationDate, type, autoPayBill);
+        throw new IllegalArgumentException("Couldn't find subcategory by name!");
     }
 }

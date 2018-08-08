@@ -185,7 +185,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     }
 
     public void setupForCreateMode(PrimaryCategory primaryCategoryForCreation){
-        mSubcategory = new Subcategory("", new Goal(0), primaryCategoryForCreation, false);
+        mSubcategory = new Subcategory("", new Goal(0), primaryCategoryForCreation.getName(), false);
         mPrimaryCategory = primaryCategoryForCreation;
         mEditMode = false;
     }

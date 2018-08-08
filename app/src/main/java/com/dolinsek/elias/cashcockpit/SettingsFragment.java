@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
@@ -18,6 +19,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+
+import static com.dolinsek.elias.cashcockpit.components.BackupHelper.BACKUP_LOCATION_LOCAL;
 
 
 /**
@@ -54,12 +57,12 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         findPreference("preference_make_backup").setOnPreferenceClickListener(preference -> {
-            new BackupHelper(getActivity()).createBackup();
+            new CreateBackupDialogFragment().show(getChildFragmentManager(), "create_backup");
             return true;
         });
 
         findPreference("preference_synchronize_from_backup").setOnPreferenceClickListener(preference -> {
-            new BackupHelper(getActivity()).overrideDataWithLocalBackup();
+            new SynchOrBackupDataDialogFragment().show(getChildFragmentManager(), "synchronize_data");
             return true;
         });
     }
@@ -88,6 +91,65 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             builder.setTitle(R.string.dialog_title_all_your_saved_data).setPositiveButton(R.string.dialog_action_close, (dialog, which) -> dismiss()).setMessage(Database.getDataAsString());
+            return builder.create();
+        }
+    }
+
+    public static class CreateBackupDialogFragment extends DialogFragment{
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.dialog_title_create_backup).setPositiveButton(R.string.dialog_action_create, (dialog, which) -> {
+                BackupHelper backupHelper = new BackupHelper(getActivity());
+                backupHelper.setOnCompleteListener(successfully -> {
+                    if (successfully){
+                        Toast.makeText(getActivity(), R.string.toast_backup_created_successfully, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), R.string.toast_something_went_wrong, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                backupHelper.createBackup();
+            }).setNegativeButton(R.string.dialog_action_close, (dialog, which) -> dismiss());
+
+            if (getBackupLocation().equals(BackupHelper.BACKUP_LOCATION_LOCAL)){
+                builder.setMessage(R.string.dialog_msg_backup_will_be_saved_locally);
+            } else {
+                builder.setMessage(R.string.dialog_msg_backup_will_be_saved_on_the_server);
+            }
+
+            return builder.create();
+        }
+
+        private String getBackupLocation(){
+            return android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("preference_backup_location", BACKUP_LOCATION_LOCAL);
+        }
+    }
+
+    public static class SynchOrBackupDataDialogFragment extends DialogFragment{
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.dialog_title_synch_or_reset_data).setMessage(R.string.dialog_msg_synchronize_or_reset_data_description);
+            builder.setPositiveButton(R.string.dialog_action_synchronize, (dialog, which) -> {
+                BackupHelper backupHelper = new BackupHelper(getActivity());
+                backupHelper.setOnCompleteListener(successfully -> {
+                    if (successfully){
+                        Toast.makeText(getActivity(), R.string.toast_synchronized_successfully, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getActivity(), R.string.toast_something_went_wrong, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                backupHelper.overrideDataWithLocalBackup();
+            }).setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> {
+                dismiss();
+            });
+
             return builder.create();
         }
     }

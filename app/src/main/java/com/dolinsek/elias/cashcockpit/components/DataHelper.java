@@ -392,7 +392,7 @@ public class DataHelper {
                     }
                 }
 
-                bills.add(new Bill(billAmount, billDescription, subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getBoolean(BILL_AUTO_PAY_BILL_JSON), billCreationDate));
+                bills.add(new Bill(billAmount, billDescription, subcategory.getName(), subcategory.getPrimaryCategory().getName(), currentBillJSON.getInt(BILL_TYPE_JSON), currentBillJSON.getBoolean(BILL_AUTO_PAY_BILL_JSON), billCreationDate));
             }
 
             //Adds name
@@ -494,7 +494,7 @@ public class DataHelper {
                 subcategoryFavored = currentSubcategoryJSON.getBoolean(SUBCATEGORY_FAVOURED);
 
                 //Adds subcategory to array
-                subcategories.add(new Subcategory(subcategoryName, new Goal(subcategoryGoalAmount, subcategoryGoalCreationDate), primaryCategories.get(i), subcategoryFavored));
+                subcategories.add(new Subcategory(subcategoryName, new Goal(subcategoryGoalAmount, subcategoryGoalCreationDate), primaryCategories.get(i).getName(), subcategoryFavored));
             }
 
             //Adds subcategories to current primary category
@@ -570,7 +570,7 @@ public class DataHelper {
             }
 
             //Adds current AutoPay
-            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory, currentBillJSON.getInt(BILL_TYPE_JSON), true, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount, autoPayCreationDate);
+            AutoPay autoPayToAdd = new AutoPay(new Bill(currentBillJSON.getLong(BILL_AMOUNT_JSON), currentBillJSON.getString(BILL_DESCRIPTION_JSON), subcategory.getName(), subcategory.getPrimaryCategory().getName(), currentBillJSON.getInt(BILL_TYPE_JSON), true, currentBillJSON.getLong(BILL_CREATION_DATE_JSON)), autoPayType, autoPayName, autoPayBankAccount.getName(), autoPayCreationDate);
             autoPayToAdd.setPayments(payments);
 
             autoPays.add(autoPayToAdd);

@@ -118,8 +118,8 @@
     <string name="label_backup_location_preference_description">Location where the Backup is saved</string>
     <string name="label_make_backup">Make Backup</string>
     <string name="label_make_backup_preference_description">Manually makes a backup of your Data</string>
-    <string name="label_synchronize_data">Synch Data</string>
-    <string name="label_synchronize_data_preference_description">Overrides your Data with the most recent Backup</string>
+    <string name="label_synchronize_or_reset_data">Synch or Reset Data</string>
+    <string name="label_synchronize_or_reset_data_preference_description">Overrides your Data with the most recent Backup on the server or locally. Can be used to synchronize data between devices.</string>
     <string name="label_on_your_mobile_phone">On your mobile phone</string>
     <string name="label_on_the_server">On the server</string>
 
@@ -136,6 +136,9 @@
     <string name="toast_password_got_reset_successfully">Password got reset successfully</string>
     <string name="toast_singed_out_successfully">Signed Out successfully</string>
     <string name="toast_data_got_deleted_successfully">All your Data got deleted successfully</string>
+    <string name="toast_synchronized_successfully">Synchronized successfully</string>
+    <string name="toast_something_went_wrong">Something went wrong</string>
+    <string name="toast_backup_created_successfully">Backup created successfully</string>
 
     <!-- Dialog actions -->
     <string name="dialog_action_delete">Delete</string>
@@ -145,6 +148,7 @@
     <string name="dialog_action_confirm_deletion">Confirm Deletion</string>
     <string name="dialog_action_reset">Reset</string>
     <string name="dialog_action_close">Close</string>
+    <string name="dialog_action_synchronize">Synch</string>
 
     <!-- Dialog messages -->
     <string name="dialog_msg_confirm_primary_category_deletion">Delete this Primary Category including all associated Bills and AutoPays?</string>
@@ -152,6 +156,9 @@
     <string name="dialog_msg_confirm_bill_deletion">Delete this Bill?</string>
     <string name="dialog_msg_reset_password_conformation">Do you really want to reset your password?</string>
     <string name="dialog_msg_delete_all_data_conformation">Do you really want to delete all your Data? This effects locally saved data and Backups!</string>
+    <string name="dialog_msg_backup_will_be_saved_locally">Backup will be saved locally</string>
+    <string name="dialog_msg_backup_will_be_saved_on_the_server">Backup will be saved on the server</string>
+    <string name="dialog_msg_synchronize_or_reset_data_description">This overrides your data with the most recent backup in the cloud or local. This can be used to synch data between devices</string>
 
     <!-- Dialog titles -->
     <string name="dialog_title_create_goal">Create Goal</string>
@@ -162,6 +169,8 @@
     <string name="dialog_title_filters">Filters</string>
     <string name="dialog_title_delete_all_data">Delete all Data</string>
     <string name="dialog_title_all_your_saved_data">All your saved Data</string>
+    <string name="dialog_title_create_backup">Create Backup</string>
+    <string name="dialog_title_synch_or_reset_data">Synch or Reset Data</string>
 
     <!-- Longer texts -->
     <string name="text_password_preferences_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text!</string>

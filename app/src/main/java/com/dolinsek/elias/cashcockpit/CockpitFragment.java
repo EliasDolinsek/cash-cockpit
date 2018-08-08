@@ -142,7 +142,7 @@ public class CockpitFragment extends Fragment {
                 if(everythingFilledCorrectly()) {
                     long amount = mFgmBillAmountInput.getEnteredAmountAsLong();
                     String description = mFgmDescriptionInput.getEnteredDescriptionAsString();
-                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory));
+                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName()));
 
                     try {
                         Database.save(getContext());

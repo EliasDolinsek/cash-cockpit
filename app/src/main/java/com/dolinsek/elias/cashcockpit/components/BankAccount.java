@@ -40,6 +40,10 @@ public class BankAccount {
      */
     private ArrayList<BalanceChange> balanceChanges;
 
+    public BankAccount(){
+
+    }
+
     /**
      * Creates a new bank account
      * @param name name of the bank account
