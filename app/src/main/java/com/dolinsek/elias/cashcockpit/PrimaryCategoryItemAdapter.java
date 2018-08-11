@@ -131,6 +131,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             manageViewsIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
         } else if (adapterType == TYPE_CATEGORIES_STATISTICS){
             loadPrimaryCategoryStatisticInGoalViews(primaryCategory, holder);
+            hideSubcategoriesRecyclerView(holder);
         }
     }
 

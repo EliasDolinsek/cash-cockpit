@@ -1,6 +1,6 @@
 package com.dolinsek.elias.cashcockpit.components;
 
-import java.util.Objects;
+import com.google.firebase.database.Exclude;
 
 /**
  * Represents a bill what usually get added to a bank account
@@ -147,6 +147,7 @@ public class Bill {
         this.type = type;
     }
 
+    @Exclude
     private Subcategory getSubcategoryByName(){
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
             if (primaryCategory.getName().equals(primaryCategoryName)){

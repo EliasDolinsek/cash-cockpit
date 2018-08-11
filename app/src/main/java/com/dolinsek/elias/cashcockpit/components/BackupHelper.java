@@ -68,7 +68,7 @@ public class BackupHelper {
     public void createLocalBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
         try {
             String dataFromDatabaseFile = getDataFromFile(DATABASE_FILE_NAME);
-            writeDataToFile(DATABASE_BACKUP_FILE_NAME, dataFromDatabaseFile);
+            writeDataToFile(dataFromDatabaseFile, DATABASE_BACKUP_FILE_NAME);
             onCompleteListener.onComplete(true);
         } catch (IOException e) {
             onCompleteListener.onComplete(false);
@@ -82,6 +82,9 @@ public class BackupHelper {
             DatabaseReference bankAccountsReference = userReference.child(BANK_ACCOUNTS_REFERENCE);
             DatabaseReference autoPaysReference = userReference.child(AUTO_PAYS_REFERENCE);
             DatabaseReference primaryCategoriesReference = userReference.child(PRIMARY_CATEGORIES_REFERENCE);
+
+            bankAccountsReference.setValue(bankAccounts);
+
             onCompleteListener.onComplete(true);
         } catch (Exception e){
             onCompleteListener.onComplete(false);
