@@ -1,7 +1,11 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -29,8 +33,11 @@ import static com.dolinsek.elias.cashcockpit.components.BackupHelper.BACKUP_LOCA
 
 public class SettingsFragment extends PreferenceFragmentCompat {
 
+    private static final int PENDING_INTENT_ID = 978;
+
     private FirebaseUser currentUser;
     private FirebaseAuth firebaseAuth;
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
@@ -140,6 +147,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 backupHelper.setOnCompleteListener(successfully -> {
                     if (successfully){
                         Toast.makeText(getActivity(), R.string.toast_synchronized_successfully, Toast.LENGTH_SHORT).show();
+                        restartCashCockpit();
                     } else {
                         Toast.makeText(getActivity(), R.string.toast_something_went_wrong, Toast.LENGTH_SHORT).show();
                     }
@@ -151,6 +159,16 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             });
 
             return builder.create();
+        }
+
+        private void restartCashCockpit(){
+            Intent intent = new Intent(getContext(), StartActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), PENDING_INTENT_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            AlarmManager alarmManager = (AlarmManager)getContext().getSystemService(Context.ALARM_SERVICE);
+            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
+
+            System.exit(0);
         }
     }
 }

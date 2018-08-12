@@ -3,6 +3,8 @@ package com.dolinsek.elias.cashcockpit.components;
 
 import android.content.Context;
 
+import com.google.firebase.database.Exclude;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -121,6 +123,7 @@ public class AutoPay {
         this.creationDate = creationDate;
     }
 
+    @Exclude
     public BankAccount getBankAccount() {
         return getBankAccountByName();
     }

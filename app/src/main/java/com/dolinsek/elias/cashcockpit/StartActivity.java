@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.AutoPayPaymentManager;
+import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.google.firebase.auth.FirebaseAuth;
 

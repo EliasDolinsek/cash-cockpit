@@ -1,8 +1,16 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.dolinsek.elias.cashcockpit.R;
+import com.dolinsek.elias.cashcockpit.RemoteBackupService;
+import com.dolinsek.elias.cashcockpit.StartActivity;
+import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -23,33 +31,15 @@ public class BackupHelper {
     private static final String DATABASE_FILE_NAME = "database.json";
     private static final String DATABASE_BACKUP_FILE_NAME = "databaseBackup.json";
 
-    private static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
-    private static final String AUTO_PAYS_REFERENCE = "autoPays";
-    private static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
-
     public static final String BACKUP_LOCATION_LOCAL = "1";
     public static final String BACKUP_LOCATION_SERVER = "2";
 
     private Context context;
-    private FirebaseAuth firebaseAuth;
-    private FirebaseUser firebaseUser;
-
-    private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference userReference;
 
     private OnCompleteListener onCompleteListener;
 
     public BackupHelper(Context context) throws IllegalStateException{
         this.context = context;
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseUser = firebaseAuth.getCurrentUser();
-
-        if (firebaseUser != null){
-            firebaseDatabase = FirebaseDatabase.getInstance();
-            userReference = firebaseDatabase.getReference().child(firebaseUser.getUid());
-        } else {
-            throw new IllegalStateException("FirebaseUser is null!");
-        }
     }
 
     public void createBackup(){
@@ -59,13 +49,13 @@ public class BackupHelper {
     public void createBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
         String backupLocation = getBackupLocation();
         switch (backupLocation){
-            case BACKUP_LOCATION_LOCAL: createLocalBackup(bankAccounts, autoPays, primaryCategories); return;
-            case BACKUP_LOCATION_SERVER: createServerBackup(bankAccounts, autoPays, primaryCategories); return;
+            case BACKUP_LOCATION_LOCAL: createLocalBackup(); return;
+            case BACKUP_LOCATION_SERVER: createServerBackup(); return;
             default: throw new IllegalArgumentException("Couldn't resolve backup location!");
         }
     }
 
-    public void createLocalBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
+    public void createLocalBackup(){
         try {
             String dataFromDatabaseFile = getDataFromFile(DATABASE_FILE_NAME);
             writeDataToFile(dataFromDatabaseFile, DATABASE_BACKUP_FILE_NAME);
@@ -76,20 +66,11 @@ public class BackupHelper {
         }
     }
 
+    private void createServerBackup(){
+        Intent intent = new Intent(context, RemoteBackupService.class);
+        context.startService(intent);
 
-    public void createServerBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
-        try {
-            DatabaseReference bankAccountsReference = userReference.child(BANK_ACCOUNTS_REFERENCE);
-            DatabaseReference autoPaysReference = userReference.child(AUTO_PAYS_REFERENCE);
-            DatabaseReference primaryCategoriesReference = userReference.child(PRIMARY_CATEGORIES_REFERENCE);
-
-            bankAccountsReference.setValue(bankAccounts);
-
-            onCompleteListener.onComplete(true);
-        } catch (Exception e){
-            onCompleteListener.onComplete(false);
-            e.printStackTrace();
-        }
+        Toast.makeText(context, R.string.toast_started_uploading_data_to_servers, Toast.LENGTH_SHORT).show();
     }
 
     public void overrideDataWithBackup(){

@@ -1,5 +1,7 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import com.google.firebase.database.Exclude;
+
 /**
  * This represents a subcategory
  * Created by elias on 06.01.2018.
@@ -58,6 +60,7 @@ public class Subcategory extends Category{
         this.favoured = favoured;
     }
 
+    @Exclude
     public PrimaryCategory getPrimaryCategory() {
         return getPrimaryCategoryByName();
     }
@@ -66,6 +69,7 @@ public class Subcategory extends Category{
         this.primaryCategoryName = primaryCategory.getName();
     }
 
+    @Exclude
     private PrimaryCategory getPrimaryCategoryByName(){
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
             if (primaryCategory.getName().equals(primaryCategoryName)){

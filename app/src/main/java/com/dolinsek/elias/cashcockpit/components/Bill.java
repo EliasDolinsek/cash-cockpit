@@ -107,6 +107,7 @@ public class Bill {
         this.description = descriptions;
     }
 
+    @Exclude
     public Subcategory getSubcategory() {
         return getSubcategoryByName();
     }

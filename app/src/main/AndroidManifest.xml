@@ -52,6 +52,11 @@
             android:label="@string/title_cockpit_chart"
             android:theme="@style/AppTheme.ActionBarEnabled"
             android:windowSoftInputMode="stateAlwaysVisible" />
+
+        <service
+            android:name=".RemoteBackupService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

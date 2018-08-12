@@ -147,7 +147,7 @@
     <string name="toast_backup_created_successfully">Backup wurde erfolgreich erstellt</string>
     <string name="dialog_msg_backup_will_be_saved_locally">Backup wird lokal gespeichert</string>
     <string name="dialog_msg_backup_will_be_saved_on_the_server">Backup wird auf dem Server gespeichert</string>
-    <string name="dialog_msg_synchronize_or_reset_data_description">Ihre Daten werden mit dem Backup überschrieben. Kann zum Synchronisieren von Daten zwischen mehreren Geräten verwendet werden</string>
+    <string name="dialog_msg_synchronize_or_reset_data_description">Ihre Daten werden mit dem Backup überschrieben. Kann zum Synchronisieren von Daten zwischen mehreren Geräten verwendet werden. CashCockpit wird nach der Fertigstellung neu gestartet!</string>
     <string name="dialog_title_create_backup">Backup erstellen</string>
     <string name="dialog_title_synch_or_reset_data">Daten synchronisieren oder zurücksetzen</string>
 </resources>
