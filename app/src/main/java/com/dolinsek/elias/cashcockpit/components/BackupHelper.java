@@ -2,8 +2,11 @@ package com.dolinsek.elias.cashcockpit.components;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
@@ -39,7 +42,7 @@ public class BackupHelper {
     public static final String BACKUP_LOCATION_SERVER = "2";
 
     private Context context;
-
+    private RemoteBackupService remoteBackupService;
     private OnCompleteListener onCompleteListener;
 
     public BackupHelper(Context context) throws IllegalStateException{
@@ -47,7 +50,7 @@ public class BackupHelper {
     }
 
     public void createBackup(){
-        String backupLocation = getBackupLocation();
+        String backupLocation = getBackupLocation(context);
         switch (backupLocation){
             case BACKUP_LOCATION_LOCAL: createLocalBackup(); return;
             case BACKUP_LOCATION_SERVER: createServerBackup(); return;
@@ -67,14 +70,34 @@ public class BackupHelper {
     }
 
     private void createServerBackup(){
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder service) {
+                RemoteBackupService.LocalBinder binder = (RemoteBackupService.LocalBinder) service;
+                remoteBackupService = binder.getService();
+                new Thread(() -> {
+                    while (true){
+                        if (remoteBackupService.hasFinished()){
+                            onCompleteListener.onComplete(true);
+                            return;
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                onCompleteListener.onComplete(false);
+            }
+        };
+
         Intent intent = new Intent(context, RemoteBackupService.class);
         context.startService(intent);
-
-        Toast.makeText(context, R.string.toast_started_uploading_data_to_servers, Toast.LENGTH_SHORT).show();
+        context.bindService(intent, serviceConnection, 0);
     }
 
     public void overrideDataWithBackup(){
-        String backupLocation = getBackupLocation();
+        String backupLocation = getBackupLocation(context);
         if (backupLocation.equals(BACKUP_LOCATION_LOCAL)){
             overrideDataWithLocalBackup();
         } else {
@@ -142,13 +165,13 @@ public class BackupHelper {
 
         return stringBuilder.toString();
     }
-    
-    private String getBackupLocation(){
-        return PreferenceManager.getDefaultSharedPreferences(context).getString("preference_backup_location", BACKUP_LOCATION_LOCAL);
-    }
 
     public void setOnCompleteListener(OnCompleteListener onCompleteListener) {
         this.onCompleteListener = onCompleteListener;
+    }
+
+    public static String getBackupLocation(Context context){
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(context).getString("preference_backup_location", BACKUP_LOCATION_LOCAL);
     }
 
     public static interface OnCompleteListener {

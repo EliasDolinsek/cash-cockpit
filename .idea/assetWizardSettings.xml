@@ -52,7 +52,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/navigation/ic_more_horiz_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/alert/ic_error_outline_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -62,9 +62,11 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_category_more" />
+                            <entry key="height" value="48" />
+                            <entry key="outputName" value="ic_error" />
                             <entry key="overrideSize" value="true" />
                             <entry key="sourceFile" value="C:\Users\elias" />
+                            <entry key="width" value="48" />
                           </map>
                         </option>
                       </PersistentState>

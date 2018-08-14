@@ -122,6 +122,10 @@
     <string name="label_synchronize_or_reset_data_preference_description">Overrides your Data with the most recent Backup on the server or locally. Can be used to synchronize data between devices.</string>
     <string name="label_on_your_mobile_phone">On your mobile phone</string>
     <string name="label_on_the_server">On the server</string>
+    <string name="label_waiting_for_internet_connection">Waiting for internet connection…</string>
+    <string name="label_creating_backup">Creating Backup…</string>
+    <string name="label_backup_got_created">Backup got created</string>
+    <string name="label_something_went_wrong">Something went wrong!</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
@@ -162,6 +166,9 @@
     <string name="dialog_msg_backup_will_be_saved_on_the_server">Backup will be saved on the server</string>
     <string name="dialog_msg_synchronize_or_reset_data_description">This overrides your data with the most recent backup in the cloud or local. This can be used to synch data between devices. CashCockpit will restart after completion!</string>
     <string name="dialog_msg_backup_on_server_description">Your Backup will be saved on the server. You can download this Backup on another phone to synch data between devices.</string>
+    <string name="dialog_msg_create_local_backup_description">Your Backup will be stored on your phone. You can reset your data to the backup anytime you want.</string>
+    <string name="dialog_msg_create_server_backup_description">Your Backup will be stored on the server. You can download it on another phone to synch or reset data.</string>
+
     <!-- Dialog titles -->
     <string name="dialog_title_create_goal">Create Goal</string>
     <string name="dialog_title_edit_goal">Edit Goal</string>

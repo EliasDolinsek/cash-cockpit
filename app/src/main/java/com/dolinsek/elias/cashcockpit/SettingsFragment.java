@@ -116,17 +116,13 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                 backupHelper.createBackup();
             }).setNegativeButton(R.string.dialog_action_close, (dialog, which) -> dismiss());
 
-            if (getBackupLocation().equals(BackupHelper.BACKUP_LOCATION_LOCAL)){
+            if (BackupHelper.getBackupLocation(getContext()).equals(BackupHelper.BACKUP_LOCATION_LOCAL)){
                 builder.setMessage(R.string.dialog_msg_backup_will_be_saved_locally);
             } else {
                 builder.setMessage(R.string.dialog_msg_backup_will_be_saved_on_the_server);
             }
 
             return builder.create();
-        }
-
-        private String getBackupLocation(){
-            return android.preference.PreferenceManager.getDefaultSharedPreferences(getActivity()).getString("preference_backup_location", BACKUP_LOCATION_LOCAL);
         }
     }
 
