@@ -88,63 +88,51 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
         builder.setView(inflatedView);
 
         final AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialogInterface) {
-                Button mBtnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                mBtnPositive.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        removeAllErrorsFromViews();
+        dialog.setOnShowListener(dialogInterface -> {
+            Button mBtnPositive = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            mBtnPositive.setOnClickListener(view -> {
+                removeAllErrorsFromViews();
 
-                        boolean nameAlreadyExits = doesNameForSubcategoryAlreadyExist();
-                        String enteredGoalAmount = mEdtGoalAmount.getText().toString();
-                        if(mEdtSubcategoryName.getText().toString().trim().equals("")){
-                            Toolkit.displayPleaseCheckInputsToast(getContext());
-                        } else if(nameAlreadyExits) {
-                            Toolkit.displayPleaseCheckInputsToast(getContext());
-                        } else if(mChbGoalEnabled.isChecked() && (enteredGoalAmount.equals("") || enteredGoalAmount.equals("."))){
-                            Toolkit.displayPleaseCheckInputsToast(getContext());
-                        } else {
+                boolean nameAlreadyExits = doesNameForSubcategoryAlreadyExist();
+                String enteredGoalAmount = mEdtGoalAmount.getText().toString();
+                if(mEdtSubcategoryName.getText().toString().trim().equals("")){
+                    Toolkit.displayPleaseCheckInputsToast(getContext());
+                } else if(nameAlreadyExits) {
+                    Toolkit.displayPleaseCheckInputsToast(getContext());
+                } else if(mChbGoalEnabled.isChecked() && (enteredGoalAmount.equals("") || enteredGoalAmount.equals("."))){
+                    Toolkit.displayPleaseCheckInputsToast(getContext());
+                } else {
 
-                            String name = mEdtSubcategoryName.getText().toString();
-                            removeAllWhiteSpacesAtBeginning(name);
+                    String name = mEdtSubcategoryName.getText().toString();
+                    removeAllWhiteSpacesAtBeginning(name);
 
-                            mSubcategory.setName(name);
-                            setGoalForSubcategory();
+                    mSubcategory.setName(name);
+                    setGoalForSubcategory();
 
-                            if(!mEditMode){
-                                addSubcategoryToPrimaryCategory(mPrimaryCategory, mSubcategory);
-                            }
-
-                            dialog.dismiss();
-                        }
+                    if(!mEditMode){
+                        addSubcategoryToPrimaryCategory(mPrimaryCategory, mSubcategory);
                     }
-                });
 
-                final Button mBtnNegative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                if(mBtnNegative != null){
-                    mBtnNegative.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            mLlDeleteInformations.setVisibility(View.VISIBLE);
-                            mBtnNegative.setText(getResources().getString(R.string.dialog_action_confirm_deletion));
-
-                            mBtnNegative.setOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    deleteAllBillsOfSubcategory(mSubcategory);
-                                    deleteAllAutoPaysOfSubcategory(mSubcategory);
-
-                                    mPrimaryCategory.getSubcategories().remove(mSubcategory);
-                                    mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
-
-                                    dialog.dismiss();
-                                }
-                            });
-                        }
-                    });
+                    dialog.dismiss();
                 }
+            });
+
+            final Button mBtnNegative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+            if(mBtnNegative != null){
+                mBtnNegative.setOnClickListener(view -> {
+                    mLlDeleteInformations.setVisibility(View.VISIBLE);
+                    mBtnNegative.setText(getResources().getString(R.string.dialog_action_confirm_deletion));
+
+                    mBtnNegative.setOnClickListener(view1 -> {
+                        deleteAllBillsOfSubcategory(mSubcategory);
+                        deleteAllAutoPaysOfSubcategory(mSubcategory);
+
+                        mPrimaryCategory.getSubcategories().remove(mSubcategory);
+                        mPrimaryCategory.getGoal().setAmount(mPrimaryCategory.getGoal().getAmount() - mSubcategory.getGoal().getAmount());
+
+                        dialog.dismiss();
+                    });
+                });
             }
         });
 
@@ -154,12 +142,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     }
 
     private void setupFmlEdtGoalAmountOnClickToEnableGoal(){
-        mLlEdtGoalAmountContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mChbGoalEnabled.setChecked(true);
-            }
-        });
+        mLlEdtGoalAmountContainer.setOnClickListener(v -> mChbGoalEnabled.setChecked(true));
     }
 
     @Override
@@ -191,12 +174,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
     }
 
     private void setupButtonClickListener(){
-        mChbGoalEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mEdtGoalAmount.setEnabled(true);
-            }
-        });
+        mChbGoalEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> mEdtGoalAmount.setEnabled(true));
 
         mImvFavored.setOnClickListener(new View.OnClickListener() {
             @Override

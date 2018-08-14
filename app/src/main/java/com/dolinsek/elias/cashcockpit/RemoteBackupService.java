@@ -1,10 +1,12 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.Service;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
 
@@ -15,16 +17,19 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
 public class RemoteBackupService extends Service {
 
-    private static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
-    private static final String AUTO_PAYS_REFERENCE = "autoPays";
-    private static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
+    public static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
+    public static final String AUTO_PAYS_REFERENCE = "autoPays";
+    public static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
     public static final int NOTIFICATION_ID = 12345;
 
     private FirebaseUser firebaseUser;
@@ -72,7 +77,7 @@ public class RemoteBackupService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        throw null;
+        return null;
     }
 
     private void displayUploadingNotification(){

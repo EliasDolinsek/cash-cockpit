@@ -150,6 +150,7 @@
     <string name="dialog_action_reset">Reset</string>
     <string name="dialog_action_close">Close</string>
     <string name="dialog_action_synchronize">Synch</string>
+    <string name="dialog_action_create_backup">Create Backup</string>
 
     <!-- Dialog messages -->
     <string name="dialog_msg_confirm_primary_category_deletion">Delete this Primary Category including all associated Bills and AutoPays?</string>
@@ -160,7 +161,7 @@
     <string name="dialog_msg_backup_will_be_saved_locally">Backup will be saved locally</string>
     <string name="dialog_msg_backup_will_be_saved_on_the_server">Backup will be saved on the server</string>
     <string name="dialog_msg_synchronize_or_reset_data_description">This overrides your data with the most recent backup in the cloud or local. This can be used to synch data between devices. CashCockpit will restart after completion!</string>
-
+    <string name="dialog_msg_backup_on_server_description">Your Backup will be saved on the server. You can download this Backup on another phone to synch data between devices.</string>
     <!-- Dialog titles -->
     <string name="dialog_title_create_goal">Create Goal</string>
     <string name="dialog_title_edit_goal">Edit Goal</string>

@@ -4,16 +4,12 @@ import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
@@ -21,8 +17,6 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
-import java.util.ArrayList;
 
 import static com.dolinsek.elias.cashcockpit.components.BackupHelper.BACKUP_LOCATION_LOCAL;
 
@@ -64,7 +58,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         findPreference("preference_make_backup").setOnPreferenceClickListener(preference -> {
-            new CreateBackupDialogFragment().show(getChildFragmentManager(), "create_backup");
+            com.dolinsek.elias.cashcockpit.CreateBackupDialogFragment createBackupDialogFragment = new com.dolinsek.elias.cashcockpit.CreateBackupDialogFragment();
+            createBackupDialogFragment.show(getChildFragmentManager(), "create_backup");
             return true;
         });
 
@@ -153,7 +148,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     }
                 });
 
-                backupHelper.overrideDataWithLocalBackup();
+                backupHelper.overrideDataWithBackup();
             }).setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> {
                 dismiss();
             });

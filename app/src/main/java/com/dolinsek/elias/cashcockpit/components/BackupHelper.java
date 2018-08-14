@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.R;
@@ -13,8 +14,11 @@ import com.dolinsek.elias.cashcockpit.StartActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -43,10 +47,6 @@ public class BackupHelper {
     }
 
     public void createBackup(){
-        createBackup(Database.getBankAccounts(), Database.getAutoPays(), Database.getPrimaryCategories());
-    }
-
-    public void createBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
         String backupLocation = getBackupLocation();
         switch (backupLocation){
             case BACKUP_LOCATION_LOCAL: createLocalBackup(); return;
@@ -78,7 +78,7 @@ public class BackupHelper {
         if (backupLocation.equals(BACKUP_LOCATION_LOCAL)){
             overrideDataWithLocalBackup();
         } else {
-            //TODO implement
+            overrideDataWithServerBackup();
         }
     }
 
@@ -91,6 +91,33 @@ public class BackupHelper {
             onCompleteListener.onComplete(false);
             e.printStackTrace();
         }
+    }
+
+    private void overrideDataWithServerBackup(){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+
+        DatabaseReference userReference = firebaseDatabase.getReference().child(user.getUid());
+        DatabaseReference bankAccountsReference = userReference.child(RemoteBackupService.BANK_ACCOUNTS_REFERENCE);
+        Database.setBankAccounts(getBankAccountsFromServer(bankAccountsReference));
+    }
+
+    private ArrayList<BankAccount> getBankAccountsFromServer(DatabaseReference bankAccountsReference){
+        final ArrayList<BankAccount> bankAccountsToReturn = new ArrayList<>();
+        bankAccountsReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ArrayList<BankAccount> bankAccounts = (ArrayList<BankAccount>) dataSnapshot.getValue();
+                bankAccountsToReturn.addAll(bankAccounts);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        return bankAccountsToReturn;
     }
 
     private void writeDataToFile(String dataAsString, String fileName) throws IOException {
