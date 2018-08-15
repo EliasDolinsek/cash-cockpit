@@ -2,13 +2,9 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.DialogFragment;
@@ -17,13 +13,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 
-import java.util.Timer;
+import static com.dolinsek.elias.cashcockpit.components.Toolbox.connectedToInternet;
 
 /**
  * Created by Elias Dolinsek on 14.08.2018 for cash-cockpit.
@@ -42,18 +37,18 @@ public class CreateBackupDialogFragment extends DialogFragment{
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
 
         LayoutInflater layoutInflater = getActivity().getLayoutInflater();
-        View inflatedView = layoutInflater.inflate(R.layout.dialog_create_backup_creating, null);
+        View inflatedView = layoutInflater.inflate(R.layout.dialog_backup_manager, null);
 
         alertBuilder.setTitle(R.string.dialog_title_create_backup)
                 .setPositiveButton(R.string.dialog_action_create_backup, null)
                 .setNegativeButton(R.string.dialog_action_cancel, null)
                 .setView(inflatedView);
 
-        imvBackupDone = inflatedView.findViewById(R.id.imv_dialog_create_backup_done);
-        txvCurrentState = inflatedView.findViewById(R.id.txv_dialog_create_backup_creating);
+        imvBackupDone = inflatedView.findViewById(R.id.imv_dialog_backup_manager_done);
+        txvCurrentState = inflatedView.findViewById(R.id.txv_dialog_backup_manager_current_status);
         clRoot = inflatedView.findViewById(R.id.cl_dialog_create_backup_creating_root);
-        pgbIndicator = inflatedView.findViewById(R.id.pgb_dialog_create_backup_indicator);
-        txvCreateBackupDescription = inflatedView.findViewById(R.id.txv_dialog_create_backup_description);
+        pgbIndicator = inflatedView.findViewById(R.id.pgb_dialog_backup_manager_indicator);
+        txvCreateBackupDescription = inflatedView.findViewById(R.id.txv_dialog_backup_manager_description);
 
         return alertBuilder.create();
     }
@@ -98,7 +93,7 @@ public class CreateBackupDialogFragment extends DialogFragment{
 
         new Thread(() -> {
             while (true){
-                if (isConnectedToInternet()){
+                if (connectedToInternet(getActivity())){
                     getActivity().runOnUiThread(() -> setupCreatingBackupView());
                     return;
                 }
@@ -140,14 +135,5 @@ public class CreateBackupDialogFragment extends DialogFragment{
         txvCurrentState.setText(R.string.label_something_went_wrong);
     }
 
-    protected boolean isConnectedToInternet() {
-        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        if (netInfo != null && netInfo.isConnectedOrConnecting()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
 }

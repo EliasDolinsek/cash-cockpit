@@ -64,7 +64,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         });
 
         findPreference("preference_synchronize_from_backup").setOnPreferenceClickListener(preference -> {
-            new SynchOrBackupDataDialogFragment().show(getChildFragmentManager(), "synchronize_data");
+            ResetDataDialogFragment resetDataDialogFragment = new ResetDataDialogFragment();
+            resetDataDialogFragment.show(getChildFragmentManager(), "reset_to_backup");
             return true;
         });
     }

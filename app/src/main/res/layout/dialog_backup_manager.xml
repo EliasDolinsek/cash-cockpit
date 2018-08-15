@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/txv_dialog_create_backup_description"
+        android:id="@+id/txv_dialog_backup_manager_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
@@ -27,20 +27,20 @@
         android:paddingBottom="12dp">
 
         <ProgressBar
-            android:id="@+id/pgb_dialog_create_backup_indicator"
+            android:id="@+id/pgb_dialog_backup_manager_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"/>
 
         <ImageView
-            android:id="@+id/imv_dialog_create_backup_done"
+            android:id="@+id/imv_dialog_backup_manager_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:src="@drawable/ic_done"/>
 
         <TextView
-            android:id="@+id/txv_dialog_create_backup_creating"
+            android:id="@+id/txv_dialog_backup_manager_current_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"

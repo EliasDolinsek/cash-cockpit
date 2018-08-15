@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Elias Dolinsek on 06.08.2018 for cash-cockpit.
@@ -130,8 +131,7 @@ public class BackupHelper {
         bankAccountsReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<BankAccount> bankAccounts = (ArrayList<BankAccount>) dataSnapshot.getValue();
-                bankAccountsToReturn.addAll(bankAccounts);
+                System.out.println(dataSnapshot.getValue().getClass());
             }
 
             @Override

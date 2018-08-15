@@ -78,7 +78,6 @@ public class RemoteBackupService extends Service {
         primaryCategories.addAll(Database.getPrimaryCategories());
     }
     public void createServerBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
-        System.out.println(bankAccounts.size() + " " + autoPays.size() + " " + primaryCategories.size());
         try {
             bankAccountsReference.push().setValue(bankAccounts);
             autoPaysReference.push().setValue(autoPays);
