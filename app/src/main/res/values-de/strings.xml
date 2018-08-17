@@ -87,7 +87,6 @@
     <string name="label_select_category">Kategorie wählen</string>
     <string name="label_account">Konto</string>
     <string name="label_sing_out">Abmelden</string>
-    <string name="label_sing_out_preference_description">Sie werden abgemeldet und alle lokal gespeicherten Daten werden gelöscht!</string>
     <string name="label_delete_data">Daten löschen</string>
     <string name="label_delete_data_description">Löscht all Ihre Daten auf dem Server und auf ihrem Smartphone</string>
     <string name="label_show_data">Daten anzeigen</string>

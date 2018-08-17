@@ -33,7 +33,6 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int RC_SING_IN = 241;
 
     /**
      * BottomNavigationView for navigating
@@ -46,15 +45,11 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseFragment databaseFragment = new DatabaseFragment();
     private SettingsFragment settingsFragment = new SettingsFragment();
 
-    private FirebaseAuth firebaseAuth;
-    private FirebaseAuth.AuthStateListener authStateListener;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        firebaseAuth = FirebaseAuth.getInstance();
         initDatabase();
 
         if(savedInstanceState == null){
@@ -90,54 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
-
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
-                    //TODO
-                } else {
-                    startActivityForResult(
-                            AuthUI.getInstance()
-                                    .createSignInIntentBuilder()
-                                    .setAvailableProviders(Arrays.asList(
-                                            new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                            new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                            new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                            new AuthUI.IdpConfig.EmailBuilder().build()))
-                                    .build(),
-                            RC_SING_IN);
-                }
-            }
-        };
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        if (authStateListener != null){
-            firebaseAuth.removeAuthStateListener(authStateListener);
-        }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        firebaseAuth.addAuthStateListener(authStateListener);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SING_IN){
-            if (resultCode == RESULT_OK){
-                //TODO
-            } else if (resultCode == RESULT_CANCELED){
-                finish();
-            }
-        }
     }
 
     /**

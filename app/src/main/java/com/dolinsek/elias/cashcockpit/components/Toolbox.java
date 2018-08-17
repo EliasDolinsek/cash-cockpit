@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.widget.Toast;
 
+import com.dolinsek.elias.cashcockpit.R;
 import com.dolinsek.elias.cashcockpit.StartActivity;
 
 import java.util.ArrayList;
@@ -87,6 +89,10 @@ public class Toolbox {
         alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
 
         System.exit(0);
+    }
+
+    public static void showSingInRequiredToUseFeatureToast(Context context){
+        Toast.makeText(context, R.string.toast_sing_in_required_to_use_feature, Toast.LENGTH_SHORT).show();
     }
 
 }

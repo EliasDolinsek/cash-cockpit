@@ -2,7 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/label_account">
-        <Preference android:key="preference_sign_out" android:title="@string/label_sing_out" android:summary="@string/label_sing_out_preference_description"/>
+        <Preference android:key="preference_sign_in_out"/>
         <Preference android:key="preference_delete_data" android:title="@string/label_delete_data" android:summary="@string/label_delete_data_description" />
         <Preference android:key="preference_show_data" android:title="@string/label_show_data" android:summary="@string/label_show_data_description" />
     </PreferenceCategory>

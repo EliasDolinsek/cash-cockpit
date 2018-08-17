@@ -114,6 +114,7 @@ public class Bill {
 
     public void setSubcategory(Subcategory subcategory) {
         this.subcategoryName = subcategory.getName();
+        this.primaryCategoryName = subcategory.getPrimaryCategoryName();
     }
 
     public String getSubcategoryName() {
