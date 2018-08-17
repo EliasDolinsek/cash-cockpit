@@ -57,5 +57,10 @@
             android:name=".RemoteBackupService"
             android:enabled="true"
             android:exported="true" />
+        <service
+            android:name=".RemoteBackupDownloadService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
+
 </manifest>

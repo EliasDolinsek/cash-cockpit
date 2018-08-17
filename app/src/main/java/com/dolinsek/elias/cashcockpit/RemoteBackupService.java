@@ -1,11 +1,9 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.app.Notification;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
@@ -21,16 +19,13 @@ import java.util.ArrayList;
 
 public class RemoteBackupService extends Service {
 
-    public static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
-    public static final String AUTO_PAYS_REFERENCE = "autoPays";
-    public static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
 
     private IBinder localBinder = new LocalBinder();
     private boolean hasFinished;
 
     private FirebaseUser firebaseUser;
     private FirebaseDatabase firebaseDatabase;
-    private DatabaseReference userReference, bankAccountsReference, autoPaysReference, primaryCategoriesReference;
+    private DatabaseReference bankAccountsReference, autoPaysReference, primaryCategoriesReference;
 
     private ArrayList<BankAccount> bankAccounts;
     private ArrayList<AutoPay> autoPays;
@@ -41,10 +36,12 @@ public class RemoteBackupService extends Service {
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         firebaseDatabase = FirebaseDatabase.getInstance();
 
-        userReference = firebaseDatabase.getReference().child(firebaseUser.getUid());
-        bankAccountsReference = userReference.child(BANK_ACCOUNTS_REFERENCE);
-        autoPaysReference = userReference.child(AUTO_PAYS_REFERENCE);
-        primaryCategoriesReference = userReference.child(PRIMARY_CATEGORIES_REFERENCE);
+        String firebaseUserUid = firebaseUser.getUid();
+        DatabaseReference backupsReference = firebaseDatabase.getReference().child(BackupHelper.BACKUPS_REFERENCE);
+
+        bankAccountsReference = backupsReference.child(BackupHelper.BANK_ACCOUNTS_REFERENCE).child(firebaseUserUid);
+        autoPaysReference = backupsReference.child(BackupHelper.AUTO_PAYS_REFERENCE).child(firebaseUserUid);
+        primaryCategoriesReference = backupsReference.child(BackupHelper.PRIMARY_CATEGORIES_REFERENCE).child(firebaseUserUid);
 
         bankAccounts = new ArrayList<>();
         autoPays = new ArrayList<>();
@@ -79,16 +76,36 @@ public class RemoteBackupService extends Service {
     }
     public void createServerBackup(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
         try {
-            bankAccountsReference.push().setValue(bankAccounts);
-            autoPaysReference.push().setValue(autoPays);
-            primaryCategoriesReference.push().setValue(primaryCategories);
+            pushBankAccounts(bankAccounts);
+            pushAutoPays(autoPays);
+            pushPrimaryCategories(primaryCategories);
         } catch (Exception e){
             e.printStackTrace();
         }
     }
 
+    private void pushBankAccounts(ArrayList<BankAccount> bankAccounts){
+        for (BankAccount bankAccount:bankAccounts){
+            bankAccountsReference.push().setValue(bankAccount);
+        }
+    }
+
+    private void pushAutoPays(ArrayList<AutoPay> autoPays){
+        for (AutoPay autoPay:autoPays){
+            autoPaysReference.push().setValue(autoPay);
+        }
+    }
+
+    private void pushPrimaryCategories(ArrayList<PrimaryCategory> primaryCategories){
+        for (PrimaryCategory primaryCategory:primaryCategories){
+            primaryCategoriesReference.push().setValue(primaryCategory);
+        }
+    }
+
     private void deletePreviousBackupOnFirebase(){
-        userReference.removeValue();
+        bankAccountsReference.removeValue();
+        autoPaysReference.removeValue();
+        primaryCategoriesReference.removeValue();
     }
 
     public boolean hasFinished() {

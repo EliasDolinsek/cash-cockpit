@@ -25,6 +25,10 @@ public class PrimaryCategory extends Category{
      */
     private String iconName;
 
+    public PrimaryCategory(){
+
+    }
+
     public PrimaryCategory(String name, Goal goal) {
         super(name, goal);
         subcategories = new ArrayList<>();

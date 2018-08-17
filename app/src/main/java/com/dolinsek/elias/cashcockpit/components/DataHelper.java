@@ -141,17 +141,19 @@ public class DataHelper {
             currentBankAccountJSON.put(BALANCE_CHANGES_JSON, balanceChanges);
 
             //Adds every balance changes of the current bank account
-            for(int y = 0; y<bankAccount.getBalanceChanges().size(); y++){
+            if (bankAccount.getBalanceChanges() != null){
+                for(int y = 0; y<bankAccount.getBalanceChanges().size(); y++){
 
-                //Contains the current balance change
-                JSONObject currentBalanceChangeJSON = new JSONObject();
+                    //Contains the current balance change
+                    JSONObject currentBalanceChangeJSON = new JSONObject();
 
-                //Adds date of balance change to the array of balance changes
-                balanceChanges.put(currentBalanceChangeJSON);
+                    //Adds date of balance change to the array of balance changes
+                    balanceChanges.put(currentBalanceChangeJSON);
 
-                //Adds data
-                currentBalanceChangeJSON.put(BALANCE_CHANGE_NEW_BALANCE_JSON, bankAccount.getBalanceChanges().get(y).getNewBalance());
-                currentBalanceChangeJSON.put(BALANCE_CHANGE_DATE_JSON, bankAccount.getBalanceChanges().get(y).getTimeStampOfChange());
+                    //Adds data
+                    currentBalanceChangeJSON.put(BALANCE_CHANGE_NEW_BALANCE_JSON, bankAccount.getBalanceChanges().get(y).getNewBalance());
+                    currentBalanceChangeJSON.put(BALANCE_CHANGE_DATE_JSON, bankAccount.getBalanceChanges().get(y).getTimeStampOfChange());
+                }
             }
 
             //Contains all bills
@@ -161,39 +163,41 @@ public class DataHelper {
             currentBankAccountJSON.put(BILLS_JSON, bills);
 
             //Adds every bill to the current bank account
-            for(int z = 0; z<bankAccount.getBills().size(); z++){
+            if (bankAccount.getBills() != null){
+                for(int z = 0; z<bankAccount.getBills().size(); z++){
 
-                //Contains current bill
-                JSONObject currentBillJSON = new JSONObject();
+                    //Contains current bill
+                    JSONObject currentBillJSON = new JSONObject();
 
-                //Adds current bill to the array list of balance changes
-                bills.put(currentBillJSON);
+                    //Adds current bill to the array list of balance changes
+                    bills.put(currentBillJSON);
 
-                //Contains current bill
-                Bill bill = bankAccount.getBills().get(z);
+                    //Contains current bill
+                    Bill bill = bankAccount.getBills().get(z);
 
-                //Adds amount
-                currentBillJSON.put(BILL_AMOUNT_JSON, bill.getAmount());
+                    //Adds amount
+                    currentBillJSON.put(BILL_AMOUNT_JSON, bill.getAmount());
 
-                //Adds description
-                currentBillJSON.put(BILL_DESCRIPTION_JSON, bill.getDescription());
+                    //Adds description
+                    currentBillJSON.put(BILL_DESCRIPTION_JSON, bill.getDescription());
 
-                //Adds primary category
-                currentBillJSON.put(BILL_PRIMARY_CATEGORY_NAME, bill.getSubcategory().getPrimaryCategory().getName());
+                    //Adds primary category
+                    currentBillJSON.put(BILL_PRIMARY_CATEGORY_NAME, bill.getSubcategory().getPrimaryCategory().getName());
 
-                //Adds subcategory
-                currentBillJSON.put(BILL_SUB_CATEGORY_JSON, bill.getSubcategory().getName());
+                    //Adds subcategory
+                    currentBillJSON.put(BILL_SUB_CATEGORY_JSON, bill.getSubcategory().getName());
 
-                //Adds creation date
-                currentBillJSON.put(BILL_CREATION_DATE_JSON, bill.getCreationDate());
+                    //Adds creation date
+                    currentBillJSON.put(BILL_CREATION_DATE_JSON, bill.getCreationDate());
 
-                //Adds type
-                currentBillJSON.put(BILL_TYPE_JSON, bill.getType());
+                    //Adds type
+                    currentBillJSON.put(BILL_TYPE_JSON, bill.getType());
 
-                //Adds if bill is an autoPayBill
-                currentBillJSON.put(BILL_AUTO_PAY_BILL_JSON, bill.isAutoPayBill());
+                    //Adds if bill is an autoPayBill
+                    currentBillJSON.put(BILL_AUTO_PAY_BILL_JSON, bill.isAutoPayBill());
+                }
             }
-        }
+            }
 
         //Adds every category to primaryCategoriesJSON
         for(int i = 0; i<primaryCategories.size(); i++){
@@ -225,28 +229,30 @@ public class DataHelper {
             //Adds subcategories
             currentPrimaryCategoryJSON.put(PRIMARY_CATEGORY_SUBCATEGORIES, subcategories);
 
-            for(int y = 0; y<primaryCategories.get(i).getSubcategories().size(); y++){
+            if (primaryCategory.getSubcategories() != null){
+                for(int y = 0; y<primaryCategory.getSubcategories().size(); y++){
 
-                //Contains current subcategory
-                JSONObject currentSubcategoryJSON = new JSONObject();
+                    //Contains current subcategory
+                    JSONObject currentSubcategoryJSON = new JSONObject();
 
-                //Adds subcategory to the array of subcategories of the current primary category
-                subcategories.put(currentSubcategoryJSON);
+                    //Adds subcategory to the array of subcategories of the current primary category
+                    subcategories.put(currentSubcategoryJSON);
 
-                //Contains current subcategory
-                Subcategory subcategory = primaryCategory.getSubcategories().get(y);
+                    //Contains current subcategory
+                    Subcategory subcategory = primaryCategory.getSubcategories().get(y);
 
-                //Adds name
-                currentSubcategoryJSON.put(SUBCATEGORY_NAME_JSON, subcategory.getName());
+                    //Adds name
+                    currentSubcategoryJSON.put(SUBCATEGORY_NAME_JSON, subcategory.getName());
 
-                //Adds goal-amount
-                currentSubcategoryJSON.put(SUBCATEGORY_GOAL_AMOUNT, subcategory.getGoal().getAmount());
+                    //Adds goal-amount
+                    currentSubcategoryJSON.put(SUBCATEGORY_GOAL_AMOUNT, subcategory.getGoal().getAmount());
 
-                //Adds goal-creation-date
-                currentSubcategoryJSON.put(SUBCATEGORY_GOAL_CREATION_DATE, subcategory.getGoal().getCreationDate());
+                    //Adds goal-creation-date
+                    currentSubcategoryJSON.put(SUBCATEGORY_GOAL_CREATION_DATE, subcategory.getGoal().getCreationDate());
 
-                //Sets if the current subcategory is favoured by the user
-                currentSubcategoryJSON.put(SUBCATEGORY_FAVOURED, subcategory.isFavoured());
+                    //Sets if the current subcategory is favoured by the user
+                    currentSubcategoryJSON.put(SUBCATEGORY_FAVOURED, subcategory.isFavoured());
+                }
             }
         }
 

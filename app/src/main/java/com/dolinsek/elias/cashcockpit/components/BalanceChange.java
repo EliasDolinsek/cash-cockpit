@@ -8,6 +8,10 @@ public class BalanceChange {
     private long timeStampOfChange;
     private long newBalance;
 
+    public BalanceChange(){
+
+    }
+
     public BalanceChange(long timeStampOfChange, long newBalance) {
         this.timeStampOfChange = timeStampOfChange;
         this.newBalance = newBalance;

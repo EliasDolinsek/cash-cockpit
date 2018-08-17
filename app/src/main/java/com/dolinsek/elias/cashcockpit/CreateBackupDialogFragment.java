@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
 
 import static com.dolinsek.elias.cashcockpit.components.Toolbox.connectedToInternet;
 
@@ -111,9 +113,9 @@ public class CreateBackupDialogFragment extends DialogFragment{
         BackupHelper backupHelper = new BackupHelper(getActivity());
         backupHelper.setOnCompleteListener(successfully -> {
             if (successfully){
-                getActivity().runOnUiThread(() -> setupBackupCreatedView());
+                getActivity().runOnUiThread(this::setupBackupCreatedView);
             } else {
-                getActivity().runOnUiThread(() -> setupErrorView());
+                getActivity().runOnUiThread(this::setupErrorView);
             }
         });
 

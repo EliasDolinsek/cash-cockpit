@@ -17,6 +17,10 @@ public abstract class Category {
      */
     private Goal goal;
 
+    public Category(){
+
+    }
+
     /**
      * Creates a new Category
      * @param name name of the category

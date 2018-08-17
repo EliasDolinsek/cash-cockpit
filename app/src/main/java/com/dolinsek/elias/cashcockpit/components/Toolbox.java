@@ -1,8 +1,13 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+
+import com.dolinsek.elias.cashcockpit.StartActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,6 +21,8 @@ public class Toolbox {
     public static final int TYPE_YEAR = 876;
     public static final int TYPE_MONTH = 298;
     public static final int TYPE_DAY = 323;
+
+    private static final int PENDING_INTENT_ID = 978;
 
     public static ArrayList<Bill> getBills(long creationTime, int type){
         Calendar calendar = Calendar.getInstance();
@@ -70,6 +77,16 @@ public class Toolbox {
         } else {
             return false;
         }
+    }
+
+    public static void restartCashCockpit(Context context){
+        Intent intent = new Intent(context, StartActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, PENDING_INTENT_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        AlarmManager alarmManager = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, pendingIntent);
+
+        System.exit(0);
     }
 
 }

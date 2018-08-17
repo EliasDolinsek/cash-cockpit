@@ -95,6 +95,7 @@ public class ResetDataDialogFragment extends DialogFragment {
         imvDone.setVisibility(View.VISIBLE);
         setupButtonsForResetView();
 
+        getDialog().setOnDismissListener(dialogInterface -> Toolbox.restartCashCockpit(getContext()));
         txvCurrentStatus.setText(R.string.label_data_got_reset);
     }
 
@@ -113,9 +114,9 @@ public class ResetDataDialogFragment extends DialogFragment {
         BackupHelper backupHelper = new BackupHelper(getActivity());
         backupHelper.setOnCompleteListener(successfully -> {
             if (successfully){
-                setupForResetView();
+                getActivity().runOnUiThread(this::setupForResetView);
             } else {
-                setupForErrorView();
+                getActivity().runOnUiThread(this::setupForErrorView);
             }
         });
 
@@ -148,5 +149,6 @@ public class ResetDataDialogFragment extends DialogFragment {
     private void setupButtonsForResetView(){
         btnPositive.setVisibility(View.GONE);
         btnNegative.setEnabled(true);
+        btnNegative.setText(R.string.dialog_action_restart);
     }
 }

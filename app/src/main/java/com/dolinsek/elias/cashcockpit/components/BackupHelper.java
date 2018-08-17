@@ -8,10 +8,12 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.R;
+import com.dolinsek.elias.cashcockpit.RemoteBackupDownloadService;
 import com.dolinsek.elias.cashcockpit.RemoteBackupService;
 import com.dolinsek.elias.cashcockpit.StartActivity;
 import com.firebase.ui.auth.AuthUI;
@@ -23,11 +25,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +43,11 @@ public class BackupHelper {
 
     private static final String DATABASE_FILE_NAME = "database.json";
     private static final String DATABASE_BACKUP_FILE_NAME = "databaseBackup.json";
+
+    public static final String BACKUPS_REFERENCE = "backups";
+    public static final String BANK_ACCOUNTS_REFERENCE = "bankAccounts";
+    public static final String AUTO_PAYS_REFERENCE = "autoPays";
+    public static final String PRIMARY_CATEGORIES_REFERENCE = "primaryCategories";
 
     public static final String BACKUP_LOCATION_LOCAL = "1";
     public static final String BACKUP_LOCATION_SERVER = "2";
@@ -71,6 +81,7 @@ public class BackupHelper {
     }
 
     private void createServerBackup(){
+        Intent intent = new Intent(context, RemoteBackupService.class);
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder service) {
@@ -80,6 +91,10 @@ public class BackupHelper {
                     while (true){
                         if (remoteBackupService.hasFinished()){
                             onCompleteListener.onComplete(true);
+
+                            context.unbindService(this);
+                            context.stopService(intent);
+
                             return;
                         }
                     }
@@ -92,7 +107,6 @@ public class BackupHelper {
             }
         };
 
-        Intent intent = new Intent(context, RemoteBackupService.class);
         context.startService(intent);
         context.bindService(intent, serviceConnection, 0);
     }
@@ -118,29 +132,42 @@ public class BackupHelper {
     }
 
     private void overrideDataWithServerBackup(){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        Intent intent = new Intent(context, RemoteBackupDownloadService.class);
+        ServiceConnection serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+                RemoteBackupDownloadService remoteBackupDownloadService = ((RemoteBackupDownloadService.LocalBinder)iBinder).getService();
+                new Thread(() -> {
+                    while (true){
+                        if (remoteBackupDownloadService.hasFinished()){
+                            replaceDatabaseDataWithNewArrayLists(remoteBackupDownloadService.getBankAccounts(),
+                                    remoteBackupDownloadService.getAutoPays(),
+                                    remoteBackupDownloadService.getPrimaryCategories());
+                            Database.save(context);
 
-        DatabaseReference userReference = firebaseDatabase.getReference().child(user.getUid());
-        DatabaseReference bankAccountsReference = userReference.child(RemoteBackupService.BANK_ACCOUNTS_REFERENCE);
-        Database.setBankAccounts(getBankAccountsFromServer(bankAccountsReference));
+                            context.unbindService(this);
+                            context.stopService(intent);
+                            onCompleteListener.onComplete(true);
+                            return;
+                        }
+                    }
+                }).start();
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName componentName) {
+                onCompleteListener.onComplete(false);
+            }
+        };
+
+        context.startService(intent);
+        context.bindService(intent, serviceConnection, 0);
     }
 
-    private ArrayList<BankAccount> getBankAccountsFromServer(DatabaseReference bankAccountsReference){
-        final ArrayList<BankAccount> bankAccountsToReturn = new ArrayList<>();
-        bankAccountsReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                System.out.println(dataSnapshot.getValue().getClass());
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-        return bankAccountsToReturn;
+    private void replaceDatabaseDataWithNewArrayLists(ArrayList<BankAccount> bankAccounts, ArrayList<AutoPay> autoPays, ArrayList<PrimaryCategory> primaryCategories){
+        Database.setBankAccounts(bankAccounts);
+        Database.setAutoPays(autoPays);
+        Database.setPrimaryCategories(primaryCategories);
     }
 
     private void writeDataToFile(String dataAsString, String fileName) throws IOException {

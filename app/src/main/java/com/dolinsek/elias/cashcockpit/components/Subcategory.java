@@ -19,6 +19,10 @@ public class Subcategory extends Category{
      */
     private String primaryCategoryName;
 
+    public Subcategory(){
+
+    }
+
     /**
      * Creates a new subcategory
      * @param name name of the subcategory
@@ -60,6 +64,14 @@ public class Subcategory extends Category{
         this.favoured = favoured;
     }
 
+    public void setPrimaryCategoryName(String primaryCategoryName) {
+        this.primaryCategoryName = primaryCategoryName;
+    }
+
+    public String getPrimaryCategoryName() {
+        return primaryCategoryName;
+    }
+
     @Exclude
     public PrimaryCategory getPrimaryCategory() {
         return getPrimaryCategoryByName();
@@ -77,7 +89,7 @@ public class Subcategory extends Category{
             }
         }
 
-        throw new IllegalArgumentException("Couldn't find primary category by name!");
+        throw new IllegalArgumentException("Couldn't find primary category by name (" + primaryCategoryName + ")");
     }
 
 }

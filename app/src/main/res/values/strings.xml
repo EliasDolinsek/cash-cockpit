@@ -157,6 +157,7 @@
     <string name="dialog_action_close">Close</string>
     <string name="dialog_action_synchronize">Synch</string>
     <string name="dialog_action_create_backup">Create Backup</string>
+    <string name="dialog_action_restart">Restart</string>
 
     <!-- Dialog messages -->
     <string name="dialog_msg_confirm_primary_category_deletion">Delete this Primary Category including all associated Bills and AutoPays?</string>
