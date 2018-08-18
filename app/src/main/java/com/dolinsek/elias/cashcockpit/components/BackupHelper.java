@@ -80,7 +80,7 @@ public class BackupHelper {
         }
     }
 
-    private void createServerBackup(){
+    public void createServerBackup(){
         Intent intent = new Intent(context, RemoteBackupService.class);
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override
@@ -131,7 +131,7 @@ public class BackupHelper {
         }
     }
 
-    private void overrideDataWithServerBackup(){
+    public void overrideDataWithServerBackup(){
         Intent intent = new Intent(context, RemoteBackupDownloadService.class);
         ServiceConnection serviceConnection = new ServiceConnection() {
             @Override

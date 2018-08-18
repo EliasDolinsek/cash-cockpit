@@ -116,8 +116,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
     public static class SignOutDialogFragment extends DialogFragment {
 
-        private Context context;
-
         @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -140,22 +138,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             Database.setAutoPays(new ArrayList<>());
             Database.setPrimaryCategories(new ArrayList<>());
             Database.save(getContext());
-        }
-    }
-    public static class DeleteDataDialogFragment extends DialogFragment{
-
-        @NonNull
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle(getString(R.string.dialog_title_delete_all_data)).setMessage(R.string.dialog_msg_delete_all_data_conformation)
-            .setPositiveButton(R.string.action_delete, (dialog, which) -> {
-                Database.deleteDatabase();
-                Database.save(getContext());
-                Toast.makeText(getContext(), getString(R.string.toast_data_got_deleted_successfully), Toast.LENGTH_SHORT).show();
-            }).setNegativeButton(R.string.dialog_action_cancel, (dialog, which) -> dismiss());
-
-            return builder.create();
         }
     }
 

@@ -117,14 +117,14 @@
     <string name="dialog_msg_confirm_auto_pay_deletion">AutoPay löschen?</string>
     <string name="dialog_msg_confirm_bill_deletion">Rechnung löschen?</string>
     <string name="dialog_msg_reset_password_conformation">Möchten sie wirklich Ihr Passwort zurücksetzen</string>
-    <string name="dialog_msg_delete_all_data_conformation">Möchten Sie wirklich all Ihre Daten löschen? Dies betrifft die lokal und auf dem Server gespeicherten Daten!</string>
+    <string name="dialog_msg_delete_all_data_description">Möchten Sie wirklich all Ihre Daten löschen? Dies betrifft die lokal und auf dem Server gespeicherten Daten!</string>
     <string name="dialog_title_create_goal">Goal erstellen</string>
     <string name="dialog_title_edit_goal">Goal bearbeiten</string>
     <string name="dialog_title_create_subcategory">Unterkategorie erstellen</string>
     <string name="dialog_title_edit_subcategory">Unterkategorie bearbeiten</string>
     <string name="dialog_title_reset_password">Passwort zurücksetzen</string>
     <string name="dialog_title_filters">Filter</string>
-    <string name="dialog_title_delete_all_data">Alle Daten löschen</string>
+    <string name="dialog_title_delete_data">Daten Löschen</string>
     <string name="dialog_title_all_your_saved_data">All Ihre gespeicherten Daten</string>
     <string name="text_password_preferences_notices">Sie können Ihr Passwort hier bearbeiten und ihre Login-Einstellungen ändern. Bitte beachten Sie das ihr Passwort als unverschlüselter Text gespeichert wird!</string>
     <string name="text_amount_to_save_preference_notices">Sie könne hier den Sparbetrag setzen der für die Berechnungen auf der Cockpit-Seite genutzt wird um korrekte Zahlen anzeigen zu können. Dieser Betrag hat aber nichts mit den Goal-Beträgen zu tun.</string>
