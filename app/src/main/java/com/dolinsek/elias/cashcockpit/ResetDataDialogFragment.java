@@ -21,7 +21,6 @@ public class ResetDataDialogFragment extends DialogFragment {
     private TextView txvDescription, txvCurrentStatus;
     private ProgressBar pgbIndicator;
     private ImageView imvDone;
-
     private Button btnPositive, btnNegative;
 
     @NonNull
@@ -31,7 +30,7 @@ public class ResetDataDialogFragment extends DialogFragment {
         alertBuilder.setTitle(R.string.dialog_title_reset_data);
 
         alertBuilder.setPositiveButton(R.string.dialog_action_reset, null)
-                    .setNegativeButton(R.string.dialog_action_close, null);
+                    .setNegativeButton(R.string.dialog_action_cancel, null);
 
         LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
         View inflatedView = layoutInflater.inflate(R.layout.dialog_backup_manager, null);
@@ -74,6 +73,7 @@ public class ResetDataDialogFragment extends DialogFragment {
         txvCurrentStatus.setVisibility(View.VISIBLE);
         pgbIndicator.setVisibility(View.VISIBLE);
         imvDone.setVisibility(View.GONE);
+        setupButtonsForWaitingForInternetConnectionView();
 
         txvCurrentStatus.setText(R.string.label_waiting_for_internet_connection);
     }
@@ -124,12 +124,10 @@ public class ResetDataDialogFragment extends DialogFragment {
             if (BackupHelper.getBackupLocation(getContext()).equals(BackupHelper.BACKUP_LOCATION_SERVER)){
                 setupForWaitingForInternetConnectionView();
                 new Thread(() -> {
-                    while (true){
-                        if (Toolbox.connectedToInternet(getContext())){
-                            getActivity().runOnUiThread(() -> setupForResettingView());
-                            backupHelper.overrideDataWithBackup();
-                            return;
-                        }
+                    waitForInternetConnectionOrDialogClose();
+                    if (getDialog() != null && getDialog().isShowing()){
+                        getActivity().runOnUiThread(() -> setupForResettingView());
+                        backupHelper.overrideDataWithBackup();
                     }
                 }).start();
             } else {
@@ -138,7 +136,14 @@ public class ResetDataDialogFragment extends DialogFragment {
             }
         });
 
-        btnNegative.setOnClickListener(view -> getDialog().dismiss());
+        btnNegative.setOnClickListener(view -> {
+            getDialog().dismiss();
+        });
+    }
+
+    private void setupButtonsForWaitingForInternetConnectionView(){
+        btnPositive.setVisibility(View.GONE);
+        btnNegative.setOnClickListener(view -> dismiss());
     }
 
     private void setupButtonsForResettingView(){
@@ -150,5 +155,13 @@ public class ResetDataDialogFragment extends DialogFragment {
         btnPositive.setVisibility(View.GONE);
         btnNegative.setEnabled(true);
         btnNegative.setText(R.string.dialog_action_restart);
+    }
+
+    private void waitForInternetConnectionOrDialogClose(){
+        while (true){
+            if (getDialog() == null ||!getDialog().isShowing() || Toolbox.connectedToInternet(getContext())){
+                return;
+            }
+        }
     }
 }

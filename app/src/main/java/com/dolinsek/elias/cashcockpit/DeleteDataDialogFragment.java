@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.zip.GZIPInputStream;
@@ -26,7 +27,6 @@ public class DeleteDataDialogFragment extends DialogFragment {
     private TextView txvDescription, txvCurrentStatus;
     private ProgressBar pgbIndicator;
     private ImageView imvDone;
-    private boolean finished, cancelWaitingForInternetConnection;
 
     @NonNull
     @Override
@@ -59,14 +59,6 @@ public class DeleteDataDialogFragment extends DialogFragment {
         setupForDescriptionView();
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        if (finished){
-            Toolbox.restartCashCockpit(getContext());
-        }
-    }
-
     private void setupForDescriptionView(){
         txvDescription.setVisibility(View.VISIBLE);
         txvCurrentStatus.setVisibility(View.GONE);
@@ -75,12 +67,10 @@ public class DeleteDataDialogFragment extends DialogFragment {
 
         txvDescription.setText(R.string.label_delete_data_description);
         setupButtonsForDescriptionView();
-        finished = false;
     }
 
     private void setupButtonsForDescriptionView(){
         BackupHelper.OnCompleteListener onCompleteListener = successfully -> {
-            finished = true;
             if (successfully){
                 getActivity().runOnUiThread(this::setupForDeletedView);
             } else {
@@ -88,24 +78,26 @@ public class DeleteDataDialogFragment extends DialogFragment {
             }
         };
 
-        btnPositive.setOnClickListener(view -> {
-            getActivity().runOnUiThread(this::setupForWaitingInternetConnectionView);
-            cancelWaitingForInternetConnection = false;
-            new Thread(() -> {
-                waitForInternetConnection();
-                if (!cancelWaitingForInternetConnection){
-                    getActivity().runOnUiThread(this::setupForDeletingDataView);
-                    removeDataInDatabase();
-                    deleteServerData(onCompleteListener);
-                }
-            }).start();
-        });
+        if (FirebaseAuth.getInstance().getCurrentUser() != null){
+            btnPositive.setOnClickListener(view -> {
+                getActivity().runOnUiThread(this::setupForWaitingInternetConnectionView);
+                new Thread(() -> {
+                    waitForInternetConnectionOrDialogClose();
+                    if (getDialog() != null && getDialog().isShowing()){
+                        getActivity().runOnUiThread(this::setupForDeletingDataView);
+                        removeDataInDatabase();
+                        deleteServerData(onCompleteListener);
+                    }
+                }).start();
+            });
+        } else {
+            btnPositive.setEnabled(false);
+        }
 
         btnNegative.setOnClickListener(view -> {
             setupForDeletingDataView();
             deleteLocalData();
             setupForDeletedView();
-            finished = true;
         });
 
     }
@@ -125,10 +117,7 @@ public class DeleteDataDialogFragment extends DialogFragment {
         btnNegative.setVisibility(View.GONE);
 
         btnPositive.setText(R.string.dialog_action_cancel);
-        btnPositive.setOnClickListener(view -> {
-            cancelWaitingForInternetConnection = true;
-            dismiss();
-        });
+        btnPositive.setOnClickListener(view -> dismiss());
     }
 
     private void setupForDeletingDataView(){
@@ -157,6 +146,7 @@ public class DeleteDataDialogFragment extends DialogFragment {
 
         txvCurrentStatus.setText(R.string.label_data_got_deleted);
         setupButtonsForFinishedView();
+        getDialog().setOnDismissListener(dialogInterface -> Toolbox.restartCashCockpit(getContext()));
     }
 
     private void setupForErrorView(){
@@ -177,9 +167,9 @@ public class DeleteDataDialogFragment extends DialogFragment {
         btnPositive.setOnClickListener(view -> dismiss());
     }
 
-    private void waitForInternetConnection(){
+    private void waitForInternetConnectionOrDialogClose(){
         while (true){
-            if (Toolbox.connectedToInternet(getContext()) || cancelWaitingForInternetConnection){
+            if (getDialog() == null ||!getDialog().isShowing() || Toolbox.connectedToInternet(getContext())){
                 return;
             }
         }

@@ -91,14 +91,12 @@ public class CreateBackupDialogFragment extends DialogFragment{
         imvBackupDone.setVisibility(View.GONE);
         pgbIndicator.setVisibility(View.VISIBLE);
         txvCurrentState.setVisibility(View.VISIBLE);
-        btnPositive.setEnabled(false);
+        btnPositive.setVisibility(View.GONE);
 
         new Thread(() -> {
-            while (true){
-                if (connectedToInternet(getActivity())){
-                    getActivity().runOnUiThread(() -> setupCreatingBackupView());
-                    return;
-                }
+            waitForInternetConnectionOrDialogClose();
+            if (getDialog() != null && getDialog().isShowing()){
+                getActivity().runOnUiThread(() -> setupCreatingBackupView());
             }
         }).start();
     }
@@ -137,5 +135,11 @@ public class CreateBackupDialogFragment extends DialogFragment{
         txvCurrentState.setText(R.string.label_something_went_wrong);
     }
 
-
+    private void waitForInternetConnectionOrDialogClose(){
+        while (true){
+            if (getDialog() == null ||!getDialog().isShowing() || Toolbox.connectedToInternet(getContext())){
+                return;
+            }
+        }
+    }
 }

@@ -71,7 +71,7 @@ public class Toolbox {
         return bills;
     }
 
-    public static boolean connectedToInternet(Context context) {
+    public static boolean connectedToInternet(Context context){
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         if (netInfo != null && netInfo.isConnectedOrConnecting()) {
