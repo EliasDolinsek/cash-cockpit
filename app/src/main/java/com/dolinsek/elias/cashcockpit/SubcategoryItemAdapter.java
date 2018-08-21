@@ -256,14 +256,11 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);
 
-        holder.mBtnSelectCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
-                int subcategoryIndexInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
+        holder.mBtnSelectCategory.setOnClickListener(view -> {
+            int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
+            int subcategoryIndexInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
 
-                onCategorySelectedListener.onSelected(primaryCategoryIndexInDatabase, subcategoryIndexInDatabase);
-            }
+            onCategorySelectedListener.onSelected(primaryCategoryIndexInDatabase, subcategoryIndexInDatabase);
         });
     }
 
@@ -357,14 +354,10 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long billsTotalAmount = 0;
         for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                billsTotalAmount += bill.getAmount();
-            } else {
-                billsTotalAmount -= bill.getAmount();
-            }
+            billsTotalAmount += bill.getAmount();
         }
 
-        return Math.abs(billsTotalAmount);
+        return billsTotalAmount;
     }
 
     private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
