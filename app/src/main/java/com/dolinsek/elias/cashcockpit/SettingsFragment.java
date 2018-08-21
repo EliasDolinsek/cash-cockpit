@@ -76,16 +76,6 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             return true;
         });
 
-        findPreference("preference_show_data").setOnPreferenceClickListener(preference -> {
-            if (currentUser != null){
-                Toast.makeText(getContext(), "Not implemented yet!", Toast.LENGTH_SHORT).show();
-                //new ShowDataDialogFragment().show(getChildFragmentManager(), "show_data");
-            } else {
-                Toolbox.showSingInRequiredToUseFeatureToast(getActivity());
-            }
-            return true;
-        });
-
         findPreference("preference_make_backup").setOnPreferenceClickListener(preference -> {
             com.dolinsek.elias.cashcockpit.CreateBackupDialogFragment createBackupDialogFragment = new com.dolinsek.elias.cashcockpit.CreateBackupDialogFragment();
             createBackupDialogFragment.show(getChildFragmentManager(), "create_backup");

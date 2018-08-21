@@ -168,7 +168,7 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         } else if (nameAlreadyExists && !mEditMode) {
             Toast.makeText(CategoryActivity.this, getString(R.string.toast_category_already_exists), Toast.LENGTH_SHORT).show();
         } else {
-            primaryCategory.setName(enteredName);
+            changePrimaryCategoryName(enteredName);
 
             if (mEditMode) {
                 Database.save(getApplicationContext());
@@ -224,5 +224,30 @@ public class CategoryActivity extends AppCompatActivity implements DeletePrimary
         }
 
         return false;
+    }
+
+    private void changePrimaryCategoryName(String newName){
+        updateNewCategoryNameInComponents(primaryCategory.getName(), newName);
+        primaryCategory.setName(newName);
+    }
+
+    private void updateNewCategoryNameInComponents(String oldName, String newName){
+        for (Subcategory subcategory:primaryCategory.getSubcategories()){
+            subcategory.setPrimaryCategoryName(newName);
+        }
+
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getPrimaryCategoryName().equals(oldName)){
+                    bill.setPrimaryCategoryName(newName);
+                }
+            }
+        }
+
+        for (AutoPay autoPay:Database.getAutoPays()){
+            if (autoPay.getBill().getPrimaryCategoryName().equals(oldName)){
+                autoPay.getBill().setPrimaryCategoryName(newName);
+            }
+        }
     }
 }

@@ -106,7 +106,7 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
                     String name = mEdtSubcategoryName.getText().toString();
                     removeAllWhiteSpacesAtBeginning(name);
 
-                    mSubcategory.setName(name);
+                    changeSubcategoryName(name);
                     setGoalForSubcategory();
 
                     if(!mEditMode){
@@ -294,6 +294,27 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             }
 
             Database.getAutoPays().removeAll(autoPaysToDelete);
+        }
+    }
+
+    private void changeSubcategoryName(String newName){
+        updateSubcategoryNameInComponents(mSubcategory.getName(), newName);
+        mSubcategory.setName(newName);
+    }
+
+    private void updateSubcategoryNameInComponents(String oldName, String newName){
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            for (Bill bill:bankAccount.getBills()){
+                if (bill.getSubcategoryName().equals(oldName)){
+                    bill.setSubcategoryName(newName);
+                }
+            }
+        }
+
+        for (AutoPay autoPay:Database.getAutoPays()){
+            if (autoPay.getBill().getSubcategoryName().equals(oldName)){
+                autoPay.getBill().setSubcategoryName(newName);
+            }
         }
     }
 
