@@ -12,26 +12,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Random;
 
 
 /**
@@ -202,11 +198,34 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        setupPieDataSetColors(pieDataSet);
         pieDataSet.setSliceSpace(3f);
         pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueFormatter(new PercentFormatter());
+    }
+
+    private void setupPieDataSetColors(PieDataSet pieDataSet){
+        ArrayList<Integer> colors = new ArrayList<>();
+        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
+            colors.add(getRandomColor());
+        }
+        pieDataSet.setColors(colors);
+    }
+
+    private int getRandomColor(){
+        Random random = new Random();
+        final int baseColor = Color.WHITE;
+
+        final int baseRed = Color.red(baseColor);
+        final int baseGreen = Color.green(baseColor);
+        final int baseBlue = Color.blue(baseColor);
+
+        final int red = (baseRed + random.nextInt(256)) / 2;
+        final int green = (baseGreen + random.nextInt(256)) / 2;
+        final int blue = (baseBlue + random.nextInt(256)) / 2;
+
+        return Color.rgb(red, green, blue);
     }
 
     private void setupChartStatistics(){

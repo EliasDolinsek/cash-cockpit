@@ -102,54 +102,42 @@ public class StartActivity extends AppCompatActivity {
     }
 
     private View.OnKeyListener getOnKeyPressedListener(){
-        return new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
-                    btnLogin.performClick();
+        return (v, keyCode, event) -> {
+            if (event.getAction() == KeyEvent.ACTION_DOWN || event.getAction() == KeyEvent.KEYCODE_ENTER){
+                btnLogin.performClick();
 
-                    return true;
-                }
-                return false;
+                return true;
             }
+            return false;
         };
     }
 
     private View.OnClickListener getOnLoginButtonClickListener(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (edtPassword.getText().toString().equals(getPasswordForLogin())){
-                    login();
+        return v -> {
+            if (edtPassword.getText().toString().equals(getPasswordForLogin())){
+                login();
 
-                    if (getTimeStampWhenPasswordGetsReset() != 0){
-                        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-                        sharedPreferences.edit().putLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, 0).commit();
-                    }
-                } else {
-                    edtPassword.setText("");
-                    Toast.makeText(StartActivity.this, getString(R.string.label_wrong_password), Toast.LENGTH_SHORT).show();
+                if (getTimeStampWhenPasswordGetsReset() != 0){
+                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                    sharedPreferences.edit().putLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, 0).commit();
                 }
+            } else {
+                edtPassword.setText("");
+                Toast.makeText(StartActivity.this, getString(R.string.label_wrong_password), Toast.LENGTH_SHORT).show();
             }
         };
     }
 
     private View.OnClickListener getOnForgotPasswordClickListener(){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ResetPasswordDialogFragment resetPasswordDialogFragment = new ResetPasswordDialogFragment();
-                resetPasswordDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (getTimeStampWhenPasswordGetsReset() != 0){
-                            setupForPasswordResettingMode();
-                        }
-                    }
-                });
+        return v -> {
+            ResetPasswordDialogFragment resetPasswordDialogFragment = new ResetPasswordDialogFragment();
+            resetPasswordDialogFragment.setOnDismissListener(dialog -> {
+                if (getTimeStampWhenPasswordGetsReset() != 0){
+                    setupForPasswordResettingMode();
+                }
+            });
 
-                resetPasswordDialogFragment.show(getFragmentManager(), "reset_password");
-            }
+            resetPasswordDialogFragment.show(getFragmentManager(), "reset_password");
         };
     }
 
@@ -170,7 +158,7 @@ public class StartActivity extends AppCompatActivity {
         long hoursUntilPasswordReset = timeMillisToHour(timeUntilPasswordReset) % 24;
         int minutesUntilPasswordReset = timeMillisToMinutes(timeUntilPasswordReset) % 60;
 
-        if (hoursUntilPasswordReset > 24){
+        if (timeUntilPasswordReset > RESET_OPTIONS_AS_TIME_STAMPS[2] /**1 day**/){
             return  getString(R.string.label_days_and_hours_until_password_reset, daysUntilPasswordReset, hoursUntilPasswordReset);
         } else {
             return getString(R.string.label_hours_and_minutes_until_password_reset, hoursUntilPasswordReset, minutesUntilPasswordReset);
@@ -218,13 +206,10 @@ public class StartActivity extends AppCompatActivity {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getActivity());
             alertBuilder.setTitle(R.string.dialog_title_reset_password).setMessage(R.string.dialog_msg_reset_password_conformation);
 
-            alertBuilder.setPositiveButton(R.string.dialog_action_reset, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    long timeStampAtReset = addResetTimeToTimeStamp(System.currentTimeMillis());
-                    SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    sharedPreferences.edit().putLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, timeStampAtReset).commit();
-                }
+            alertBuilder.setPositiveButton(R.string.dialog_action_reset, (dialog, which) -> {
+                long timeStampAtReset = addResetTimeToTimeStamp(System.currentTimeMillis());
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                sharedPreferences.edit().putLong(PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP, timeStampAtReset).commit();
             }).setNegativeButton(R.string.dialog_action_cancel, null);
 
             return alertBuilder.create();

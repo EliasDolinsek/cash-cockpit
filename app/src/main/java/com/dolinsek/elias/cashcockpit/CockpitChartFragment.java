@@ -1,22 +1,14 @@
 package com.dolinsek.elias.cashcockpit;
 
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.Point;
-import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -26,19 +18,13 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
-import com.dolinsek.elias.cashcockpit.components.Toolbox;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Locale;
 
 
 /**
@@ -71,12 +57,9 @@ public class CockpitChartFragment extends Fragment {
         llCockpitChartRoot = inflatedView.findViewById(R.id.ll_cockpit_chart_root);
 
         imvCockpitChartSettings = inflatedView.findViewById(R.id.imv_cockpit_chart_settings);
-        imvCockpitChartSettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CockpitChartPreferencesActivity.class);
-                startActivity(intent);
-            }
+        imvCockpitChartSettings.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), CockpitChartPreferencesActivity.class);
+            startActivity(intent);
         });
 
         setupPieChart();
@@ -190,34 +173,22 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull, boolean amountOfTransfersGreaterThanNull){
-        int[] colors;
-        int colorInputs = getResources().getColor(R.color.colorCockpitChartEntriesInput), colorOutputs = getResources().getColor(R.color.colorCockpitChartEntriesOutput), colorTransfers = getResources().getColor(R.color.colorCockpitChartEntriesTransfer), colorFixedCosts = getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts);
-        if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull  && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorInputs, colorOutputs, colorTransfers, colorFixedCosts};
-        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull){
-            colors = new int[]{colorInputs, colorOutputs, colorTransfers};
-        } else if (amountOfInputsGreaterThanNull && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorInputs, colorTransfers, colorFixedCosts};
-        } else if (amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorOutputs, colorTransfers, colorFixedCosts};
-        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{colorInputs, colorOutputs};
-        } else if (amountOfInputsGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorInputs, colorFixedCosts};
-        } else if (amountOfOutputGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorOutputs, colorFixedCosts};
-        } else if (amountOfOutputGreaterThanNull && amountOfTransfersGreaterThanNull){
-            colors = new int[]{colorOutputs, colorTransfers};
-        } else if (amountOfTransfersGreaterThanNull && amountOfFixCostsGreaterThanNull){
-            colors = new int[]{colorTransfers, colorFixedCosts};
-        } else if (amountOfOutputGreaterThanNull){
-            colors = new int[]{colorOutputs};
-        } else if (amountOfInputsGreaterThanNull){
-            colors = new int[]{colorInputs};
-        } else if (amountOfTransfersGreaterThanNull){
-            colors = new int[]{colorTransfers};
-        } else {
-            colors = new int[]{colorFixedCosts};
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        if (amountOfInputsGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesInput));
+        }
+
+        if (amountOfOutputGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesOutput));
+        }
+
+        if (amountOfTransfersGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesTransfer));
+        }
+
+        if (amountOfFixCostsGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts));
         }
 
         pieDataSet.setColors(colors);

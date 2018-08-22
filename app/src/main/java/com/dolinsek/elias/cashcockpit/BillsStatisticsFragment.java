@@ -196,23 +196,18 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfTransferGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
-        int[] colors;
-        if (amountOfTransferGreaterThanNull && amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
-        } else if (amountOfTransferGreaterThanNull && amountOfInputsGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeTransfer)};
-        } else if (amountOfTransferGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
-        } else if (amountOfInputsGreaterThanNull && amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput)};
-        } else if (amountOfInputsGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput)};
-        } else if (amountOfOutputGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeOutput)};
-        } else if (amountOfTransferGreaterThanNull){
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeTransfer)};
-        } else {
-            colors = new int[]{getResources().getColor(R.color.colorBillTypeInput), getResources().getColor(R.color.colorBillTypeOutput), getResources().getColor(R.color.colorBillTypeTransfer)};
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        if (amountOfInputsGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorBillTypeInput));
+        }
+
+        if (amountOfOutputGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorBillTypeOutput));
+        }
+
+        if (amountOfTransferGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorBillTypeTransfer));
         }
 
         pieDataSet.setColors(colors);
