@@ -244,7 +244,7 @@ public class CockpitChartFragment extends Fragment {
         long amountOfFixedCostsOfMonth = getAmountOfFixedCosts();
         long amountOfOutputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
 
-        return amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
+        return Database.Toolkit.getTotalBalanceOfAllBankAccounts() + amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
     }
 
     private long getAmountOfTotalInputsOfMonthIncludingAutoPays(){
@@ -267,7 +267,7 @@ public class CockpitChartFragment extends Fragment {
         long amountOfCashOfMonth = getAmountOfCash();
         long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
 
-        long creditRate = (amountOfCashOfMonth - amountToSaveEveryMonth) / getRemainingDaysUntilMonthEnds();
+        long creditRate = amountOfCashOfMonth - amountToSaveEveryMonth;
 
         if (creditRate < 0){
             return 0;
