@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">CashCockpit</string>
-    <string name="title_select_category">Kategorie Wählen</string>
-    <string name="title_password_settings">Passwort-Einstellungen</string>
+    <string name="title_select_category">Kategorie Auswählen</string>
+    <string name="title_password_settings">Passworteinstellungen</string>
     <string name="title_cockpit_chart">Cockpit-Chart</string>
     <string name="tab_cockpit">Cockpit</string>
     <string name="tab_history">Verlauf</string>
-    <string name="tab_statistics">Statistik</string>
+    <string name="tab_statistics">Statistiken</string>
     <string name="tab_database">Datenbank</string>
     <string name="tab_settings">Einstellungen</string>
     <string name="tab_bills">Rechnungen</string>
@@ -149,4 +149,32 @@
     <string name="dialog_msg_synchronize_or_reset_data_description">Ihre Daten werden mit dem Backup überschrieben. Kann zum Synchronisieren von Daten zwischen mehreren Geräten verwendet werden. CashCockpit wird nach der Fertigstellung neu gestartet!</string>
     <string name="dialog_title_create_backup">Backup erstellen</string>
     <string name="dialog_title_synch_or_reset_data">Daten synchronisieren oder zurücksetzen</string>
+    <string name="notification_title_cash_cockpit">Cash Cockpit</string>
+    <string name="notification_text_uploading_data">Daten werden auf Server hochgeladen</string>
+    <string name="notification_text_uploaded_data_successfully">Daten wurden erfolgreich auf Server hochgeladen</string>
+    <string name="dialog_title_sing_out">Abmelden</string>
+    <string name="dialog_title_reset_data">Daten zurücksetzen</string>
+    <string name="label_synchronize_or_reset_data">Daten zurücksetzen oder synchronisieren</string>
+    <string name="label_synchronize_or_reset_data_preference_description">Daten werden mit dem letzten Backup überschrieben. Kann zur Synchronisation genutzt werden</string>
+    <string name="label_waiting_for_internet_connection">Waren auf Internetverbindung…</string>
+    <string name="label_creating_backup">Erstellen Backup…</string>
+    <string name="label_backup_got_created">Backup wurde erstellt</string>
+    <string name="label_something_went_wrong">Etwas ist schief gelaufen!</string>
+    <string name="label_resetting_data">Setzen Daten zurück…</string>
+    <string name="label_data_got_reset">Daten wurden zurückgesetzt</string>
+    <string name="label_sign_in">Anmelden</string>
+    <string name="label_deleting_data">Daten werden gelöscht</string>
+    <string name="label_data_got_deleted">Daten wurden gelöscht</string>
+    <string name="toast_started_uploading_data_to_servers">Daten werden im Hintergrund zum Server hochgeladen</string>
+    <string name="toast_sing_in_required_to_use_feature">Sie müssen sich anmelden um dieses Feuture zu nutzen</string>
+    <string name="dialog_action_synchronize">Synch</string>
+    <string name="dialog_action_create_backup">Backup erstellen</string>
+    <string name="dialog_action_restart">Neustarten</string>
+    <string name="dialog_action_sign_out">Abmelden</string>
+    <string name="dialog_action_server">Server</string>
+    <string name="dialog_action_local">Lokal</string>
+    <string name="dialog_msg_backup_on_server_description">Ihr Backup wird auf dem Server gespechert. Sie können es unter anderem auf anderen Geräten herunterlanden um Daten zu synchronizieren oder zurückzusetzen</string>
+    <string name="dialog_msg_create_local_backup_description">Ihr Backup wird auf diesem Smartphone gespeichert. Sie können später jederzeit ihre Daten darauf zurücksetzen.</string>
+    <string name="dialog_msg_create_server_backup_description">//TODO dialog_msg_create_server_backup</string>
+    <string name="dialog_msg_sing_out_description">Wenn sie sich abmelden werden alle lokal gespeicherten Daten gelöscht</string>
 </resources>

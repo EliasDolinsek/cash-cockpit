@@ -221,9 +221,9 @@ public class CategoriesStatisticsFragment extends Fragment {
         final int baseGreen = Color.green(baseColor);
         final int baseBlue = Color.blue(baseColor);
 
-        final int red = (baseRed + random.nextInt(256)) / 2;
-        final int green = (baseGreen + random.nextInt(256)) / 2;
-        final int blue = (baseBlue + random.nextInt(256)) / 2;
+        final int red = (baseRed + random.nextInt(256)) / 3;
+        final int green = (baseGreen + random.nextInt(256)) / 3;
+        final int blue = (baseBlue + random.nextInt(256)) / 3;
 
         return Color.rgb(red, green, blue);
     }

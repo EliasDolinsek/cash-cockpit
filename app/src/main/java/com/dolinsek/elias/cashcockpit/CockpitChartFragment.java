@@ -18,6 +18,8 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -229,35 +231,12 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private long getAmountOfTotalOutputsOfMonths(){
-        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> filteredBillsOfMonth = Database.Toolkit.removeAutoPayBillsFromCollection(billsOfMonth);
-
-        ArrayList<AutoPay> autoPaysWithBillTypeOutputTransfer = getAutoPaysWithBillTypeOutputTransfer();
-        long amountOfAutoPays = Database.Toolkit.getAmountOfAutoPays(autoPaysWithBillTypeOutputTransfer);
-
-        long amountOfTotalOutputsOfMonth = Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
-        amountOfTotalOutputsOfMonth -= amountOfAutoPays;
-
-        return amountOfTotalOutputsOfMonth;
-    }
-
-    private ArrayList<AutoPay> getAutoPaysWithBillTypeOutputTransfer(){
-        ArrayList<AutoPay> autoPays = new ArrayList<>();
-
-        for (AutoPay autoPay:Database.getAutoPays()){
-            int autoPayBillType = autoPay.getBill().getType();
-
-            if (autoPayBillType == Bill.TYPE_OUTPUT || autoPayBillType == Bill.TYPE_TRANSFER){
-                autoPays.add(autoPay);
-            }
-        }
-
-        return autoPays;
+        return getAmountOfFixedCosts() - getAmountOfOutputsOfMonth();
     }
 
     private long getAmountToSaveEveryMonth(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        return sharedPreferences.getLong("preference_amount_to_save", 100) * 100;
+        return sharedPreferences.getLong("preference_amount_to_save", 100);
     }
 
     private long getAmountOfCash(){
@@ -288,7 +267,7 @@ public class CockpitChartFragment extends Fragment {
         long amountOfCashOfMonth = getAmountOfCash();
         long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
 
-        long creditRate =  amountOfCashOfMonth - amountToSaveEveryMonth;
+        long creditRate = (amountOfCashOfMonth - amountToSaveEveryMonth) / getRemainingDaysUntilMonthEnds();
 
         if (creditRate < 0){
             return 0;
@@ -299,15 +278,28 @@ public class CockpitChartFragment extends Fragment {
 
     private long getAmountOfDailyLimitOfMonth(){
         long totalInputsOfMonthIncludingAutoPays = getAmountOfTotalInputsOfMonthIncludingAutoPays();
-        long fixedCostsOfMonth = getAmountOfFixedCosts();
-        long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
+        long fixedCostsOfMonth = Math.abs(getAmountOfFixedCosts());
+        long outputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
+        long amountToSaveEveryMonth = Math.abs(getAmountToSaveEveryMonth());
 
-        long dailyLimit = totalInputsOfMonthIncludingAutoPays - fixedCostsOfMonth - amountToSaveEveryMonth;
-
+        long dailyLimit = (Database.Toolkit.getTotalBalanceOfAllBankAccounts() + totalInputsOfMonthIncludingAutoPays - fixedCostsOfMonth - outputsOfMonth - amountToSaveEveryMonth) / getRemainingDaysUntilMonthEnds();
         if (dailyLimit < 0){
             return 0;
         } else {
             return dailyLimit;
         }
+    }
+
+    private int getRemainingDaysUntilMonthEnds(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+
+        int days = 0, month = calendar.get(Calendar.MONTH);
+        while (calendar.get(Calendar.MONTH) == month){
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            days++;
+        }
+
+        return days;
     }
 }

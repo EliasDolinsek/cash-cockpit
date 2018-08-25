@@ -90,10 +90,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
 
         if (currentUser == null){
             Preference backupLocationPreference = findPreference("preference_backup_location");
-            Preference showDataPreference = findPreference("preference_show_data");
-
             backupLocationPreference.setEnabled(false);
-            showDataPreference.setEnabled(false);
         }
     }
 
