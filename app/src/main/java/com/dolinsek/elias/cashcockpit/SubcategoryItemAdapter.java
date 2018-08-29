@@ -173,18 +173,25 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private void loadGoalStatistics(SubcategoryItemViewHolder holder, Subcategory subcategory){
         if(subcategory.getGoal().getAmount() != 0) {
-            ArrayList<Bill> billsOfMonth = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
-            int percentOfUsedGoalAmount = getPercentOfUsedGoalAmount(subcategory, billsOfMonth);
+            ArrayList<Bill> billsOfMonthAndSubcategory = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
+            int percentOfUsedGoalAmount = getPercentOfUsedGoalAmount(subcategory, billsOfMonthAndSubcategory);
 
-            long usedGoalAmount = getTotalAmountOfBills(billsOfMonth);
+            long usedGoalAmount = getTotalAmountOfBills(billsOfMonthAndSubcategory);
             long subcategoryGoalAmount = subcategory.getGoal().getAmount();
 
-            String formattedUsedGoalAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(subcategoryGoalAmount);
-            String formattedGoalAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(usedGoalAmount);
+            Currency activeCurrency = Currency.getActiveCurrency(holder.itemView.getContext());
+            String formattedGoalAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(subcategoryGoalAmount);
+            String formattedUsedGoalAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(Math.abs(usedGoalAmount));
 
-            holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
-            holder.mTxvSubcategoryGoalStatus.setText(formattedGoalAmount);
-            holder.mTxvSubcategoryGoalStatusAmount.setText(formattedUsedGoalAmount);
+            holder.mTxvSubcategoryGoalStatusAmount.setText(formattedGoalAmount);
+
+            if (usedGoalAmount > 0){
+                holder.mPgbSubcategoryGoalStatus.setProgress(0);
+                holder.mTxvSubcategoryGoalStatus.setText("+" + formattedUsedGoalAmount);
+            } else {
+                holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
+                holder.mTxvSubcategoryGoalStatus.setText(formattedUsedGoalAmount);
+            }
 
             holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.VISIBLE);
         } else {
@@ -346,15 +353,19 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private int getPercentOfUsedGoalAmount(Subcategory subcategory, ArrayList<Bill> bills){
         long subcategoryGoalAmount = subcategory.getGoal().getAmount();
-        long billsAmount = getTotalAmountOfBills(bills);
+        long billsAmount = Math.abs(getTotalAmountOfBills(bills));
 
-        return (int)(100 / (double)subcategoryGoalAmount * (double)billsAmount);
+        return  (int)(100 / (double)subcategoryGoalAmount * (double)billsAmount);
     }
 
     private long getTotalAmountOfBills(ArrayList<Bill> bills){
         long billsTotalAmount = 0;
         for (Bill bill:bills){
-            billsTotalAmount += bill.getAmount();
+            if (bill.getType() == Bill.TYPE_INPUT){
+                billsTotalAmount += bill.getAmount();
+            } else {
+                billsTotalAmount -= bill.getAmount();
+            }
         }
 
         return billsTotalAmount;

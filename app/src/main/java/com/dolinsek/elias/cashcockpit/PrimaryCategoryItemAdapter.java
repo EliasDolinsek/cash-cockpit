@@ -164,14 +164,11 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private View.OnClickListener getOnSubcategoryViewStateChangeButtonOnClickListener(final PrimaryCategoryViewHolder holder){
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (holder.mRvSubcategories.getVisibility() == View.VISIBLE){
-                    hideSubcategoriesRecyclerView(holder);
-                } else {
-                    showSubcategoriesRecyclerView(holder);
-                }
+        return view -> {
+            if (holder.mRvSubcategories.getVisibility() == View.VISIBLE){
+                hideSubcategoriesRecyclerView(holder);
+            } else {
+                showSubcategoriesRecyclerView(holder);
             }
         };
     }
@@ -198,7 +195,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
             }
         }
 
-        return Math.abs(usedMoney);
+        return usedMoney;
     }
 
     private ArrayList<Bill> getBillsWithSameCreationDateAndCategory(PrimaryCategory primaryCategory, long creationDateMonth){
@@ -243,13 +240,19 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         long goalAmount = primaryCategory.getGoal().getAmount();
         Context context = primaryCategoryViewHolder.itemView.getContext();
 
-        int percentOfUsedAmount = (int)(100 / (double) goalAmount * (double) usedMoney);
-        String formattedUsedMoney = formatToReadableAmountUsingActiveCurrency(usedMoney, context);
+        String formattedUsedMoney = formatToReadableAmountUsingActiveCurrency(Math.abs(usedMoney), context);
         String formattedGoalAmount = formatToReadableAmountUsingActiveCurrency(goalAmount, context);
 
-        primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
         primaryCategoryViewHolder.mTxvGoalStatusAmount.setText(formattedGoalAmount);
-        primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(percentOfUsedAmount);
+        
+        if (usedMoney > 0){
+            primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(0);
+            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText("+" + formattedUsedMoney);
+        } else {
+            int percentOfUsedAmount = (int)(100 / (double) goalAmount * (double) Math.abs(usedMoney));
+            primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(percentOfUsedAmount);
+            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
+        }
     }
 
     private String formatToReadableAmountUsingActiveCurrency(long amount, Context context){
@@ -286,15 +289,12 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private void setupViewToStartCategoryActivityOnClick(View view, final int primaryCategoryIndexInDatabase){
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Context context = view.getContext();
+        view.setOnClickListener(view1 -> {
+            Context context = view1.getContext();
 
-                Intent intent = new Intent(context, CategoryActivity.class);
-                intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndexInDatabase);
-                context.startActivity(intent);
-            }
+            Intent intent = new Intent(context, CategoryActivity.class);
+            intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndexInDatabase);
+            context.startActivity(intent);
         });
     }
 
@@ -393,15 +393,5 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
 
         return billsOfPrimaryCategory;
-    }
-
-    private ArrayList<Bill> getAllBillsOfMonthFromDatabase(long timeStampOfMonth){
-        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
-
-        for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            allBillsInDatabase.addAll(getBillsWhatBelongToPrimaryCategory(primaryCategory));
-        }
-
-        return filterBillsOfMonth(allBillsInDatabase, timeStampOfMonth);
     }
 }

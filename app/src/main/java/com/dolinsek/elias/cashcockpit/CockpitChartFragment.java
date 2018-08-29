@@ -18,8 +18,6 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
-import com.dolinsek.elias.cashcockpit.components.Toolbox;
-import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -266,8 +264,7 @@ public class CockpitChartFragment extends Fragment {
     private long getAmountOfCreditRateOfMonth(){
         long amountOfCashOfMonth = getAmountOfCash();
         long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
-
-        long creditRate = amountOfCashOfMonth - amountToSaveEveryMonth;
+        long creditRate = amountOfCashOfMonth - amountToSaveEveryMonth - getBankAccountsBalanceWithBillsAdded();
 
         if (creditRate < 0){
             return 0;
@@ -301,5 +298,23 @@ public class CockpitChartFragment extends Fragment {
         }
 
         return days;
+    }
+
+    private long getBankAccountsBalanceWithBillsAdded(){
+        long allBankAccountsBalance = Database.Toolkit.getTotalBalanceOfAllBankAccounts();
+        ArrayList<Bill> allBillsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
+        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_INPUT);
+        ArrayList<Bill> outputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_OUTPUT);
+        ArrayList<Bill> transferBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_TRANSFER);
+
+        long amountOfInputBillsOfMonth = Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth);
+        long amountOfOutputBillsOfMonth = Math.abs(Database.Toolkit.getTotalAmountOfBills(outputBillsOfMonth));
+        long amountOfTransferBillsOfMonth = Math.abs(Database.Toolkit.getTotalAmountOfBills(transferBillsOfMonth));
+
+        allBankAccountsBalance += amountOfInputBillsOfMonth;
+        allBankAccountsBalance -= amountOfOutputBillsOfMonth;
+        allBankAccountsBalance -= amountOfTransferBillsOfMonth;
+
+        return allBankAccountsBalance;
     }
 }

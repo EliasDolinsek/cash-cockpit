@@ -92,7 +92,7 @@ public class GoalsStatisticsFragment extends Fragment {
         primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), timeStampOfMonth);
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
 
-        long totalAmountOfAllGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
+        long totalAmountOfAllGoals = getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase();
         long totalAmountOfBillsOfMonth = getTotalAmountOfBillsOfMonthWithGoals(timeStampOfMonth);
         int percent = Math.abs(Math.round((int) (100 / (double) totalAmountOfAllGoals * totalAmountOfBillsOfMonth)));
 
@@ -100,12 +100,10 @@ public class GoalsStatisticsFragment extends Fragment {
         displayPercentCorrectly(mTxvMonth, percent);
     }
 
-    private long getTotalAmountOfAllGoalsOfSubcategoriesInDatabase(){
+    private long getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase(){
         ArrayList<Goal> goals = new ArrayList<>();
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            for (Subcategory subcategory:primaryCategory.getSubcategories()){
-                goals.add(subcategory.getGoal());
-            }
+            return primaryCategory.getGoal().getAmount();
         }
 
         return getTotalAmountOfGoals(goals);
@@ -202,7 +200,7 @@ public class GoalsStatisticsFragment extends Fragment {
             months++;
         }
 
-        long totalAmountOfGoals = getTotalAmountOfAllGoalsOfSubcategoriesInDatabase();
+        long totalAmountOfGoals = getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase();
         int percent = Math.abs((int)(100 / (double) (totalAmountOfGoals * months) * totalAmount));
 
         return Math.round(percent);
@@ -246,7 +244,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
     private void manageViews(){
         ArrayList<Bill> billsWhatBelongToGoals = filterBillsWhatBelongToGoals(Database.Toolkit.getAllBillsInDatabase());
-        if (getTotalAmountOfAllGoalsOfSubcategoriesInDatabase() == 0 || billsWhatBelongToGoals.size() == 0){
+        if (getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase() == 0 || billsWhatBelongToGoals.size() == 0){
             mLLContent.setVisibility(View.GONE);
             mFgmNotEnoughData.show();
             mLlSelectMonthFragmentContainer.setVisibility(View.GONE);

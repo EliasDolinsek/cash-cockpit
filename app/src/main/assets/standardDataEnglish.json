@@ -165,7 +165,7 @@
     },{
       "name":"Others",
       "goalAmount": 0,
-      "icon": "todo",
+      "icon": "ic_category_more",
       "subcategories": []
     }
   ],
