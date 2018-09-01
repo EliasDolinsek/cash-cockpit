@@ -30,7 +30,6 @@ import java.util.Calendar;
 
 public class StartActivity extends AppCompatActivity {
 
-    private static final String TAG = StartActivity.class.getSimpleName();
     private static final String PREFERENCE_KEY_RESET_PASSWORD_TIME_STAMP = "resetPasswordTimeStamp";
     private static final String PREFERENCE_KEY_PASSWORD_RESET_OPTION = "preference_password_reset_time_option";
     private static final int PASSWORD_RESET_OPTION_NEVER = 5;

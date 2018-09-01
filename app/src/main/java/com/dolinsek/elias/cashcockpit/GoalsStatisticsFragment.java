@@ -1,8 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.content.Context;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,12 +12,10 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Goal;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
-import com.dolinsek.elias.cashcockpit.components.Subcategory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,8 +92,13 @@ public class GoalsStatisticsFragment extends Fragment {
         long totalAmountOfBillsOfMonth = getTotalAmountOfBillsOfMonthWithGoals(timeStampOfMonth);
         int percent = Math.abs(Math.round((int) (100 / (double) totalAmountOfAllGoals * totalAmountOfBillsOfMonth)));
 
-        mPgbMonth.setProgress(percent);
-        displayPercentCorrectly(mTxvMonth, percent);
+        if (totalAmountOfBillsOfMonth > 0){
+            mPgbMonth.setProgress(0);
+            displayPercentCorrectly(mTxvMonth, 0);
+        } else {
+            mPgbMonth.setProgress(percent);
+            displayPercentCorrectly(mTxvMonth, percent);
+        }
     }
 
     private long getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase(){
@@ -126,7 +127,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
     private long getTotalAmountOfBillsOfMonthWithGoals(long timeStampOfMonth) {
         ArrayList<Bill> allBillsInDatabaseOfMonth = Database.Toolkit.getBillsOfMonth(timeStampOfMonth);
-        ArrayList<Bill> allBillsInDatabaseOfMonthWhatHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(allBillsInDatabaseOfMonth);
+        ArrayList<Bill> allBillsInDatabaseOfMonthWhatHaveGoals = filterBillsWithPrimaryCategoriesWhatHaveGoals(allBillsInDatabaseOfMonth);
 
         return getTotalAmountOfBills(allBillsInDatabaseOfMonthWhatHaveGoals);
     }
@@ -167,11 +168,11 @@ public class GoalsStatisticsFragment extends Fragment {
         return totalAmount;
     }
 
-    private ArrayList<Bill> filterBillsWithSubcategoriesWhatHaveGoals(ArrayList<Bill> bills){
+    private ArrayList<Bill> filterBillsWithPrimaryCategoriesWhatHaveGoals(ArrayList<Bill> bills){
         ArrayList<Bill> filteredBills = new ArrayList<>();
 
         for (Bill bill:bills){
-            if (bill.getSubcategory().getGoal().getAmount() != 0){
+            if (bill.getSubcategory().getPrimaryCategory().getGoal().getAmount() != 0){
                 filteredBills.add(bill);
             }
         }
@@ -187,23 +188,23 @@ public class GoalsStatisticsFragment extends Fragment {
         long totalAmount = 0;
         while (!doesMonthExceedsCurrentTime(calendar)){
             ArrayList<Bill> billsOfCurrentMonth = Database.Toolkit.getBillsOfMonth(calendar.getTimeInMillis());
-            ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithSubcategoriesWhatHaveGoals(billsOfCurrentMonth);
+            ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithPrimaryCategoriesWhatHaveGoals(billsOfCurrentMonth);
 
             long totalAmountOfBills = getTotalAmountOfBills(filteredBillsWhatSubcategoriesHaveGoals);
-            if (totalAmountOfBills >= 0){
-                totalAmount -= totalAmountOfBills;
-            } else {
-                totalAmount += totalAmountOfBills;
-            }
+            totalAmount += totalAmountOfBills;
 
             calendar.add(Calendar.MONTH, 1);
             months++;
         }
 
         long totalAmountOfGoals = getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase();
-        int percent = Math.abs((int)(100 / (double) (totalAmountOfGoals * months) * totalAmount));
+        int percent = Math.round((int)(100 / (double) (totalAmountOfGoals * months) * totalAmount));
 
-        return Math.round(percent);
+        if (percent >= 0){
+            return 0;
+        } else {
+            return Math.abs(percent);
+        }
     }
 
     private void loadAverageStatistics(){
