@@ -18,6 +18,7 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -33,7 +34,7 @@ import java.util.Calendar;
 public class CockpitChartFragment extends Fragment {
 
     private PieChart pieChart;
-    private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvCreditRateAmount;
+    private TextView txvTotalOutputsAmount, txvCashAmount, txvDailyLimitAmount, txvInstallmentAmount;
     private LinearLayout llCockpitChartRoot;
     private NotEnoughDataFragment fgmNotEnoughData;
     private GridLayout glTextsContainer;
@@ -50,7 +51,7 @@ public class CockpitChartFragment extends Fragment {
         txvTotalOutputsAmount =  inflatedView.findViewById(R.id.txv_cockpit_chart_total_outputs_amount);
         txvCashAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_cash_amount);
         txvDailyLimitAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_daily_limit_amount);
-        txvCreditRateAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_credit_rate_amount);
+        txvInstallmentAmount = inflatedView.findViewById(R.id.txv_cockpit_chart_installment_amount);
 
         fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_cockpit_chart_not_enough_data);
         glTextsContainer = inflatedView.findViewById(R.id.gl_cockpit_chart_texts_container);
@@ -92,42 +93,14 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private long getAmountOfBillsOfBillTypeOfMonth(int billType){
-        ArrayList<Bill> allBillsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> filteredBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, billType);
-        return Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
-    }
-
-    private long getAmountOfFixedCosts(){
-        ArrayList<AutoPay> autoPaysYearly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_YEARLY);
-        ArrayList<AutoPay> autoPaysMonthly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_MONTHLY);
-        ArrayList<AutoPay> autoPaysWeekly = Database.Toolkit.getAutoPaysOfType(AutoPay.TYPE_WEEKLY);
-
-        ArrayList<AutoPay> autoPays = new ArrayList<>(autoPaysMonthly);
-
-        for (int i = 0; i < 4; i++){
-            autoPays.addAll(autoPaysWeekly);
-        }
-
-        if (isCurrentMonthJanuary()){
-            autoPays.addAll(autoPaysYearly);
-        }
-
-        ArrayList<AutoPay> autoPaysWithBillTypeInput = Database.Toolkit.filterAutoPaysOfAutoPayBillType(autoPays, Bill.TYPE_INPUT);
-        autoPays.removeAll(autoPaysWithBillTypeInput);
-
-        return Database.Toolkit.getAmountOfAutoPays(autoPays);
-    }
-
-    private boolean isCurrentMonthJanuary(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        return calendar.get(Calendar.MONTH) == Calendar.JANUARY;
+        ArrayList<Bill> bills = Toolkit.getBillsByTypeAndMonth(billType, System.currentTimeMillis());
+        return Toolkit.getBillsAmount(bills);
     }
 
     private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        long amountOfFixedCosts = getAmountOfFixedCosts();
+        long amountOfFixedCosts = getFixedCosts();
         long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT));
         long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
         long amountOfTransfers = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER);
@@ -195,7 +168,7 @@ public class CockpitChartFragment extends Fragment {
     }
 
     private boolean isAmountOfFixCostsGreaterThanNull(){
-        return getAmountOfFixedCosts() != 0;
+        return getFixedCosts() != 0;
     }
 
     private boolean isAmountOfOutputsGreaterThanNull(){
@@ -213,78 +186,99 @@ public class CockpitChartFragment extends Fragment {
     private void displayTextsOnTextFields(){
         Currency activeCurrency = Currency.getActiveCurrency(getContext());
 
-        long totalOutputsAmount = Math.abs(getAmountOfTotalOutputsOfMonths());
+        long totalOutputsAmount = getTotalOutputs();
         String formattedTotalOutputsAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(totalOutputsAmount);
         txvTotalOutputsAmount.setText(formattedTotalOutputsAmount);
 
-        String formattedCash = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfCash());
+        String formattedCash = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getDisplayCash());
         txvCashAmount.setText(formattedCash);
 
-        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfDailyLimitOfMonth());
+        String formattedDailyLimit = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getDailyLimit());
         txvDailyLimitAmount.setText(formattedDailyLimit);
 
-        String formattedCreditRate = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getAmountOfCreditRateOfMonth());
-        txvCreditRateAmount.setText(formattedCreditRate);
+        String formattedInstallment = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(getInstallment());
+        txvInstallmentAmount.setText(formattedInstallment);
 
     }
 
-    private long getAmountOfTotalOutputsOfMonths(){
-        return getAmountOfFixedCosts() - getAmountOfOutputsOfMonth();
+    private long getDailyLimit(){
+        return (getAllInputs() + Toolkit.getBankAccountsBalance() - getTotalOutputs() - getAmountToSaveEveryMonth()) / getRemainingDaysUntilMonthEnds();
+    }
+
+    private long getInstallment(){
+        return getCash() - getAmountToSaveEveryMonth();
+    }
+
+    private long getCash(){
+        return getAllInputs() - getTotalOutputs();
+    }
+
+    private long getDisplayCash(){
+        return getCash() + Toolkit.getBankAccountsBalance();
+    }
+
+    private long getTotalOutputs(){
+        ArrayList<Bill> outputTransferBillsOfMonth = new ArrayList<>();
+        outputTransferBillsOfMonth.addAll(Toolkit.getBillsByTypeAndMonth(Bill.TYPE_OUTPUT, System.currentTimeMillis()));
+        outputTransferBillsOfMonth.addAll(Toolkit.getBillsByTypeAndMonth(Bill.TYPE_TRANSFER, System.currentTimeMillis()));
+
+        return getFixedCosts() + Toolkit.getBillsTotalAmount(outputTransferBillsOfMonth);
+    }
+
+    private long getFixedCosts(){
+        ArrayList<AutoPay> outputTransferAutoPays = new ArrayList<>();
+        outputTransferAutoPays.addAll(Toolkit.getAutoPaysByBillType(Bill.TYPE_OUTPUT));
+        outputTransferAutoPays.addAll(Toolkit.getAutoPaysByBillType(Bill.TYPE_TRANSFER));
+
+        outputTransferAutoPays = manageAutoPays(outputTransferAutoPays);
+        return Toolkit.getAutoPaysAmount(outputTransferAutoPays);
+    }
+
+    private long getAllInputs(){
+        ArrayList<Bill> inputBills = Toolkit.getBillsByTypeAndMonth(Bill.TYPE_INPUT, System.currentTimeMillis());
+        long billInputs = Toolkit.getBillsTotalAmount(inputBills);
+
+        ArrayList<AutoPay> inputAutoPays = Toolkit.getAutoPaysByBillType(Bill.TYPE_INPUT);
+        inputAutoPays = manageAutoPays(inputAutoPays);
+        long autoPayInputs = Toolkit.getAutoPaysAmount(inputAutoPays);
+
+        return billInputs + autoPayInputs;
+    }
+
+    /**
+     * Adds and removes AutoPays from ArrayList depending on current time
+     * @param autoPays
+     * @return
+     */
+    private ArrayList<AutoPay> manageAutoPays(ArrayList<AutoPay> autoPays){
+        ArrayList<AutoPay> autoPaysToReturn = new ArrayList<>();
+
+        ArrayList<AutoPay> weeklyAutoPays = Toolkit.filterAutoPaysByType(autoPays, AutoPay.TYPE_WEEKLY);
+        ArrayList<AutoPay> monthlyAutoPays = Toolkit.filterAutoPaysByType(autoPays, AutoPay.TYPE_MONTHLY);
+        ArrayList<AutoPay> yearlyAutoPays = Toolkit.filterAutoPaysByType(autoPays, AutoPay.TYPE_YEARLY);
+
+        for (int i = 0; i<4; i++){
+            autoPaysToReturn.addAll(weeklyAutoPays);
+        }
+
+        autoPaysToReturn.addAll(monthlyAutoPays);
+
+        if (isCurrentMonthJanuary()){
+            autoPaysToReturn.addAll(yearlyAutoPays);
+        }
+
+        return autoPaysToReturn;
+    }
+
+    private boolean isCurrentMonthJanuary(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        return calendar.get(Calendar.MONTH) == Calendar.JANUARY;
     }
 
     private long getAmountToSaveEveryMonth(){
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
         return sharedPreferences.getLong("preference_amount_to_save", 100);
-    }
-
-    private long getAmountOfCash(){
-        long amountOfTotalInputsOfMonth = getAmountOfTotalInputsOfMonthIncludingAutoPays();
-        long amountOfFixedCostsOfMonth = getAmountOfFixedCosts();
-        long amountOfOutputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
-
-        return Database.Toolkit.getTotalBalanceOfAllBankAccounts() + amountOfTotalInputsOfMonth - amountOfFixedCostsOfMonth - amountOfOutputsOfMonth;
-    }
-
-    private long getAmountOfTotalInputsOfMonthIncludingAutoPays(){
-        ArrayList<AutoPay> autoPaysWithBillTypeInput = Database.Toolkit.filterAutoPaysOfAutoPayBillType(Database.getAutoPays(), Bill.TYPE_INPUT);
-
-        long amountOfInputsOfMonth = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT);
-        long amountOfInputTypeAutoPaysOfMonth = Database.Toolkit.getAmountOfAutoPays(autoPaysWithBillTypeInput);
-        return amountOfInputsOfMonth + amountOfInputTypeAutoPaysOfMonth;
-    }
-
-    private long getAmountOfOutputsOfMonth(){
-        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> filteredBillsOfMonth = new ArrayList<>(billsOfMonth);
-        filteredBillsOfMonth.removeAll(Database.Toolkit.filterBillsOfBillType(filteredBillsOfMonth, Bill.TYPE_INPUT));
-
-        return Database.Toolkit.getTotalAmountOfBills(filteredBillsOfMonth);
-    }
-
-    private long getAmountOfCreditRateOfMonth(){
-        long amountOfCashOfMonth = getAmountOfCash();
-        long amountToSaveEveryMonth = getAmountToSaveEveryMonth();
-        long creditRate = amountOfCashOfMonth - amountToSaveEveryMonth - getBankAccountsBalanceWithBillsAdded();
-
-        if (creditRate < 0){
-            return 0;
-        } else {
-            return creditRate;
-        }
-    }
-
-    private long getAmountOfDailyLimitOfMonth(){
-        long totalInputsOfMonthIncludingAutoPays = getAmountOfTotalInputsOfMonthIncludingAutoPays();
-        long fixedCostsOfMonth = Math.abs(getAmountOfFixedCosts());
-        long outputsOfMonth = Math.abs(getAmountOfOutputsOfMonth());
-        long amountToSaveEveryMonth = Math.abs(getAmountToSaveEveryMonth());
-
-        long dailyLimit = (Database.Toolkit.getTotalBalanceOfAllBankAccounts() + totalInputsOfMonthIncludingAutoPays - fixedCostsOfMonth - outputsOfMonth - amountToSaveEveryMonth) / getRemainingDaysUntilMonthEnds();
-        if (dailyLimit < 0){
-            return 0;
-        } else {
-            return dailyLimit;
-        }
     }
 
     private int getRemainingDaysUntilMonthEnds(){
@@ -298,23 +292,5 @@ public class CockpitChartFragment extends Fragment {
         }
 
         return days;
-    }
-
-    private long getBankAccountsBalanceWithBillsAdded(){
-        long allBankAccountsBalance = Database.Toolkit.getTotalBalanceOfAllBankAccounts();
-        ArrayList<Bill> allBillsOfMonth = Database.Toolkit.getBillsOfMonth(System.currentTimeMillis());
-        ArrayList<Bill> inputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_INPUT);
-        ArrayList<Bill> outputBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_OUTPUT);
-        ArrayList<Bill> transferBillsOfMonth = Database.Toolkit.filterBillsOfBillType(allBillsOfMonth, Bill.TYPE_TRANSFER);
-
-        long amountOfInputBillsOfMonth = Database.Toolkit.getTotalAmountOfBills(inputBillsOfMonth);
-        long amountOfOutputBillsOfMonth = Math.abs(Database.Toolkit.getTotalAmountOfBills(outputBillsOfMonth));
-        long amountOfTransferBillsOfMonth = Math.abs(Database.Toolkit.getTotalAmountOfBills(transferBillsOfMonth));
-
-        allBankAccountsBalance += amountOfInputBillsOfMonth;
-        allBankAccountsBalance -= amountOfOutputBillsOfMonth;
-        allBankAccountsBalance -= amountOfTransferBillsOfMonth;
-
-        return allBankAccountsBalance;
     }
 }

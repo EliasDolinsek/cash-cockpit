@@ -83,7 +83,6 @@ public class CockpitFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              final Bundle savedInstanceState) {
-
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit, container, false);
 
         mBtnAdd = inflatedView.findViewById(R.id.btn_cockpit_add_bill);

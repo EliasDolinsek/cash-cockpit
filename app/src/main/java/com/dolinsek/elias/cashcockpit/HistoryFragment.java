@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 
@@ -54,16 +55,13 @@ public class HistoryFragment extends Fragment {
         mTxvSelectedFilters = inflatedView.findViewById(R.id.txv_history_selected_filters);
         mBtnShowFilters = inflatedView.findViewById(R.id.btn_history_show_filters);
 
-        billsToDisplay = Database.Toolkit.getAllBillsInDatabase();
+        billsToDisplay = Toolkit.getAllBills();
         createHistoryFragmentFiltersDialogFragment();
         setupBillsToDisplayFromSavedInstanceState(savedInstanceState);
 
-        mBtnShowFilters.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                historyFragmentFiltersDialogFragment.setFiltersSelection(selectedIndexMainFilter, selectedIndexBillTypeFilter);
-                historyFragmentFiltersDialogFragment.show(getActivity().getFragmentManager(), "select_filter");
-            }
+        mBtnShowFilters.setOnClickListener(v -> {
+            historyFragmentFiltersDialogFragment.setFiltersSelection(selectedIndexMainFilter, selectedIndexBillTypeFilter);
+            historyFragmentFiltersDialogFragment.show(getActivity().getFragmentManager(), "select_filter");
         });
         return inflatedView;
     }
@@ -86,7 +84,7 @@ public class HistoryFragment extends Fragment {
     }
 
     private void displayHowManyBillsAreInDatabaseOnSelectedFilterTxv(){
-        int billsInDatabase = Database.Toolkit.getAllBillsInDatabase().size();
+        int billsInDatabase = Toolkit.getAllBills().size();
         mTxvSelectedFilters.setText(getString(R.string.label_bills_found, billsInDatabase));
     }
 
@@ -111,18 +109,15 @@ public class HistoryFragment extends Fragment {
     }
 
     private void setupHistoryFiltersDialogFragment(){
-        historyFragmentFiltersDialogFragment.setOnFilterSelectedListener(new OnFilterSelectedListener() {
-            @Override
-            public void onFilterSelected(int selectedIndexInMainFilter, int selectedIndexInBillTypeFilter) {
-                selectedIndexMainFilter = selectedIndexInMainFilter;
-                selectedIndexBillTypeFilter = selectedIndexInBillTypeFilter;
+        historyFragmentFiltersDialogFragment.setOnFilterSelectedListener((selectedIndexInMainFilter, selectedIndexInBillTypeFilter) -> {
+            selectedIndexMainFilter = selectedIndexInMainFilter;
+            selectedIndexBillTypeFilter = selectedIndexInBillTypeFilter;
 
-                billsToDisplay = Database.Toolkit.getAllBillsInDatabase();
-                filterBillsToDisplayDependingOnSelectedBillTypeFilter(selectedIndexInBillTypeFilter);
+            billsToDisplay = Toolkit.getAllBills();
+            filterBillsToDisplayDependingOnSelectedBillTypeFilter(selectedIndexInBillTypeFilter);
 
-                reloadRecyclerView(selectedIndexMainFilter);
-                displaySelectedFilters();
-            }
+            reloadRecyclerView(selectedIndexMainFilter);
+            displaySelectedFilters();
         });
     }
 
@@ -145,7 +140,7 @@ public class HistoryFragment extends Fragment {
 
     private void filterBillsToDisplayDependingOnSelectedBillTypeFilter(int selectedIndexBillTypeFilter){
         if (selectedIndexBillTypeFilter != 0){
-            billsToDisplay = Database.Toolkit.filterBillsOfBillType(billsToDisplay, selectedIndexBillTypeFilter - 1);
+            billsToDisplay = Toolkit.filterBillsByType(billsToDisplay, selectedIndexBillTypeFilter - 1);
         }
     }
 

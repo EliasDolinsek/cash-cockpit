@@ -121,7 +121,7 @@
                 android:layout_marginBottom="4dp"/>
 
             <TextView
-                android:id="@+id/txv_cockpit_chart_credit_rate_amount"
+                android:id="@+id/txv_cockpit_chart_installment_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"

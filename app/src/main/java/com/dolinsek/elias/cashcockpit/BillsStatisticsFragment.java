@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.PieChart;
@@ -86,8 +87,9 @@ public class BillsStatisticsFragment extends Fragment {
         txvBillsTypeOutputUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_overall);
         txvBillsTypeTransferUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_transfer_usage_overall);
 
-        if (Database.Toolkit.getAllBillsInDatabase().size() != 0){
-            displayBillsTypeUsage(Database.Toolkit.getAllBillsInDatabase(), DISPLAY_BILL_USAGE_TYPE_OVERALL);
+        ArrayList<Bill> allBillsInDatabase = Toolkit.getAllBills();
+        if (allBillsInDatabase.size() != 0){
+            displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
             fgmNotEnoughData.hide();
@@ -214,7 +216,7 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void loadPaymentsHistory(long timeStampOfMonth){
-        ArrayList<Bill> billsOfSelectedMonth = Database.Toolkit.getBillsOfMonth(timeStampOfMonth);
+        ArrayList<Bill> billsOfSelectedMonth = Toolkit.getBillsByMonth(timeStampOfMonth);
         ArrayList<BarEntry> barEntries = billsToBarEntryForDailyStatistic(billsOfSelectedMonth, timeStampOfMonth);
 
         BarDataSet barDataSet = new BarDataSet(barEntries, "");
@@ -228,7 +230,7 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void loadBillTypeUsageStatistic(long timeStampToLoadStatistics){
-        ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(timeStampToLoadStatistics);
+        ArrayList<Bill> billsOfMonth =  Toolkit.getBillsByMonth(timeStampToLoadStatistics);
         loadUsageOfBillTypeChart(
                 getBillsAsPieEntriesForBillUsageStatistics(billsOfMonth)
         );
@@ -237,9 +239,9 @@ public class BillsStatisticsFragment extends Fragment {
     private ArrayList<PieEntry> getBillsAsPieEntriesForBillUsageStatistics(ArrayList<Bill> bills){
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
 
-        ArrayList<Bill> inputTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_INPUT);
-        ArrayList<Bill> outputTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_OUTPUT);
-        ArrayList<Bill> transferTypeBills = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_TRANSFER);
+        ArrayList<Bill> inputTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_INPUT);
+        ArrayList<Bill> outputTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT);
+        ArrayList<Bill> transferTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_TRANSFER);
 
         int allBillsSize = inputTypeBills.size() + outputTypeBills.size() + transferTypeBills.size();
         int usageOfInputTypesInPercent = getPercentOfBillUsage(allBillsSize, inputTypeBills.size());
@@ -273,8 +275,7 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void loadTimeStampsWithBills(){
-        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
-        timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills(allBillsInDatabase));
+        timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills(Toolkit.getAllBills()));
     }
 
     private PieEntry usageOfBillTypeToPieEntry(int usageOfBillTypeInPercent, int billType){
@@ -286,9 +287,9 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void displayBillsTypeUsage(ArrayList<Bill> bills, int type){
-        int billsTypeInputSize = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_INPUT).size();
-        int billsTypeOutputSize = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_OUTPUT).size();
-        int billsTypeTransferSize = Database.Toolkit.filterBillsOfBillType(bills, Bill.TYPE_TRANSFER).size();
+        int billsTypeInputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_INPUT).size();
+        int billsTypeOutputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT).size();
+        int billsTypeTransferSize = Toolkit.filterBillsByType(bills, Bill.TYPE_TRANSFER).size();
 
         int usageInputPercent = getPercentOfBillUsage(bills.size(), billsTypeInputSize);
         int usageOutputPercent = getPercentOfBillUsage(bills.size(), billsTypeOutputSize);
@@ -399,12 +400,12 @@ public class BillsStatisticsFragment extends Fragment {
     private ArrayList<Long> getTimeStampsWithBills(ArrayList<Bill> bills){
         ArrayList<Long> monthsWithBills = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-        long firstCreationDateOfBill = Database.Toolkit.getCreationDateOfFirstBill(bills);
+        long firstCreationDateOfBill = getCreationDateOfFirstAddedBillBill(bills);
         calendar.setTimeInMillis(firstCreationDateOfBill);
 
         while (!doesMonthExceedsCurrentTime(calendar)){
             long currentMonthTimesStamp = calendar.getTimeInMillis();
-            ArrayList<Bill> billsOfMonth = Database.Toolkit.getBillsOfMonth(currentMonthTimesStamp);
+            ArrayList<Bill> billsOfMonth = Toolkit.getBillsByMonth(currentMonthTimesStamp);
 
             if (billsOfMonth.size() != 0){
                 monthsWithBills.add(currentMonthTimesStamp);
@@ -441,7 +442,7 @@ public class BillsStatisticsFragment extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 long selectionTimeStamp = timeStampsWithBills[position];
-                ArrayList<Bill> billsOfSelectedMonth = Database.Toolkit.getBillsOfMonth(selectionTimeStamp);
+                ArrayList<Bill> billsOfSelectedMonth = Toolkit.getBillsByMonth(selectionTimeStamp);
 
                 loadBillTypeUsageStatistic(selectionTimeStamp);
                 loadPaymentsHistory(selectionTimeStamp);
@@ -455,6 +456,17 @@ public class BillsStatisticsFragment extends Fragment {
 
             }
         };
+    }
+
+    public static long getCreationDateOfFirstAddedBillBill(ArrayList<Bill> bills){
+        long firstCreationDate = System.currentTimeMillis();
+        for (Bill bill:bills){
+            if (bill.getCreationDate() < firstCreationDate){
+                firstCreationDate = bill.getCreationDate();
+            }
+        }
+
+        return firstCreationDate;
     }
 
     private static class HistoryOfPaymentsValueFormatter implements IValueFormatter {

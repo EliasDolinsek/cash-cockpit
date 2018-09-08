@@ -93,12 +93,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         holder.mTxvDetails.setText(billDetails);
 
         if(allowToEditBill){
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showEditDialogForSubcategory(bill, bankAccountOfBill, holder.itemView.getContext());
-                }
-            });
+            holder.itemView.setOnClickListener(view -> showEditDialogForSubcategory(bill, bankAccountOfBill, holder.itemView.getContext()));
         }
     }
 
@@ -123,7 +118,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     }
 
     private void cleanUpBillsToDisplay(){
-        ArrayList<Bill> allBillsInDatabase = Database.Toolkit.getAllBillsInDatabase();
+        ArrayList<Bill> allBillsInDatabase = Toolkit.getAllBills();
         ArrayList<Bill> cleanedUpBillsToDisplay = new ArrayList<>();
         for (Bill bill:billsToDisplay){
             if (allBillsInDatabase.contains(bill)){
@@ -220,38 +215,18 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     }
 
     private void filterBillsNewestFirst(ArrayList<Bill> billsToFilter){
-        Collections.sort(billsToFilter, new Comparator<Bill>() {
-            @Override
-            public int compare(Bill bill, Bill t1) {
-                return Long.compare(t1.getCreationDate(), bill.getCreationDate());
-            }
-        });
+        Collections.sort(billsToFilter, (bill, t1) -> Long.compare(t1.getCreationDate(), bill.getCreationDate()));
     }
 
     private void filterBillsOldestFirst(ArrayList<Bill> billsToFilter){
-        Collections.sort(billsToFilter, new Comparator<Bill>() {
-            @Override
-            public int compare(Bill bill, Bill t1) {
-                return Long.compare(bill.getCreationDate(), t1.getCreationDate());
-            }
-        });
+        Collections.sort(billsToFilter, (bill, t1) -> Long.compare(bill.getCreationDate(), t1.getCreationDate()));
     }
 
     private void filterBillsHighestPriceFirst(ArrayList<Bill> billsToFilter){
-        Collections.sort(billsToFilter, new Comparator<Bill>() {
-            @Override
-            public int compare(Bill bill, Bill t1) {
-                return Long.compare(t1.getAmount(), bill.getAmount());
-            }
-        });
+        Collections.sort(billsToFilter, (bill, t1) -> Long.compare(t1.getAmount(), bill.getAmount()));
     }
 
     private void filterBillsLowestPriceFirst(ArrayList<Bill> billsToFilter){
-        Collections.sort(billsToFilter, new Comparator<Bill>() {
-            @Override
-            public int compare(Bill bill, Bill t1) {
-                return Long.compare(bill.getAmount(), t1.getAmount());
-            }
-        });
+        Collections.sort(billsToFilter, (bill, t1) -> Long.compare(bill.getAmount(), t1.getAmount()));
     }
 }
