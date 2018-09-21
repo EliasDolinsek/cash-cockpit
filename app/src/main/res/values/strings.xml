@@ -130,6 +130,7 @@
     <string name="label_delete_data_description">Please select which data you want to delete</string>
     <string name="label_deleting_data">Deleting Data</string>
     <string name="label_data_got_deleted">Data got deleted</string>
+    <string name="label_auto_pay">AutoPay</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>

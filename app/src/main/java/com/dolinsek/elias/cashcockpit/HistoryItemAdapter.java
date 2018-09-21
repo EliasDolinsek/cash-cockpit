@@ -60,17 +60,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         return historyItemAdapter;
     }
 
-    public static HistoryItemAdapter getBillsStatisticsHistoryItemAdapter(ArrayList<Bill> billsToDisplay){
-        HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
-        historyItemAdapter.filterType = FILTER_NEWEST_ITEM_FIRST;
-        historyItemAdapter.billsToDisplay = billsToDisplay;
-        historyItemAdapter.allowToEditBill = false;
-        historyItemAdapter.filterBills(historyItemAdapter.filterType);
-        historyItemAdapter.cleanUpBillsToDisplay();
-
-        return historyItemAdapter;
-    }
-
     @Override
     public HistoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
@@ -82,15 +71,9 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final Bill bill = billsToDisplay.get(position);
         final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
-        showAutoPayBillIndicatorIfBillIsAutoPayBill(bill, holder);
+        displayBillType(bill, holder);
         displayDescription(bill.getDescription(), holder);
-        setupImvFromBillType(holder.mImvBillType, bill);
-
-        String dateOfCreationDate = DateFormat.format("EEE dd.MM", bill.getCreationDate()).toString();
-        String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
-
-        String billDetails = dateOfCreationDate + " " + Character.toString((char)0x00B7) + " " + bill.getSubcategory().getName() + " " + Character.toString((char)0x00B7) + " " + formattedAmount;
-        holder.mTxvDetails.setText(billDetails);
+        displayDateAndAmount(bill, holder);
 
         if(allowToEditBill){
             holder.itemView.setOnClickListener(view -> showEditDialogForSubcategory(bill, bankAccountOfBill, holder.itemView.getContext()));
@@ -104,16 +87,14 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
-        public ImageView mImvBillType;
-        public TextView mTxvDescription, mTxvDetails, mTxvAutoPayBillIndicator;
+        public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
-            mTxvDescription = (TextView) itemView.findViewById(R.id.txv_item_history_description);
-            mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_history_details);
-            mTxvAutoPayBillIndicator = itemView.findViewById(R.id.txv_item_history_auto_pay_bill_indicator);
-            mImvBillType = (ImageView) itemView.findViewById(R.id.imv_item_history_bill_type);
+            mTxvBillType = itemView.findViewById(R.id.txv_item_history_bill_type);
+            mTxvDescription = itemView.findViewById(R.id.txv_item_history_description);
+            mTxvDateAmount = itemView.findViewById(R.id.txv_item_history_date_amount);
         }
     }
 
@@ -129,20 +110,41 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         billsToDisplay = cleanedUpBillsToDisplay;
     }
 
-    private void showAutoPayBillIndicatorIfBillIsAutoPayBill(Bill bill, HistoryViewHolder holder){
+    private void displayBillType(Bill bill, HistoryViewHolder holder){
+        Context context = holder.itemView.getContext();
+
         if (bill.isAutoPayBill()){
-            holder.mTxvAutoPayBillIndicator.setVisibility(View.VISIBLE);
+            holder.mTxvBillType.setText(context.getString(R.string.label_auto_pay) + "");
+        } else {
+            holder.mTxvBillType.setText("");
+        }
+
+        if (bill.getType() == Bill.TYPE_INPUT){
+            holder.mTxvBillType.setText(context.getString(R.string.label_input));
+            holder.mTxvBillType.setTextColor(context.getResources().getColor(R.color.colorBillTypeInput));
+        } else if (bill.getType() == Bill.TYPE_OUTPUT){
+            holder.mTxvBillType.setText(context.getString(R.string.label_output));
+            holder.mTxvBillType.setTextColor(context.getResources().getColor(R.color.colorBillTypeOutput));
+        } else {
+            holder.mTxvBillType.setText(context.getString(R.string.label_transfer));
+            holder.mTxvBillType.setTextColor(context.getResources().getColor(R.color.colorBillTypeTransfer));
         }
     }
     private void displayDescription(String description, HistoryViewHolder holder){
         TextView txvDescription = holder.mTxvDescription;
         if (description.equals("")){
             txvDescription.setText(R.string.label_no_description);
-            txvDescription.setTypeface(txvDescription.getTypeface(), Typeface.ITALIC);
         } else {
             txvDescription.setText(description);
-            txvDescription.setTypeface(Typeface.DEFAULT); //To avoid problems
         }
+    }
+
+    private void displayDateAndAmount(Bill bill, HistoryViewHolder holder){
+        String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
+        String dateOfCreationDate = DateFormat.format("EEE dd.MM", bill.getCreationDate()).toString();
+
+        String dateAndAmount = formattedAmount + Character.toString((char)0x00B7) + dateOfCreationDate;
+        holder.mTxvDateAmount.setText(dateAndAmount);
     }
 
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
