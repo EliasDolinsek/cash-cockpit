@@ -27,5 +27,8 @@
     <color name="colorBillTypeInput">@color/colorPrimary</color>
     <color name="colorBillTypeOutput">#b71c1c</color>
     <color name="colorBillTypeTransfer">#bf360c</color>
+    
+    <color name="colorDivider">#dededf</color>
+    <color name="colorIcons">#333334</color>
 
 </resources>

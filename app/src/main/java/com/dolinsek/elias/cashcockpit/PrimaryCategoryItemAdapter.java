@@ -33,6 +33,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -263,10 +264,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     private void loadPrimaryCategoryIcon(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
         try{
             Context context = primaryCategoryViewHolder.itemView.getContext();
-            String primaryCategoryIconName = primaryCategory.getIconName();
-            String packageName = context.getPackageName();
-
-            int resource = context.getResources().getIdentifier(primaryCategoryIconName, "drawable", packageName);
+            int resource = Toolbox.getPrimaryCategoryIconResourceByName(context, primaryCategory);
             primaryCategoryViewHolder.mImvCategoryIcon.setBackgroundResource(resource);
         } catch (Exception e) {
             loadDefaultPrimaryCategoryIcon(primaryCategoryViewHolder);

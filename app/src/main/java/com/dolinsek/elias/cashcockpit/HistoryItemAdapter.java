@@ -6,10 +6,16 @@ import android.graphics.Typeface;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -17,6 +23,8 @@ import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Toolbox;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
@@ -69,14 +77,15 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     @Override
     public void onBindViewHolder(final HistoryViewHolder holder, int position) {
         final Bill bill = billsToDisplay.get(position);
-        final BankAccount bankAccountOfBill = getBankAccountOfBill(bill);
 
         displayBillType(bill, holder);
         displayDescription(bill.getDescription(), holder);
         displayDateAndAmount(bill, holder);
+        displayCategoryImage(bill, holder);
 
+        setupBillActionButtonsClickListeners(bill, holder);
         if(allowToEditBill){
-            holder.itemView.setOnClickListener(view -> showEditDialogForSubcategory(bill, bankAccountOfBill, holder.itemView.getContext()));
+            holder.itemView.setOnClickListener(view -> showHideBillActionButtons(holder));
         }
     }
 
@@ -87,14 +96,25 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     class HistoryViewHolder extends RecyclerView.ViewHolder{
 
+        public View mViewDivider;
+        public ImageView mImvPrimaryCategory;
+        public LinearLayout mLlBillActionButtonsContainer;
         public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
+        public Button btnEdit, btnDelete;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
+            mViewDivider = itemView.findViewById(R.id.view_item_history_divider);
+            mImvPrimaryCategory = itemView.findViewById(R.id.imv_item_history_category);
+            mLlBillActionButtonsContainer = itemView.findViewById(R.id.ll_item_history_bill_action_buttons_container);
+
             mTxvBillType = itemView.findViewById(R.id.txv_item_history_bill_type);
             mTxvDescription = itemView.findViewById(R.id.txv_item_history_description);
             mTxvDateAmount = itemView.findViewById(R.id.txv_item_history_date_amount);
+
+            btnEdit = itemView.findViewById(R.id.btn_item_history_edit);
+            btnDelete = itemView.findViewById(R.id.btn_item_history_delete);
         }
     }
 
@@ -141,10 +161,76 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     private void displayDateAndAmount(Bill bill, HistoryViewHolder holder){
         String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bill.getAmount());
-        String dateOfCreationDate = DateFormat.format("EEE dd.MM", bill.getCreationDate()).toString();
+        String dateOfCreationDate = (String) DateUtils.getRelativeTimeSpanString(bill.getCreationDate());
 
-        String dateAndAmount = formattedAmount + Character.toString((char)0x00B7) + dateOfCreationDate;
+        String dateAndAmount = dateOfCreationDate + " " + Character.toString((char)0x00B7) + " " + formattedAmount;
         holder.mTxvDateAmount.setText(dateAndAmount);
+    }
+
+    private void displayCategoryImage(Bill bill, HistoryViewHolder holder){
+        Context context = holder.itemView.getContext();
+        PrimaryCategory primaryCategory = bill.getSubcategory().getPrimaryCategory();
+
+        int imageResource = Toolbox.getPrimaryCategoryIconResourceByName(context, primaryCategory);
+        holder.mImvPrimaryCategory.setBackgroundResource(imageResource);
+    }
+
+    private void setupBillActionButtonsClickListeners(Bill bill, HistoryViewHolder holder) {
+        holder.btnEdit.setOnClickListener(view -> showEditDialogForSubcategory(bill, getBankAccountOfBill(bill), holder.itemView.getContext()));
+    }
+
+    private void showHideBillActionButtons(HistoryViewHolder holder) {
+        if (holder.mLlBillActionButtonsContainer.isShown()){
+            hideBillActionButtons(holder);
+        } else {
+            showBillActionButtons(holder);
+        }
+    }
+
+    private void showBillActionButtons(HistoryViewHolder holder){
+        LinearLayout llBillActionButtonsContainer = holder.mLlBillActionButtonsContainer;
+        llBillActionButtonsContainer.setVisibility(View.VISIBLE);
+
+        TranslateAnimation billActionButtonsAnimation = new TranslateAnimation(0, 0, -llBillActionButtonsContainer.getHeight(),0);
+        billActionButtonsAnimation.setDuration(200);
+        billActionButtonsAnimation.setFillAfter(false);
+
+        TranslateAnimation dividerAnimation = new TranslateAnimation(0,0, -llBillActionButtonsContainer.getHeight(), 0);
+        dividerAnimation.setDuration(200);
+        dividerAnimation.setFillAfter(false);
+
+        llBillActionButtonsContainer.startAnimation(billActionButtonsAnimation);
+        holder.mViewDivider.startAnimation(dividerAnimation);
+    }
+
+    private void hideBillActionButtons(HistoryViewHolder holder){
+        LinearLayout llBillActionButtonsContainer = holder.mLlBillActionButtonsContainer;
+
+        TranslateAnimation dividerAnimation = new TranslateAnimation(0,0, 0, -llBillActionButtonsContainer.getHeight());
+        dividerAnimation.setDuration(200);
+        dividerAnimation.setFillAfter(false);
+
+        TranslateAnimation billActionButtonsAnimation = new TranslateAnimation(0,0, 0, -llBillActionButtonsContainer.getHeight());
+        billActionButtonsAnimation.setDuration(300);
+        billActionButtonsAnimation.setFillAfter(true);
+        billActionButtonsAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                holder.mViewDivider.startAnimation(dividerAnimation);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                llBillActionButtonsContainer.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        llBillActionButtonsContainer.startAnimation(billActionButtonsAnimation);
     }
 
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
@@ -155,19 +241,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
         context.startActivity(intent);
-    }
-
-    private void setupImvFromBillType(ImageView imageView, Bill bill){
-        Context context = imageView.getContext();
-        if (bill.getType() == Bill.TYPE_INPUT){
-            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_input));
-        } else if (bill.getType() == Bill.TYPE_OUTPUT){
-            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_output));
-        } else if (bill.getType() == Bill.TYPE_TRANSFER){
-            imageView.setBackground(context.getDrawable(R.drawable.ic_bill_type_transfer));
-        } else {
-            throw new IllegalArgumentException("Couldn't resolve " + bill.getType() + " as a bill type!");
-        }
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){

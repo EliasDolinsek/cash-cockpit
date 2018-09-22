@@ -91,6 +91,13 @@ public class Toolbox {
         System.exit(0);
     }
 
+    public static int getPrimaryCategoryIconResourceByName(Context context, PrimaryCategory primaryCategory){
+        String primaryCategoryIconName = primaryCategory.getIconName();
+        String packageName = context.getPackageName();
+
+        return context.getResources().getIdentifier(primaryCategoryIconName, "drawable", packageName);
+    }
+
     public static void showSingInRequiredToUseFeatureToast(Context context){
         Toast.makeText(context, R.string.toast_sing_in_required_to_use_feature, Toast.LENGTH_SHORT).show();
     }

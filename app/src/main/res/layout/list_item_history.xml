@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+<LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
     xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -7,45 +9,92 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:paddingTop="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/txv_item_history_bill_type"
+        app:layout_constraintTop_toBottomOf="@+id/txv_item_history_bill_type">
+
+        <ImageView
+            android:id="@+id/imv_item_history_category"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/txv_item_history_bill_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:fontFamily="sans-serif"
             android:letterSpacing="0.15"
             android:textAllCaps="true"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imv_item_history_category"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txv_item_history_description"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:fontFamily="sans-serif"
-            android:textSize="24sp"
-            android:textColor="@color/colorAccentTextColor"
             android:letterSpacing="0"
             android:textAllCaps="false"
-            app:layout_constraintStart_toStartOf="@+id/txv_item_history_bill_type"
+            android:textColor="@color/colorAccentTextColor"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/imv_item_history_category"
             app:layout_constraintTop_toBottomOf="@+id/txv_item_history_bill_type" />
 
         <TextView
             android:id="@+id/txv_item_history_date_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:fontFamily="sans-serif-medium"
             android:letterSpacing="0.1"
             android:textAllCaps="false"
             android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/txv_item_history_description"
+            app:layout_constraintStart_toEndOf="@+id/imv_item_history_category"
             app:layout_constraintTop_toBottomOf="@+id/txv_item_history_description" />
+
 
     </android.support.constraint.ConstraintLayout>
 
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp">
+
+        <LinearLayout
+            android:id="@+id/ll_item_history_bill_action_buttons_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_history_edit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/btn_edit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_history_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/btn_delete" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
     <View
+        android:id="@+id/view_item_history_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@android:color/darker_gray" />
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="72dp"
+        android:background="@color/colorDivider" />
 </LinearLayout>
