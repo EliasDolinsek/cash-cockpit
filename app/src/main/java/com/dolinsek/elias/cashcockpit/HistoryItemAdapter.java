@@ -3,16 +3,20 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.text.format.DateUtils;
+import android.transition.TransitionManager;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -44,10 +48,12 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     private ArrayList<Bill> billsToDisplay;
     private boolean allowToEditBill;
-    private int filterType;
+    private int filterType, mExpandedPosition = -1;
+    private RecyclerView recyclerView;
 
-    public static HistoryItemAdapter getDefaultHistoryItemAdapter(ArrayList<Bill> billsToDisplay, int filterType){
+    public static HistoryItemAdapter getDefaultHistoryItemAdapter(RecyclerView recyclerView, ArrayList<Bill> billsToDisplay, int filterType){
         HistoryItemAdapter historyItemAdapter = new HistoryItemAdapter();
+        historyItemAdapter.recyclerView = recyclerView;
         historyItemAdapter.filterType = filterType;
         historyItemAdapter.billsToDisplay = billsToDisplay;
         historyItemAdapter.allowToEditBill = true;
@@ -83,9 +89,9 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         displayDateAndAmount(bill, holder);
         displayCategoryImage(bill, holder);
 
-        setupBillActionButtonsClickListeners(bill, holder);
-        if(allowToEditBill){
-            holder.itemView.setOnClickListener(view -> showHideBillActionButtons(holder));
+        setupBillActionButtonsClickListeners(holder, bill);
+        if(allowToEditBill && recyclerView != null){
+            setupBillActionButtonsExpandFunction(holder, position);
         }
     }
 
@@ -98,16 +104,21 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
         public View mViewDivider;
         public ImageView mImvPrimaryCategory;
-        public LinearLayout mLlBillActionButtonsContainer;
+        public LinearLayout mLlBillActionButtonsContainer, mLlBillEditElementsContainer;
         public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
-        public Button btnEdit, btnDelete;
+        public Button btnEdit, btnDelete, btnEditAmount, btnEditDescritpion, btnChangeCategory;
+
+        private TextInputLayout mTilEditEdtContainer;
+        private EditText mEdtEdit;
 
         public HistoryViewHolder(View itemView) {
             super(itemView);
 
             mViewDivider = itemView.findViewById(R.id.view_item_history_divider);
             mImvPrimaryCategory = itemView.findViewById(R.id.imv_item_history_category);
+
             mLlBillActionButtonsContainer = itemView.findViewById(R.id.ll_item_history_bill_action_buttons_container);
+            mLlBillEditElementsContainer = itemView.findViewById(R.id.ll_item_history_bill_edit_elements_container);
 
             mTxvBillType = itemView.findViewById(R.id.txv_item_history_bill_type);
             mTxvDescription = itemView.findViewById(R.id.txv_item_history_description);
@@ -115,6 +126,12 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
             btnEdit = itemView.findViewById(R.id.btn_item_history_edit);
             btnDelete = itemView.findViewById(R.id.btn_item_history_delete);
+            btnEditAmount = itemView.findViewById(R.id.btn_item_history_edit_amount);
+            btnEditDescritpion = itemView.findViewById(R.id.btn_item_history_edit_description);
+            btnChangeCategory = itemView.findViewById(R.id.btn_item_history_change_category);
+
+            mTilEditEdtContainer = itemView.findViewById(R.id.til_item_history_edt_container);
+            mEdtEdit = itemView.findViewById(R.id.edt_item_history_edit);
         }
     }
 
@@ -175,62 +192,28 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         holder.mImvPrimaryCategory.setBackgroundResource(imageResource);
     }
 
-    private void setupBillActionButtonsClickListeners(Bill bill, HistoryViewHolder holder) {
+    private void setupBillActionButtonsClickListeners(HistoryViewHolder holder, Bill bill) {
         holder.btnEdit.setOnClickListener(view -> showEditDialogForSubcategory(bill, getBankAccountOfBill(bill), holder.itemView.getContext()));
+        holder.btnEditDescritpion.setOnClickListener(view -> showDescriptionEditEdt(holder, bill));
     }
 
-    private void showHideBillActionButtons(HistoryViewHolder holder) {
-        if (holder.mLlBillActionButtonsContainer.isShown()){
-            hideBillActionButtons(holder);
-        } else {
-            showBillActionButtons(holder);
-        }
-    }
+    private void setupBillActionButtonsExpandFunction(HistoryViewHolder holder, int position){
+        final boolean isExpanded = position == mExpandedPosition;
+        holder.mLlBillActionButtonsContainer.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+        holder.itemView.setActivated(isExpanded);
 
-    private void showBillActionButtons(HistoryViewHolder holder){
-        LinearLayout llBillActionButtonsContainer = holder.mLlBillActionButtonsContainer;
-        llBillActionButtonsContainer.setVisibility(View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> {
+            int previousExpandedPosition = mExpandedPosition;
+            mExpandedPosition = isExpanded ? -1 : position;
 
-        TranslateAnimation billActionButtonsAnimation = new TranslateAnimation(0, 0, -llBillActionButtonsContainer.getHeight(),0);
-        billActionButtonsAnimation.setDuration(200);
-        billActionButtonsAnimation.setFillAfter(false);
-
-        TranslateAnimation dividerAnimation = new TranslateAnimation(0,0, -llBillActionButtonsContainer.getHeight(), 0);
-        dividerAnimation.setDuration(200);
-        dividerAnimation.setFillAfter(false);
-
-        llBillActionButtonsContainer.startAnimation(billActionButtonsAnimation);
-        holder.mViewDivider.startAnimation(dividerAnimation);
-    }
-
-    private void hideBillActionButtons(HistoryViewHolder holder){
-        LinearLayout llBillActionButtonsContainer = holder.mLlBillActionButtonsContainer;
-
-        TranslateAnimation dividerAnimation = new TranslateAnimation(0,0, 0, -llBillActionButtonsContainer.getHeight());
-        dividerAnimation.setDuration(200);
-        dividerAnimation.setFillAfter(false);
-
-        TranslateAnimation billActionButtonsAnimation = new TranslateAnimation(0,0, 0, -llBillActionButtonsContainer.getHeight());
-        billActionButtonsAnimation.setDuration(300);
-        billActionButtonsAnimation.setFillAfter(true);
-        billActionButtonsAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                holder.mViewDivider.startAnimation(dividerAnimation);
+            if (previousExpandedPosition != -1){
+                notifyItemChanged(previousExpandedPosition);
             }
 
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                llBillActionButtonsContainer.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
+            if (mExpandedPosition != -1){
+                notifyItemChanged(mExpandedPosition);
             }
         });
-
-        llBillActionButtonsContainer.startAnimation(billActionButtonsAnimation);
     }
 
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
@@ -241,6 +224,22 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
         context.startActivity(intent);
+    }
+
+    private void showDescriptionEditEdt(HistoryViewHolder holder, Bill bill){
+        holder.mLlBillActionButtonsContainer.setVisibility(View.GONE);
+        holder.mLlBillEditElementsContainer.setVisibility(View.VISIBLE);
+        notifyItemChanged(mExpandedPosition);
+
+        holder.mEdtEdit.setHint(bill.getDescription());
+        holder.mEdtEdit.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
+                System.out.println("enter clicked");
+                return true;
+            } else {
+                return false;
+            }
+        });
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){

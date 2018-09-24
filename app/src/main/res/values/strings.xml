@@ -40,6 +40,9 @@
     <string name="btn_save_security_settings">Save Security Settings</string>
     <string name="btn_edit">Edit</string>
     <string name="btn_delete">Delete</string>
+    <string name="btn_edit_amount">Edit amount</string>
+    <string name="btn_edit_description">Edit description</string>
+    <string name="btn_change_category">Change category</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>

@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +52,7 @@ public class HistoryFragment extends Fragment {
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
+
         mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_history_not_enough_data_for_history);
         mTxvSelectedFilters = inflatedView.findViewById(R.id.txv_history_selected_filters);
         mBtnShowFilters = inflatedView.findViewById(R.id.btn_history_show_filters);
@@ -151,13 +153,13 @@ public class HistoryFragment extends Fragment {
 
     private void reloadRecyclerView(int selectedIndexMainFilter){
         switch (selectedIndexMainFilter){
-            case HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(billsToDisplay, HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST));
+            case HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST));
                 break;
-            case HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(billsToDisplay, HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST));
+            case HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST));
                 break;
-            case HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(billsToDisplay, HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST));
+            case HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST));
                 break;
-            case HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(billsToDisplay, HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST));
+            case HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST));
                 break;
                 default: throw new IllegalArgumentException("Couldn't resolve " + selectedIndexMainFilter + " as a valid selection");
         }
