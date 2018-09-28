@@ -48,7 +48,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     private ArrayList<Bill> billsToDisplay;
     private boolean allowToEditBill;
-    private int filterType, mExpandedPosition = -1;
+    private int filterType, expandedPosition = -1, editPosition = -1;
     private RecyclerView recyclerView;
 
     public static HistoryItemAdapter getDefaultHistoryItemAdapter(RecyclerView recyclerView, ArrayList<Bill> billsToDisplay, int filterType){
@@ -91,7 +91,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
         setupBillActionButtonsClickListeners(holder, bill);
         if(allowToEditBill && recyclerView != null){
-            setupBillActionButtonsExpandFunction(holder, position);
+            setupOnItemClickAction(holder, position);
         }
     }
 
@@ -197,23 +197,42 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         holder.btnEditDescritpion.setOnClickListener(view -> showDescriptionEditEdt(holder, bill));
     }
 
-    private void setupBillActionButtonsExpandFunction(HistoryViewHolder holder, int position){
-        final boolean isExpanded = position == mExpandedPosition;
-        holder.mLlBillActionButtonsContainer.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
-        holder.itemView.setActivated(isExpanded);
+    private void setupOnItemClickAction(HistoryViewHolder holder, int position){
+        final boolean isExpanded = position == expandedPosition;
+        final boolean isEditModeActive = position == editPosition;
+
+        holder.mLlBillActionButtonsContainer.setVisibility(isExpanded && !isEditModeActive ? View.VISIBLE : View.GONE);
+        holder.mLlBillEditElementsContainer.setVisibility(isEditModeActive ? View.VISIBLE : View.GONE);
+        holder.itemView.setActivated(isExpanded || isEditModeActive);
 
         holder.itemView.setOnClickListener(v -> {
-            int previousExpandedPosition = mExpandedPosition;
-            mExpandedPosition = isExpanded ? -1 : position;
+            int previousExpandedPosition = expandedPosition;
+            expandedPosition = isExpanded ? -1 : position;
+
+            if (!isEditModeActive){
+                editPosition = -1;
+            }
 
             if (previousExpandedPosition != -1){
                 notifyItemChanged(previousExpandedPosition);
             }
 
-            if (mExpandedPosition != -1){
-                notifyItemChanged(mExpandedPosition);
+            if (expandedPosition != -1){
+                notifyItemChanged(expandedPosition);
             }
         });
+    }
+
+    private void showDescriptionEditEdt(HistoryViewHolder holder, Bill bill){
+        editPosition = expandedPosition;
+
+        holder.mLlBillActionButtonsContainer.setVisibility(View.GONE);
+        holder.mLlBillEditElementsContainer.setVisibility(View.VISIBLE);
+
+        holder.mEdtEdit.setHint(bill.getDescription());
+        holder.mEdtEdit.requestFocus();
+
+        notifyItemChanged(expandedPosition);
     }
 
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
@@ -224,22 +243,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
         context.startActivity(intent);
-    }
-
-    private void showDescriptionEditEdt(HistoryViewHolder holder, Bill bill){
-        holder.mLlBillActionButtonsContainer.setVisibility(View.GONE);
-        holder.mLlBillEditElementsContainer.setVisibility(View.VISIBLE);
-        notifyItemChanged(mExpandedPosition);
-
-        holder.mEdtEdit.setHint(bill.getDescription());
-        holder.mEdtEdit.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (keyEvent.getAction() == KeyEvent.KEYCODE_ENTER){
-                System.out.println("enter clicked");
-                return true;
-            } else {
-                return false;
-            }
-        });
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){
