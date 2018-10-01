@@ -2,27 +2,20 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
 import android.text.format.DateUtils;
-import android.transition.TransitionManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
@@ -33,7 +26,6 @@ import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * Created by elias on 22.02.2018.
@@ -46,9 +38,12 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     public static final int FILTER_HIGHEST_PRICE_FIRST = 2;
     public static final int FILTER_LOWEST_PRICE_FIRST = 3;
 
+    private static final int EDIT_TYPE_DESCRIPTION = 745;
+    private static final int EDIT_TYPE_AMOUNT = 578;
+
     private ArrayList<Bill> billsToDisplay;
     private boolean allowToEditBill;
-    private int filterType, expandedPosition = -1, editPosition = -1;
+    private int filterType, expandedPosition = -1, editPosition = -1, editType;
     private RecyclerView recyclerView;
 
     public static HistoryItemAdapter getDefaultHistoryItemAdapter(RecyclerView recyclerView, ArrayList<Bill> billsToDisplay, int filterType){
@@ -92,6 +87,12 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         setupBillActionButtonsClickListeners(holder, bill);
         if(allowToEditBill && recyclerView != null){
             setupOnItemClickAction(holder, position);
+        }
+
+        if (editPosition == position && editType == EDIT_TYPE_DESCRIPTION){
+            setupEdtEditForDescriptionEdit(holder, position);
+        } else if (editPosition == position && editPosition == EDIT_TYPE_AMOUNT){
+            setupEdtEditForAmountEdit(holder, position);
         }
     }
 
@@ -194,7 +195,8 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     private void setupBillActionButtonsClickListeners(HistoryViewHolder holder, Bill bill) {
         holder.btnEdit.setOnClickListener(view -> showEditDialogForSubcategory(bill, getBankAccountOfBill(bill), holder.itemView.getContext()));
-        holder.btnEditDescritpion.setOnClickListener(view -> showDescriptionEditEdt(holder, bill));
+        holder.btnEditDescritpion.setOnClickListener(view -> setupForDescriptionEdit(holder));
+        holder.btnEditAmount.setOnClickListener(view -> setupForAmountEdit(holder));
     }
 
     private void setupOnItemClickAction(HistoryViewHolder holder, int position){
@@ -202,7 +204,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         final boolean isEditModeActive = position == editPosition;
 
         holder.mLlBillActionButtonsContainer.setVisibility(isExpanded && !isEditModeActive ? View.VISIBLE : View.GONE);
-        holder.mLlBillEditElementsContainer.setVisibility(isEditModeActive ? View.VISIBLE : View.GONE);
+        holder.mLlBillEditElementsContainer.setVisibility(isExpanded && isEditModeActive ? View.VISIBLE : View.GONE);
         holder.itemView.setActivated(isExpanded || isEditModeActive);
 
         holder.itemView.setOnClickListener(v -> {
@@ -223,16 +225,48 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         });
     }
 
-    private void showDescriptionEditEdt(HistoryViewHolder holder, Bill bill){
+    private void setupForDescriptionEdit(HistoryViewHolder holder){
         editPosition = expandedPosition;
+        editType = EDIT_TYPE_DESCRIPTION;
 
-        holder.mLlBillActionButtonsContainer.setVisibility(View.GONE);
-        holder.mLlBillEditElementsContainer.setVisibility(View.VISIBLE);
-
-        holder.mEdtEdit.setHint(bill.getDescription());
-        holder.mEdtEdit.requestFocus();
-
+        showKeyboardForEditInput(holder.mEdtEdit);
         notifyItemChanged(expandedPosition);
+    }
+
+    private void setupForAmountEdit(HistoryViewHolder holder){
+        editPosition = expandedPosition;
+        editType = EDIT_TYPE_AMOUNT;
+
+        showKeyboardForEditInput(holder.mEdtEdit);
+        notifyItemChanged(expandedPosition);
+    }
+
+    private void setupEdtEditForDescriptionEdit(HistoryViewHolder holder, int position){
+        Bill currentBill = billsToDisplay.get(position);
+
+        holder.mEdtEdit.setHint(currentBill.getDescription());
+        holder.mEdtEdit.setOnEditorActionListener((textView, i, keyEvent) -> {
+            String enteredDescription = holder.mEdtEdit.getText().toString();
+            currentBill.setDescription(enteredDescription);
+
+            notifyItemChanged(position);
+            Database.save(holder.itemView.getContext());
+
+            editPosition = -1;
+            editType = 0;
+
+            return true;
+        });
+    }
+
+    private void setupEdtEditForAmountEdit(HistoryViewHolder holder, int position){
+        holder.mEdtEdit.setHint("Not implemented yet!"); //TODO
+    }
+
+    private void showKeyboardForEditInput(View viewWhereKeyboardIsNeeded){
+        InputMethodManager inputMethodManager = (InputMethodManager) viewWhereKeyboardIsNeeded.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+        viewWhereKeyboardIsNeeded.requestFocus();
+        inputMethodManager.showSoftInput(viewWhereKeyboardIsNeeded, 0);
     }
 
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){

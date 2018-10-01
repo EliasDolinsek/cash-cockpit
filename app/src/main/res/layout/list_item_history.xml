@@ -132,9 +132,11 @@
                 android:id="@+id/edt_item_history_edit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:lines="1"/>
+                android:imeOptions="actionDone"
+                android:singleLine="true"/>
 
         </android.support.design.widget.TextInputLayout>
+
     </LinearLayout>
 
     <View
