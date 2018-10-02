@@ -136,6 +136,10 @@
     <string name="label_deleting_data">Deleting Data</string>
     <string name="label_data_got_deleted">Data got deleted</string>
     <string name="label_auto_pay">AutoPay</string>
+    <string name="label_newest_first">Newest first</string>
+    <string name="label_oldest_first">Oldest first</string>
+    <string name="label_highest_price_first">Highest price first</string>
+    <string name="label_lowest_price_first">Lowest price first</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
@@ -241,10 +245,10 @@
     </array>
 
     <array name="filters_array">
-        <item>Newest first</item>
-        <item>Oldest first</item>
-        <item>Highest price first</item>
-        <item>Lowest price first</item>
+        <item>@string/label_newest_first</item>
+        <item>@string/label_oldest_first</item>
+        <item>@string/label_highest_price_first</item>
+        <item>@string/label_lowest_price_first</item>
     </array>
 
     <array name="auto_pay_types_array">

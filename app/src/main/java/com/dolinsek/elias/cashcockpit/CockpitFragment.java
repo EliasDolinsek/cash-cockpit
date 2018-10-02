@@ -120,12 +120,7 @@ public class CockpitFragment extends Fragment {
             }
         });
 
-        mFgmSelectCategory.setOnCategorySelectedListener(new SelectCategoryFragment.OnCategorySelectedListener() {
-            @Override
-            public void onSubcategorySelected(Subcategory subcategory) {
-                selectedSubcategory = subcategory;
-            }
-        });
+        mFgmSelectCategory.setOnCategorySelectedListener(subcategory -> selectedSubcategory = subcategory);
 
         if(editModeActive){
             setupForEditMode();
