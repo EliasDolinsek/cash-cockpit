@@ -35,7 +35,7 @@
     <string name="btn_select">Select</string>
     <string name="btn_add_bill">Add Bill</string>
     <string name="btn_login">Login</string>
-    <string name="btn_filters">Filters</string>
+    <string name="btn_show_filters">Show Filters</string>
     <string name="btn_save_password">Save Password</string>
     <string name="btn_save_security_settings">Save Security Settings</string>
     <string name="btn_edit">Edit</string>
@@ -43,6 +43,7 @@
     <string name="btn_edit_amount">Edit amount</string>
     <string name="btn_edit_description">Edit description</string>
     <string name="btn_change_category">Change category</string>
+    <string name="btn_hide_filters">Hide Filters</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>
@@ -94,7 +95,7 @@
     <string name="label_outputs">Outputs</string>
     <string name="label_transfers">Transfers</string>
     <string name="label_fixed_costs">Fixed Costs</string>
-    <string name="label_bills_found">%1$d Bill(s) found</string>
+    <string name="label_bills_in_database">%1$d bills</string>
     <string name="label_no_categories_found">No Categories found!</string>
     <string name="label_display_bill_creation_date">Bill created on %1$s</string>
     <string name="label_entered_passwords_dont_match">Entered Password doesn\'t match</string>

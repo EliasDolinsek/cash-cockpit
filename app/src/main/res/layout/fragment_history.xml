@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.dolinsek.elias.cashcockpit.HistoryFragment"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <android.support.design.card.MaterialCardView
         android:layout_width="match_parent"
@@ -18,14 +18,42 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
             android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:paddingBottom="10dp"
+            android:animateLayoutChanges="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <android.support.design.button.MaterialButton
+                    android:id="@+id/btn_history_filters"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:text="@string/btn_show_filters" />
+
+                <TextView
+                    android:id="@+id/txv_history_bills_in_database"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:fontFamily="sans-serif"
+                    android:textSize="14sp"
+                    android:letterSpacing="0.25"
+                    android:textColor="@android:color/black"/>
+
+            </LinearLayout>
 
             <HorizontalScrollView
+                android:id="@+id/sv_history_bill_types"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
                 android:overScrollMode="never"
-                android:layout_marginBottom="8dp">
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone">
 
                 <android.support.design.chip.ChipGroup
                     android:id="@+id/chip_group_bill_types"
@@ -40,31 +68,34 @@
                         android:id="@+id/chip_history_input"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        style="@style/Widget.MaterialComponents.Chip.Filter"
                         android:text="@string/label_input"/>
 
                     <android.support.design.chip.Chip
                         android:id="@+id/chip_history_output"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        style="@style/Widget.MaterialComponents.Chip.Filter"
                         android:text="@string/label_output"/>
 
                     <android.support.design.chip.Chip
                         android:id="@+id/chip_history_transfer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        style="@style/Widget.MaterialComponents.Chip.Filter"
                         android:text="@string/label_transfer"/>
 
                 </android.support.design.chip.ChipGroup>
             </HorizontalScrollView>
 
             <HorizontalScrollView
+                android:id="@+id/sv_history_arrangement"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:scrollbars="none"
-                android:overScrollMode="never">
+                android:overScrollMode="never"
+                android:animateLayoutChanges="true"
+                android:visibility="gone">
 
                 <android.support.design.chip.ChipGroup
                     android:id="@+id/chip_group_chip_arrangement"
@@ -80,7 +111,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
-                        android:text="@string/label_newest_first"/>
+                        android:text="@string/label_newest_first" />
 
                     <android.support.design.chip.Chip
                         android:id="@+id/chip_history_oldest_first"

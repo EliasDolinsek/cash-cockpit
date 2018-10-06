@@ -10,6 +10,9 @@ import android.widget.EditText;
 
 import com.dolinsek.elias.cashcockpit.R;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+
 /**
  * Created by Elias Dolinsek on 21.03.2018 for cash-cockpit.
  */
@@ -148,6 +151,8 @@ public class Currency {
 
     public static TextWatcher getCurrencyTextWatcherByCurrencyIndex(final int currencyIndex, final EditText editText){
         return new TextWatcher() {
+
+            private String current;
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {

@@ -10,6 +10,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
+import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
@@ -31,20 +34,25 @@ public class HistoryFragment extends Fragment {
     private ArrayList<Bill> billsToDisplay;
     private NotEnoughDataFragment mFgmNotEnoughData;
     private int selectedArrangementFilter, selectedIndexBillTypeFilter;
+    private Button btnFilters;
 
+    private HorizontalScrollView svBillTypes, svArrangement;
     private ChipGroup chipGroupBillTypes, chipGroupArrangement;
     private Chip chipInput, chipOutput, chipTransfer, chipNewestFirst, chipOldestFirst, chipHighestFirst, chipLowestFirst;
     private int preivousCheckedArrangementChip;
+    private boolean filtersVisible;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_history, container, false);
+        displayHowManyBillsAreInDatabase(inflatedView);
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
 
         mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_history_not_enough_data_for_history);
+        btnFilters = inflatedView.findViewById(R.id.btn_history_filters);
 
         chipGroupBillTypes = inflatedView.findViewById(R.id.chip_group_bill_types);
         chipGroupArrangement = inflatedView.findViewById(R.id.chip_group_chip_arrangement);
@@ -58,6 +66,9 @@ public class HistoryFragment extends Fragment {
         chipHighestFirst = inflatedView.findViewById(R.id.chip_history_highest_first);
         chipLowestFirst = inflatedView.findViewById(R.id.chip_history_lowest_first);
 
+        svBillTypes = inflatedView.findViewById(R.id.sv_history_bill_types);
+        svArrangement = inflatedView.findViewById(R.id.sv_history_arrangement);
+
         billsToDisplay = Toolkit.getAllBills();
         if (savedInstanceState != null){
             setupSelections(savedInstanceState);
@@ -66,6 +77,22 @@ public class HistoryFragment extends Fragment {
         }
 
         setupChips();
+
+        btnFilters.setOnClickListener(view -> {
+            if (filtersVisible){
+                svBillTypes.setVisibility(View.GONE);
+                svArrangement.setVisibility(View.GONE);
+
+                btnFilters.setText(R.string.btn_show_filters);
+                filtersVisible = false;
+            } else {
+                svBillTypes.setVisibility(View.VISIBLE);
+                svArrangement.setVisibility(View.VISIBLE);
+
+                btnFilters.setText(R.string.btn_hide_filters);
+                filtersVisible = true;
+            }
+        });
 
         return inflatedView;
     }
@@ -164,5 +191,10 @@ public class HistoryFragment extends Fragment {
         }
 
         return size;
+    }
+
+    private void displayHowManyBillsAreInDatabase(View inflatedView){
+        int billsInDatabase = Toolkit.getAllBills().size();
+        ((TextView)inflatedView.findViewById(R.id.txv_history_bills_in_database)).setText(getString(R.string.label_bills_in_database, billsInDatabase));
     }
 }

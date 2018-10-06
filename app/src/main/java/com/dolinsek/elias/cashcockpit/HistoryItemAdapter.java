@@ -244,7 +244,8 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     private void setupEdtEditForDescriptionEdit(HistoryViewHolder holder, int position){
         Bill currentBill = billsToDisplay.get(position);
 
-        holder.mEdtEdit.setHint(currentBill.getDescription());
+        holder.mEdtEdit.setText(currentBill.getDescription());
+        holder.mEdtEdit.setSelection(holder.mEdtEdit.length());
         holder.mEdtEdit.setOnEditorActionListener((textView, i, keyEvent) -> {
             String enteredDescription = holder.mEdtEdit.getText().toString();
             currentBill.setDescription(enteredDescription);

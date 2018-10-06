@@ -25,7 +25,7 @@
     <string name="btn_select">Auswählen</string>
     <string name="btn_add_bill">Rechnung hinzufügen</string>
     <string name="btn_login">Login</string>
-    <string name="btn_filters">Filter</string>
+    <string name="btn_show_filters">Zeige Filter</string>
     <string name="btn_save_password">Passwort speichern</string>
     <string name="btn_save_security_settings">Sicherheitseinstellungen speichern</string>
     <string name="hint_name">Name</string>
@@ -75,7 +75,7 @@
     <string name="label_outputs">Ausgaben</string>
     <string name="label_transfers">Überweisungen</string>
     <string name="label_fixed_costs">Fixkosten</string>
-    <string name="label_bills_found">%1$d Rechnung(en) gefunden</string>
+    <string name="label_bills_in_database">%1$d Rechnungen</string>
     <string name="label_no_categories_found">Keine Kategorien gefunden</string>
     <string name="label_display_bill_creation_date">Rechnung erstellt am %1$s</string>
     <string name="label_entered_passwords_dont_match">Eingegebenes Passwort stimmt nicht überein </string>
