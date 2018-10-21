@@ -1,8 +1,11 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.KeyEvent;
@@ -107,7 +110,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         public ImageView mImvPrimaryCategory;
         public LinearLayout mLlBillActionButtonsContainer, mLlBillEditElementsContainer;
         public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
-        public Button btnEdit, btnDelete, btnEditAmount, btnEditDescritpion, btnChangeCategory;
+        public Button btnEdit, btnDelete, btnDuplicate, btnEditAmount, btnEditDescritpion, btnChangeCategory;
 
         private TextInputLayout mTilEditEdtContainer;
         private EditText mEdtEdit;
@@ -127,6 +130,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
             btnEdit = itemView.findViewById(R.id.btn_item_history_edit);
             btnDelete = itemView.findViewById(R.id.btn_item_history_delete);
+            btnDuplicate = itemView.findViewById(R.id.btn_item_history_duplicate);
             btnEditAmount = itemView.findViewById(R.id.btn_item_history_edit_amount);
             btnEditDescritpion = itemView.findViewById(R.id.btn_item_history_edit_description);
             btnChangeCategory = itemView.findViewById(R.id.btn_item_history_change_category);
@@ -195,8 +199,10 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
     private void setupBillActionButtonsClickListeners(HistoryViewHolder holder, Bill bill) {
         holder.btnEdit.setOnClickListener(view -> showEditDialogForSubcategory(bill, getBankAccountOfBill(bill), holder.itemView.getContext()));
-        holder.btnEditDescritpion.setOnClickListener(view -> setupForDescriptionEdit(holder));
+        holder.btnDelete.setOnClickListener(view -> showDeleteBillDialogFragment(holder, bill));
+        holder.btnDuplicate.setOnClickListener(view -> duplicateBill(holder, bill));
         holder.btnEditAmount.setOnClickListener(view -> setupForAmountEdit(holder));
+        holder.btnEditDescritpion.setOnClickListener(view -> setupForDescriptionEdit(holder));
     }
 
     private void setupOnItemClickAction(HistoryViewHolder holder, int position){
@@ -270,6 +276,46 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         inputMethodManager.showSoftInput(viewWhereKeyboardIsNeeded, 0);
     }
 
+    private void showDeleteBillDialogFragment(HistoryViewHolder holder, Bill bill){
+        Context context = holder.itemView.getContext();
+        FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
+
+        DeleteBillDialogFragment deleteBillDialogFragment = new DeleteBillDialogFragment();
+        deleteBillDialogFragment.setOnDialogPositiveClickListener((dialogInterface, i) -> {
+            deleteBillAndRemoveItFromRecyclerView(holder, bill);
+        });
+
+        deleteBillDialogFragment.show(fragmentManager, "delete_bill");
+    }
+
+    private void deleteBillAndRemoveItFromRecyclerView(HistoryViewHolder holder, Bill bill){
+        billsToDisplay.remove(bill);
+        Toolkit.getBankAccountOfBill(bill).getBills().remove(bill);
+
+        Database.save(holder.itemView.getContext());
+
+        int position = holder.getAdapterPosition();
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+
+        collapseAll();
+    }
+
+    private void duplicateBill(HistoryViewHolder holder, Bill bill){
+        Bill duplication = (Bill)bill.clone();
+        duplication.setCreationDate(System.currentTimeMillis());
+
+        Toolkit.getBankAccountOfBill(bill).addBill(bill);
+        Database.save(holder.itemView.getContext());
+
+        billsToDisplay.add(bill);
+
+        notifyItemInserted(0);
+        notifyItemRangeChanged(0, getItemCount());
+
+        collapseAll();
+    }
+
     private void showEditDialogForSubcategory(Bill bill, BankAccount bankAccountOfBill, Context context){
         int bankAccountIndex = getIndexOfBankAccountInDatabase(bankAccountOfBill);
         int billPosition = getIndexOfBillInBankAccount(bill, bankAccountOfBill);
@@ -278,6 +324,11 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
         intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
         context.startActivity(intent);
+    }
+
+    private void collapseAll(){
+        editPosition = -1;
+        expandedPosition = -1;
     }
 
     private int getIndexOfBankAccountInDatabase(BankAccount bankAccount){

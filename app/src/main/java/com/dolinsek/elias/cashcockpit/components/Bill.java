@@ -163,4 +163,9 @@ public class Bill {
 
         throw new IllegalArgumentException("Couldn't find subcategory by name!");
     }
+
+    @Override
+    public Object clone() {
+        return new Bill(this.getAmount(), this.getDescription(), this.subcategoryName, this.primaryCategoryName, this.type, this.autoPayBill, this.creationDate);
+    }
 }

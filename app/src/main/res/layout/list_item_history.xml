@@ -88,6 +88,14 @@
                 android:text="@string/btn_delete" />
 
             <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_history_duplicate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/btn_duplicate"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+            <android.support.design.button.MaterialButton
                 android:id="@+id/btn_item_history_edit_amount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

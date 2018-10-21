@@ -3,6 +3,7 @@ package com.dolinsek.elias.cashcockpit.components;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.dolinsek.elias.cashcockpit.DeleteBillDialogFragment;
 import com.dolinsek.elias.cashcockpit.R;
 
 import java.util.ArrayList;
@@ -147,5 +148,15 @@ public class Toolkit {
 
     public static void displayPleaseCheckInputsToast(Context context){
         Toast.makeText(context, context.getString(R.string.toast_please_check_inputs), Toast.LENGTH_SHORT).show();
+    }
+
+    public static BankAccount getBankAccountOfBill(Bill bill){
+        for (BankAccount bankAccount: Database.getBankAccounts()){
+            if (bankAccount.getBills().contains(bill)){
+                return bankAccount;
+            }
+        }
+
+        throw new IllegalArgumentException("Couldn't find bank account of bill");
     }
 }
