@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit.components;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.widget.Toast;
 
@@ -158,5 +159,16 @@ public class Toolkit {
         }
 
         throw new IllegalArgumentException("Couldn't find bank account of bill");
+    }
+
+    public static ArrayList<Bill> filterBillsByCategory(ArrayList<Bill> billsToFilter, Category category){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+        for (Bill bill:billsToFilter){
+            if (bill.getSubcategory().equals(category) || bill.getSubcategory().getPrimaryCategory().equals(category)){
+                filteredBills.add(bill);
+            }
+        }
+
+        return filteredBills;
     }
 }

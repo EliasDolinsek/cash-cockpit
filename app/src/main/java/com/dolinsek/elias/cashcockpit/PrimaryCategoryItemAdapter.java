@@ -1,33 +1,24 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.Color;
-import android.graphics.Picture;
-import android.graphics.drawable.Drawable;
-import android.support.v7.widget.CardView;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.telephony.SubscriptionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.Animation;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
-import com.dolinsek.elias.cashcockpit.components.Category;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -112,21 +103,21 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         final PrimaryCategory primaryCategory = primaryCategoriesToDisplay.get(position);
 
         loadPrimaryCategoryIcon(primaryCategory, holder);
+        setupOnCategoryClickListener(holder);
+        setupButtonClickListeners(holder);
 
         SubcategoryItemAdapter subcategoryItemAdapter = createSubcategoriesItemAdapter(primaryCategory);
 
         holder.mRvSubcategories.setAdapter(subcategoryItemAdapter);
         holder.mRvSubcategories.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.mTxvCategoryName.setText(primaryCategory.getName());
-        holder.mBtnShowHideSubcategories.setOnClickListener(getOnSubcategoryViewStateChangeButtonOnClickListener(holder));
 
         if(adapterType == TYPE_NORMAL){
-            setupViewToStartCategoryActivityOnClick(holder.mCardView, position);
             manageGoalViews(primaryCategory, holder);
-            holder.mTxvCategoryGoalStatus.setVisibility(View.GONE);
+            holder.mTxvGoal.setVisibility(View.GONE);
         } else if (adapterType == TYPE_GOAL_STATISTICS){
-            hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
             manageGoalViews(primaryCategory, holder);
+            hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
         } else if (adapterType == TYPE_SELECT_CATEGORY){
             manageGoalViews(primaryCategory, holder);
             manageViewsIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
@@ -144,23 +135,25 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     public class PrimaryCategoryViewHolder extends RecyclerView.ViewHolder{
 
         public ImageView mImvCategoryIcon;
-        public TextView mTxvCategoryName, mTxvCategoryGoalStatus, mTxvGoalStatusAmount;
+        public TextView mTxvCategoryName, mTxvGoal;
         public ProgressBar mPgbCategoryGoalStatus;
         public RecyclerView mRvSubcategories;
-        public CardView mCardView;
-        public Button mBtnShowHideSubcategories;
+        public LinearLayout mLlActionButtonsContainer;
+        public Button btnEdit, btnDelete, btnAddSubcategory;
 
         public PrimaryCategoryViewHolder(View itemView) {
             super(itemView);
 
-            mCardView = (CardView) itemView.findViewById(R.id.cv_item_primary_category);
             mImvCategoryIcon = (ImageView) itemView.findViewById(R.id.imv_item_primary_category);
             mTxvCategoryName = (TextView) itemView.findViewById(R.id.txv_item_primary_category_name);
-            mTxvCategoryGoalStatus = (TextView) itemView.findViewById(R.id.txv_item_primary_category_goal_status);
-            mTxvGoalStatusAmount = (TextView) itemView.findViewById(R.id.txv_item_primary_category_goal_status_amount);
             mPgbCategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_primary_category_goal_status);
             mRvSubcategories = (RecyclerView) itemView.findViewById(R.id.rv_item_primary_categories_subcategory);
-            mBtnShowHideSubcategories = (Button) itemView.findViewById(R.id.btn_show_hide_subcategories);
+            mLlActionButtonsContainer = itemView.findViewById(R.id.ll_primary_category_action_buttons_container);
+            mTxvGoal = itemView.findViewById(R.id.txv_item_primary_category_goal);
+
+            btnEdit = itemView.findViewById(R.id.btn_item_primary_category_edit);
+            btnDelete = itemView.findViewById(R.id.btn_item_primary_category_delete);
+            btnAddSubcategory = itemView.findViewById(R.id.btn_item_primary_category_add_subcategory);
         }
     }
 
@@ -174,52 +167,70 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         };
     }
 
+    private void setupButtonClickListeners(PrimaryCategoryViewHolder holder) {
+        Context context = holder.itemView.getContext();
+        FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
+
+        holder.btnEdit.setOnClickListener(view -> {
+            Intent intent = new Intent(context, CategoryActivity.class);
+
+            intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, holder.getAdapterPosition());
+            context.startActivity(intent);
+        });
+
+
+        holder.btnDelete.setOnClickListener(view -> {
+            DeletePrimaryCategoryDialogFragment deletePrimaryCategoryDialogFragment = new DeletePrimaryCategoryDialogFragment();
+            deletePrimaryCategoryDialogFragment.setDialogClickListener(() -> {
+                deletePrimaryCategory(holder);
+            });
+
+            deletePrimaryCategoryDialogFragment.show(fragmentManager, "delete_primary_category");
+        });
+
+        holder.btnAddSubcategory.setOnClickListener(view -> showSubcategoryEditorDialogFragmentToAddSubcategory(holder, fragmentManager));
+    }
+
+    private void showSubcategoryEditorDialogFragmentToAddSubcategory(PrimaryCategoryViewHolder holder, FragmentManager fragmentManager) {
+        PrimaryCategory primaryCategory = primaryCategoriesToDisplay.get(holder.getAdapterPosition());
+        int previousSubcategoriesSize = primaryCategory.getSubcategories().size();
+
+        SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
+        subcategoryEditorDialogFragment.setupForCreateMode(primaryCategoriesToDisplay.get(holder.getAdapterPosition()));
+        subcategoryEditorDialogFragment.setOnDismissListener(dialogInterface -> {
+            int currentSubcategoriesSize = primaryCategory.getSubcategories().size();
+            if (previousSubcategoriesSize != currentSubcategoriesSize){
+                holder.mRvSubcategories.getAdapter().notifyItemInserted(currentSubcategoriesSize);
+                Database.save(holder.itemView.getContext());
+            }
+        });
+
+        subcategoryEditorDialogFragment.show(fragmentManager, "add_subcategory");
+    }
+
+    private void deletePrimaryCategory(PrimaryCategoryViewHolder holder){
+        int position = holder.getAdapterPosition();
+        PrimaryCategory primaryCategoryToDelete = primaryCategoriesToDisplay.get(position);
+
+        Database.getPrimaryCategories().remove(primaryCategoryToDelete);
+        primaryCategoriesToDisplay.remove(primaryCategoryToDelete);
+        Database.save(holder.itemView.getContext());
+
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, getItemCount());
+    }
+
     private void hideSubcategoriesRecyclerView(PrimaryCategoryViewHolder holder){
-        holder.mBtnShowHideSubcategories.setBackgroundResource(R.drawable.ic_keyboard_arrow_up_gray);
         holder.mRvSubcategories.setVisibility(View.GONE);
     }
 
     private void showSubcategoriesRecyclerView(PrimaryCategoryViewHolder holder){
-        holder.mBtnShowHideSubcategories.setBackgroundResource(R.drawable.ic_keyboard_arrow_down_gray);
         holder.mRvSubcategories.setVisibility(View.VISIBLE);
     }
 
     private long getAmountOfUsedMoneyOfTimestamp(PrimaryCategory primaryCategory, long timeStampOfMonth){
-        ArrayList<Bill> bills = getBillsWithSameCreationDateAndCategory(primaryCategory, timeStampOfMonth);
-        long usedMoney = 0;
-
-        for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                usedMoney += bill.getAmount();
-            } else {
-                usedMoney -= bill.getAmount();
-            }
-        }
-
-        return usedMoney;
-    }
-
-    private ArrayList<Bill> getBillsWithSameCreationDateAndCategory(PrimaryCategory primaryCategory, long creationDateMonth){
-        ArrayList<Bill> bills = getBillsWhatBelongToPrimaryCategory(primaryCategory);
-        ArrayList<Bill> filteredBills = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(creationDateMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (Bill bill:bills){
-            calendar.setTimeInMillis(bill.getCreationDate());
-
-            int currentYear = calendar.get(Calendar.YEAR);
-            int currentMonth = calendar.get(Calendar.MONTH);
-
-            if (year == currentYear && month == currentMonth){
-                filteredBills.add(bill);
-            }
-        }
-
-        return filteredBills;
+        ArrayList<Bill> bills = Toolkit.filterBillsByCategory(Toolkit.getBillsByMonth(timeStampOfMonth), primaryCategory);
+        return Toolkit.getBillsAmount(bills);
     }
 
     private ArrayList<Bill> getBillsWhatBelongToPrimaryCategory(PrimaryCategory primaryCategory){
@@ -236,29 +247,24 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         return bills;
     }
 
-    private void displayGoalInformations(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
+    private void displayGoalInformation(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
         long usedMoney = getAmountOfUsedMoneyOfTimestamp(primaryCategory, timeStampOfMonthToLoadStatistics);
         long goalAmount = primaryCategory.getGoal().getAmount();
         Context context = primaryCategoryViewHolder.itemView.getContext();
 
-        String formattedUsedMoney = formatToReadableAmountUsingActiveCurrency(Math.abs(usedMoney), context);
-        String formattedGoalAmount = formatToReadableAmountUsingActiveCurrency(goalAmount, context);
+        Currency activeCurrency = Currency.getActiveCurrency(context);
+        String formattedUsedMoney = activeCurrency.formatAmountToReadableStringWithoutCents(Math.abs(usedMoney));
+        String formattedGoalAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(goalAmount);
 
-        primaryCategoryViewHolder.mTxvGoalStatusAmount.setText(formattedGoalAmount);
-        
-        if (usedMoney > 0){
-            primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(0);
-            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText("+" + formattedUsedMoney);
-        } else {
+        if (usedMoney < 0){
             int percentOfUsedAmount = (int)(100 / (double) goalAmount * (double) Math.abs(usedMoney));
             primaryCategoryViewHolder.mPgbCategoryGoalStatus.setProgress(percentOfUsedAmount);
-            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setText(formattedUsedMoney);
+            primaryCategoryViewHolder.mTxvGoal.setText(formattedUsedMoney + "/" + formattedGoalAmount);
+        } else {
+            primaryCategoryViewHolder.mTxvGoal.setText("0/" + formattedGoalAmount);
         }
-    }
 
-    private String formatToReadableAmountUsingActiveCurrency(long amount, Context context){
-        Currency activeCurrency = Currency.getActiveCurrency(context);
-        return activeCurrency.formatAmountToReadableStringWithCurrencySymbol(amount);
+        System.out.println(primaryCategoryViewHolder.mTxvGoal.getVisibility());
     }
 
     private void loadPrimaryCategoryIcon(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
@@ -276,24 +282,32 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
     }
 
     private void manageGoalViews(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
-        long primaryCategoryGoalAmount = primaryCategory.getGoal().getAmount();
-
-        if(primaryCategoryGoalAmount == 0){
-            primaryCategoryViewHolder.mTxvCategoryGoalStatus.setVisibility(View.INVISIBLE);
-            primaryCategoryViewHolder.mTxvGoalStatusAmount.setVisibility(View.GONE);
-        } else {
-            displayGoalInformations(primaryCategory, primaryCategoryViewHolder);
+        if(primaryCategory.getGoal().getAmount() != 0){
+            displayGoalInformation(primaryCategory, primaryCategoryViewHolder);
         }
     }
 
-    private void setupViewToStartCategoryActivityOnClick(View view, final int primaryCategoryIndexInDatabase){
-        view.setOnClickListener(view1 -> {
-            Context context = view1.getContext();
-
-            Intent intent = new Intent(context, CategoryActivity.class);
-            intent.putExtra(CategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, primaryCategoryIndexInDatabase);
-            context.startActivity(intent);
+    private void setupOnCategoryClickListener(PrimaryCategoryViewHolder holder){
+        holder.itemView.setOnClickListener(view -> {
+            if (holder.mRvSubcategories.getVisibility() == View.VISIBLE){
+                collapse(holder);
+            } else {
+                expand(holder);
+            }
         });
+    }
+
+    private void expand(PrimaryCategoryViewHolder holder){
+        if (adapterType == TYPE_NORMAL){
+            holder.mLlActionButtonsContainer.setVisibility(View.VISIBLE);
+        }
+
+        holder.mRvSubcategories.setVisibility(View.VISIBLE);
+    }
+
+    private void collapse(PrimaryCategoryViewHolder holder){
+        holder.mLlActionButtonsContainer.setVisibility(View.GONE);
+        holder.mRvSubcategories.setVisibility(View.GONE);
     }
 
     private static ArrayList<PrimaryCategory> filterPrimaryCategoriesWithGoals(ArrayList<PrimaryCategory> primaryCategories){
@@ -326,7 +340,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
     private void hideItemIfPrimaryCategoryHasNoSubcategories(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
         if (primaryCategory.getSubcategories().size() == 0){
-            holder.mCardView.setVisibility(View.GONE);
+            holder.itemView.setVisibility(View.GONE);
         }
     }
 
@@ -339,14 +353,13 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round(100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory);
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
-        holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
-        holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
+        //TODO holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
+        //TODO holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
         holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);
     }
 
     private void manageViewsIfPrimaryCategoryHasNoSubcategories(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder holder){
         if (primaryCategory.getSubcategories().size() == 0){
-            holder.mBtnShowHideSubcategories.setVisibility(View.INVISIBLE);
             holder.mTxvCategoryName.setEnabled(false);
         }
     }

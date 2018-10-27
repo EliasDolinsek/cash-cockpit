@@ -2,7 +2,6 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -30,7 +29,7 @@ public class DeletePrimaryCategoryDialogFragment extends DialogFragment {
         public void onDialogPositiveClick();
     }
 
-    private DeletePrimaryCategoryListener mListener;
+    private DeletePrimaryCategoryListener dialogClickListener;
 
     @NonNull
     @Override
@@ -39,21 +38,14 @@ public class DeletePrimaryCategoryDialogFragment extends DialogFragment {
         alertDialog.setPositiveButton(R.string.dialog_action_delete, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                mListener.onDialogPositiveClick();
+                dialogClickListener.onDialogPositiveClick();
             }
         }).setNegativeButton(R.string.dialog_action_cancel, null).setMessage(getResources().getString(R.string.dialog_msg_confirm_primary_category_deletion));
 
         return alertDialog.create();
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            mListener = (DeletePrimaryCategoryListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString()
-                    + " must implement NoticeDialogListener");
-        }
+    public void setDialogClickListener(DeletePrimaryCategoryListener dialogClickListener) {
+        this.dialogClickListener = dialogClickListener;
     }
 }

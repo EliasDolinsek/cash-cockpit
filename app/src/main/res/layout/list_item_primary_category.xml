@@ -1,99 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    android:id="@+id/cv_item_primary_category"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="4dp" android:layout_marginEnd="4dp" android:layout_marginBottom="4dp" android:layout_marginTop="1dp">
+    tools:layout_editor_absoluteY="25dp">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/imv_item_primary_category"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txv_item_primary_category_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:fontFamily="sans-serif-regular"
+        android:textSize="24sp"
+        app:layout_constraintStart_toEndOf="@+id/imv_item_primary_category"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txv_item_primary_category_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="22dp"
+        android:fontFamily="sans-serif-medium"
+        android:letterSpacing="0.1"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/pgb_item_primary_category_goal_status"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="8dp">
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="72dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imv_item_primary_category" />
+
+    <HorizontalScrollView
+        android:id="@+id/sv_item_primary_category_action_buttons_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="72dp"
+        android:scrollbars="none"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pgb_item_primary_category_goal_status">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/ll_primary_category_action_buttons_container"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="start|center_vertical">
+            android:visibility="gone">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/imv_item_primary_category"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="4dp" />
-
-            <TextView
-                android:id="@+id/txv_item_primary_category_name"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="10"
-                android:layout_gravity="center_vertical"
-                android:layout_marginStart="8dp"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:lines="1"
-                android:ellipsize="end" />
-
-            <LinearLayout
+            <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_primary_category_edit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:orientation="horizontal">
+                android:layout_marginEnd="8dp"
+                android:text="@string/btn_edit" />
 
-                <TextView
-                    android:id="@+id/txv_item_primary_category_goal_status"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:background="@drawable/border_accent"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
+            <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_primary_category_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/btn_delete" />
 
-                <TextView
-                    android:id="@+id/txv_item_primary_category_goal_status_amount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@android:color/white"
-                    android:textStyle="bold"
-                    android:background="@drawable/border_primary_light"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
-
-                <Button
-                    android:id="@+id/btn_show_hide_subcategories"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_marginEnd="4dp"
-                    android:background="@drawable/ic_keyboard_arrow_down_gray"
-                    android:layout_gravity="center_vertical"/>
-            </LinearLayout>
-
+            <android.support.design.button.MaterialButton
+                android:id="@+id/btn_item_primary_category_add_subcategory"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/btn_add_subcategory" />
         </LinearLayout>
+    </HorizontalScrollView>
 
-        <ProgressBar
-            android:id="@+id/pgb_item_primary_category_goal_status"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginTop="4dp"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_item_primary_categories_subcategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="72dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sv_item_primary_category_action_buttons_container" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_item_primary_categories_subcategory"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="14dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"/>
 
-    </LinearLayout>
-
-</android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
