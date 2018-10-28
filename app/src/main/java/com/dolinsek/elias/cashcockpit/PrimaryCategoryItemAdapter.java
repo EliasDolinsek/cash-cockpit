@@ -114,7 +114,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
 
         if(adapterType == TYPE_NORMAL){
             manageGoalViews(primaryCategory, holder);
-            holder.mTxvGoal.setVisibility(View.GONE);
         } else if (adapterType == TYPE_GOAL_STATISTICS){
             manageGoalViews(primaryCategory, holder);
             hideItemIfPrimaryCategoryHasNoSubcategories(primaryCategory, holder);
@@ -353,6 +352,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round(100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory);
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
+        holder.mTxvGoal.setText(formattedTotalAmountOfBills + "/" + usageOfPrimaryCategoryOfMonthInPercent + "%");
         //TODO holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
         //TODO holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
         holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);

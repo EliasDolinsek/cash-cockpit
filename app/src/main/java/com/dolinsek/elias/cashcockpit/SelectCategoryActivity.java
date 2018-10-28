@@ -13,6 +13,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
@@ -27,10 +30,11 @@ public class SelectCategoryActivity extends AppCompatActivity {
     public static final String SELECTED_SUBCATEGORY_INDEX = "selected_subcategory";
 
     private RecyclerView mRecyclerView;
-    private NotEnoughDataFragment mFgmNoCategoriesFound;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
+    private ScrollView scrollView;
+    private ImageView imvClose;
     private int selectedPrimaryCategoryIndex, selectedSubcategoryIndex;
-    private Button mBtnCreateCategory, mBtnRestoreDefaultCategories;
+    private Button mBtnCreateCategory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,32 +42,19 @@ public class SelectCategoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_category);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rv_select_category);
-        mFgmNoCategoriesFound = (NotEnoughDataFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_select_category_no_categories_found);
         mBtnCreateCategory = findViewById(R.id.btn_select_category_create_category);
-        mBtnRestoreDefaultCategories = findViewById(R.id.btn_select_category_restore_default_categories);
+        scrollView = findViewById(R.id.sv_select_category);
+        imvClose = findViewById(R.id.imv_select_category_close);
 
-        mBtnCreateCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intentStartCategoryActivity = new Intent(getApplicationContext(), CategoryActivity.class);
-                startActivityForResult(intentStartCategoryActivity, 0);
-            }
+        //Prevents ScrollView from scrolling down automatically
+        scrollView.post(() -> scrollView.fullScroll(ScrollView.FOCUS_UP));
+
+        mBtnCreateCategory.setOnClickListener(view -> {
+            Intent intentStartCategoryActivity = new Intent(getApplicationContext(), CategoryActivity.class);
+            startActivityForResult(intentStartCategoryActivity, 0);
         });
 
-        mBtnRestoreDefaultCategories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    addDefaultPrimaryCategoriesToPrimaryCategories();
-                    Database.save(getApplicationContext());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                setupRecyclerView();
-                setupViewsVisibilities();
-            }
-        });
+        imvClose.setOnClickListener(view -> finish());
     }
 
     @Override
@@ -95,13 +86,10 @@ public class SelectCategoryActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView(){
-        final SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = new SubcategoryItemAdapter.OnCategorySelectedListener() {
-            @Override
-            public void onSelected(int primaryCategoryIndex, int subcategoryIndex) {
-                selectedPrimaryCategoryIndex = primaryCategoryIndex;
-                selectedSubcategoryIndex = subcategoryIndex;
-                setResultsAndFinishActivity();
-            }
+        final SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = (primaryCategoryIndex, subcategoryIndex) -> {
+            selectedPrimaryCategoryIndex = primaryCategoryIndex;
+            selectedSubcategoryIndex = subcategoryIndex;
+            setResultsAndFinishActivity();
         };
 
         final Intent intent = getIntent();
@@ -112,19 +100,11 @@ public class SelectCategoryActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(false);
     }
 
-    private void addDefaultPrimaryCategoriesToPrimaryCategories(){
-        Database.getPrimaryCategories().addAll(Database.getDefaultPrimaryCategories());
-    }
-
     private void setupViewsVisibilities(){
         if (Database.getPrimaryCategories().size() == 0){
-            mFgmNoCategoriesFound.show();
             mRecyclerView.setVisibility(View.GONE);
-            mBtnRestoreDefaultCategories.setEnabled(true);
         } else {
             mRecyclerView.setVisibility(View.VISIBLE);
-            mFgmNoCategoriesFound.hide();
-            mBtnRestoreDefaultCategories.setEnabled(false);
         }
     }
 

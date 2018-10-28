@@ -1,14 +1,12 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -110,7 +108,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         public ImageView mImvPrimaryCategory;
         public LinearLayout mLlBillActionButtonsContainer, mLlBillEditElementsContainer;
         public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
-        public Button btnEdit, btnDelete, btnDuplicate, btnEditAmount, btnEditDescritpion, btnChangeCategory;
+        public Button btnEdit, btnDelete, btnDuplicate, btnEditAmount, btnEditDescription;
 
         private TextInputLayout mTilEditEdtContainer;
         private EditText mEdtEdit;
@@ -132,8 +130,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             btnDelete = itemView.findViewById(R.id.btn_item_history_delete);
             btnDuplicate = itemView.findViewById(R.id.btn_item_history_duplicate);
             btnEditAmount = itemView.findViewById(R.id.btn_item_history_edit_amount);
-            btnEditDescritpion = itemView.findViewById(R.id.btn_item_history_edit_description);
-            btnChangeCategory = itemView.findViewById(R.id.btn_item_history_change_category);
+            btnEditDescription = itemView.findViewById(R.id.btn_item_history_edit_description);
 
             mTilEditEdtContainer = itemView.findViewById(R.id.til_item_history_edt_container);
             mEdtEdit = itemView.findViewById(R.id.edt_item_history_edit);
@@ -202,7 +199,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         holder.btnDelete.setOnClickListener(view -> showDeleteBillDialogFragment(holder, bill));
         holder.btnDuplicate.setOnClickListener(view -> duplicateBill(holder, bill));
         holder.btnEditAmount.setOnClickListener(view -> setupForAmountEdit(holder));
-        holder.btnEditDescritpion.setOnClickListener(view -> setupForDescriptionEdit(holder));
+        holder.btnEditDescription.setOnClickListener(view -> setupForDescriptionEdit(holder));
     }
 
     private void setupOnItemClickAction(HistoryViewHolder holder, int position){

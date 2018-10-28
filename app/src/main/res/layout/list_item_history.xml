@@ -110,13 +110,6 @@
                 android:layout_marginEnd="8dp"
                 android:text="@string/btn_edit_description"
                 style="@style/Widget.MaterialComponents.Button.TextButton"/>
-
-            <android.support.design.button.MaterialButton
-                android:id="@+id/btn_item_history_change_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/btn_change_category"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
         </LinearLayout>
     </HorizontalScrollView>
 

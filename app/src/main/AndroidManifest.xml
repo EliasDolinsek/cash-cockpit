@@ -34,8 +34,7 @@
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SelectCategoryActivity"
-            android:label="@string/title_select_category"
-            android:theme="@style/AppTheme.ActionBarEnabled" />
+            android:label="@string/title_select_category" />
         <activity
             android:name=".StartActivity"
             android:noHistory="true"
