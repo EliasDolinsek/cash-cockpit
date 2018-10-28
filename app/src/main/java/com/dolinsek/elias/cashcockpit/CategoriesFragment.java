@@ -4,8 +4,10 @@ package com.dolinsek.elias.cashcockpit;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +21,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -63,6 +66,10 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
 
         mRvCategories.setLayoutManager(new LinearLayoutManager(inflatedView.getContext()));
+        mRvCategories.setItemAnimator(new DefaultItemAnimator(){
+            @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) { return true; }
+            @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) { return true; }
+        });
 
         mBtnCreateCategory = (Button) inflatedView.findViewById(R.id.btn_fragment_categories_create);
         mBtnRestoreDefaultCategories = (Button) inflatedView.findViewById(R.id.btn_fragment_categories_restore_default_categories);

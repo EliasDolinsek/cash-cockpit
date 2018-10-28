@@ -2,16 +2,21 @@ package com.dolinsek.elias.cashcockpit;
 
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
@@ -20,6 +25,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,6 +41,7 @@ public class HistoryFragment extends Fragment {
     private NotEnoughDataFragment mFgmNotEnoughData;
     private int selectedArrangementFilter, selectedIndexBillTypeFilter;
     private Button btnFilters;
+    private LinearLayout llRoot;
 
     private HorizontalScrollView svBillTypes, svArrangement;
     private ChipGroup chipGroupBillTypes, chipGroupArrangement;
@@ -50,9 +57,14 @@ public class HistoryFragment extends Fragment {
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRvHistory.setItemAnimator(new DefaultItemAnimator(){
+            @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) { return true; }
+            @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) { return true; }
+        });
 
         mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_history_not_enough_data_for_history);
         btnFilters = inflatedView.findViewById(R.id.btn_history_filters);
+        llRoot = inflatedView.findViewById(R.id.ll_history_root);
 
         chipGroupBillTypes = inflatedView.findViewById(R.id.chip_group_bill_types);
         chipGroupArrangement = inflatedView.findViewById(R.id.chip_group_chip_arrangement);
@@ -85,12 +97,14 @@ public class HistoryFragment extends Fragment {
 
                 btnFilters.setText(R.string.btn_show_filters);
                 filtersVisible = false;
+                TransitionManager.beginDelayedTransition(llRoot);
             } else {
                 svBillTypes.setVisibility(View.VISIBLE);
                 svArrangement.setVisibility(View.VISIBLE);
 
                 btnFilters.setText(R.string.btn_hide_filters);
                 filtersVisible = true;
+                TransitionManager.beginDelayedTransition(llRoot);
             }
         });
 

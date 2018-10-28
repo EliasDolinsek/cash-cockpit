@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -302,11 +304,13 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
 
         holder.mRvSubcategories.setVisibility(View.VISIBLE);
+        TransitionManager.beginDelayedTransition(holder.itemView.findViewById(R.id.cv_item_primary_category_root));
     }
 
     private void collapse(PrimaryCategoryViewHolder holder){
         holder.mLlActionButtonsContainer.setVisibility(View.GONE);
         holder.mRvSubcategories.setVisibility(View.GONE);
+        notifyItemChanged(holder.getAdapterPosition());
     }
 
     private static ArrayList<PrimaryCategory> filterPrimaryCategoriesWithGoals(ArrayList<PrimaryCategory> primaryCategories){
