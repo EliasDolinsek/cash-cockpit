@@ -1,10 +1,9 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +21,6 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
-import com.dolinsek.elias.cashcockpit.components.Toolbox;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -127,14 +125,11 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             throw new IllegalStateException("Couldn't resolve " + adapterType + " as adapter-type");
         }
 
-        holder.mTxvSubcategoryName.setText(subcategory.getName());
-        holder.mImvSubcategoryFavored.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    subcategory.setFavoured(!subcategory.isFavoured());
-                    setFavoredIcon(subcategory.isFavoured(), holder);
-                    CategoriesSorter.sortSubcategories(primaryCategoryOfSubcategories.getSubcategories());
-                }
+        holder.mTxvName.setText(subcategory.getName());
+        holder.imvFavored.setOnClickListener(view -> {
+            subcategory.setFavoured(!subcategory.isFavoured());
+            setFavoredIcon(subcategory.isFavoured(), holder);
+            CategoriesSorter.sortSubcategories(primaryCategoryOfSubcategories.getSubcategories());
         });
     }
 
@@ -145,24 +140,17 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     public class SubcategoryItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvSubcategoryName, mTxvSubcategoryGoalStatus, mTxvSubcategoryGoalStatusAmount;
-        public ProgressBar mPgbSubcategoryGoalStatus;
-        public ImageView mImvSubcategoryFavored;
-        public LinearLayout mLlMaster, mLlHorizontalContents;
-        public Button mBtnSelectCategory;
+        public TextView mTxvName, mTxvGoal;
+        public ProgressBar mPgbGoalProgress;
+        public ImageView imvFavored;
 
         public SubcategoryItemViewHolder(View itemView) {
             super(itemView);
 
-            mTxvSubcategoryName = (TextView) itemView.findViewById(R.id.txv_item_subcategory_name);
-            mTxvSubcategoryGoalStatus = (TextView) itemView.findViewById(R.id.txv_item_subcategory_goal_status);
-            mTxvSubcategoryGoalStatusAmount = (TextView) itemView.findViewById(R.id.txv_item_subcategory_goal_status_amount);
-            mPgbSubcategoryGoalStatus = (ProgressBar) itemView.findViewById(R.id.pgb_item_subcategory_goal_status);
-            mImvSubcategoryFavored = (ImageView) itemView.findViewById(R.id.imv_item_subcategory_favored);
-            mBtnSelectCategory = (Button) itemView.findViewById(R.id.btn_item_subcategory_select);
-            mLlHorizontalContents = itemView.findViewById(R.id.ll_item_subcategory_horizontal_contents);
-
-            mLlMaster = (LinearLayout) itemView.findViewById(R.id.ll_item_subcategory_master);
+            mTxvName = (TextView) itemView.findViewById(R.id.txv_item_subcategory_name);
+            mTxvGoal = (TextView) itemView.findViewById(R.id.txv_item_subcategory_goal);
+            mPgbGoalProgress = (ProgressBar) itemView.findViewById(R.id.pgb_item_subcategory_goal_status);
+            imvFavored = (ImageView) itemView.findViewById(R.id.imv_item_subcategory_favored);
         }
     }
 
@@ -180,22 +168,16 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             long subcategoryGoalAmount = subcategory.getGoal().getAmount();
 
             Currency activeCurrency = Currency.getActiveCurrency(holder.itemView.getContext());
-            String formattedGoalAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(subcategoryGoalAmount);
-            String formattedUsedGoalAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(Math.abs(usedGoalAmount));
-
-            holder.mTxvSubcategoryGoalStatusAmount.setText(formattedGoalAmount);
+            String formattedUsedGoalAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(Math.abs(usedGoalAmount));
+            String formattedSubcategoryGoalAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(subcategoryGoalAmount);
 
             if (usedGoalAmount > 0){
-                holder.mPgbSubcategoryGoalStatus.setProgress(0);
-                holder.mTxvSubcategoryGoalStatus.setText("+" + formattedUsedGoalAmount);
+                holder.mPgbGoalProgress.setProgress(0);
+                holder.mTxvGoal.setText("0/" + formattedSubcategoryGoalAmount);
             } else {
-                holder.mPgbSubcategoryGoalStatus.setProgress(percentOfUsedGoalAmount);
-                holder.mTxvSubcategoryGoalStatus.setText(formattedUsedGoalAmount);
+                holder.mPgbGoalProgress.setProgress(percentOfUsedGoalAmount);
+                holder.mTxvGoal.setText(formattedUsedGoalAmount + "/" + formattedSubcategoryGoalAmount);
             }
-
-            holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.VISIBLE);
-        } else {
-            holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
         }
     }
 
@@ -207,9 +189,8 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         int usageOfSubcategoryOfMonthInPercent = (int) Math.round(100 / (double)totalAmountOfBillsOfPrimaryCategory * (double)totalAmountOfBillsOfSubcategory);
         String formattedTotalAmountOfBillsOfSubcategory = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfSubcategory);
 
-        holder.mTxvSubcategoryGoalStatus.setText(formattedTotalAmountOfBillsOfSubcategory);
-        holder.mTxvSubcategoryGoalStatusAmount.setText(usageOfSubcategoryOfMonthInPercent + "%");
-        holder.mPgbSubcategoryGoalStatus.setProgress(usageOfSubcategoryOfMonthInPercent);
+        holder.mTxvGoal.setText(formattedTotalAmountOfBillsOfSubcategory + "/" + usageOfSubcategoryOfMonthInPercent + "%");
+        holder.mPgbGoalProgress.setProgress(usageOfSubcategoryOfMonthInPercent);
     }
 
     private ArrayList<Bill> getBillsOfSubcategoryAndMonth(Subcategory subcategory, long timeStampOfMonth){
@@ -237,44 +218,26 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     }
 
     private void setupForNormalAdapterType(Subcategory subcategory, SubcategoryItemViewHolder holder){
-        holder.mBtnSelectCategory.setVisibility(View.GONE);
-        holder.mTxvSubcategoryGoalStatus.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);
-        setTwentyTwoDpMarginTopToView(holder.mPgbSubcategoryGoalStatus);
-        setTwentyTwoDpMarginTopToView(holder.mLlHorizontalContents);
     }
 
     private void setupForGoalsStatisticsAdapterType(SubcategoryItemViewHolder holder){
-        holder.mBtnSelectCategory.setVisibility(View.GONE);
-        holder.mImvSubcategoryFavored.setVisibility(View.GONE);
-        setTwentyTwoDpMarginTopToView(holder.mPgbSubcategoryGoalStatus);
-        setTwentyTwoDpMarginTopToView(holder.mLlHorizontalContents);
+        holder.imvFavored.setVisibility(View.INVISIBLE);
     }
 
     private void setupForCategoriesStatistics(SubcategoryItemViewHolder holder){
-        holder.mBtnSelectCategory.setVisibility(View.GONE);
-        holder.mImvSubcategoryFavored.setVisibility(View.GONE);
-        setTwentyTwoDpMarginTopToView(holder.mPgbSubcategoryGoalStatus);
-        setTwentyTwoDpMarginTopToView(holder.mLlHorizontalContents);
+        holder.imvFavored.setVisibility(View.INVISIBLE);
     }
 
     private void setupForSelectCategoryAdapterType(final Subcategory subcategory, SubcategoryItemViewHolder holder){
-        holder.mTxvSubcategoryGoalStatus.setVisibility(View.GONE);
-        holder.mTxvSubcategoryGoalStatusAmount.setVisibility(View.GONE);
         setFavoredIcon(subcategory.isFavoured(), holder);
 
-        holder.mBtnSelectCategory.setOnClickListener(view -> {
+        holder.itemView.setOnClickListener(view -> {
             int primaryCategoryIndexInDatabase = getIndexOfPrimaryCategoryInDatabase(subcategory.getPrimaryCategory());
             int subcategoryIndexInDatabase = getIndexOfSubcategoryInPrimaryCategory(subcategory);
 
             onCategorySelectedListener.onSelected(primaryCategoryIndexInDatabase, subcategoryIndexInDatabase);
         });
-    }
-
-    private void setTwentyTwoDpMarginTopToView(View view){
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
-        params.setMargins(0,22,0,0);
-        view.setLayoutParams(params);
     }
 
     private static ArrayList<Subcategory> removeSubcategoriesWhatHaveNoGoal(ArrayList<Subcategory> subcategories){
@@ -290,28 +253,22 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
 
     private void setFavoredIcon(boolean isSubcategoryFavored, SubcategoryItemViewHolder holder){
         if (isSubcategoryFavored){
-            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_favorite);
+            holder.imvFavored.setImageResource(R.drawable.ic_favorite);
         } else {
-            holder.mImvSubcategoryFavored.setImageResource(R.drawable.ic_not_favorite);
+            holder.imvFavored.setImageResource(R.drawable.ic_not_favorite);
         }
     }
 
     private void markSelectedSubcategory(Subcategory subcategory, SubcategoryItemViewHolder holder){
         if (subcategory != null && subcategory.equals(selectedSubcategory)){
-            holder.mTxvSubcategoryName.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
-            holder.mBtnSelectCategory.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
+            holder.mTxvName.setTextColor(holder.itemView.getContext().getResources().getColor(R.color.colorPrimary));
         }
     }
 
     private void showSubcategoryEditor(Subcategory subcategory, SubcategoryItemViewHolder holder){
         SubcategoryEditorDialogFragment subcategoryEditorDialogFragment = new SubcategoryEditorDialogFragment();
         subcategoryEditorDialogFragment.setupForEditMode(primaryCategoryOfSubcategories, subcategory);
-        subcategoryEditorDialogFragment.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialogInterface) {
-                refreshListOfItems();
-            }
-        });
+        subcategoryEditorDialogFragment.setOnDismissListener(dialogInterface -> refreshListOfItems());
 
         subcategoryEditorDialogFragment.show(((AppCompatActivity)holder.itemView.getContext()).getSupportFragmentManager(), "edit_subcategory");
     }

@@ -158,16 +158,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
     }
 
-    private View.OnClickListener getOnSubcategoryViewStateChangeButtonOnClickListener(final PrimaryCategoryViewHolder holder){
-        return view -> {
-            if (holder.mRvSubcategories.getVisibility() == View.VISIBLE){
-                hideSubcategoriesRecyclerView(holder);
-            } else {
-                showSubcategoriesRecyclerView(holder);
-            }
-        };
-    }
-
     private void setupButtonClickListeners(PrimaryCategoryViewHolder holder) {
         Context context = holder.itemView.getContext();
         FragmentManager fragmentManager = ((AppCompatActivity)context).getSupportFragmentManager();
@@ -304,12 +294,15 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         }
 
         holder.mRvSubcategories.setVisibility(View.VISIBLE);
+
         TransitionManager.beginDelayedTransition(holder.itemView.findViewById(R.id.cv_item_primary_category_root));
+        notifyItemChanged(holder.getAdapterPosition());
     }
 
     private void collapse(PrimaryCategoryViewHolder holder){
         holder.mLlActionButtonsContainer.setVisibility(View.GONE);
         holder.mRvSubcategories.setVisibility(View.GONE);
+
         notifyItemChanged(holder.getAdapterPosition());
     }
 

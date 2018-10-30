@@ -23,6 +23,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:fontFamily="sans-serif-regular"
+        android:textColor="@color/colorAccentTextColor"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/imv_item_primary_category"
         app:layout_constraintTop_toTopOf="parent" />
@@ -36,6 +37,7 @@
         android:fontFamily="sans-serif-medium"
         android:letterSpacing="0.1"
         android:textSize="14sp"
+        android:textColor="@color/colorAccentTextColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,7 +97,6 @@
         android:id="@+id/rv_item_primary_categories_subcategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
         android:layout_marginStart="72dp"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="parent"

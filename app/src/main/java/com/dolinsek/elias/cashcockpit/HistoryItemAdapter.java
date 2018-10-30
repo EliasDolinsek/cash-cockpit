@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -233,7 +234,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         editType = EDIT_TYPE_DESCRIPTION;
 
         showKeyboardForEditInput(holder.mEdtEdit);
-        notifyItemChanged(expandedPosition);
+        expand(holder);
     }
 
     private void setupForAmountEdit(HistoryViewHolder holder){
@@ -241,7 +242,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         editType = EDIT_TYPE_AMOUNT;
 
         showKeyboardForEditInput(holder.mEdtEdit);
-        notifyItemChanged(expandedPosition);
+        expand(holder);
     }
 
     private void setupEdtEditForDescriptionEdit(HistoryViewHolder holder, int position){
@@ -253,7 +254,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             String enteredDescription = holder.mEdtEdit.getText().toString();
             currentBill.setDescription(enteredDescription);
 
-            notifyItemChanged(position);
+            expand(holder);
             Database.save(holder.itemView.getContext());
 
             editPosition = -1;
@@ -261,6 +262,11 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
             return true;
         });
+    }
+
+    private void expand(HistoryViewHolder holder){
+        TransitionManager.beginDelayedTransition(holder.itemView.findViewById(R.id.ll_item_history_root));
+        notifyItemChanged(expandedPosition);
     }
 
     private void setupEdtEditForAmountEdit(HistoryViewHolder holder, int position){
