@@ -31,4 +31,8 @@
     <color name="colorDivider">#dededf</color>
     <color name="colorIcons">#333334</color>
 
+    <!--button colors -->
+    <color name="colorButtonEmailRed">#ce021c</color>
+    <color name="colorButtonPhoneGreen">#42c3a5</color>
+
 </resources>

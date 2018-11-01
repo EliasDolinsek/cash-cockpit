@@ -19,6 +19,7 @@ import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -240,58 +241,16 @@ public class CategoriesStatisticsFragment extends Fragment {
     private ArrayList<PieEntry> getChartStatisticsData(){
         ArrayList<PieEntry> entries = new ArrayList<>();
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            ArrayList<Bill> billsOfPrimaryCategory = filterBillsOfPrimaryCategory(billsToUse, primaryCategory);
-            ArrayList<Bill> billsOfPrimaryCategoryAndMonth = filterBillsToMonth(billsOfPrimaryCategory, timestampOfCurrentDisplayedMonth);
+            ArrayList<Bill> billsOfMonth = Toolkit.getBillsByMonth(timestampOfCurrentDisplayedMonth);
+            ArrayList<Bill> billsOfCategoryAndMonth = Toolkit.filterBillsByCategory(billsOfMonth, primaryCategory);
 
-            long amountOfBills = getTotalAmountOfBills(billsOfPrimaryCategoryAndMonth);
+            long amountOfBills = Toolkit.getBillsTotalAmount(billsOfCategoryAndMonth);
             if (amountOfBills != 0){
                 entries.add(new PieEntry(amountOfBills, primaryCategory.getName()));
             }
         }
 
         return entries;
-    }
-
-    private long getTotalAmountOfBills(ArrayList<Bill> bills){
-        long totalAmount = 0;
-        for (Bill bill:bills){
-            totalAmount += bill.getAmount();
-        }
-
-        return totalAmount;
-    }
-
-    private ArrayList<Bill> filterBillsToMonth(ArrayList<Bill> billsToFilter, long timestampOfMonth){
-        ArrayList<Bill> filteredBills = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timestampOfMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (Bill bill:billsToFilter){
-            calendar.setTimeInMillis(bill.getCreationDate());
-
-            int currentYear = calendar.get(Calendar.YEAR);
-            int currentMonth = calendar.get(Calendar.MONTH);
-
-            if (currentYear == year && currentMonth == month){
-                filteredBills.add(bill);
-            }
-        }
-
-        return filteredBills;
-    }
-
-    private ArrayList<Bill> filterBillsOfPrimaryCategory(ArrayList<Bill> billsToFilter, PrimaryCategory primaryCategory){
-        ArrayList<Bill> filteredBills = new ArrayList<>();
-        for (Bill bill:billsToFilter){
-            if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
-                filteredBills.add(bill);
-            }
-        }
-
-        return filteredBills;
     }
 
     private void manageViews(){

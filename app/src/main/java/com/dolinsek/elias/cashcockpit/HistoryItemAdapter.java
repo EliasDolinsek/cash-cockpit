@@ -265,7 +265,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
     }
 
     private void expand(HistoryViewHolder holder){
-        TransitionManager.beginDelayedTransition(holder.itemView.findViewById(R.id.ll_item_history_root));
         notifyItemChanged(expandedPosition);
     }
 

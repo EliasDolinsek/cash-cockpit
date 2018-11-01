@@ -64,7 +64,6 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
 
         mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
         mRvCategories.setAdapter(mPrimaryCategoryItemAdapter);
-
         mRvCategories.setLayoutManager(new LinearLayoutManager(inflatedView.getContext()));
         mRvCategories.setItemAnimator(new DefaultItemAnimator(){
             @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder) { return true; }

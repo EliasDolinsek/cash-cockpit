@@ -45,6 +45,9 @@
     <string name="btn_change_category">Change category</string>
     <string name="btn_hide_filters">Hide Filters</string>
     <string name="btn_duplicate">Duplicate</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_continue">Continue</string>
+    <string name="btn_sign_in">Sign In</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>
@@ -142,6 +145,8 @@
     <string name="label_oldest_first">Oldest first</string>
     <string name="label_highest_price_first">Highest price first</string>
     <string name="label_lowest_price_first">Lowest price first</string>
+    <string name="label_continue_without_sign_in">Continue without sign in</string>
+    <string name="label_verification_code">Verification Code</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
@@ -185,7 +190,8 @@
     <string name="dialog_msg_delete_all_data_description">Do you really want to delete all your Data? This effects locally saved data including Backups saved on your device or on the server!</string>
     <string name="dialog_msg_backup_will_be_saved_locally">Backup will be saved locally</string>
     <string name="dialog_msg_backup_will_be_saved_on_the_server">Backup will be saved on the server</string>
-    <!-- TODO delete --><string name="dialog_msg_synchronize_or_reset_data_description">This overrides your data with the most recent backup in the cloud or local. This can be used to synch data between devices. CashCockpit will restart after completion!</string>
+    <!-- TODO delete -->
+    <string name="dialog_msg_synchronize_or_reset_data_description">This overrides your data with the most recent backup in the cloud or local. This can be used to synch data between devices. CashCockpit will restart after completion!</string>
     <string name="dialog_msg_backup_on_server_description">Your Backup will be saved on the server. You can download this Backup on another phone to synch data between devices.</string>
     <string name="dialog_msg_create_local_backup_description">Your Backup will be stored on your phone. You can reset your data to the backup anytime you want.</string>
     <string name="dialog_msg_create_server_backup_description">Your Backup will be stored on the server. You can download it on another phone to synch or reset data.</string>
@@ -202,7 +208,8 @@
     <string name="dialog_title_delete_data">Delete Data</string>
     <string name="dialog_title_all_your_saved_data">All your saved Data</string>
     <string name="dialog_title_create_backup">Create Backup</string>
-    <!-- TODO delete --><string name="dialog_title_synch_or_reset_data">Synch or Reset Data</string>
+    <!-- TODO delete -->
+    <string name="dialog_title_synch_or_reset_data">Synch or Reset Data</string>
     <string name="dialog_title_reset_data">Reset Data</string>
     <string name="dialog_title_sing_out">Sign Out</string>
     <string name="dialog_title_delete_bill">Delete Bill</string>

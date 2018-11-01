@@ -215,27 +215,9 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         holder.mRvSubcategories.setVisibility(View.GONE);
     }
 
-    private void showSubcategoriesRecyclerView(PrimaryCategoryViewHolder holder){
-        holder.mRvSubcategories.setVisibility(View.VISIBLE);
-    }
-
     private long getAmountOfUsedMoneyOfTimestamp(PrimaryCategory primaryCategory, long timeStampOfMonth){
         ArrayList<Bill> bills = Toolkit.filterBillsByCategory(Toolkit.getBillsByMonth(timeStampOfMonth), primaryCategory);
         return Toolkit.getBillsAmount(bills);
-    }
-
-    private ArrayList<Bill> getBillsWhatBelongToPrimaryCategory(PrimaryCategory primaryCategory){
-        ArrayList<Bill> bills = new ArrayList<>();
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                if (bill.getSubcategory().getPrimaryCategory().equals(primaryCategory)){
-                    bills.add(bill);
-                }
-            }
-        }
-
-        return bills;
     }
 
     private void displayGoalInformation(PrimaryCategory primaryCategory, PrimaryCategoryViewHolder primaryCategoryViewHolder){
@@ -296,7 +278,6 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         holder.mRvSubcategories.setVisibility(View.VISIBLE);
 
         TransitionManager.beginDelayedTransition(holder.itemView.findViewById(R.id.cv_item_primary_category_root));
-        notifyItemChanged(holder.getAdapterPosition());
     }
 
     private void collapse(PrimaryCategoryViewHolder holder){
@@ -345,13 +326,11 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         ArrayList<Bill> filteredBills = filterBillsOfMonth(bills, timeStampOfMonthToLoadStatistics);
         long totalAmountOfBillsOfCategory = getTotalAmountOfBills(filteredBills);
 
-        long totalAmountOfAllBillsOfMonth = getTotalAmountOfBills(billsToUseForPrimaryCategoryStatisticUsage);
+        long totalAmountOfAllBillsOfMonth = Toolkit.getBillsTotalAmount(billsToUseForPrimaryCategoryStatisticUsage);
         int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round(100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory);
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);
         holder.mTxvGoal.setText(formattedTotalAmountOfBills + "/" + usageOfPrimaryCategoryOfMonthInPercent + "%");
-        //TODO holder.mTxvCategoryGoalStatus.setText(formattedTotalAmountOfBills);
-        //TODO holder.mTxvGoalStatusAmount.setText(usageOfPrimaryCategoryOfMonthInPercent + "%");
         holder.mPgbCategoryGoalStatus.setProgress(usageOfPrimaryCategoryOfMonthInPercent);
     }
 

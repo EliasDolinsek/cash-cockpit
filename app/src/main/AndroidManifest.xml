@@ -4,33 +4,33 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:hardwareAccelerated="true">
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
         <activity
             android:name=".BankAccountActivity"
-            android:theme="@style/AppTheme.ActionBarEnabled" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".CategoryActivity"
-            android:theme="@style/AppTheme.ActionBarEnabled" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".AutoPayActivity"
-            android:theme="@style/AppTheme.ActionBarEnabled"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".BillEditorActivity"
-            android:theme="@style/AppTheme.ActionBarEnabled"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".SelectCategoryActivity"
@@ -38,21 +38,15 @@
         <activity
             android:name=".StartActivity"
             android:noHistory="true"
-            android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="adjustResize"></activity>
         <activity
             android:name=".PasswordPreferenceActivity"
             android:label="@string/title_password_settings"
-            android:theme="@style/AppTheme.ActionBarEnabled" />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".CockpitChartPreferencesActivity"
             android:label="@string/title_cockpit_chart"
-            android:theme="@style/AppTheme.ActionBarEnabled"
+            android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateAlwaysVisible" />
 
         <service
@@ -64,6 +58,17 @@
             android:enabled="true"
             android:exported="false" />
 
+        <activity
+            android:name=".SignUpActivity"
+            android:theme="@style/AppTheme.NoMaterialDesign">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".PhoneSignInActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
