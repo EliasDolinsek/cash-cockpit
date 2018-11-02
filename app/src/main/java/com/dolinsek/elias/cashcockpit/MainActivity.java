@@ -59,35 +59,33 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bnv_main);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        mBottomNavigationView.setOnNavigationItemSelectedListener(item -> {
 
-                //Switch between fragments
-                switch (item.getItemId()){
-                    case R.id.navigation_database:
-                        replaceFragment(databaseFragment);
-                            return true;
-                    case R.id.navigation_cockpit:
-                        replaceFragment(cockpitFragment);
-                            return true;
-                    case R.id.navigation_history:
-                        replaceFragment(historyFragment);
-                            return true;
-                    case R.id.navigation_statistics:
-                        replaceFragment(statisticsFragment);
-                            return true;
-                    case R.id.navigation_settings:
-                        replaceFragment(settingsFragment);
-                            return true;
+            //Switch between fragments
+            switch (item.getItemId()){
+                case R.id.navigation_database:
+                    replaceFragment(databaseFragment);
+                        return true;
+                case R.id.navigation_cockpit:
+                    replaceFragment(cockpitFragment);
+                        return true;
+                case R.id.navigation_history:
+                    replaceFragment(historyFragment);
+                        return true;
+                case R.id.navigation_statistics:
+                    replaceFragment(statisticsFragment);
+                        return true;
+                case R.id.navigation_settings:
+                    replaceFragment(settingsFragment);
+                        return true;
 
-                }
-
-                return false;
             }
-        });
-    }
 
+            return false;
+        });
+
+        showSignInActivityIfUserIsNotSignedIn();
+    }
     /**
      * Replaces current Fragment with new Fragment
      * @param fragment new Fragment
@@ -98,6 +96,12 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentTransaction.replace(R.id.ll_main, fragment);
         fragmentTransaction.commit();
+    }
+
+    private void showSignInActivityIfUserIsNotSignedIn(){
+        if (FirebaseAuth.getInstance().getCurrentUser() == null){
+            startActivity(new Intent(this, SignInActivity.class));
+        }
     }
 
     private void initDatabase(){

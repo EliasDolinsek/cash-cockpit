@@ -148,6 +148,7 @@
     <string name="btn_continue_without_sign_in">Continue without sign in</string>
     <string name="label_verification_code">Verification Code</string>
     <string name="label_read_phone_number">Read Phone Number</string>
+    <string name="label_agree_to_cash_cockpit_privacy_statement_beginning">By signing in or continuing without sign in you agree to CashCockpit's</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
