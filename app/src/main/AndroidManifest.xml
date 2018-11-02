@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,13 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" />
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".BankAccountActivity"
             android:theme="@style/AppTheme" />
@@ -38,7 +44,7 @@
         <activity
             android:name=".StartActivity"
             android:noHistory="true"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".PasswordPreferenceActivity"
             android:label="@string/title_password_settings"
@@ -58,17 +64,7 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity
-            android:name=".SignUpActivity"
-            android:theme="@style/AppTheme.NoMaterialDesign">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".PhoneSignInActivity"
-            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".SignInActivity"></activity>
     </application>
 
 </manifest>

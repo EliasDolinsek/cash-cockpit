@@ -145,8 +145,9 @@
     <string name="label_oldest_first">Oldest first</string>
     <string name="label_highest_price_first">Highest price first</string>
     <string name="label_lowest_price_first">Lowest price first</string>
-    <string name="label_continue_without_sign_in">Continue without sign in</string>
+    <string name="btn_continue_without_sign_in">Continue without sign in</string>
     <string name="label_verification_code">Verification Code</string>
+    <string name="label_read_phone_number">Read Phone Number</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
