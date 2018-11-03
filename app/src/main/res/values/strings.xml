@@ -48,6 +48,8 @@
     <string name="btn_cancel">Cancel</string>
     <string name="btn_continue">Continue</string>
     <string name="btn_sign_in">Sign In</string>
+    <string name="btn_watch_on_youtube">Watch on YouTube</string>
+    <string name="btn_skip">Skip</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>
@@ -149,6 +151,8 @@
     <string name="label_verification_code">Verification Code</string>
     <string name="label_read_phone_number">Read Phone Number</string>
     <string name="label_agree_to_cash_cockpit_privacy_statement_beginning">By signing in or continuing without sign in you agree to CashCockpit's</string>
+    <string name="label_cash_cockpit_tutorial">CashCockpit Tutorial</string>
+    <string name="label_cash_cockpit_tutorial_description">Watch the quick Video-Tutorial on YouTube to learn the CashCockpit basics</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>

@@ -100,7 +100,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void showSignInActivityIfUserIsNotSignedIn(){
         if (FirebaseAuth.getInstance().getCurrentUser() == null){
-            startActivity(new Intent(this, SignInActivity.class));
+            Intent intent = new Intent(this, SignInActivity.class);
+            intent.putExtra(SignInActivity.EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS, true);
+            startActivity(intent);
         }
     }
 

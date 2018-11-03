@@ -18,7 +18,8 @@ import java.util.List;
 public class SignInActivity extends AppCompatActivity {
 
     private static final int RC_SIGN_IN = 227;
-    private static final String PRIVACE_STATEMENT_LINK_KEY = "privacy_statement_link";
+    private static final String PRIVACY_STATEMENT_LINK = "privacy_statement_link";
+    public static final String EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS = "showVideoTutorialAfterwards";
 
     private FirebaseRemoteConfig firebaseRemoteConfig;;
 
@@ -52,7 +53,7 @@ public class SignInActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_sign_in_continue_without_sign_in).setOnClickListener(view -> {
             FirebaseAuth.getInstance().signInAnonymously();
-            finish();
+            showTutorialActivityOrFinish();
         });
 
         setPrivacyStatement();
@@ -71,13 +72,29 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private String getPrivacyStatementLink() {
-        return firebaseRemoteConfig.getString(PRIVACE_STATEMENT_LINK_KEY);
+        return firebaseRemoteConfig.getString(PRIVACY_STATEMENT_LINK);
+    }
+
+    private void showTutorialActivityOrFinish(){
+        finish();
+        if (isTutorialActivityRequested()){
+            showTutorialActivity();
+        }
+    }
+
+    private boolean isTutorialActivityRequested(){
+        return getIntent().hasExtra(EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS) && getIntent().getBooleanExtra(EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS, false);
+    }
+
+    private void showTutorialActivity(){
+        Intent intent = new Intent(this, TutorialActivity.class);
+        startActivity(intent);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == RC_SIGN_IN && resultCode == RESULT_OK){
-            finish();
+            showTutorialActivityOrFinish();
         }
     }
 }

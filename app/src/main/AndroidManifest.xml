@@ -63,7 +63,9 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".SignInActivity"></activity>
+        <activity android:name=".SignInActivity" />
+        <activity android:name=".TutorialActivity" />
+        <activity android:name=".BillActivity"></activity>
     </application>
 
 </manifest>
