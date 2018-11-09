@@ -50,6 +50,7 @@
     <string name="btn_sign_in">Sign In</string>
     <string name="btn_watch_on_youtube">Watch on YouTube</string>
     <string name="btn_skip">Skip</string>
+    <string name="btn_select_category">Select Category</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>

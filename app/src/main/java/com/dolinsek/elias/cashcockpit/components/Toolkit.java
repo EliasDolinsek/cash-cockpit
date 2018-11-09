@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit.components;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.res.Resources;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.DeleteBillDialogFragment;
@@ -170,5 +171,27 @@ public class Toolkit {
         }
 
         return filteredBills;
+    }
+
+    public static int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
+        for (int i = 0; i<subcategory.getPrimaryCategory().getSubcategories().size(); i++){
+            if (subcategory.equals(subcategory.getPrimaryCategory().getSubcategories().get(i))){
+                return i;
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find subcategory in database!");
+    }
+
+    public static int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
+        ArrayList<PrimaryCategory> primaryCategoriesInDatabase = Database.getPrimaryCategories();
+        for (int i = 0; i<primaryCategoriesInDatabase.size(); i++){
+            System.out.println(primaryCategory + " " + primaryCategoriesInDatabase.get(i));
+            if (primaryCategory.equals(primaryCategoriesInDatabase.get(i))){
+                return i;
+            }
+        }
+
+        throw new Resources.NotFoundException("Couldn't find primary category in database!");
     }
 }

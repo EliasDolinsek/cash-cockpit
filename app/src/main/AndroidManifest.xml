@@ -65,7 +65,8 @@
 
         <activity android:name=".SignInActivity" />
         <activity android:name=".TutorialActivity" />
-        <activity android:name=".BillActivity"></activity>
+        <activity android:name=".BillActivity"
+            android:windowSoftInputMode="adjustPan" />
     </application>
 
 </manifest>

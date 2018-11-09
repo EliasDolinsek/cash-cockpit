@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
 
@@ -47,8 +48,8 @@ public class SelectCategoryFragment extends Fragment {
                 Intent intent = new Intent(getContext(), SelectCategoryActivity.class);
                 if (selectedSubcategory != null){
                     try {
-                        intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
-                        intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
+                        intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, Toolkit.getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
+                        intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, Toolkit.getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
                     } catch (Exception e){
                         selectedSubcategory = null;
                     }
@@ -76,27 +77,6 @@ public class SelectCategoryFragment extends Fragment {
         this.onCategorySelectedListener = onCategorySelectedListener;
     }
 
-    private int getIndexOfSubcategoryInPrimaryCategory(Subcategory subcategory){
-        for (int i = 0; i<subcategory.getPrimaryCategory().getSubcategories().size(); i++){
-            if (subcategory.equals(subcategory.getPrimaryCategory().getSubcategories().get(i))){
-                return i;
-            }
-        }
-
-        throw new Resources.NotFoundException("Couldn't find subcategory in database!");
-    }
-
-    private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
-        ArrayList<PrimaryCategory> primaryCategoriesInDatabase = Database.getPrimaryCategories();
-        for (int i = 0; i<primaryCategoriesInDatabase.size(); i++){
-            System.out.println(primaryCategory + " " + primaryCategoriesInDatabase.get(i));
-            if (primaryCategory.equals(primaryCategoriesInDatabase.get(i))){
-                return i;
-            }
-        }
-
-        throw new Resources.NotFoundException("Couldn't find primary category in database!");
-    }
 
     public void setSelectedSubcategory(Subcategory selectedSubcategory){
         this.selectedSubcategory = selectedSubcategory;

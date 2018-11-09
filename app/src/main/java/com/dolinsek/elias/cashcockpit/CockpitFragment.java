@@ -130,27 +130,25 @@ public class CockpitFragment extends Fragment {
             restoreFromSavedInstanceState(savedInstanceState);
         }
 
-        mBtnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(everythingFilledCorrectly()) {
-                    long amount = mFgmBillAmountInput.getEnteredAmountAsLong();
-                    String description = mFgmDescriptionInput.getEnteredDescriptionAsString();
-                    bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName()));
+        mBtnAdd.setOnClickListener(view -> {
+            if(everythingFilledCorrectly()) {
+                long amount = mFgmBillAmountInput.getEnteredAmountAsLong();
+                String description = mFgmDescriptionInput.getEnteredDescriptionAsString();
+                bankAccountOfBill.addBill(new Bill(amount, description, currentlySelectedBillType, false, selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName()));
 
-                    try {
-                        Database.save(getContext());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                    Toast.makeText(getContext(), getResources().getString(R.string.toast_new_bill_got_added), Toast.LENGTH_SHORT).show();
-                    clearFieldsFromUserInputs();
-                    hideKeyboard();
-                    refreshCockpitChart();
-                } else {
-                    Toolkit.displayPleaseCheckInputsToast(getContext());
+                try {
+                    Database.save(getContext());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                Toast.makeText(getContext(), getResources().getString(R.string.toast_new_bill_got_added), Toast.LENGTH_SHORT).show();
+                clearFieldsFromUserInputs();
+                hideKeyboard();
+                refreshCockpitChart();
+            } else {
+                Intent intent = new Intent(getActivity(), BillActivity.class);
+                startActivity(intent);
             }
         });
 
