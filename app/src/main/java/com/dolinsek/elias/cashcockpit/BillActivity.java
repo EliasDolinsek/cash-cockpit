@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
@@ -96,10 +97,12 @@ public class BillActivity extends AppCompatActivity {
         chip.setText(bankAccount.getName());
         chip.setCheckable(true);
         chip.setClickable(true);
-        chip.setChecked(checked);
         chip.setCheckedIconVisible(false);
 
         cgBankAccount.addView(chip);
+        if (checked){
+            cgBankAccount.check(chip.getId());
+        }
     }
 
     private Subcategory getSubcategoryFromIntentExtras(Intent intent){
@@ -123,6 +126,7 @@ public class BillActivity extends AppCompatActivity {
             Bill bill = new Bill(getEnteredAmountAsLong(), getValidDescription(), selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName(), getSelectedBillType(), false, System.currentTimeMillis());
             getSelectedBankAccount().addBill(bill);
             Database.save(this);
+            clearInputs();
         }
     }
 
@@ -137,9 +141,8 @@ public class BillActivity extends AppCompatActivity {
             tilAmount.setError(null);
         }
 
-        if (isCategorySelected()){
-            //TODO display error
-        } else {
+        if (selectedSubcategory == null) {
+            Toast.makeText(this, getString(R.string.toast_no_category_selected), Toast.LENGTH_SHORT).show();
             everythingFilledOutCorrectly = false;
         }
 
@@ -159,10 +162,6 @@ public class BillActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isCategorySelected(){
-        return selectedSubcategory != null;
-    }
-
     private int getSelectedBillType(){
         switch (cgBillType.getCheckedChipId()){
             case R.id.chip_bill_input: return Bill.TYPE_INPUT;
@@ -172,11 +171,23 @@ public class BillActivity extends AppCompatActivity {
     }
 
     private BankAccount getSelectedBankAccount(){
-        return Database.getBankAccounts().get(0); //TODO replace with selected bank account
+        for (int i = 0; i<cgBankAccount.getChildCount(); i++){
+            if (((Chip)cgBankAccount.getChildAt(i)).isChecked()){
+                System.out.println(i);
+                return Database.getBankAccounts().get(i);
+            }
+        }
+
+        return Database.getBankAccounts().get(0);
     }
 
     private String getValidDescription(){
         String enteredDescription = edtDescription.getText().toString();
         return !enteredDescription.equals("") ? enteredDescription : getString(R.string.label_no_description);
+    }
+
+    private void clearInputs(){
+        edtAmount.setText("");
+        edtDescription.setText("");
     }
 }
