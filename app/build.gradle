@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 
 android {
-    compileSdkVersion 'android-P'
+    compileSdkVersion 'android-28'
     defaultConfig {
         applicationId "com.dolinsek.elias.cashcockpit"
         minSdkVersion 21
