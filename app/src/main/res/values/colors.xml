@@ -35,4 +35,7 @@
     <color name="colorButtonEmailRed">#ce021c</color>
     <color name="colorButtonPhoneGreen">#42c3a5</color>
 
+    <!--other colors-->
+    <color name="colorDefaultGray">#d5d5d6</color>
+
 </resources>
