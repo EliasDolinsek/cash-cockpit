@@ -11,28 +11,28 @@
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView4"
+        android:layout_marginTop="8dp"
+        android:progressDrawable="@layout/rounded_progressbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="10"
         app:layout_constraintStart_toStartOf="parent"
-        android:progressDrawable="@layout/rounded_progressbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
     <ProgressBar
         android:id="@+id/pgb_cockpit_statistics_total_outputs"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView5"
+        android:layout_marginTop="8dp"
+        android:progressDrawable="@layout/rounded_progressbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="10"
         app:layout_constraintStart_toStartOf="parent"
-        android:progressDrawable="@layout/rounded_progressbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
 
     <ProgressBar
@@ -40,35 +40,38 @@
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView9"
+        android:layout_marginTop="8dp"
+        android:progressDrawable="@layout/rounded_progressbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintHorizontal_weight="10"
         app:layout_constraintStart_toStartOf="parent"
-        android:progressDrawable="@layout/rounded_progressbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <ProgressBar
         android:id="@+id/pgb_cockpit_statistics_daily_limit"
         style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginStart="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        android:progressDrawable="@layout/rounded_progressbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintHorizontal_weight="10"
         app:layout_constraintStart_toStartOf="parent"
-        android:progressDrawable="@layout/rounded_progressbar"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
     <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart"
+        android:id="@+id/pc_cockpit_statistics"
         android:layout_width="0dp"
-        android:layout_height="250dp"
+        android:layout_height="260dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -79,14 +82,14 @@
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-regular"
         android:text="@string/label_cash"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/pgb_cockpit_statistics_cash"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pc_cockpit_statistics" />
 
     <TextView
         android:id="@+id/txv_cockpit_statistics_cash_amount"
@@ -145,39 +148,39 @@
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-regular"
         android:text="@string/label_total_outputs"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/pgb_cockpit_statistics_total_outputs"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pgb_cockpit_statistics_cash" />
 
     <TextView
         android:id="@+id/textView5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-regular"
         android:text="@string/label_installment"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/pgb_cockpit_statistics_installment"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pgb_cockpit_statistics_total_outputs" />
 
 
     <TextView
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="31dp"
-        android:layout_marginBottom="8dp"
         android:layout_marginStart="32dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-regular"
         android:text="@string/label_daily_limit"
         android:textColor="@android:color/black"
         android:textSize="24sp"
-        app:layout_constraintBottom_toTopOf="@+id/pgb_cockpit_statistics_daily_limit"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pgb_cockpit_statistics_installment" />
 </android.support.constraint.ConstraintLayout>

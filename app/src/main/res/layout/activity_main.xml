@@ -13,8 +13,7 @@
         android:id="@+id/ll_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_marginBottom="70dp"/>
+        android:orientation="vertical" />
 
     <android.support.design.bottomappbar.BottomAppBar
         android:id="@+id/bab_main"
@@ -22,8 +21,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:fabAlignmentMode="end"
-        app:hideOnScroll="true"/>
+        app:fabAlignmentMode="center"
+        app:hideOnScroll="true" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab_main"

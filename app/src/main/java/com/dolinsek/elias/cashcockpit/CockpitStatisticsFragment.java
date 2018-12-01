@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -15,7 +16,12 @@ import com.dolinsek.elias.cashcockpit.components.AutoPay;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -27,12 +33,14 @@ public class CockpitStatisticsFragment extends Fragment {
 
     private TextView txvCash, txvTotalOutputs, txvInstallment, txvDailyLimit;
     private ProgressBar pgbCash, pgbTotalOutputs, pgbInstallment, pgbDailyLimit;
+    private PieChart pieChart;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_cockpit_statistics, container, false);
 
+        pieChart = inflatedView.findViewById(R.id.pc_cockpit_statistics);
         txvCash = inflatedView.findViewById(R.id.txv_cockpit_statistics_cash_amount);
         txvTotalOutputs = inflatedView.findViewById(R.id.txv_cockpit_statistics_total_outputs_amount);
         txvInstallment = inflatedView.findViewById(R.id.txv_cockpit_statistics_installment_amount);
@@ -45,6 +53,9 @@ public class CockpitStatisticsFragment extends Fragment {
 
         displayAmounts();
         displayProgresses();
+
+        setupPieChart();
+        loadPieChart();
 
         return inflatedView;
     }
@@ -173,4 +184,109 @@ public class CockpitStatisticsFragment extends Fragment {
         calendar.setTimeInMillis(System.currentTimeMillis());
         return calendar.get(Calendar.MONTH) == Calendar.JANUARY;
     }
+
+    /*
+     *
+     * PieChart
+     *
+    */
+
+    private void setupPieChart(){
+        pieChart.setDescription(null);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setHoleRadius(78f);
+
+        pieChart.setDrawEntryLabels(true);
+        pieChart.setEntryLabelTypeface(Typeface.create("sans-serif-regular", Typeface.NORMAL));
+        pieChart.setEntryLabelTextSize(16f);
+        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.black));
+
+        pieChart.invalidate();
+    }
+
+    private void loadPieChart(){
+        ArrayList<PieEntry> pieEntries = getUsageOfBillsAsPieEntries();
+
+        PieDataSet pieDataSet = new PieDataSet(pieEntries, "");
+        setupPieDataSet(pieDataSet);
+        PieData pieData = new PieData(pieDataSet);
+
+        pieChart.setData(pieData);
+    }
+
+    private void setupPieDataSet(PieDataSet pieDataSet){
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull(), isAmountOfTransfersGreaterThanNull());
+        pieDataSet.setDrawValues(true);
+        pieDataSet.setSliceSpace(5f);
+        pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
+        pieDataSet.setValueTextSize(14f);
+        pieDataSet.setValueFormatter(new CurrencyEntryValueFormatter(getContext()));
+        pieDataSet.setValueTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+    }
+
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull, boolean amountOfTransfersGreaterThanNull){
+        ArrayList<Integer> colors = new ArrayList<>();
+
+        if (amountOfInputsGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorPrimary));
+        }
+
+        if (amountOfOutputGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorPrimary));
+        }
+
+        if (amountOfTransfersGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorPrimary));
+        }
+
+        if (amountOfFixCostsGreaterThanNull){
+            colors.add(getResources().getColor(R.color.colorPrimary));
+        }
+
+        pieDataSet.setColors(colors);
+    }
+
+    private boolean isAmountOfFixCostsGreaterThanNull(){
+        return getFixedCosts() != 0;
+    }
+
+    private boolean isAmountOfOutputsGreaterThanNull(){
+        return Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) != 0;
+    }
+
+    private boolean isAmountOfInputsGreaterThanNull(){
+        return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) != 0;
+    }
+
+    private boolean isAmountOfTransfersGreaterThanNull(){
+        return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER) != 0;
+    }
+
+    private long getAmountOfBillsOfBillTypeOfMonth(int billType){
+        ArrayList<Bill> bills = Toolkit.getBillsByTypeAndMonth(billType, System.currentTimeMillis());
+        return Toolkit.getBillsAmount(bills);
+    }
+
+    private ArrayList<PieEntry> getUsageOfBillsAsPieEntries(){
+        ArrayList<PieEntry> pieEntries = new ArrayList<>();
+
+        long amountOfFixedCosts = getFixedCosts() / 100;
+        long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
+        long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
+        long amountOfTransfers = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER) / 100;
+
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, getString(R.string.label_inputs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutputs), getString(R.string.label_outputs), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfTransfers), getString(R.string.label_transfers), pieEntries);
+        addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
+
+        return pieEntries;
+    }
+
+    private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
+        if (amount != 0){
+            pieEntries.add(new PieEntry(amount, label));
+        }
+    }
+
 }
