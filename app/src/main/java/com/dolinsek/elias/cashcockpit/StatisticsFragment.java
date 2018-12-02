@@ -6,7 +6,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +17,13 @@ import android.view.ViewGroup;
  */
 public class StatisticsFragment extends Fragment {
 
-    private static final String EXTRA_BANK_ACCOUNTS_STATISTICS_FRAGMENT = "bankAccountsStatisticsFragment";
-    private static final String EXTRA_BILLS_STATISTICS_FRAGMENT = "billStatisticsFragment";
-    private static final String EXTRA_CATEGORIES_STATISTICS_FRAGMENT = "categoriesStatisticsFragment";
-    private static final String EXTRA_GOALS_STATISTICS_FRAGMENT = "goalsStatisticsFragment";
-
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
-    private BankAccountsStatisticsFragment bankAccountsStatisticsFragment;
-    private BillsStatisticsFragment billsStatisticsFragment;
-    private CategoriesStatisticsFragment categoriesStatisticsFragment;
-    private GoalsStatisticsFragment goalsStatisticsFragment;
+    private BankAccountsStatisticsFragment bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
+    private BillsStatisticsFragment billsStatisticsFragment = new BillsStatisticsFragment();
+    private CategoriesStatisticsFragment categoriesStatisticsFragment = new CategoriesStatisticsFragment();
+    private GoalsStatisticsFragment goalsStatisticsFragment = new GoalsStatisticsFragment();
 
 
     @Override
@@ -37,8 +31,6 @@ public class StatisticsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View inflatedView = inflater.inflate(R.layout.fragment_statistics, container, false);
-
-        setupFragments();
 
         mTabLayout = (TabLayout) inflatedView.findViewById(R.id.tl_statistics);
         mViewPager = (ViewPager) inflatedView.findViewById(R.id.vp_statistics);
@@ -60,11 +52,11 @@ public class StatisticsFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             switch (position){
-                case 0:return bankAccountsStatisticsFragment;
+                case 0: return bankAccountsStatisticsFragment;
                 case 1: return billsStatisticsFragment;
                 case 2: return categoriesStatisticsFragment;
                 case 3: return goalsStatisticsFragment;
-                default: throw new IllegalStateException("Couldn't find a fragment for psoition " + position);
+                default: throw new IllegalStateException("Couldn't find a fragment for position " + position);
             }
         }
 
@@ -82,12 +74,5 @@ public class StatisticsFragment extends Fragment {
         public int getCount() {
             return TABS;
         }
-    }
-
-    private void setupFragments(){
-        bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
-        billsStatisticsFragment = new BillsStatisticsFragment();
-        categoriesStatisticsFragment = new CategoriesStatisticsFragment();
-        goalsStatisticsFragment = new GoalsStatisticsFragment();
     }
 }

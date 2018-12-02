@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -51,13 +53,19 @@ public class CockpitStatisticsFragment extends Fragment {
         pgbInstallment = inflatedView.findViewById(R.id.pgb_cockpit_statistics_installment);
         pgbDailyLimit = inflatedView.findViewById(R.id.pgb_cockpit_statistics_daily_limit);
 
-        displayAmounts();
-        displayProgresses();
 
         setupPieChart();
-        loadPieChart();
 
         return inflatedView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        loadPieChart();
+        displayAmounts();
+        displayProgresses();
     }
 
     private void displayAmounts(){
@@ -82,7 +90,11 @@ public class CockpitStatisticsFragment extends Fragment {
     }
 
     private int getProgressOfDisplayAmount(long value){
-        return (int) (value * 100 / getTotalOfAllDisplayAmounts());
+        if (value != 0){
+            return (int) (value * 100 / getTotalOfAllDisplayAmounts());
+        } else {
+            return 0;
+        }
     }
 
     private long getTotalOfAllDisplayAmounts(){
@@ -193,13 +205,11 @@ public class CockpitStatisticsFragment extends Fragment {
 
     private void setupPieChart(){
         pieChart.setDescription(null);
-        pieChart.getLegend().setEnabled(false);
-        pieChart.setHoleRadius(78f);
-
-        pieChart.setDrawEntryLabels(true);
-        pieChart.setEntryLabelTypeface(Typeface.create("sans-serif-regular", Typeface.NORMAL));
-        pieChart.setEntryLabelTextSize(16f);
-        pieChart.setEntryLabelColor(getResources().getColor(android.R.color.black));
+        pieChart.setHoleRadius(70f);
+        pieChart.setDrawEntryLabels(false);
+        pieChart.getLegend().setEnabled(true);
+        pieChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        pieChart.setExtraOffsets(0,-4,0,-4);
 
         pieChart.invalidate();
     }
@@ -216,31 +226,26 @@ public class CockpitStatisticsFragment extends Fragment {
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull(), isAmountOfTransfersGreaterThanNull());
-        pieDataSet.setDrawValues(true);
-        pieDataSet.setSliceSpace(5f);
-        pieDataSet.setYValuePosition(PieDataSet.ValuePosition.OUTSIDE_SLICE);
-        pieDataSet.setValueTextSize(14f);
-        pieDataSet.setValueFormatter(new CurrencyEntryValueFormatter(getContext()));
-        pieDataSet.setValueTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        pieDataSet.setDrawValues(false);
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull, boolean amountOfTransfersGreaterThanNull){
         ArrayList<Integer> colors = new ArrayList<>();
 
         if (amountOfInputsGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorPrimary));
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesInput));
         }
 
         if (amountOfOutputGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorPrimary));
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesOutput));
         }
 
         if (amountOfTransfersGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorPrimary));
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesTransfer));
         }
 
         if (amountOfFixCostsGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorPrimary));
+            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesFixedCosts));
         }
 
         pieDataSet.setColors(colors);
@@ -285,7 +290,8 @@ public class CockpitStatisticsFragment extends Fragment {
 
     private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
         if (amount != 0){
-            pieEntries.add(new PieEntry(amount, label));
+            String textToDisplay = label + " (" + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amount * 100) + ") ";
+            pieEntries.add(new PieEntry(amount, textToDisplay));
         }
     }
 
