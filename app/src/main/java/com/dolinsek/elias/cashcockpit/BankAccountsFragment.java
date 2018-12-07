@@ -36,11 +36,6 @@ public class BankAccountsFragment extends Fragment {
      */
     private Button mBtnCreateAccount;
 
-    /**
-     * FloatingActionButton to create a new bank account
-     */
-    private FloatingActionButton mFbtnAdd;
-
     public BankAccountsFragment() {
         mBankAccountItemAdapter = new BankAccountItemAdapter();
     }
@@ -56,26 +51,13 @@ public class BankAccountsFragment extends Fragment {
         mRecyclerView.setAdapter(mBankAccountItemAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        //Setup FloatingActionButton
-        mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_bank_accounts_add);
-        mFbtnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
-                startActivity(intent);
-            }
-        });
-
         //Setup Button
         mBtnCreateAccount = (Button) inflatedView.findViewById(R.id.btn_bank_accounts_create);
-        mBtnCreateAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        mBtnCreateAccount.setOnClickListener(view -> {
 
-                //Start CreateBankAccountsActivity
-                Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
-                startActivity(intent);
-            }
+            //Start CreateBankAccountsActivity
+            Intent intent = new Intent(inflatedView.getContext(), BankAccountActivity.class);
+            startActivity(intent);
         });
 
         return inflatedView;
@@ -84,13 +66,6 @@ public class BankAccountsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        //Hides mFbtnAdd when there are zero bank accounts and hides mBtnCreateAccount if not
-        if(Database.getBankAccounts().size() != 0){
-            mBtnCreateAccount.setVisibility(View.GONE);
-            mFbtnAdd.setVisibility(View.VISIBLE);
-        } else
-            mFbtnAdd.setVisibility(View.GONE);
 
         //Load bank accounts
         mBankAccountItemAdapter = new BankAccountItemAdapter();

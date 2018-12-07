@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.content.Intent;
+import android.support.design.chip.Chip;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -40,24 +41,20 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public void onBindViewHolder(final BankAccountItemViewHolder holder, final int position) {
         BankAccount bankAccount = mBankAccounts.get(position);
 
-        String accountBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(bankAccount.getBalance());
-        String formattedBills = String.valueOf(bankAccount.getBills().size()) + " " + holder.itemView.getContext().getResources().getString(R.string.label_bills);
-        String formattedDetails =  accountBalance + " " + Character.toString((char)0x00B7) + " "  + formattedBills;
+        String accountBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(bankAccount.getBalance());
+        String formattedDetails =  holder.itemView.getContext().getString(R.string.label_item_bank_account_details_text, accountBalance, bankAccount.getBills().size());
 
         holder.mTxvName.setText(bankAccount.getName());
         holder.mTxvDetails.setText(formattedDetails);
 
         if(!bankAccount.isPrimaryAccount()){
-            holder.mTxvPrimaryAccount.setVisibility(View.GONE);
+            holder.chipPrimaryAccount.setVisibility(View.GONE);
         }
 
-        holder.mCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
-                intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);
-                holder.itemView.getContext().startActivity(intent);
-            }
+        holder.itemView.setOnClickListener(view -> {
+            Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
+            intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);
+            holder.itemView.getContext().startActivity(intent);
         });
     }
 
@@ -68,16 +65,15 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
     public class BankAccountItemViewHolder extends RecyclerView.ViewHolder{
 
-        public TextView mTxvName, mTxvDetails, mTxvPrimaryAccount;
-        public CardView mCardView;
+        TextView mTxvName, mTxvDetails;
+        Chip chipPrimaryAccount;
 
         public BankAccountItemViewHolder(View itemView) {
             super(itemView);
 
             mTxvName = (TextView) itemView.findViewById(R.id.txv_item_bank_account_name);
             mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_bank_account_details);
-            mTxvPrimaryAccount = (TextView) itemView.findViewById(R.id.txv_item_bank_account_primary_account);
-            mCardView = (CardView) itemView.findViewById(R.id.cv_item_bank_account);
+            chipPrimaryAccount = itemView.findViewById(R.id.chip_item_bank_account_primary_account);
         }
     }
 }

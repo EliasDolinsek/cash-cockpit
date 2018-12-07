@@ -74,7 +74,6 @@
     <string name="label_weekly">Weekly</string>
     <string name="label_monthly">Monthly</string>
     <string name="label_yearly">Yearly</string>
-    <string name="label_bills">Bill(s)</string>
     <string name="label_subcategory_delete_information">When deleting, all AutoPays and Bills are also removed!</string>
     <string name="label_currency">Currency</string>
     <string name="label_cash">Cash</string>
@@ -156,6 +155,7 @@
     <string name="label_cash_cockpit_tutorial_description">Watch the quick Video-Tutorial on YouTube to learn the CashCockpit basics</string>
     <string name="label_bank_account">Bank Account</string>
     <string name="label_bill_type">Bill Type</string>
+    <string name="label_item_bank_account_details_text">%1$s and %2$d Bills</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>

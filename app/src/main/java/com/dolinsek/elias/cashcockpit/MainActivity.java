@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,9 +23,6 @@ import org.json.JSONException;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     /**
      * BottomNavigationView for navigating
      */

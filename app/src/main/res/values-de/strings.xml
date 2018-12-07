@@ -47,7 +47,6 @@
     <string name="label_weekly">Wöchentlich</string>
     <string name="label_monthly">Monatlich</string>
     <string name="label_yearly">Jährlich</string>
-    <string name="label_bills">Rechnung(en)</string>
     <string name="label_subcategory_delete_information">Beim Löschen werden auch alle AutoPays und Rechungen entfernt</string>
     <string name="label_currency">Währung</string>
     <string name="label_cash">Cash</string>
