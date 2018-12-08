@@ -1,20 +1,14 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.app.Fragment;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -32,26 +26,36 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
 
     private RecyclerView mRvBills;
     private CheckBox mChbPrimaryAccount;
-    private AmountInputFragment mFgmAmountInput;
-    private DescriptionInputFragment mFgmNameInput;
     private BankAccount bankAccount = null;
+
+    private TextInputLayout tilAmount, tilName;
+    private TextInputEditText edtAmount, edtName;
+    private Button btnCreateSave, btnCancelDelete;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bank_account);
 
-        mFgmNameInput = (DescriptionInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_bank_account_name_input);
-        mFgmAmountInput = (AmountInputFragment) getSupportFragmentManager().findFragmentById(R.id.fgm_bank_account_amount_input);
+        edtAmount = findViewById(R.id.edt_bank_account_amount);
+        edtName = findViewById(R.id.edt_bank_account_name);
 
-        mChbPrimaryAccount = (CheckBox) findViewById(R.id.chb_bank_account_primary_account);
+        tilAmount = findViewById(R.id.til_bank_account_amount);
+        tilName = findViewById(R.id.til_bank_account_name);
 
-        mRvBills = (RecyclerView) findViewById(R.id.rv_bank_account_bills);
+        mChbPrimaryAccount = findViewById(R.id.chb_bank_account_primary_account);
+
+        mRvBills = findViewById(R.id.rv_bank_account_bills);
         mRvBills.setLayoutManager(new LinearLayoutManager(this));
+
+        btnCreateSave = findViewById(R.id.btn_bank_account_create_save);
+        btnCancelDelete = findViewById(R.id.btn_bank_account_cancel_delete);
 
         if(isEditModeRequired()){
             setupForEditMode();
         }
+
+        setupButtonTexts();
 
         if(bankAccount != null){
             displayBankAccountDetails();
@@ -62,64 +66,53 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
             mChbPrimaryAccount.setChecked(true);
             mChbPrimaryAccount.setEnabled(false);
         }
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+        btnCreateSave.setOnClickListener(v -> {
+            createOrSaveBankAccountIfPossible();
+        });
 
-        MenuInflater menuInflater = getMenuInflater();
-        if (isEditModeRequired() && !bankAccount.isPrimaryAccount()){
-            menuInflater.inflate(R.menu.save_delete_menu, menu);
-        } else if (isEditModeRequired() && bankAccount.isPrimaryAccount()){
-            menuInflater.inflate(R.menu.save_menu, menu);
-        } else {
-            menuInflater.inflate(R.menu.create_menu, menu);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home: finish(); return true;
-            case R.id.menu_create: createOrSaveBankAccountIfPossible(); return true;
-            case R.id.menu_save: createOrSaveBankAccountIfPossible(); return true;
-            case R.id.menu_delete: showDeleteBankAccountDialogFragment(); return true;
-            default: return super.onOptionsItemSelected(item);
-        }
+        btnCancelDelete.setOnClickListener(v -> {
+            if (isEditModeRequired()){
+                showDeleteBankAccountDialogFragment();
+            } else {
+                finish();
+            }
+        });
     }
 
     private void createOrSaveBankAccountIfPossible(){
-        String enteredBalance = mFgmAmountInput.getEnteredAmountAsString();
-        if(mFgmNameInput.getEnteredDescriptionAsString().trim().equals("")){
-            Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+        removeErrors();
+        String enteredBalance = edtAmount.getText().toString();
+
+        if(getEnteredNameAsString().trim().equals("")){
+            tilName.setError(getString(R.string.label_enter_valid_name));
         } else if(enteredBalance.equals("") || enteredBalance.equals(".")){
-            Toolkit.displayPleaseCheckInputsToast(getApplicationContext());
+            tilAmount.setError(getString(R.string.label_enter_valid_amount));
         } else if(doesEnteredNameAlreadyExist()){
-            Toast.makeText(BankAccountActivity.this, getString(R.string.toast_bank_account_already_exists), Toast.LENGTH_SHORT).show();
+            tilName.setError(getString(R.string.label_enter_name_already_exists));
         } else {
             if(bankAccount == null){
-                if(mChbPrimaryAccount.isChecked()){
-                    setPrimaryAccountInAllBankAccountsInDatabseToFalse();
-                }
-
+                setBankAccountToPrimaryAccountIfRequired();
                 createAndSaveBankAccount();
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.toast_bank_account_got_created_successfully), Toast.LENGTH_LONG).show();
-                finish();
             } else {
                 saveEnteredChanges();
-
                 Database.save(getApplicationContext());
-                finish();
             }
+
+            finish();
         }
     }
 
+    private void removeErrors(){
+        tilName.setError(null);
+        tilAmount.setError(null);
+    }
+
+    private void setBankAccountToPrimaryAccountIfRequired(){
+        if (mChbPrimaryAccount.isChecked()){
+            setPrimaryAccountInAllBankAccountsInDatabseToFalse();
+        }
+    }
     private void showDeleteBankAccountDialogFragment(){
         DeleteBankAccountDialogFragment deleteBankAccountDialogFragment = new DeleteBankAccountDialogFragment();
         deleteBankAccountDialogFragment.show(getSupportFragmentManager(), "delete_bank_account");
@@ -130,8 +123,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void createAndSaveBankAccount(){
-        long balance = mFgmAmountInput.getEnteredAmountAsLong();
-        String enteredName = mFgmNameInput.getEnteredDescriptionAsString();
+        long balance = getEnteredAmountAsLong();
+        String enteredName = getEnteredNameAsString();
         boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
 
         BankAccount newBankAccount = new BankAccount(enteredName, balance, isAccountPrimaryAccount);
@@ -140,8 +133,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void saveEnteredChanges(){
-        long balance = mFgmAmountInput.getEnteredAmountAsLong();
-        String enteredName = mFgmNameInput.getEnteredDescriptionAsString();
+        long balance = getEnteredAmountAsLong();
+        String enteredName = getEnteredNameAsString();
         boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
 
         bankAccount.setName(enteredName);
@@ -204,15 +197,15 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
     }
 
     private void displayBankAccountDetails(){
-        mFgmNameInput.getEdtDescription().setText(bankAccount.getName());
-        mFgmAmountInput.getEdtAmount().setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
+        edtName.setText(bankAccount.getName());
+       edtAmount.setText(Currency.getActiveCurrency(getApplicationContext()).formatAmountToReadableString(bankAccount.getBalance()));
 
         mChbPrimaryAccount.setEnabled(!bankAccount.isPrimaryAccount());
         mChbPrimaryAccount.setChecked(bankAccount.isPrimaryAccount());
     }
 
     private boolean doesEnteredNameAlreadyExist(){
-        String enteredNameForBankAccount = mFgmNameInput.getEnteredDescriptionAsString();
+        String enteredNameForBankAccount = getEnteredNameAsString();
         for (BankAccount bankAccount:Database.getBankAccounts()){
             if (bankAccount.getName().equals(enteredNameForBankAccount) && !bankAccount.equals(this.bankAccount)){
                 return true;
@@ -220,5 +213,23 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         }
 
         return false;
+    }
+
+    private void setupButtonTexts(){
+        if (isEditModeRequired()){
+            btnCreateSave.setText(getString(R.string.btn_save));
+            btnCancelDelete.setText(getString(R.string.btn_delete));
+        } else {
+            btnCreateSave.setText(getString(R.string.btn_create));
+            btnCancelDelete.setText(getString(R.string.btn_cancel));
+        }
+    }
+
+    private long getEnteredAmountAsLong(){
+        return Toolkit.convertStringToLongAmount(edtAmount.getText().toString());
+    }
+
+    private String getEnteredNameAsString(){
+        return edtName.getText().toString();
     }
 }

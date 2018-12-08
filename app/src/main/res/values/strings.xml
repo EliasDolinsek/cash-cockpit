@@ -51,6 +51,8 @@
     <string name="btn_watch_on_youtube">Watch on YouTube</string>
     <string name="btn_skip">Skip</string>
     <string name="btn_select_category">Select Category</string>
+    <string name="btn_save">Save</string>
+    <string name="btn_create">Create</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>
@@ -156,12 +158,12 @@
     <string name="label_bank_account">Bank Account</string>
     <string name="label_bill_type">Bill Type</string>
     <string name="label_item_bank_account_details_text">%1$s and %2$d Bills</string>
+    <string name="label_enter_valid_name">Enter a valid name</string>
+    <string name="label_enter_name_already_exists">Entered name already exists</string>
 
     <!-- Toast texts -->
-    <string name="toast_bank_account_got_created_successfully">Bank Account got created successfully</string>
     <string name="toast_bank_account_got_deleted_successfully">Bank Account got deleted successfully</string>
     <string name="toast_category_already_exists">Category already exists</string>
-    <string name="toast_bank_account_already_exists">Bank Account already exists</string>
     <string name="toast_new_bill_got_added">New Bill got added</string>
     <string name="toast_please_check_inputs">Please check your inputs!</string>
     <string name="toast_amount_to_save_got_saved_successfully">Amount to save got saved successfully</string>

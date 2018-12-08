@@ -93,10 +93,8 @@
     <string name="label_euro">Euro</string>
     <string name="label_dollar">Dollar</string>
     <string name="label_pounds">Pfund</string>
-    <string name="toast_bank_account_got_created_successfully">Bankkonto wurde erfolgreich erstellt</string>
     <string name="toast_bank_account_got_deleted_successfully">Bankkonto wurde erfolgreich gelöscht</string>
     <string name="toast_category_already_exists">Kategorie existiert bereits</string>
-    <string name="toast_bank_account_already_exists">Bankkonto existiert bereits</string>
     <string name="toast_new_bill_got_added">Neue Rechnung wurde hinzugefügt</string>
     <string name="toast_please_check_inputs">Bitte überprüfen Sie ihre Eingaben</string>
     <string name="toast_amount_to_save_got_saved_successfully">Sparbetrag wurde erfolgreich gespeichert</string>

@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,10 +21,10 @@ public class StatisticsFragment extends Fragment {
     private TabLayout mTabLayout;
     private ViewPager mViewPager;
 
-    private BankAccountsStatisticsFragment bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
-    private BillsStatisticsFragment billsStatisticsFragment = new BillsStatisticsFragment();
-    private CategoriesStatisticsFragment categoriesStatisticsFragment = new CategoriesStatisticsFragment();
-    private GoalsStatisticsFragment goalsStatisticsFragment = new GoalsStatisticsFragment();
+    private BankAccountsStatisticsFragment bankAccountsStatisticsFragment;
+    private BillsStatisticsFragment billsStatisticsFragment;
+    private CategoriesStatisticsFragment categoriesStatisticsFragment;
+    private GoalsStatisticsFragment goalsStatisticsFragment;
 
 
     @Override
@@ -31,6 +32,8 @@ public class StatisticsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View inflatedView = inflater.inflate(R.layout.fragment_statistics, container, false);
+
+        setupFragments();
 
         mTabLayout = (TabLayout) inflatedView.findViewById(R.id.tl_statistics);
         mViewPager = (ViewPager) inflatedView.findViewById(R.id.vp_statistics);
@@ -52,7 +55,7 @@ public class StatisticsFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             switch (position){
-                case 0: return bankAccountsStatisticsFragment;
+                case 0:return bankAccountsStatisticsFragment;
                 case 1: return billsStatisticsFragment;
                 case 2: return categoriesStatisticsFragment;
                 case 3: return goalsStatisticsFragment;
@@ -74,5 +77,12 @@ public class StatisticsFragment extends Fragment {
         public int getCount() {
             return TABS;
         }
+    }
+
+    private void setupFragments(){
+        bankAccountsStatisticsFragment = new BankAccountsStatisticsFragment();
+        billsStatisticsFragment = new BillsStatisticsFragment();
+        categoriesStatisticsFragment = new CategoriesStatisticsFragment();
+        goalsStatisticsFragment = new GoalsStatisticsFragment();
     }
 }

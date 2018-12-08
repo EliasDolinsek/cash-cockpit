@@ -194,4 +194,12 @@ public class Toolkit {
 
         throw new Resources.NotFoundException("Couldn't find primary category in database!");
     }
+
+    public static long convertStringToLongAmount(String amount){
+        try {
+            return (long) (Double.valueOf(amount) * 100);
+        } catch (Exception e){
+            return 0;
+        }
+    }
 }

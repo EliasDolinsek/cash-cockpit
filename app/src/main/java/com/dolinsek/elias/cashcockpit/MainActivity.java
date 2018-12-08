@@ -23,16 +23,14 @@ import org.json.JSONException;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
-    /**
-     * BottomNavigationView for navigating
-     */
+
     private BottomAppBar bottomAppBar;
 
-    private CockpitStatisticsFragment cockpitStatisticsFragment = new CockpitStatisticsFragment();
-    private HistoryFragment historyFragment = new HistoryFragment();
-    private StatisticsFragment statisticsFragment = new StatisticsFragment();
-    private DatabaseFragment databaseFragment = new DatabaseFragment();
-    private SettingsFragment settingsFragment = new SettingsFragment();
+    private CockpitStatisticsFragment cockpitStatisticsFragment;
+    private HistoryFragment historyFragment;
+    private StatisticsFragment statisticsFragment;
+    private DatabaseFragment databaseFragment;
+    private SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initDatabase();
+        setupFragments();
 
         if(savedInstanceState == null){
             //Show CockpitFragment
@@ -106,5 +105,14 @@ public class MainActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    private void setupFragments(){
+        cockpitStatisticsFragment = new CockpitStatisticsFragment();
+        historyFragment = new HistoryFragment();
+        statisticsFragment = new StatisticsFragment();
+        databaseFragment = new DatabaseFragment();
+        settingsFragment = new SettingsFragment();
+
     }
 }
