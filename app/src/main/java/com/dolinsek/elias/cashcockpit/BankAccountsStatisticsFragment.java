@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import com.dolinsek.elias.cashcockpit.components.BalanceChange;
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -234,7 +235,7 @@ BankAccountsStatisticsFragment extends Fragment {
     private ArrayList<BalanceChange> getLastBalanceChangesOfMonthsOfBankAccount(BankAccount bankAccount){
         ArrayList<BalanceChange> balanceChanges = new ArrayList<>();
 
-        sortBalanceChangesOfCreationDates(bankAccount.getBalanceChanges());
+        Toolkit.sortBalanceChangesOfCreationDates(bankAccount.getBalanceChanges());
         long firstBalanceChangeDate = bankAccount.getBalanceChanges().get(0).getTimeStampOfChange();
 
         Calendar calendar = Calendar.getInstance();
@@ -247,7 +248,7 @@ BankAccountsStatisticsFragment extends Fragment {
         while (calendar.get(Calendar.YEAR) <= year || calendar.get(Calendar.MONTH) <= month){
             int balanceChangesOfMonthSize = getSizeOfBalanceChangesOfMonth(bankAccount, calendar.getTimeInMillis());
             if (balanceChangesOfMonthSize != 0){
-                BalanceChange lastBalanceChangeOfMonth = getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
+                BalanceChange lastBalanceChangeOfMonth = Toolkit.getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());
                 balanceChanges.add(lastBalanceChangeOfMonth);
             }
 
@@ -262,48 +263,9 @@ BankAccountsStatisticsFragment extends Fragment {
         return new Entry(x, formattedAmountOfBalanceChange);
     }
 
-    private BalanceChange getLastBalanceChangeOfBankAccountAndMonth(BankAccount bankAccount, long timeStampOfMonth){
-        ArrayList<BalanceChange> balanceChangesOfBankAccount = bankAccount.getBalanceChanges();
-        sortBalanceChangesOfCreationDates(balanceChangesOfBankAccount);
-
-        ArrayList<BalanceChange> balanceChangesOfBankAccountAndMonth = filterBalanceChangesOfMonth(balanceChangesOfBankAccount, timeStampOfMonth);
-        return balanceChangesOfBankAccountAndMonth.get(balanceChangesOfBankAccountAndMonth.size() - 1);
-    }
-
     private int getSizeOfBalanceChangesOfMonth(BankAccount bankAccount, long timeStampOfMonth){
-        ArrayList<BalanceChange> balanceChangesOfMonth = filterBalanceChangesOfMonth(bankAccount.getBalanceChanges(), timeStampOfMonth);
+        ArrayList<BalanceChange> balanceChangesOfMonth = Toolkit.filterBalanceChangesOfMonth(bankAccount.getBalanceChanges(), timeStampOfMonth);
         return balanceChangesOfMonth.size();
-    }
-
-    private ArrayList<BalanceChange> filterBalanceChangesOfMonth(ArrayList<BalanceChange> balanceChangesToFilter, long timeStampOfMonth){
-        ArrayList<BalanceChange> balanceChangesOfMonth = new ArrayList<>();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (BalanceChange balanceChange:balanceChangesToFilter){
-            calendar.setTimeInMillis(balanceChange.getTimeStampOfChange());
-
-            int currentYear = calendar.get(Calendar.YEAR);
-            int currentMonth = calendar.get(Calendar.MONTH);
-
-            if (currentYear == year && currentMonth == month){
-                balanceChangesOfMonth.add(balanceChange);
-            }
-        }
-
-        return balanceChangesOfMonth;
-    }
-
-    private void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
-        Collections.sort(balanceChangesToSort, new Comparator<BalanceChange>() {
-            @Override
-            public int compare(BalanceChange balanceChange, BalanceChange t1) {
-                return Long.compare(balanceChange.getTimeStampOfChange(), t1.getTimeStampOfChange());
-            }
-        });
     }
 
     @Override

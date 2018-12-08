@@ -171,7 +171,6 @@ public class BillActivity extends AppCompatActivity {
     private BankAccount getSelectedBankAccount(){
         for (int i = 0; i<cgBankAccount.getChildCount(); i++){
             if (((Chip)cgBankAccount.getChildAt(i)).isChecked()){
-                System.out.println(i);
                 return Database.getBankAccounts().get(i);
             }
         }

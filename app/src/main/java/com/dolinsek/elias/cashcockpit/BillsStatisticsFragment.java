@@ -364,17 +364,8 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private String billUsageToReadableString(int billType, int billsOfTypeSize, int usageOfTypeInPercent){
-        String billTypeAsString = getBillTypeAsString(billType);
+        String billTypeAsString = Toolkit.getBillTypeAsString(billType, getContext());
         return billTypeAsString + ": " + billsOfTypeSize + " (" + usageOfTypeInPercent + "%)";
-    }
-
-    private String getBillTypeAsString(int billType){
-        switch (billType){
-            case Bill.TYPE_INPUT: return getResources().getString(R.string.label_input);
-            case Bill.TYPE_OUTPUT: return getResources().getString(R.string.label_output);
-            case Bill.TYPE_TRANSFER: return getResources().getString(R.string.label_transfer);
-            default: throw new IllegalArgumentException("Couldn't resolve " + billType + " as a bill-type");
-        }
     }
 
     private String billTypeToString(int billType){

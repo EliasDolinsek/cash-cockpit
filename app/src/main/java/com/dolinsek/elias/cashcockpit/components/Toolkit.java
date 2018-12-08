@@ -10,6 +10,8 @@ import com.dolinsek.elias.cashcockpit.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by Elias Dolinsek on 06.07.2018 for cash-cockpit.
@@ -201,5 +203,48 @@ public class Toolkit {
         } catch (Exception e){
             return 0;
         }
+    }
+
+    public static String getBillTypeAsString(int billType, Context context){
+        switch (billType){
+            case Bill.TYPE_INPUT: return context.getString(R.string.label_input);
+            case Bill.TYPE_OUTPUT: return context.getString(R.string.label_output);
+            case Bill.TYPE_TRANSFER: return context.getString(R.string.label_transfer);
+            default: throw new IllegalArgumentException("Couldn't resolve " + billType + " as a bill-type");
+        }
+    }
+
+    public static BalanceChange getLastBalanceChangeOfBankAccountAndMonth(BankAccount bankAccount, long timeStampOfMonth){
+        ArrayList<BalanceChange> balanceChangesOfBankAccount = bankAccount.getBalanceChanges();
+        sortBalanceChangesOfCreationDates(balanceChangesOfBankAccount);
+
+        ArrayList<BalanceChange> balanceChangesOfBankAccountAndMonth = filterBalanceChangesOfMonth(balanceChangesOfBankAccount, timeStampOfMonth);
+        return balanceChangesOfBankAccountAndMonth.get(balanceChangesOfBankAccountAndMonth.size() - 1);
+    }
+
+    public static void sortBalanceChangesOfCreationDates(ArrayList<BalanceChange> balanceChangesToSort){
+        Collections.sort(balanceChangesToSort, (balanceChange, t1) -> Long.compare(balanceChange.getTimeStampOfChange(), t1.getTimeStampOfChange()));
+    }
+
+    public static ArrayList<BalanceChange> filterBalanceChangesOfMonth(ArrayList<BalanceChange> balanceChangesToFilter, long timeStampOfMonth){
+        ArrayList<BalanceChange> balanceChangesOfMonth = new ArrayList<>();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeStampOfMonth);
+
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+
+        for (BalanceChange balanceChange:balanceChangesToFilter){
+            calendar.setTimeInMillis(balanceChange.getTimeStampOfChange());
+
+            int currentYear = calendar.get(Calendar.YEAR);
+            int currentMonth = calendar.get(Calendar.MONTH);
+
+            if (currentYear == year && currentMonth == month){
+                balanceChangesOfMonth.add(balanceChange);
+            }
+        }
+
+        return balanceChangesOfMonth;
     }
 }

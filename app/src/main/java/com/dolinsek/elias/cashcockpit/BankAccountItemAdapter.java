@@ -11,10 +11,13 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
+import com.dolinsek.elias.cashcockpit.components.Category;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by elias on 13.01.2018.
@@ -41,14 +44,17 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
     public void onBindViewHolder(final BankAccountItemViewHolder holder, final int position) {
         BankAccount bankAccount = mBankAccounts.get(position);
 
-        String accountBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(bankAccount.getBalance());
-        String formattedDetails =  holder.itemView.getContext().getString(R.string.label_item_bank_account_details_text, accountBalance, bankAccount.getBills().size());
+        String formattedAccountBalance = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(bankAccount.getBalance());
+        String formattedBillsText = holder.itemView.getContext().getString(R.string.label_item_bank_account_bills, bankAccount.getBills().size());
 
         holder.mTxvName.setText(bankAccount.getName());
-        holder.mTxvDetails.setText(formattedDetails);
+
+        holder.chipBalance.setText(formattedAccountBalance);
+        holder.chipTrend.setText(getBalanceTrendInPercentAsString(bankAccount));
+        holder.chipBills.setText(formattedBillsText);
 
         if(!bankAccount.isPrimaryAccount()){
-            holder.chipPrimaryAccount.setVisibility(View.GONE);
+            holder.txvPrimaryAccount.setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(view -> {
@@ -65,15 +71,53 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
     public class BankAccountItemViewHolder extends RecyclerView.ViewHolder{
 
-        TextView mTxvName, mTxvDetails;
-        Chip chipPrimaryAccount;
+        TextView mTxvName, txvPrimaryAccount;
+        Chip chipBalance, chipTrend, chipBills;
 
         public BankAccountItemViewHolder(View itemView) {
             super(itemView);
 
-            mTxvName = (TextView) itemView.findViewById(R.id.txv_item_bank_account_name);
-            mTxvDetails = (TextView) itemView.findViewById(R.id.txv_item_bank_account_details);
-            chipPrimaryAccount = itemView.findViewById(R.id.chip_item_bank_account_primary_account);
+            mTxvName = itemView.findViewById(R.id.txv_item_bank_account_name);
+            txvPrimaryAccount = itemView.findViewById(R.id.txv_item_bank_account_primary_account);
+
+            chipBalance = itemView.findViewById(R.id.chip_item_bank_account_balance);
+            chipTrend = itemView.findViewById(R.id.chip_item_bank_account_trend);
+            chipBills = itemView.findViewById(R.id.chip_item_bank_account_bills);
+
+        }
+    }
+
+    private String getBalanceTrendInPercentAsString(BankAccount bankAccount){
+        int balanceTrend = getBalanceTrendInPercent(bankAccount);
+        if (balanceTrend > 0){
+            return "+" + balanceTrend + "%";
+        } else if (balanceTrend == 0){
+            return "\u00B1" + balanceTrend + "%";
+        } else {
+            return "-" + balanceTrend + "%";
+        }
+    }
+
+    private int getBalanceTrendInPercent(BankAccount bankAccount){
+        try {
+            Calendar calendar = Calendar.getInstance();
+            calendar.add(Calendar.MONTH, -1);
+
+            long currentMonthBalance = Toolkit.getLastBalanceChangeOfBankAccountAndMonth(bankAccount, System.currentTimeMillis()).getNewBalance();
+            long lastMonthBalance = Toolkit.getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis()).getNewBalance();
+
+            if (lastMonthBalance < 0){
+                lastMonthBalance = Math.abs(lastMonthBalance);
+                currentMonthBalance += lastMonthBalance;
+            }
+
+            if (currentMonthBalance > 0){
+                return (int) Math.round(100.0 / lastMonthBalance * currentMonthBalance);
+            } else {
+                return (int) Math.round(100.0 / currentMonthBalance * lastMonthBalance);
+            }
+        } catch (Exception e){
+            return 0;
         }
     }
 }

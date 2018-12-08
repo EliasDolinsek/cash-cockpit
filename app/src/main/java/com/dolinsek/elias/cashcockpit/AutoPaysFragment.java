@@ -24,7 +24,6 @@ import java.io.IOException;
 public class AutoPaysFragment extends Fragment {
 
     private Button mBtnCreateAutoPay;
-    private FloatingActionButton mFbtnAdd;
     private RecyclerView mRvAutoPays;
     private AutoPayItemAdapter mAutoPayItemAdapter;
 
@@ -34,27 +33,13 @@ public class AutoPaysFragment extends Fragment {
 
         View inflatedView = inflater.inflate(R.layout.fragment_auto_pays, container, false);
 
-        mBtnCreateAutoPay = (Button) inflatedView.findViewById(R.id.btn_auto_pays_create_autopay);
-        mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_auto_pays_add);
-        mRvAutoPays = (RecyclerView) inflatedView.findViewById(R.id.rv_auto_pays);
+        mBtnCreateAutoPay = inflatedView.findViewById(R.id.btn_auto_pays_create_autopay);
+        mRvAutoPays = inflatedView.findViewById(R.id.rv_auto_pays);
         mRvAutoPays.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mFbtnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Start AutoPayActivity
-                Intent intent = new Intent(getContext(), AutoPayActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mBtnCreateAutoPay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Start AutoPayActivity
-                Intent intent = new Intent(getContext(), AutoPayActivity.class);
-                startActivity(intent);
-            }
+        mBtnCreateAutoPay.setOnClickListener(view -> {
+            Intent intent = new Intent(getContext(), AutoPayActivity.class);
+            startActivity(intent);
         });
         return inflatedView;
     }
@@ -62,14 +47,6 @@ public class AutoPaysFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
-        if(Database.getAutoPays().size() != 0){
-            mBtnCreateAutoPay.setVisibility(View.GONE);
-            mFbtnAdd.setVisibility(View.VISIBLE);
-        } else {
-            mFbtnAdd.setVisibility(View.GONE);
-            mBtnCreateAutoPay.setVisibility(View.VISIBLE);
-        }
 
         mRvAutoPays.setAdapter((mAutoPayItemAdapter = new AutoPayItemAdapter()));
     }

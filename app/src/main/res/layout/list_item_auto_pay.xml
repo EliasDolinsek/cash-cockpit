@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cv_item_auto_pay"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,43 +8,30 @@
     android:layout_marginStart="4dp"
     android:layout_marginEnd="4dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/txv_item_auto_pay_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="14dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Einkommen"
+        android:fontFamily="sans-serif-regular"
+        android:textColor="@color/colorAccentTextColor"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imv_item_auto_pay_bill_type"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_bill_type_input"
-            android:layout_gravity="center_vertical"
-            android:layout_marginEnd="16dp"/>
+    <TextView
+        android:id="@+id/txv_item_auto_pay_details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Monatliches 100€ Einkommen (Hauptkonto)"
+        android:fontFamily="sans-serif-medium"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txv_item_auto_pay_name" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/txv_item_auto_pay_name"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                android:textColor="@color/colorAccentTextColor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
-                android:lines="1"
-                android:ellipsize="end"/>
-
-            <TextView
-                android:id="@+id/txv_item_auto_pay_details"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:ellipsize="middle"/>
-        </LinearLayout>
-    </LinearLayout>
-
-</android.support.v7.widget.CardView>
+</android.support.constraint.ConstraintLayout>
