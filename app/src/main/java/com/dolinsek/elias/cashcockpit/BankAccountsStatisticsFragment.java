@@ -44,7 +44,6 @@ BankAccountsStatisticsFragment extends Fragment {
     private RecyclerView rvBills;
     private LineChart lcStatistics;
     private BankAccount currentBankAccount;
-    private NotEnoughDataFragment fgmNotEnoughData, fgmNotEnoughBills;
     private LinearLayout mLlSpnSelectBankAccountContainer;
     private Spinner spnSelectBankAccount;
 
@@ -61,20 +60,13 @@ BankAccountsStatisticsFragment extends Fragment {
         spnSelectBankAccount = inflatedView.findViewById(R.id.spn_bank_accounts_statistics_select_bank_account);
         mLlSpnSelectBankAccountContainer = inflatedView.findViewById(R.id.ll_bank_account_statistics_bank_accounts_spn_container);
 
-        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_not_enough_data);
-        fgmNotEnoughBills = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bank_account_statistics_no_bills);
-
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBills.setNestedScrollingEnabled(false);
 
         if (Database.getBankAccounts().size() != 0){
-            fgmNotEnoughData.hide();
             loadBankAccount(savedInstanceState);
             setupSelectBankAccountSpinner();
         } else {
-            fgmNotEnoughData.show();
-            fgmNotEnoughBills.hide();
-            lcStatistics.setVisibility(View.GONE);
             spnSelectBankAccount.setVisibility(View.GONE);
             mLlSpnSelectBankAccountContainer.setVisibility(View.GONE);
         }
@@ -188,22 +180,17 @@ BankAccountsStatisticsFragment extends Fragment {
                     setupChartStyle();
 
                     lcStatistics.setVisibility(View.VISIBLE);
-                    fgmNotEnoughData.hide();
                 } else {
                     lcStatistics.setVisibility(View.GONE);
-                    fgmNotEnoughData.show();
                 }
 
                 if (selectedBankAccount.getBills().size() == 0){
                     rvBills.setVisibility(View.GONE);
                     if (doesBankAccountOwnBalanceChanges(selectedBankAccount)){
-                        fgmNotEnoughBills.show();
                     } else {
-                        fgmNotEnoughBills.hide();
                     }
                 } else {
                     rvBills.setVisibility(View.VISIBLE);
-                    fgmNotEnoughBills.hide();
                 }
             }
 

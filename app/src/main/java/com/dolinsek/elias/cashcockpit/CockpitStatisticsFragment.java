@@ -209,6 +209,8 @@ public class CockpitStatisticsFragment extends Fragment {
         pieChart.setDrawEntryLabels(false);
         pieChart.getLegend().setEnabled(true);
         pieChart.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        pieChart.getLegend().setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        pieChart.getLegend().setTextSize(14f);
         pieChart.setExtraOffsets(0,-4,0,-4);
 
         pieChart.invalidate();
@@ -290,7 +292,7 @@ public class CockpitStatisticsFragment extends Fragment {
 
     private void addNewPieEntryToPieEntriesIfValueIsNotNull(long amount, String label, ArrayList<PieEntry> pieEntries){
         if (amount != 0){
-            String textToDisplay = label + " (" + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amount * 100) + ") ";
+            String textToDisplay = label + " " + Currency.getActiveCurrency(getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(amount * 100);
             pieEntries.add(new PieEntry(amount, textToDisplay));
         }
     }

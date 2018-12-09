@@ -39,14 +39,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="220dp"/>
 
-            <fragment
-                android:id="@+id/fgm_bank_account_statistics_not_enough_data"
-                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                app:text="@string/label_no_data_for_statistic"/>
-
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"
                 android:layout_width="match_parent"

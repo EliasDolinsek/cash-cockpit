@@ -24,7 +24,8 @@
             style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="@string/hint_amount" />
+            android:hint="@string/hint_amount"
+            android:inputType="numberDecimal"/>
 
     </android.support.design.widget.TextInputLayout>
 
@@ -78,21 +79,21 @@
         android:orientation="horizontal">
 
         <android.support.design.button.MaterialButton
-            android:id="@+id/btn_bank_account_create_save"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_weight="5"
-            android:text="@string/btn_save" />
-
-        <android.support.design.button.MaterialButton
             android:id="@+id/btn_bank_account_cancel_delete"
             style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
             android:layout_weight="5"
             android:text="@string/btn_delete" />
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_bank_account_create_save"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:text="@string/btn_save" />
 
     </LinearLayout>
 

@@ -7,13 +7,12 @@
     tools:layout_editor_absoluteY="25dp">
 
     <TextView
-        android:id="@+id/txv_item_bank_account_primary_account"
+        android:id="@+id/txv_item_bank_account_primary_secondary_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-regular"
-        android:text="@string/label_primary_account"
         android:textAllCaps="true"
-        android:textColor="@color/colorPrimary"
+        android:letterSpacing="0.15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txv_item_bank_account_name" />
@@ -38,7 +37,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txv_item_bank_account_primary_account">
+        app:layout_constraintTop_toBottomOf="@+id/txv_item_bank_account_primary_secondary_account">
 
         <android.support.design.chip.Chip
             android:id="@+id/chip_item_bank_account_balance"
@@ -58,8 +57,11 @@
     </android.support.design.chip.ChipGroup>
 
     <View
+        android:id="@+id/view_item_bank_account_divider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:background="@color/colorDivider"
         app:layout_constraintBottom_toBottomOf="parent"

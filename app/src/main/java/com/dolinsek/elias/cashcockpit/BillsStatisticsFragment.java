@@ -56,7 +56,6 @@ public class BillsStatisticsFragment extends Fragment {
     private BarChart bcHistoryOfPayments;
     private LinearLayout llBillTypeOverallUsageTextsContainer, llBillTypeSelectedMonthUsageTextsContainer;
     private View vwSeparationOne, vwSeparationTwo;
-    private NotEnoughDataFragment fgmNotEnoughData;
 
     private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
     private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
@@ -71,7 +70,6 @@ public class BillsStatisticsFragment extends Fragment {
         llSelectMonthFragment = inflatedView.findViewById(R.id.ll_bills_statistics_select_month_fragment_container);
         pcUsageOfBillTypes = inflatedView.findViewById(R.id.pc_bills_statistics_bill_type_usage);
         bcHistoryOfPayments = inflatedView.findViewById(R.id.bc_bills_statistics_history_of_payments);
-        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_bills_statistics_not_enough_data);
 
         llBillTypeOverallUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_overall_texts_container);
         llBillTypeSelectedMonthUsageTextsContainer = inflatedView.findViewById(R.id.ll_bills_statistics_bill_type_usage_selected_month_texts_container);
@@ -92,7 +90,6 @@ public class BillsStatisticsFragment extends Fragment {
             displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
-            fgmNotEnoughData.hide();
         } else {
             vwSeparationOne.setVisibility(View.GONE);
             vwSeparationTwo.setVisibility(View.GONE);
@@ -100,7 +97,6 @@ public class BillsStatisticsFragment extends Fragment {
             pcUsageOfBillTypes.setVisibility(View.GONE);
             bcHistoryOfPayments.setVisibility(View.GONE);
             hideBillTypeUsageContainers();
-            fgmNotEnoughData.show();
         }
 
         return inflatedView;

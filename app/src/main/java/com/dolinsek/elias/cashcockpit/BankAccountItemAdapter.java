@@ -1,8 +1,8 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.chip.Chip;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,8 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
-import com.dolinsek.elias.cashcockpit.components.Bill;
-import com.dolinsek.elias.cashcockpit.components.Category;
 import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
@@ -53,8 +51,10 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
         holder.chipTrend.setText(getBalanceTrendInPercentAsString(bankAccount));
         holder.chipBills.setText(formattedBillsText);
 
-        if(!bankAccount.isPrimaryAccount()){
-            holder.txvPrimaryAccount.setVisibility(View.GONE);
+        setupBankAccountStatusTxv(holder, bankAccount);
+
+        if (position == mBankAccounts.size() - 1){
+            holder.itemView.findViewById(R.id.view_item_bank_account_divider).setVisibility(View.GONE);
         }
 
         holder.itemView.setOnClickListener(view -> {
@@ -71,14 +71,14 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
     public class BankAccountItemViewHolder extends RecyclerView.ViewHolder{
 
-        TextView mTxvName, txvPrimaryAccount;
+        TextView mTxvName, txvPrimarySecondaryAccount;
         Chip chipBalance, chipTrend, chipBills;
 
         public BankAccountItemViewHolder(View itemView) {
             super(itemView);
 
             mTxvName = itemView.findViewById(R.id.txv_item_bank_account_name);
-            txvPrimaryAccount = itemView.findViewById(R.id.txv_item_bank_account_primary_account);
+            txvPrimarySecondaryAccount = itemView.findViewById(R.id.txv_item_bank_account_primary_secondary_account);
 
             chipBalance = itemView.findViewById(R.id.chip_item_bank_account_balance);
             chipTrend = itemView.findViewById(R.id.chip_item_bank_account_trend);
@@ -94,7 +94,7 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
         } else if (balanceTrend == 0){
             return "\u00B1" + balanceTrend + "%";
         } else {
-            return "-" + balanceTrend + "%";
+            return balanceTrend + "%";
         }
     }
 
@@ -111,13 +111,20 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
                 currentMonthBalance += lastMonthBalance;
             }
 
-            if (currentMonthBalance > 0){
-                return (int) Math.round(100.0 / lastMonthBalance * currentMonthBalance);
-            } else {
-                return (int) Math.round(100.0 / currentMonthBalance * lastMonthBalance);
-            }
+            return (int) Math.round(100.0 / lastMonthBalance * currentMonthBalance) - 100;
         } catch (Exception e){
             return 0;
+        }
+    }
+
+    private void setupBankAccountStatusTxv(BankAccountItemViewHolder holder, BankAccount bankAccount){
+        Context context = holder.itemView.getContext();
+        if (bankAccount.isPrimaryAccount()){
+            holder.txvPrimarySecondaryAccount.setText(context.getString(R.string.label_primary_account));
+            holder.txvPrimarySecondaryAccount.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        } else {
+            holder.txvPrimarySecondaryAccount.setText(context.getString(R.string.label_secondary_account));
+            holder.txvPrimarySecondaryAccount.setTextColor(context.getResources().getColor(R.color.colorAccent));
         }
     }
 }

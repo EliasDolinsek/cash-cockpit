@@ -162,6 +162,7 @@
     <string name="label_enter_name_already_exists">Entered name already exists</string>
     <string name="label_item_auto_pay_details">%1$s %2$s %3$s (%4$s)</string>
     <string name="label_item_bank_account_bills">%1$d Bills</string>
+    <string name="label_secondary_account">Secondary Account</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_deleted_successfully">Bank Account got deleted successfully</string>

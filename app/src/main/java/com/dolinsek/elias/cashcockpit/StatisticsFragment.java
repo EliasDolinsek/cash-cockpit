@@ -55,7 +55,7 @@ public class StatisticsFragment extends Fragment {
         @Override
         public Fragment getItem(int position) {
             switch (position){
-                case 0:return bankAccountsStatisticsFragment;
+                case 0: return bankAccountsStatisticsFragment;
                 case 1: return billsStatisticsFragment;
                 case 2: return categoriesStatisticsFragment;
                 case 3: return goalsStatisticsFragment;
