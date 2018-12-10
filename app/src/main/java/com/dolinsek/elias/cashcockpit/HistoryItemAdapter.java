@@ -110,8 +110,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         public LinearLayout mLlBillActionButtonsContainer, mLlBillEditElementsContainer;
         public TextView mTxvBillType, mTxvDescription, mTxvDateAmount;
         public Button btnEdit, btnDelete, btnDuplicate, btnEditAmount, btnEditDescription;
-
-        private TextInputLayout mTilEditEdtContainer;
         private EditText mEdtEdit;
 
         public HistoryViewHolder(View itemView) {
@@ -132,8 +130,6 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             btnDuplicate = itemView.findViewById(R.id.btn_item_history_duplicate);
             btnEditAmount = itemView.findViewById(R.id.btn_item_history_edit_amount);
             btnEditDescription = itemView.findViewById(R.id.btn_item_history_edit_description);
-
-            mTilEditEdtContainer = itemView.findViewById(R.id.til_item_history_edt_container);
             mEdtEdit = itemView.findViewById(R.id.edt_item_history_edit);
         }
     }
@@ -307,13 +303,14 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         Bill duplication = (Bill)bill.clone();
         duplication.setCreationDate(System.currentTimeMillis());
 
-        Toolkit.getBankAccountOfBill(bill).addBill(bill);
+        Toolkit.getBankAccountOfBill(bill).addBill(duplication);
         Database.save(holder.itemView.getContext());
 
-        billsToDisplay.add(bill);
+        billsToDisplay.add(0, bill);
 
         notifyItemInserted(0);
         notifyItemRangeChanged(0, getItemCount());
+        recyclerView.scrollToPosition(0);
 
         collapseAll();
     }

@@ -9,12 +9,11 @@
     android:layout_marginEnd="4dp">
 
     <TextView
-        android:id="@+id/textView6"
-        android:text="INPUT"
+        android:id="@+id/txv_item_auto_pay_bill_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-regular"
         android:letterSpacing="0.15"
         android:textAllCaps="true"
@@ -27,23 +26,31 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-regular"
-        android:text="Einkommen"
         android:textColor="@color/colorAccentTextColor"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        app:layout_constraintTop_toBottomOf="@+id/txv_item_auto_pay_bill_type" />
 
     <TextView
         android:id="@+id/txv_item_auto_pay_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Monatliches 100€ Einkommen (Hauptkonto)"
         android:fontFamily="sans-serif-medium"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txv_item_auto_pay_name" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/colorDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txv_item_auto_pay_details" />
 
 
 </android.support.constraint.ConstraintLayout>

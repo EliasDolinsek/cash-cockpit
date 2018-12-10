@@ -43,10 +43,11 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
         String autoPayTypeAsString = getAutoPayTypeAsString(autoPay.getType(), context);
         String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(autoPay.getBill().getAmount());
-        String details = context.getResources().getString(R.string.label_item_auto_pay_details, autoPayTypeAsString, formattedAmount, Toolkit.getBillTypeAsString(autoPay.getBill().getType(), context), autoPay.getBankAccountName());
+        String details = context.getResources().getString(R.string.label_item_auto_pay_details, autoPayTypeAsString, formattedAmount, autoPay.getBankAccountName());
 
         holder.mTxvName.setText(autoPay.getName());
         holder.mTxvDetails.setText(details);
+        setupBillTypeIndicator(holder, autoPay);
 
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(holder.itemView.getContext(), AutoPayActivity.class);
@@ -80,5 +81,23 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
         }
 
         throw new IllegalArgumentException("Couldn't resolve " + autoPayType + " as an AutoPay-Type");
+    }
+
+    private void setupBillTypeIndicator(AutoPayItemViewHolder holder, AutoPay autoPay){
+        Context context = holder.itemView.getContext();
+        TextView txvBillTypeIndicator = holder.itemView.findViewById(R.id.txv_item_auto_pay_bill_type);
+
+        switch (autoPay.getBill().getType()){
+            case Bill.TYPE_INPUT: {
+                txvBillTypeIndicator.setTextColor(context.getResources().getColor(R.color.colorBillTypeInput));
+                txvBillTypeIndicator.setText(context.getString(R.string.label_input));
+            } break;
+            case Bill.TYPE_OUTPUT: {
+                txvBillTypeIndicator.setTextColor(context.getResources().getColor(R.color.colorBillTypeOutput));
+                txvBillTypeIndicator.setText(context.getString(R.string.label_output));
+            } break;
+        }
+
+
     }
 }

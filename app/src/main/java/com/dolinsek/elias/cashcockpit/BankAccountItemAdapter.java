@@ -53,10 +53,6 @@ public class BankAccountItemAdapter extends RecyclerView.Adapter<BankAccountItem
 
         setupBankAccountStatusTxv(holder, bankAccount);
 
-        if (position == mBankAccounts.size() - 1){
-            holder.itemView.findViewById(R.id.view_item_bank_account_divider).setVisibility(View.GONE);
-        }
-
         holder.itemView.setOnClickListener(view -> {
             Intent intent = new Intent(holder.itemView.getContext(), BankAccountActivity.class);
             intent.putExtra(BankAccountActivity.EXTRA_BANK_ACCOUNT_INDEX, position);
