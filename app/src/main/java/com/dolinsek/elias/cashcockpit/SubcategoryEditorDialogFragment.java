@@ -118,6 +118,12 @@ public class SubcategoryEditorDialogFragment extends DialogFragment{
             });
 
             final Button mBtnNegative = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 0, 8, 0);
+            mBtnNegative.setLayoutParams(layoutParams);
+
             if(mBtnNegative != null){
                 mBtnNegative.setOnClickListener(view -> {
                     mLlDeleteInformations.setVisibility(View.VISIBLE);

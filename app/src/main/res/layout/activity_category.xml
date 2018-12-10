@@ -3,51 +3,85 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.dolinsek.elias.cashcockpit.CategoryActivity"
-    android:orientation="vertical"
-    android:padding="8dp">
+    android:orientation="vertical" >
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_category_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp" >
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/edt_category_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputEditText.FilledBox"
+            android:hint="@string/hint_name"
+            android:singleLine="true"/>
+
+    </android.support.design.widget.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_marginBottom="4dp">
+        android:orientation="horizontal"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginTop="6dp" >
 
-        <fragment
-            android:id="@+id/fgm_category_name"
-            class="com.dolinsek.elias.cashcockpit.DescriptionInputFragment"
-            android:layout_width="match_parent"
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_category_set_goal"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:hintText="@string/hint_name"
-            android:layout_marginBottom="4dp"/>
+            android:layout_weight="5"
+            android:text="@string/btn_set_goal"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_marginEnd="8dp"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btn_category_add_subcategory"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btn_category_set_goal"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="@string/btn_set_goal"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-
-            <Button
-                android:id="@+id/btn_category_add_subcategory"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="5"
-                android:text="@string/btn_add_subcategory"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"/>
-        </LinearLayout>
+            android:layout_weight="5"
+            android:text="@string/btn_add_subcategory"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_category_subcategories"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"/>
+        android:layout_weight="10"
+        android:layout_marginTop="8dp"
+        android:paddingStart="8dp" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginBottom="14dp"
+        android:layout_marginEnd="16dp">
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_category_cance_delete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:layout_marginEnd="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+        <android.support.design.button.MaterialButton
+            android:id="@+id/btn_category_create_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton"/>
+    </LinearLayout>
+
 </LinearLayout>

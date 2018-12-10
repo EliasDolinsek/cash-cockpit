@@ -45,11 +45,6 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
     private Button mBtnRestoreDefaultCategories;
 
     /**
-     * FloatingActionButton to create a new category
-     */
-    private FloatingActionButton mFbtnAdd;
-
-    /**
      * Adapter what displays primary categories
      */
     private PrimaryCategoryItemAdapter mPrimaryCategoryItemAdapter;
@@ -70,41 +65,16 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
             @Override public boolean canReuseUpdatedViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, @NonNull List<Object> payloads) { return true; }
         });
 
-        mBtnCreateCategory = (Button) inflatedView.findViewById(R.id.btn_fragment_categories_create);
-        mBtnRestoreDefaultCategories = (Button) inflatedView.findViewById(R.id.btn_fragment_categories_restore_default_categories);
-        mFbtnAdd = (FloatingActionButton) inflatedView.findViewById(R.id.fbtn_fragment_categories);
+        mBtnCreateCategory = inflatedView.findViewById(R.id.btn_fragment_categories_create);
+        mBtnRestoreDefaultCategories = inflatedView.findViewById(R.id.btn_fragment_categories_restore_default_categories);
 
-        mFbtnAdd.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(container.getContext(), CategoryActivity.class);
-                startActivity(intent);
-            }
+        mBtnCreateCategory.setOnClickListener(view -> {
+            Intent intent = new Intent(container.getContext(), CategoryActivity.class);
+            startActivity(intent);
         });
 
-        mBtnCreateCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(container.getContext(), CategoryActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        mBtnRestoreDefaultCategories.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                addDefaultPrimaryCategoriesToPrimaryCategories();
-
-                try {
-                    Database.save(getContext());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                setVisibilities();
-
-                mRvCategories.setAdapter((mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories())));
-            }
+        mBtnRestoreDefaultCategories.setOnClickListener(view -> {
+            restoreDefaultCategories();
         });
 
         return inflatedView;
@@ -122,13 +92,9 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
 
     private void setVisibilities(){
         if(Database.getPrimaryCategories().size() != 0){
-            mBtnCreateCategory.setVisibility(View.GONE);
             mBtnRestoreDefaultCategories.setVisibility(View.GONE);
-            mFbtnAdd.setVisibility(View.VISIBLE);
         } else{
-            mBtnCreateCategory.setVisibility(View.VISIBLE);
             mBtnRestoreDefaultCategories.setVisibility(View.VISIBLE);
-            mFbtnAdd.setVisibility(View.GONE);
         }
     }
 
@@ -155,6 +121,19 @@ public class CategoriesFragment extends Fragment implements DialogInterface.OnDi
 
     private void setupPrimaryCategoryItemAdapter(){
         mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories());
+    }
+
+    private void restoreDefaultCategories(){
+        addDefaultPrimaryCategoriesToPrimaryCategories();
+
+        try {
+            Database.save(getContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        setVisibilities();
+        mRvCategories.setAdapter((mPrimaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getNormalPrimaryCategoryAdapter(Database.getPrimaryCategories())));
     }
 
     private void addDefaultPrimaryCategoriesToPrimaryCategories(){
