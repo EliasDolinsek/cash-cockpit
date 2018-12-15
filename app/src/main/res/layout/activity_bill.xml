@@ -34,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_amount"
-                    android:inputType="numberDecimal"
+                    android:inputType="numberDecimal|numberSigned"
                     android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
@@ -84,7 +84,7 @@
                 android:orientation="horizontal"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cg_bill_bill_types">
+                app:layout_constraintTop_toBottomOf="@+id/cg_auto_pay_bill_types">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -160,7 +160,7 @@
             </LinearLayout>
 
             <android.support.design.chip.ChipGroup
-                android:id="@+id/cg_bill_bill_types"
+                android:id="@+id/cg_auto_pay_bill_types"
                 android:layout_width="395dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -173,14 +173,14 @@
                 app:singleSelection="true">
 
                 <android.support.design.chip.Chip
-                    android:id="@+id/chip_bill_input"
+                    android:id="@+id/chip_auto_pay_bill_type_input"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/label_input" />
 
                 <android.support.design.chip.Chip
-                    android:id="@+id/chip_bill_output"
+                    android:id="@+id/chip_auto_pay_bill_type_output"
                     style="@style/Widget.MaterialComponents.Chip.Choice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

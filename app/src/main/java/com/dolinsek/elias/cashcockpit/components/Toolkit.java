@@ -3,6 +3,8 @@ package com.dolinsek.elias.cashcockpit.components;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.res.Resources;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.DeleteBillDialogFragment;
@@ -246,5 +248,36 @@ public class Toolkit {
         }
 
         return balanceChangesOfMonth;
+    }
+
+    public static class ActivityToolkit {
+        public static void addBankAccountChipsToChipGroup(ChipGroup chipGroup, Context context){
+            for (BankAccount bankAccount:Database.getBankAccounts()){
+                addBankAccountChipToChipGroup(bankAccount, chipGroup, bankAccount.isPrimaryAccount(), context);
+            }
+        }
+
+        public static void addBankAccountChipToChipGroup(BankAccount bankAccount, ChipGroup chipGroup, boolean checked, Context context) {
+            Chip chip = new Chip(context);
+            chip.setText(bankAccount.getName());
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chip.setCheckedIconVisible(false);
+
+            chipGroup.addView(chip);
+            if (checked){
+                chipGroup.check(chip.getId());
+            }
+        }
+
+        public static BankAccount getSelectedBankAccountFromChipGroup(ChipGroup chipGroup){
+            for (int i = 0; i<chipGroup.getChildCount(); i++){
+                if (((Chip)chipGroup.getChildAt(i)).isChecked()){
+                    return Database.getBankAccounts().get(i);
+                }
+            }
+
+            return Database.getBankAccounts().get(0);
+        }
     }
 }

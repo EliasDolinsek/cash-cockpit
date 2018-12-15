@@ -69,26 +69,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
         setupViewsVisibilities();
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void setupRecyclerView(){
         final SubcategoryItemAdapter.OnCategorySelectedListener onSubcategorySelectedListener = (primaryCategoryIndex, subcategoryIndex) -> {
             selectedPrimaryCategoryIndex = primaryCategoryIndex;

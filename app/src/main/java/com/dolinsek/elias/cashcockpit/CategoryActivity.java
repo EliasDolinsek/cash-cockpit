@@ -1,21 +1,13 @@
 package com.dolinsek.elias.cashcockpit;
 
-import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.AutoPay;
@@ -27,9 +19,6 @@ import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
-import org.json.JSONException;
-
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity {

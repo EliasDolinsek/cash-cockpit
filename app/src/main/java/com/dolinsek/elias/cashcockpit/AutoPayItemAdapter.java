@@ -43,7 +43,7 @@ public class AutoPayItemAdapter extends RecyclerView.Adapter<AutoPayItemAdapter.
 
         String autoPayTypeAsString = getAutoPayTypeAsString(autoPay.getType(), context);
         String formattedAmount = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithoutCentsWithCurrencySymbol(autoPay.getBill().getAmount());
-        String details = context.getResources().getString(R.string.label_item_auto_pay_details, autoPayTypeAsString, formattedAmount, autoPay.getBankAccountName());
+        String details = context.getResources().getString(R.string.label_item_auto_pays_details, autoPayTypeAsString, formattedAmount, autoPay.getBankAccountName());
 
         holder.mTxvName.setText(autoPay.getName());
         holder.mTxvDetails.setText(details);

@@ -27,10 +27,7 @@ public class BillActivity extends AppCompatActivity {
     private Button btnSelectCategory, btnAddBill;
 
     private ChipGroup cgBillType, cgBankAccount;
-
-    private int selectedBillType, previousSelectedBillTypeChipId;
     private Subcategory selectedSubcategory;
-    private BankAccount selectedBankAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,24 +37,16 @@ public class BillActivity extends AppCompatActivity {
         tilAmount = findViewById(R.id.til_bill_amount);
         edtAmount = findViewById(R.id.edt_bill_amount);
 
+        edtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(edtAmount));
+
         tilDescription = findViewById(R.id.til_bill_description);
         edtDescription = findViewById(R.id.edt_bill_description);
 
         btnSelectCategory = findViewById(R.id.btn_bill_select_category);
         btnAddBill = findViewById(R.id.btn_bill_add_bill);
 
-        cgBillType = findViewById(R.id.cg_bill_bill_types);
+        cgBillType = findViewById(R.id.cg_auto_pay_bill_types);
         cgBankAccount = findViewById(R.id.cg_bill_bank_account);
-
-        cgBillType.setOnCheckedChangeListener((chipGroup, i) -> {
-            switch (i){
-                case 0: selectedBillType = Bill.TYPE_INPUT; break;
-                case 1: selectedBillType = Bill.TYPE_OUTPUT; break;
-                case 2: selectedBillType = Bill.TYPE_TRANSFER; break;
-            }
-
-            previousSelectedBillTypeChipId = i;
-        });
 
         edtAmount.addTextChangedListener(Currency.getActiveCurrency(this).getCurrencyTextWatcher(edtAmount));
 
@@ -73,7 +62,7 @@ public class BillActivity extends AppCompatActivity {
             addBillFromInputsIfFilledOut();
         });
 
-        addChipsForBankAccounts();
+        Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
     }
 
     @Override
@@ -81,25 +70,6 @@ public class BillActivity extends AppCompatActivity {
         if (requestCode == RC_SELECT_CATEGORY && resultCode == RESULT_OK){
             selectedSubcategory = getSubcategoryFromIntentExtras(data);
             displaySelectedSubcategoryName();
-        }
-    }
-
-    private void addChipsForBankAccounts(){
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            addChipForBankAccount(bankAccount, bankAccount.isPrimaryAccount());
-        }
-    }
-
-    private void addChipForBankAccount(BankAccount bankAccount, boolean checked) {
-        Chip chip = new Chip(this);
-        chip.setText(bankAccount.getName());
-        chip.setCheckable(true);
-        chip.setClickable(true);
-        chip.setCheckedIconVisible(false);
-
-        cgBankAccount.addView(chip);
-        if (checked){
-            cgBankAccount.check(chip.getId());
         }
     }
 
@@ -122,7 +92,7 @@ public class BillActivity extends AppCompatActivity {
     private void addBillFromInputsIfFilledOut(){
         if (checkEverythingFilledOutAndDisplayErrorIfNot()){
             Bill bill = new Bill(getEnteredAmountAsLong(), getValidDescription(), selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName(), getSelectedBillType(), false, System.currentTimeMillis());
-            getSelectedBankAccount().addBill(bill);
+            Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccount).addBill(bill);
             Database.save(this);
             clearInputs();
         }
@@ -162,20 +132,10 @@ public class BillActivity extends AppCompatActivity {
 
     private int getSelectedBillType(){
         switch (cgBillType.getCheckedChipId()){
-            case R.id.chip_bill_input: return Bill.TYPE_INPUT;
+            case R.id.chip_auto_pay_bill_type_input: return Bill.TYPE_INPUT;
             case R.id.chip_bill_transfer: return Bill.TYPE_TRANSFER;
             default: return Bill.TYPE_OUTPUT;
         }
-    }
-
-    private BankAccount getSelectedBankAccount(){
-        for (int i = 0; i<cgBankAccount.getChildCount(); i++){
-            if (((Chip)cgBankAccount.getChildAt(i)).isChecked()){
-                return Database.getBankAccounts().get(i);
-            }
-        }
-
-        return Database.getBankAccounts().get(0);
     }
 
     private String getValidDescription(){

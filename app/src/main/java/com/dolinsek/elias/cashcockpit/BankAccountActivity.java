@@ -40,6 +40,8 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         edtAmount = findViewById(R.id.edt_bank_account_amount);
         edtName = findViewById(R.id.edt_bank_account_name);
 
+        edtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(edtAmount));
+
         tilAmount = findViewById(R.id.til_bank_account_amount);
         tilName = findViewById(R.id.til_bank_account_name);
 
