@@ -61,8 +61,6 @@ public class AutoPayActivity extends AppCompatActivity {
         btnCreateSave = findViewById(R.id.btn_auto_pay_create_save);
 
         edtAmount.addTextChangedListener(Currency.getActiveCurrency(getApplicationContext()).getCurrencyTextWatcher(edtAmount));
-
-        setupButtons();
         setupChipGroups();
 
         if(getIntent().hasExtra(EXTRA_AUTO_PAY_INDEX)){
@@ -77,13 +75,16 @@ public class AutoPayActivity extends AppCompatActivity {
             autoPay = new AutoPay();
             autoPay.setBill(new Bill());
         }
+
+        setupButtons();
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == RC_SELECT_CATEGORY && resultCode == RESULT_OK){
-            int primaryCategoryIndex = data.getIntExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, 0);
-            int subcategoryIndex = data.getIntExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, 0);
+            int primaryCategoryIndex = data.getIntExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, 0);
+            int subcategoryIndex = data.getIntExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, 0);
             selectedSubcategory = Database.getPrimaryCategories().get(primaryCategoryIndex).getSubcategories().get(subcategoryIndex);
 
             btnSelectCategory.setText(selectedSubcategory.getName());
@@ -106,8 +107,8 @@ public class AutoPayActivity extends AppCompatActivity {
         btnSelectCategory.setOnClickListener(v -> {
             Intent intent = new Intent(this, SelectCategoryActivity.class);
             if (selectedSubcategory != null){
-                intent.putExtra(SelectCategoryActivity.EXTRA_SUBCATEGORY_INDEX, Toolkit.getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
-                intent.putExtra(SelectCategoryActivity.EXTRA_PRIMARY_CATEGORY_INDEX, Toolkit.getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
+                intent.putExtra(SelectCategoryActivity.SELECTED_SUBCATEGORY_INDEX, Toolkit.getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
+                intent.putExtra(SelectCategoryActivity.SELECTED_PRIMARY_CATEGORY_INDEX, Toolkit.getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
             }
 
             startActivityForResult(intent, RC_SELECT_CATEGORY);

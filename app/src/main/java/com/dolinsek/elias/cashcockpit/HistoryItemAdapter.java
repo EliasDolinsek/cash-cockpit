@@ -319,9 +319,9 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         int bankAccountIndex = getIndexOfBankAccountInDatabase(bankAccountOfBill);
         int billPosition = getIndexOfBillInBankAccount(bill, bankAccountOfBill);
 
-        Intent intent = new Intent(context, BillEditorActivity.class);
-        intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT, billPosition);
-        intent.putExtra(BillEditorActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
+        Intent intent = new Intent(context, BillActivity.class);
+        intent.putExtra(BillActivity.EXTRA_BILL_TO_EDIT, billPosition);
+        intent.putExtra(BillActivity.EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, bankAccountIndex);
         context.startActivity(intent);
     }
 

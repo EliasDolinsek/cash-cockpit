@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         if(savedInstanceState == null){
-            //Show CockpitFragment
             replaceFragment(cockpitStatisticsFragment);
         }
 

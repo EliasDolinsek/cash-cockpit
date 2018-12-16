@@ -1,5 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
@@ -8,6 +9,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -21,13 +23,21 @@ import com.dolinsek.elias.cashcockpit.components.Toolkit;
 public class BillActivity extends AppCompatActivity {
 
     private static final int RC_SELECT_CATEGORY = 518;
+    public static final String EXTRA_BILL_TO_EDIT = "extraBillToEditIndex";
+    public static final String EXTRA_BILL_TO_EDIT_BANK_ACCOUNT = "extraBillBankAccountIndex";
 
     private TextInputLayout tilAmount, tilDescription;
     private TextInputEditText edtAmount, edtDescription;
-    private Button btnSelectCategory, btnAddBill;
+    private Button btnSelectCategory, btnAddDeleteBill, btnSaveBill;
 
     private ChipGroup cgBillType, cgBankAccount;
     private Subcategory selectedSubcategory;
+
+    //editMode-Variables
+    private boolean editMode;
+    private Bill billToEdit;
+    private BankAccount bankAccountOfBillToEdit;
+    int bankAccountOfBillToEditIndex, billToEditIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +53,38 @@ public class BillActivity extends AppCompatActivity {
         edtDescription = findViewById(R.id.edt_bill_description);
 
         btnSelectCategory = findViewById(R.id.btn_bill_select_category);
-        btnAddBill = findViewById(R.id.btn_bill_add_bill);
+        btnAddDeleteBill = findViewById(R.id.btn_bill_add_delete_bill);
+        btnSaveBill = findViewById(R.id.btn_bill_save_bill);
 
         cgBillType = findViewById(R.id.cg_auto_pay_bill_types);
         cgBankAccount = findViewById(R.id.cg_bill_bank_account);
 
         edtAmount.addTextChangedListener(Currency.getActiveCurrency(this).getCurrencyTextWatcher(edtAmount));
 
+        if (getIntent().hasExtra(EXTRA_BILL_TO_EDIT) && getIntent().hasExtra(EXTRA_BILL_TO_EDIT_BANK_ACCOUNT)){
+            editMode = true;
+            loadEditVariablesFromIntentExtras();
+            hideBankAccountSelection();
+        }
+
+        setupButtons();
+        Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (editMode){
+            setupForEditMode();
+        }
+    }
+
+    private void hideBankAccountSelection(){
+        findViewById(R.id.ll_bill_bank_account_selection).setVisibility(View.GONE);
+        findViewById(R.id.hsv_bill_bank_account_selection).setVisibility(View.GONE);
+    }
+
+    private void setupButtons(){
         btnSelectCategory.setOnClickListener(view -> {
             Intent intent = new Intent(this, SelectCategoryActivity.class);
             if (selectedSubcategory != null){
@@ -58,11 +93,25 @@ public class BillActivity extends AppCompatActivity {
             startActivityForResult(intent, RC_SELECT_CATEGORY);
         });
 
-        btnAddBill.setOnClickListener(view -> {
-            addBillFromInputsIfFilledOut();
-        });
+        if (editMode){
+            btnAddDeleteBill.setText(R.string.btn_delete);
+            btnAddDeleteBill.setOnClickListener(view -> showDeleteBillDialogFragment());
+            btnSaveBill.setOnClickListener(view -> saveBillFromInputsIfFilledOut());
+        } else {
+            btnSaveBill.setVisibility(View.GONE);
+            btnAddDeleteBill.setText(R.string.btn_add_bill);
+            btnAddDeleteBill.setOnClickListener(view -> addBillFromInputsIfFilledOut());
+        }
+    }
 
-        Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
+    private void showDeleteBillDialogFragment(){
+        DeleteBillDialogFragment deleteBillDialogFragment = new DeleteBillDialogFragment();
+        deleteBillDialogFragment.setOnDialogPositiveClickListener((dialog, which) -> {
+            bankAccountOfBillToEdit.getBills().remove(billToEdit);
+            Database.save(BillActivity.this);
+            finish();
+        });
+        deleteBillDialogFragment.show(getSupportFragmentManager(), "delete_bill");
     }
 
     @Override
@@ -71,6 +120,27 @@ public class BillActivity extends AppCompatActivity {
             selectedSubcategory = getSubcategoryFromIntentExtras(data);
             displaySelectedSubcategoryName();
         }
+    }
+
+    private void setupForEditMode(){
+        String formattedAmount = Currency.getActiveCurrency(this).formatAmountToReadableStringWithCurrencySymbol(billToEdit.getAmount());
+        edtAmount.setText(formattedAmount);
+        edtDescription.setText(billToEdit.getDescription());
+
+        ((Chip)cgBillType.getChildAt(billToEdit.getType())).setChecked(true);
+        ((Chip)cgBankAccount.getChildAt(bankAccountOfBillToEditIndex)).setChecked(true);
+
+        btnSelectCategory.setText(billToEdit.getSubcategoryName());
+    }
+
+    private void loadEditVariablesFromIntentExtras(){
+        bankAccountOfBillToEditIndex = getIntent().getIntExtra(EXTRA_BILL_TO_EDIT_BANK_ACCOUNT, 0);
+        billToEditIndex = getIntent().getIntExtra(EXTRA_BILL_TO_EDIT, 0);
+
+        bankAccountOfBillToEdit = Database.getBankAccounts().get(bankAccountOfBillToEditIndex);
+        billToEdit = bankAccountOfBillToEdit.getBills().get(billToEditIndex);
+
+        selectedSubcategory = billToEdit.getSubcategory();
     }
 
     private Subcategory getSubcategoryFromIntentExtras(Intent intent){
@@ -95,6 +165,18 @@ public class BillActivity extends AppCompatActivity {
             Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccount).addBill(bill);
             Database.save(this);
             clearInputs();
+        }
+    }
+
+    private void saveBillFromInputsIfFilledOut(){
+        if (checkEverythingFilledOutAndDisplayErrorIfNot()){
+            billToEdit.setAmount(getEnteredAmountAsLong());
+            billToEdit.setDescription(getValidDescription());
+            billToEdit.setSubcategory(selectedSubcategory);
+            billToEdit.setType(getSelectedBillType());
+
+            Database.save(this);
+            finish();
         }
     }
 
