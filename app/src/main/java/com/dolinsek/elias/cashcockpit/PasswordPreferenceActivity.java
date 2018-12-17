@@ -2,19 +2,13 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.Switch;
 import android.widget.Toast;
 
 public class PasswordPreferenceActivity extends AppCompatActivity {
@@ -23,8 +17,8 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
 
     private EditText edtCurrentPassword, edtNewPassword, edtNewPasswordConfirmation;
     private TextInputLayout tilCurrentPassword, tilNewPassword, tilNewPasswordConfirmation;
-    private Spinner spnPasswordResetTime;
-    private Switch swUsePasswordForLogin;
+    private Chip chipUsePasswordForLogin;
+    private ChipGroup cgPasswordResetTime;
     private Button btnSaveNewPassword, btnSaveSecuritySettings;
     private int selectedPasswordResetTimeOption;
 
@@ -41,62 +35,36 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
         tilNewPassword = findViewById(R.id.til_password_preference_new_password);
         tilNewPasswordConfirmation = findViewById(R.id.til_password_preference_new_password_confirmation);
 
-        spnPasswordResetTime = findViewById(R.id.spn_password_preference_password_reset_time);
-        swUsePasswordForLogin = findViewById(R.id.sw_password_preference_use_password_for_login);
+        chipUsePasswordForLogin = findViewById(R.id.chip_password_preference_use_password_for_login);
+        cgPasswordResetTime = findViewById(R.id.cg_password_preference_reset_times);
 
         btnSaveNewPassword = findViewById(R.id.btn_password_preference_save_new_password);
         btnSaveSecuritySettings = findViewById(R.id.btn_password_preference_save_security_settings);
 
         setupCurrentPasswordViews();
-        setupSpnPasswordResetTime();
-        setupSwUsePasswordForLogin();
+        setupChipGroupPasswordResetTime();
+        setupChipUsePasswordForLogin();
 
-        btnSaveNewPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String enteredCurrentPassword = edtCurrentPassword.getText().toString();
-                String enteredNewPassword = edtNewPassword.getText().toString();
+        btnSaveNewPassword.setOnClickListener(v -> {
+            String enteredCurrentPassword = edtCurrentPassword.getText().toString();
+            String enteredNewPassword = edtNewPassword.getText().toString();
 
-                hideAllErrors();
-                if (!doesEnteredCurrentPasswordMatchWitchCurrentSetPassword(enteredCurrentPassword)){
-                    displayCurrentEnteredPasswordError();
-                } else if (!doEnteredNewPasswordAndEnteredConformationOfNewPasswordMatch()){
-                    displayNewPasswordViewsErrors();
-                } else if(enteredNewPassword.trim().equals("")){
-                    displayNoNewPasswordEnteredError();
-                } else {
-                    saveNewPasswordAndReSetupViews();
-                }
+            hideAllErrors();
+            if (!doesEnteredCurrentPasswordMatchWitchCurrentSetPassword(enteredCurrentPassword)){
+                displayCurrentEnteredPasswordError();
+            } else if (!doEnteredNewPasswordAndEnteredConformationOfNewPasswordMatch()){
+                displayNewPasswordViewsErrors();
+            } else if(enteredNewPassword.trim().equals("")){
+                displayNoNewPasswordEnteredError();
+            } else {
+                saveNewPasswordAndReSetupViews();
             }
         });
 
-        btnSaveSecuritySettings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveSecuritySettings();
-                displayToastThatSecuritySettingsGotSavedSuccessfully();
-            }
+        btnSaveSecuritySettings.setOnClickListener(v -> {
+            saveSecuritySettings();
+            displayToastThatSecuritySettingsGotSavedSuccessfully();
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null){
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home){
-            finish();
-            return true;
-        } else {
-            return super.onOptionsItemSelected(item);
-        }
     }
 
     private void saveNewPassword(){
@@ -111,7 +79,7 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
         displayToastThatNewPasswordGotSavedSuccessfully();
         removeInputsFromEditTexts();
 
-        swUsePasswordForLogin.setEnabled(true);
+        chipUsePasswordForLogin.setEnabled(true);
         setupCurrentPasswordViews();
     }
 
@@ -192,33 +160,29 @@ public class PasswordPreferenceActivity extends AppCompatActivity {
 
     private void saveSecuritySettings(){
         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).edit();
-        editor.putBoolean("preference_password_required_for_login", swUsePasswordForLogin.isChecked());
+        editor.putBoolean("preference_password_required_for_login", chipUsePasswordForLogin.isChecked());
         editor.putInt(PREFERENCE_PASSWORD_RESET_TIME_OPTION, selectedPasswordResetTimeOption);
         editor.apply();
     }
 
-    private void setupSpnPasswordResetTime(){
-        ArrayAdapter<String> passwordResetTimesAdapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_spinner_item, getResources().getStringArray(R.array.password_reset_time_options));
-        passwordResetTimesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnPasswordResetTime.setAdapter(passwordResetTimesAdapter);
-        spnPasswordResetTime.setSelection(getPasswordResetTimeOption());
-        spnPasswordResetTime.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedPasswordResetTimeOption = position;
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+    private void setupChipGroupPasswordResetTime(){
+        ((Chip)cgPasswordResetTime.getChildAt(getPasswordResetTimeOption())).setChecked(true);
+        cgPasswordResetTime.setOnCheckedChangeListener((chipGroup, i) -> {
+            switch (i){
+                case R.id.chip_password_preference_reset_time_six_hours: selectedPasswordResetTimeOption = 0; break;
+                case R.id.chip_password_preference_reset_time_twelve_hours: selectedPasswordResetTimeOption = 1; break;
+                case R.id.chip_password_preference_reset_time_one_day: selectedPasswordResetTimeOption = 2; break;
+                case R.id.chip_password_preference_reset_three_days: selectedPasswordResetTimeOption = 3; break;
+                case R.id.chip_password_preference_reset_time_one_week: selectedPasswordResetTimeOption = 4; break;
+                case R.id.chip_password_preference_reset_time_never: selectedPasswordResetTimeOption = 5; break;
             }
         });
     }
 
-    private void setupSwUsePasswordForLogin(){
-        swUsePasswordForLogin.setChecked(getIfPasswordIsRequiredForLogin());
+    private void setupChipUsePasswordForLogin(){
+        chipUsePasswordForLogin.setChecked(getIfPasswordIsRequiredForLogin());
         if (getPasswordForLogin().trim().equals("")){
-            swUsePasswordForLogin.setEnabled(false);
+            chipUsePasswordForLogin.setEnabled(false);
         }
     }
 

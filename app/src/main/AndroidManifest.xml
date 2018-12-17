@@ -49,7 +49,7 @@
             android:name=".CockpitChartPreferencesActivity"
             android:label="@string/title_cockpit_chart"
             android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateAlwaysVisible" />
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
 
         <service
             android:name=".RemoteBackupService"

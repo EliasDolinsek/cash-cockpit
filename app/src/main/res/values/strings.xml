@@ -165,6 +165,14 @@
     <string name="label_item_auto_pays_details">%1$s %2$s (%3$s)</string>
     <string name="label_auto_pay_type">AutoPay Type</string>
     <string name="label_enter_valid_description">Enter valid description</string>
+    <string name="label_security_settings">Security Settings</string>
+
+    <string name="label_six_hours">6 Hours</string>
+    <string name="label_twelve_hours">12 Hours</string>
+    <string name="label_one_day">1 Day</string>
+    <string name="label_three_days">3 Days</string>
+    <string name="label_one_week">1 Week</string>
+    <string name="label_never">Never</string>
 
     <!-- Toast texts -->
     <string name="toast_bank_account_got_deleted_successfully">Bank Account got deleted successfully</string>
@@ -298,15 +306,6 @@
         <item>October</item>
         <item>November</item>
         <item>December</item>
-    </array>
-
-    <array name="password_reset_time_options">
-        <item>6 Hours</item>
-        <item>12 Hours</item>
-        <item>1 Day</item>
-        <item>3 Days</item>
-        <item>1 Week</item>
-        <item>Never</item>
     </array>
 
     <!-- Other strings -->
