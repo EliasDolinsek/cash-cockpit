@@ -3,6 +3,9 @@
     <!-- App-Name -->
     <string name="app_name">CashCockpit</string>
 
+    <!-- Publisher -->
+    <string name="publisher_name">Dolinsek App</string>
+
     <!-- ActionBar titles-->
     <string name="title_select_category">Select Category</string>
     <string name="title_password_settings">Password Settings</string>

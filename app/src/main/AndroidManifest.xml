@@ -13,17 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan|stateAlwaysHidden" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:windowSoftInputMode="adjustPan|stateAlwaysHidden"></activity>
         <activity
             android:name=".BankAccountActivity"
             android:theme="@style/AppTheme" />
@@ -40,7 +33,13 @@
         <activity
             android:name=".StartActivity"
             android:noHistory="true"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".PasswordPreferenceActivity"
             android:label="@string/title_password_settings"
@@ -62,8 +61,10 @@
 
         <activity android:name=".SignInActivity" />
         <activity android:name=".TutorialActivity" />
-        <activity android:name=".BillActivity"
+        <activity
+            android:name=".BillActivity"
             android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".AccountActivity"></activity>
     </application>
 
 </manifest>

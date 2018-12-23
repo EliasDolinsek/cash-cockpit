@@ -19,20 +19,18 @@
             android:orientation="vertical"
             android:layout_margin="8dp">
 
-            <LinearLayout
-                android:id="@+id/ll_bank_account_statistics_bank_accounts_spn_container"
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/border_primary_light"
-                android:padding="4dp">
+                android:scrollbars="none">
 
-                <Spinner
-                    android:id="@+id/spn_bank_accounts_statistics_select_bank_account"
+                <android.support.design.chip.ChipGroup
+                    android:id="@+id/cg_bank_accounts_statistics"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    app:singleSelection="true"/>
 
-            </LinearLayout>
+            </HorizontalScrollView>
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lc_bank_accounts_statistics"
@@ -45,13 +43,6 @@
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
                 android:paddingBottom="12dp" />
-
-            <fragment
-                android:id="@+id/fgm_bank_account_statistics_no_bills"
-                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:text="@string/label_no_bills_found"/>
 
         </LinearLayout>
 

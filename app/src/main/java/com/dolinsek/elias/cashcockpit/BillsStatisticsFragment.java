@@ -390,7 +390,7 @@ public class BillsStatisticsFragment extends Fragment {
         long firstCreationDateOfBill = getCreationDateOfFirstAddedBillBill(bills);
         calendar.setTimeInMillis(firstCreationDateOfBill);
 
-        while (!doesMonthExceedsCurrentTime(calendar)){
+        while (!Toolkit.doesMonthExceedsCurrentTime(calendar)){
             long currentMonthTimesStamp = calendar.getTimeInMillis();
             ArrayList<Bill> billsOfMonth = Toolkit.getBillsByMonth(currentMonthTimesStamp);
 
@@ -402,16 +402,6 @@ public class BillsStatisticsFragment extends Fragment {
         }
 
         return monthsWithBills;
-    }
-
-    private boolean doesMonthExceedsCurrentTime(Calendar calendar){
-        Calendar currentMonthCalendar = Calendar.getInstance();
-        currentMonthCalendar.setTimeInMillis(System.currentTimeMillis());
-
-        int currentYear = currentMonthCalendar.get(Calendar.YEAR);
-        int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
-
-        return currentYear < calendar.get(Calendar.YEAR) && currentMonth < calendar.get(Calendar.MONTH);
     }
 
     private long[] arrayListToLongArray(ArrayList<Long> arrayList){

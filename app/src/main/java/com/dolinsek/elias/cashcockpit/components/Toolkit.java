@@ -250,6 +250,30 @@ public class Toolkit {
         return balanceChangesOfMonth;
     }
 
+    public static boolean doesMonthExceedsCurrentTime(Calendar calendar){
+        Calendar currentMonthCalendar = Calendar.getInstance();
+        currentMonthCalendar.setTimeInMillis(System.currentTimeMillis());
+
+        int currentYear = currentMonthCalendar.get(Calendar.YEAR);
+        int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
+
+        if (currentYear <= calendar.get(Calendar.YEAR)){
+            return currentMonth < calendar.get(Calendar.MONTH);
+        } else {
+            return false;
+        }
+    }
+
+    public static int getIndexOfBankAccountInDatabase(BankAccount bankAccount){
+        for (int i = 0; i<Database.getBankAccounts().size(); i++){
+            if (Database.getBankAccounts().get(i).equals(bankAccount)){
+                return i;
+            }
+        }
+
+        throw new IllegalStateException("Couldn't find bankAccount in database");
+    }
+
     public static class ActivityToolkit {
         public static void addBankAccountChipsToChipGroup(ChipGroup chipGroup, Context context){
             for (BankAccount bankAccount:Database.getBankAccounts()){

@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.preference.PreferenceManager;
@@ -123,7 +124,7 @@ public class StartActivity extends AppCompatActivity {
                 }
             } else {
                 edtPassword.setText("");
-                Toast.makeText(StartActivity.this, getString(R.string.label_wrong_password), Toast.LENGTH_SHORT).show();
+                ((TextInputLayout)findViewById(R.id.til_start)).setError(getString(R.string.label_wrong_password));
             }
         };
     }
