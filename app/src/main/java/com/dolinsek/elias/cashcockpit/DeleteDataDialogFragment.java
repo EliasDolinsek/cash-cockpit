@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
@@ -146,7 +147,7 @@ public class DeleteDataDialogFragment extends DialogFragment {
 
         txvCurrentStatus.setText(R.string.label_data_got_deleted);
         setupButtonsForFinishedView();
-        getDialog().setOnDismissListener(dialogInterface -> Toolbox.restartCashCockpit(getContext()));
+        getDialog().setOnDismissListener(dialogInterface -> Toolkit.restartCashCockpit(getContext()));
     }
 
     private void setupForErrorView(){

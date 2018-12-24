@@ -21,7 +21,7 @@ public class SignInActivity extends AppCompatActivity {
     private static final String PRIVACY_STATEMENT_LINK = "privacy_statement_link";
     public static final String EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS = "showVideoTutorialAfterwards";
 
-    private FirebaseRemoteConfig firebaseRemoteConfig;;
+    private FirebaseRemoteConfig firebaseRemoteConfig;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

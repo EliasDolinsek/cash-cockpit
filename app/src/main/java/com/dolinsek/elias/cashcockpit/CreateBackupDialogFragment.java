@@ -137,7 +137,7 @@ public class CreateBackupDialogFragment extends DialogFragment{
 
     private void waitForInternetConnectionOrDialogClose(){
         while (true){
-            if (getDialog() == null ||!getDialog().isShowing() || Toolbox.connectedToInternet(getContext())){
+            if (getDialog() == null || !getDialog().isShowing() || Toolbox.connectedToInternet(getContext())){
                 return;
             }
         }

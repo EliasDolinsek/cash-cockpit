@@ -56,6 +56,10 @@
     <string name="btn_select_category">Select Category</string>
     <string name="btn_save">Save</string>
     <string name="btn_create">Create</string>
+    <string name="btn_sing_in">Sign In</string>
+    <string name="btn_sing_out">Sign Out</string>
+    <string name="btn_help">Help</string>
+    <string name="btn_delete_data">Delete Data</string>
 
     <!-- Hint texts -->
     <string name="hint_name">Name</string>
@@ -169,6 +173,8 @@
     <string name="label_auto_pay_type">AutoPay Type</string>
     <string name="label_enter_valid_description">Enter valid description</string>
     <string name="label_security_settings">Security Settings</string>
+    <string name="label_anonymously">Anonymously</string>
+    <string name="label_help_description">If you need help or change your Sign In password contact us by pressing help</string>
 
     <string name="label_six_hours">6 Hours</string>
     <string name="label_twelve_hours">12 Hours</string>
@@ -225,6 +231,7 @@
     <string name="dialog_msg_create_server_backup_description">Your Backup will be stored on the server. You can download it on another phone to synch or reset data.</string>
     <string name="dialog_msg_sing_out_description">"When signing out, all off your locally saved data will be removed!"</string>
     <string name="dialog_msg_delete_bill">Do you want to delete this bill?</string>
+    <string name="dialog_msg_delete_account">Press delete to delete this user account. If you want your server data deleted you HAVE TO delete it before!</string>
 
     <!-- Dialog titles -->
     <string name="dialog_title_create_goal">Create Goal</string>
@@ -241,6 +248,7 @@
     <string name="dialog_title_reset_data">Reset Data</string>
     <string name="dialog_title_sing_out">Sign Out</string>
     <string name="dialog_title_delete_bill">Delete Bill</string>
+    <string name="dialog_title_delete_account">Delete Account</string>
 
     <!-- Longer texts -->
     <string name="text_password_preferences_notices">In this settings page you can edit your password and change your login settings. Please notice that your password is stored as plain text!</string>
@@ -320,5 +328,5 @@
     <string name="label_synchronize_data_preference_description">Synchronizes your data with the most recent backup</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>>
 </resources>

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,33 +47,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
         firebaseAuth = FirebaseAuth.getInstance();
         currentUser = firebaseAuth.getCurrentUser();
 
-        Preference preferenceSingInOut = findPreference("preference_sign_in_out");
-        if (currentUser != null){
-            preferenceSingInOut.setTitle(R.string.label_sing_out);
-            preferenceSingInOut.setOnPreferenceClickListener(preference -> {
-                new SignOutDialogFragment().show(getChildFragmentManager(), "sign_out");
-                return true;
-            });
-        } else {
-            preferenceSingInOut.setTitle(R.string.label_sign_in);
-            preferenceSingInOut.setOnPreferenceClickListener(preference -> {
-                startActivityForResult(
-                        AuthUI.getInstance()
-                                .createSignInIntentBuilder()
-                                .setAvailableProviders(Arrays.asList(
-                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.TwitterBuilder().build(),
-                                        new AuthUI.IdpConfig.FacebookBuilder().build(),
-                                        new AuthUI.IdpConfig.EmailBuilder().build()))
-                                .build(),
-                        RC_SING_IN);
-
-                return true;
-            });
-        }
-
-        findPreference("preference_delete_data").setOnPreferenceClickListener(preference -> {
-            new DeleteDataDialogFragment().show(getChildFragmentManager(), "delete_data");
+        findPreference("preference_account").setOnPreferenceClickListener(preference -> {
+            startActivity(new Intent(getContext(), AccountActivity.class));
             return true;
         });
 
@@ -97,7 +73,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_SING_IN && resultCode == Activity.RESULT_OK){
-            Toolbox.restartCashCockpit(getActivity());
+            Toolkit.restartCashCockpit(getActivity());
         }
     }
 
@@ -114,7 +90,7 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                         AuthUI.getInstance().signOut(getContext());
 
                         deleteLocallySavedData();
-                        Toolbox.restartCashCockpit(getContext());
+                        Toolkit.restartCashCockpit(getContext());
                     }).setNegativeButton(R.string.dialog_action_close, null);
 
             return builder.create();

@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.BackupHelper;
 import com.dolinsek.elias.cashcockpit.components.Toolbox;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 public class ResetDataDialogFragment extends DialogFragment {
 
@@ -95,7 +96,7 @@ public class ResetDataDialogFragment extends DialogFragment {
         imvDone.setVisibility(View.VISIBLE);
         setupButtonsForResetView();
 
-        getDialog().setOnDismissListener(dialogInterface -> Toolbox.restartCashCockpit(getContext()));
+        getDialog().setOnDismissListener(dialogInterface -> Toolkit.restartCashCockpit(getContext()));
         txvCurrentStatus.setText(R.string.label_data_got_reset);
     }
 
