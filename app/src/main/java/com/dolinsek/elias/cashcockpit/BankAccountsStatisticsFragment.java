@@ -54,7 +54,6 @@ BankAccountsStatisticsFragment extends Fragment {
 
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBills.setNestedScrollingEnabled(false);
-        rvBills.setAdapter(HistoryItemAdapter.getBankAccountHistoryItemAdapter(Database.getBankAccounts().get(0)));
 
         if (Database.getBankAccounts().size() != 0){
             loadSelectedBankAccount(savedInstanceState);
@@ -98,20 +97,25 @@ BankAccountsStatisticsFragment extends Fragment {
 
     private void loadStatistics(BankAccount selectedBankAccount){
         if (selectedBankAccount.getBalanceChanges().size() != 0){
-            LineData lineData = new LineData();
-
-            ArrayList<BalanceChange> balanceChanges = getLastBalanceChangesOfMonthsOfBankAccount(selectedBankAccount);
-            LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
-            lineData.addDataSet(lineDataSet);
-            setupLineDataSet(lineDataSet);
-
-            displayTimeStampsOfBalanceChangesOnChart(getTimeStampsOfBalanceChanges(balanceChanges));
-            lcStatistics.setData(lineData);
-            setupChartStyle();
-            lcStatistics.invalidate();
+            loadChartStatistics(selectedBankAccount);
+            rvBills.setAdapter(HistoryItemAdapter.getBankAccountHistoryItemAdapter(selectedBankAccount));
         } else {
             throw new IllegalStateException("No balanceChanges!");
         }
+    }
+
+    private void loadChartStatistics(BankAccount bankAccount){
+        LineData lineData = new LineData();
+
+        ArrayList<BalanceChange> balanceChanges = getLastBalanceChangesOfMonthsOfBankAccount(bankAccount);
+        LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
+        lineData.addDataSet(lineDataSet);
+        setupLineDataSet(lineDataSet);
+
+        displayTimeStampsOfBalanceChangesOnChart(getTimeStampsOfBalanceChanges(balanceChanges));
+        lcStatistics.setData(lineData);
+        setupChartStyle();
+        lcStatistics.invalidate();
     }
 
     private ArrayList<Long> getTimeStampsOfBalanceChanges(ArrayList<BalanceChange> balanceChanges){
@@ -195,7 +199,7 @@ BankAccountsStatisticsFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(firstBalanceChangeDate);
 
-        while (Toolkit.doesMonthExceedsCurrentTime(calendar)){
+        while (!Toolkit.doesMonthExceedsCurrentTime(calendar)){
             int balanceChangesOfMonthSize = getSizeOfBalanceChangesOfMonth(bankAccount, calendar.getTimeInMillis());
             if (balanceChangesOfMonthSize != 0){
                 BalanceChange lastBalanceChangeOfMonth = Toolkit.getLastBalanceChangeOfBankAccountAndMonth(bankAccount, calendar.getTimeInMillis());

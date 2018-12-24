@@ -119,8 +119,8 @@ public class AutoPayActivity extends AppCompatActivity {
         Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccounts, this);
         cgBillType.setOnCheckedChangeListener((chipGroup, i) -> {
             switch (i){
-                case 0: selectedBillType = Bill.TYPE_INPUT; break;
-                case 1: selectedBillType = Bill.TYPE_OUTPUT; break;
+                case R.id.chip_auto_pay_bill_type_input: selectedBillType = Bill.TYPE_INPUT; break;
+                case R.id.chip_auto_pay_bill_type_output: selectedBillType = Bill.TYPE_OUTPUT; break;
             }
         });
 

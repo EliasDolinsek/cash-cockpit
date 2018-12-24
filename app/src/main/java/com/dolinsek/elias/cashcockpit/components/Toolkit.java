@@ -261,12 +261,14 @@ public class Toolkit {
         currentMonthCalendar.setTimeInMillis(System.currentTimeMillis());
 
         int currentYear = currentMonthCalendar.get(Calendar.YEAR);
+        int specifiedYear = calendar.get(Calendar.YEAR);
         int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
+        int specifiedMonth = calendar.get(Calendar.MONTH);
 
-        if (currentYear <= calendar.get(Calendar.YEAR)){
-            return currentMonth < calendar.get(Calendar.MONTH);
+        if (currentYear < specifiedYear){
+            return true;
         } else {
-            return false;
+            return currentMonth < specifiedMonth && currentYear < specifiedYear;
         }
     }
 

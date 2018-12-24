@@ -1,7 +1,11 @@
 package com.dolinsek.elias.cashcockpit;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.annotation.Nullable;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
@@ -23,6 +27,8 @@ import com.dolinsek.elias.cashcockpit.components.Toolkit;
 public class BillActivity extends AppCompatActivity {
 
     private static final int RC_SELECT_CATEGORY = 518;
+    private static final int VIBRATION_DURATION = 100;
+
     public static final String EXTRA_BILL_TO_EDIT = "extraBillToEditIndex";
     public static final String EXTRA_BILL_TO_EDIT_BANK_ACCOUNT = "extraBillBankAccountIndex";
 
@@ -164,6 +170,7 @@ public class BillActivity extends AppCompatActivity {
             Bill bill = new Bill(getEnteredAmountAsLong(), getValidDescription(), selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName(), getSelectedBillType(), false, System.currentTimeMillis());
             Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccount).addBill(bill);
             Database.save(this);
+            vibrateDevice();
             clearInputs();
         }
     }
@@ -228,5 +235,14 @@ public class BillActivity extends AppCompatActivity {
     private void clearInputs(){
         edtAmount.setText("");
         edtDescription.setText("");
+    }
+
+    private void vibrateDevice(){
+        Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            vibrator.vibrate(VibrationEffect.createOneShot(VIBRATION_DURATION, VibrationEffect.DEFAULT_AMPLITUDE));
+        } else {
+            vibrator.vibrate(VIBRATION_DURATION);
+        }
     }
 }

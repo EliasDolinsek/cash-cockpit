@@ -56,9 +56,9 @@ public class StatisticsFragment extends Fragment {
         public Fragment getItem(int position) {
             switch (position){
                 case 0: return bankAccountsStatisticsFragment;
-                case 1: return new BankAccountsFragment();
-                case 2: return new BankAccountsFragment();
-                case 3: return new BankAccountsFragment();
+                case 1: return billsStatisticsFragment;
+                case 2: return categoriesStatisticsFragment;
+                case 3: return goalsStatisticsFragment;
                 default: throw new IllegalStateException("Couldn't find a fragment for position " + position);
             }
         }
