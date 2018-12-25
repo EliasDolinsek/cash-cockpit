@@ -10,93 +10,81 @@
     <!--To avoid scroll view from scrolling to the bottom automatically-->
     <View android:layout_width="match_parent" android:id="@+id/focus_view" android:layout_height="0dp" android:focusable="true" android:focusableInTouchMode="true"><requestFocus/></View>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="8dp">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_bills_statistics_select_month_fragment_container"
-                android:layout_width="wrap_content"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="4dp"
-                android:orientation="horizontal"
-                android:background="@drawable/border_primary_light" />
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp" >
+
+                <android.support.design.chip.ChipGroup
+                    android:id="@+id/cg_bills_statistics_month_selection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:singleSelection="true"/>
+            </HorizontalScrollView>
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pc_bills_statistics_bill_type_usage"
                 android:layout_width="match_parent"
-                android:layout_height="325dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"/>
+                android:layout_height="260dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
             <View
                 android:id="@+id/vw_bills_statistics_separation_one"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"/>
+                android:background="@color/colorDivider"
+                android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"/>
 
             <LinearLayout
                 android:id="@+id/ll_bills_statistics_bill_type_overall_texts_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
 
                 <TextView
                     android:text="@string/label_summary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccentTextColor"
                     android:textAlignment="center"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:paddingBottom="4dp"/>
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <android.support.design.chip.ChipGroup
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
-                    android:layout_marginBottom="8dp">
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp">
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_input_usage_overall"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeInput"
-                        android:textStyle="bold" />
+                    <android.support.design.chip.Chip
+                        android:id="@+id/chip_bills_statistics_input_usage_overall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_output_usage_overall"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeOutput"
-                        android:textStyle="bold"/>
+                    <android.support.design.chip.Chip
+                        android:id="@+id/chip_bills_statistics_output_usage_overall"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_transfer_usage_overall"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeTransfer"
-                        android:textStyle="bold"/>
-                </LinearLayout>
+                </android.support.design.chip.ChipGroup>
             </LinearLayout>
 
             <LinearLayout
@@ -109,68 +97,50 @@
                     android:text="@string/label_selected_month"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorAccentTextColor"
                     android:textAlignment="center"
-                    android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                    android:paddingBottom="4dp"/>
+                    android:layout_marginTop="8dp"
+                    android:fontFamily="sans-serif-medium"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/black"/>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <android.support.design.chip.ChipGroup
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp">
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_input_usage_month"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeInput"
-                        android:textStyle="bold"/>
+                    <android.support.design.chip.Chip
+                        android:id="@+id/chip_bills_statistics_input_usage_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_output_usage_month"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="5dp"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeOutput"
-                        android:textStyle="bold"/>
+                    <android.support.design.chip.Chip
+                        android:id="@+id/chip_bills_statistics_output_usage_month"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                    <TextView
-                        android:id="@+id/txv_bills_statistics_bills_type_transfer_usage_month"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
-                        android:textAlignment="center"
-                        android:textColor="@color/colorBillTypeTransfer"
-                        android:textStyle="bold"/>
-                </LinearLayout>
+                </android.support.design.chip.ChipGroup>
             </LinearLayout>
 
             <View
                 android:id="@+id/vw_bills_statistics_separation_two"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
+                android:background="@color/colorDivider"
                 android:layout_marginTop="16dp"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp" />
 
             <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/bc_bills_statistics_history_of_payments"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginBottom="20dp"/>
 
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

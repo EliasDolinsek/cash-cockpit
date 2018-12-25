@@ -1,30 +1,24 @@
 package com.dolinsek.elias.cashcockpit;
 
 
-import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.design.chip.Chip;
+import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Bill;
-import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.charts.HorizontalBarChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
@@ -35,14 +29,11 @@ import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 
 public class BillsStatisticsFragment extends Fragment {
@@ -50,16 +41,15 @@ public class BillsStatisticsFragment extends Fragment {
     private static final int DISPLAY_BILL_USAGE_TYPE_OVERALL = 172;
     private static final int DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH = 862;
 
-    private SelectMonthFragment selectMonthFragment;
-    private LinearLayout llSelectMonthFragment;
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
     private LinearLayout llBillTypeOverallUsageTextsContainer, llBillTypeSelectedMonthUsageTextsContainer;
     private View vwSeparationOne, vwSeparationTwo;
 
-    private TextView txvBillsTypeInputUsageMonth, txvBillsTypeOutputUsageMonth, txvBillsTypeTransferUsageMonth;
-    private TextView txvBillsTypeInputUsageOverall, txvBillsTypeOutputUsageOverall, txvBillsTypeTransferUsageOverall;
-    private long[] timeStampsWithBills;
+    private ChipGroup cgMonthSelection;
+    private Chip chipInputOverall, chipOutputOverall, chipInputMonth, chipOutputMonth;
+
+    private ArrayList<Long> timeStampsWithBills;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,7 +57,7 @@ public class BillsStatisticsFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_bills_statistics, container, false);
         loadTimeStampsWithBills();
 
-        llSelectMonthFragment = inflatedView.findViewById(R.id.ll_bills_statistics_select_month_fragment_container);
+        cgMonthSelection = inflatedView.findViewById(R.id.cg_bills_statistics_month_selection);
         pcUsageOfBillTypes = inflatedView.findViewById(R.id.pc_bills_statistics_bill_type_usage);
         bcHistoryOfPayments = inflatedView.findViewById(R.id.bc_bills_statistics_history_of_payments);
 
@@ -77,88 +67,71 @@ public class BillsStatisticsFragment extends Fragment {
         vwSeparationOne = inflatedView.findViewById(R.id.vw_bills_statistics_separation_one);
         vwSeparationTwo = inflatedView.findViewById(R.id.vw_bills_statistics_separation_two);
 
-        txvBillsTypeInputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_month);
-        txvBillsTypeOutputUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_month);
-        txvBillsTypeTransferUsageMonth = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_transfer_usage_month);
-
-        txvBillsTypeInputUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_input_usage_overall);
-        txvBillsTypeOutputUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_output_usage_overall);
-        txvBillsTypeTransferUsageOverall = inflatedView.findViewById(R.id.txv_bills_statistics_bills_type_transfer_usage_overall);
+        chipInputOverall = inflatedView.findViewById(R.id.chip_bills_statistics_input_usage_overall);
+        chipOutputOverall = inflatedView.findViewById(R.id.chip_bills_statistics_output_usage_overall);
+        chipInputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_input_usage_month);
+        chipOutputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_output_usage_month);
 
         ArrayList<Bill> allBillsInDatabase = Toolkit.getAllBills();
         if (allBillsInDatabase.size() != 0){
-            displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
+
+            displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
+            displayStatistics(timeStampsWithBills.get(timeStampsWithBills.size() - 1));
         } else {
             vwSeparationOne.setVisibility(View.GONE);
             vwSeparationTwo.setVisibility(View.GONE);
-            llSelectMonthFragment.setVisibility(View.GONE);
             pcUsageOfBillTypes.setVisibility(View.GONE);
             bcHistoryOfPayments.setVisibility(View.GONE);
-            hideBillTypeUsageContainers();
         }
 
         return inflatedView;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
-        //Removes Fragment because otherwise it would be added twice
-        getFragmentManager().beginTransaction().remove(selectMonthFragment).commit();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        setupSelectMonthFragment();
+        setupCgMonthSelection();
     }
 
-    private void displayStatisticsIfEnoughData(int sizeOfBills){
-        if (sizeOfBills == 0){
-            hideBillTypeUsageContainers();
-
-        } else {
-            showBillTypeUsageContainers();
-        }
+    private void setupCgMonthSelection(){
+        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
+        cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
+            long timeStampOfSelectedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup));
+            displayStatistics(timeStampOfSelectedMonth);
+        });
     }
 
-    private void hideBillTypeUsageContainers(){
-        llBillTypeOverallUsageTextsContainer.setVisibility(View.GONE);
-        llBillTypeSelectedMonthUsageTextsContainer.setVisibility(View.GONE);
-    }
-
-    private void showBillTypeUsageContainers(){
-        llBillTypeOverallUsageTextsContainer.setVisibility(View.VISIBLE);
-        llBillTypeSelectedMonthUsageTextsContainer.setVisibility(View.VISIBLE);
-    }
-    private void setupSelectMonthFragment(){
-        selectMonthFragment = new SelectMonthFragment();
-        selectMonthFragment.setTimeStampsOfDates(timeStampsWithBills);
-        selectMonthFragment.setSelectLastItemAfterCreate(true);
-        selectMonthFragment.setOnItemSelectedListener(getOnMonthSelectedItemListener());
-
-        displaySelectMonthFragment();
+    private void displayStatistics(long timeStamp){
+        loadBillTypeUsageStatistic(timeStamp);
+        loadPaymentsHistory(timeStamp);
+        displayBillsTypeUsage(Toolkit.getBillsByMonth(timeStamp), DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH);
     }
 
     private void setupBillTypeUsageChart(){
         pcUsageOfBillTypes.setDescription(null);
-        pcUsageOfBillTypes.setUsePercentValues(true);
-        pcUsageOfBillTypes.setDrawEntryLabels(false);
         pcUsageOfBillTypes.setHoleRadius(70f);
-        pcUsageOfBillTypes.setExtraOffsets(2f,2f,2f,-8f);
+        pcUsageOfBillTypes.setDrawEntryLabels(false);
+        pcUsageOfBillTypes.getLegend().setEnabled(true);
+        pcUsageOfBillTypes.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        pcUsageOfBillTypes.getLegend().setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        pcUsageOfBillTypes.getLegend().setTextSize(14f);
+        pcUsageOfBillTypes.setExtraOffsets(0,-4,0,-4);
+
         pcUsageOfBillTypes.invalidate();
     }
 
     private void setupHistoryOfPaymentsChart(){
         bcHistoryOfPayments.getAxisRight().setEnabled(false);
+        bcHistoryOfPayments.getAxisLeft().setEnabled(false);
+        bcHistoryOfPayments.getXAxis().setDrawGridLines(false);
+        bcHistoryOfPayments.getXAxis().setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        bcHistoryOfPayments.getXAxis().setTextSize(14f);
+
         bcHistoryOfPayments.getLegend().setEnabled(false);
-        bcHistoryOfPayments.getDescription().setEnabled(true);
-        bcHistoryOfPayments.getDescription().setText(getString(R.string.label_added_bills_history));
-        bcHistoryOfPayments.getDescription().setTextSize(14f);
-        bcHistoryOfPayments.getDescription().setYOffset(4f);
+        bcHistoryOfPayments.getDescription().setEnabled(false);
+
 
         XAxis xAxis = bcHistoryOfPayments.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -170,11 +143,7 @@ public class BillsStatisticsFragment extends Fragment {
                 areTransfersGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_TRANSFER);
 
         setupPieDataSetColorsDependingOnAvailableData(pieDataSet, areTransfersGreaterThanNull, areInputsGreaterThanNull, areOutputsGreaterThanNull);
-        pieDataSet.setValueTextSize(15f);
-        pieDataSet.setSliceSpace(3f);
-        pieDataSet.setValueLineWidth(2f);
-        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
-        pieDataSet.setValueFormatter(new PercentFormatter());
+        pieDataSet.setDrawValues(false);
     }
 
     private boolean isUsageOfBillTypeGreaterThanNullFromEntries(ArrayList<PieEntry> entries, int billType){
@@ -237,12 +206,10 @@ public class BillsStatisticsFragment extends Fragment {
 
         ArrayList<Bill> inputTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_INPUT);
         ArrayList<Bill> outputTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT);
-        ArrayList<Bill> transferTypeBills = Toolkit.filterBillsByType(bills, Bill.TYPE_TRANSFER);
 
-        int allBillsSize = inputTypeBills.size() + outputTypeBills.size() + transferTypeBills.size();
+        int allBillsSize = inputTypeBills.size() + outputTypeBills.size();
         int usageOfInputTypesInPercent = getPercentOfBillUsage(allBillsSize, inputTypeBills.size());
         int usageOfOutputTypesInPercent = getPercentOfBillUsage(allBillsSize, outputTypeBills.size());
-        int usageOfTransferTypesInPercent = getPercentOfBillUsage(allBillsSize, transferTypeBills.size());
 
         if (usageOfInputTypesInPercent != 0){
             pieEntries.add(usageOfBillTypeToPieEntry(usageOfInputTypesInPercent, Bill.TYPE_INPUT));
@@ -250,10 +217,6 @@ public class BillsStatisticsFragment extends Fragment {
 
         if(usageOfOutputTypesInPercent != 0){
             pieEntries.add(usageOfBillTypeToPieEntry(usageOfOutputTypesInPercent, Bill.TYPE_OUTPUT));
-        }
-
-        if (usageOfTransferTypesInPercent != 0){
-            pieEntries.add(usageOfBillTypeToPieEntry(usageOfTransferTypesInPercent, Bill.TYPE_TRANSFER));
         }
 
         return pieEntries;
@@ -271,38 +234,29 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void loadTimeStampsWithBills(){
-        timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills(Toolkit.getAllBills()));
+        timeStampsWithBills = getTimeStampsWithBills(Toolkit.getAllBills());
     }
 
-    private PieEntry usageOfBillTypeToPieEntry(int usageOfBillTypeInPercent, int billType){
-        PieEntry pieEntry = new PieEntry(usageOfBillTypeInPercent);
-        String billTypeAsString = billTypeToString(billType);
-        pieEntry.setLabel(billTypeAsString);
-
-        return pieEntry;
+    private PieEntry usageOfBillTypeToPieEntry(int usageOfBillTypeInPercent, int billType) {
+        return new PieEntry(usageOfBillTypeInPercent, billTypeToString(billType));
     }
 
     private void displayBillsTypeUsage(ArrayList<Bill> bills, int type){
         int billsTypeInputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_INPUT).size();
         int billsTypeOutputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT).size();
-        int billsTypeTransferSize = Toolkit.filterBillsByType(bills, Bill.TYPE_TRANSFER).size();
 
         int usageInputPercent = getPercentOfBillUsage(bills.size(), billsTypeInputSize);
         int usageOutputPercent = getPercentOfBillUsage(bills.size(), billsTypeOutputSize);
-        int usageTransferPercent = getPercentOfBillUsage(bills.size(), billsTypeTransferSize);
 
         String textInput = billUsageToReadableString(Bill.TYPE_INPUT, billsTypeInputSize, usageInputPercent);
         String textOutput = billUsageToReadableString(Bill.TYPE_OUTPUT, billsTypeOutputSize, usageOutputPercent);
-        String textTransfer = billUsageToReadableString(Bill.TYPE_TRANSFER, billsTypeTransferSize, usageTransferPercent);
 
         if (type == DISPLAY_BILL_USAGE_TYPE_OVERALL){
-            txvBillsTypeInputUsageOverall.setText(textInput);
-            txvBillsTypeOutputUsageOverall.setText(textOutput);
-            txvBillsTypeTransferUsageOverall.setText(textTransfer);
+            chipInputOverall.setText(textInput);
+            chipOutputOverall.setText(textOutput);
         } else if (type == DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH){
-            txvBillsTypeInputUsageMonth.setText(textInput);
-            txvBillsTypeOutputUsageMonth.setText(textOutput);
-            txvBillsTypeTransferUsageMonth.setText(textTransfer);
+            chipInputMonth.setText(textInput);
+            chipOutputMonth.setText(textOutput);
         } else {
             throw new IllegalArgumentException("Couldn't resolve " + type + " as a valid type");
         }
@@ -380,10 +334,6 @@ public class BillsStatisticsFragment extends Fragment {
         return (int) Math.round((100.0 / allBillsSize * billTypeSize));
     }
 
-    private void displaySelectMonthFragment(){
-        getFragmentManager().beginTransaction().add(R.id.ll_bills_statistics_select_month_fragment_container, selectMonthFragment).commit();
-    }
-
     private ArrayList<Long> getTimeStampsWithBills(ArrayList<Bill> bills){
         ArrayList<Long> monthsWithBills = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
@@ -402,37 +352,6 @@ public class BillsStatisticsFragment extends Fragment {
         }
 
         return monthsWithBills;
-    }
-
-    private long[] arrayListToLongArray(ArrayList<Long> arrayList){
-        long[] longsToReturn = new long[arrayList.size()];
-
-        for (int i = 0; i<longsToReturn.length; i++){
-            longsToReturn[i] = arrayList.get(i);
-        }
-
-        return longsToReturn;
-    }
-
-    private AdapterView.OnItemSelectedListener getOnMonthSelectedItemListener(){
-        return new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                long selectionTimeStamp = timeStampsWithBills[position];
-                ArrayList<Bill> billsOfSelectedMonth = Toolkit.getBillsByMonth(selectionTimeStamp);
-
-                loadBillTypeUsageStatistic(selectionTimeStamp);
-                loadPaymentsHistory(selectionTimeStamp);
-
-                displayBillsTypeUsage(billsOfSelectedMonth, DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH);
-                displayStatisticsIfEnoughData(billsOfSelectedMonth.size());
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        };
     }
 
     public static long getCreationDateOfFirstAddedBillBill(ArrayList<Bill> bills){
