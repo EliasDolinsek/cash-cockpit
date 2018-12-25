@@ -17,7 +17,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_margin="8dp">
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="16dp">
 
             <HorizontalScrollView
                 android:layout_width="match_parent"
@@ -35,7 +38,8 @@
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/lc_bank_accounts_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"/>
+                android:layout_height="220dp"
+                android:layout_marginBottom="8dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_bank_account_statistics"

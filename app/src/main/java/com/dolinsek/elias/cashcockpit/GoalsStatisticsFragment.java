@@ -187,7 +187,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         int months = 0;
         long totalAmount = 0;
-        while (!doesMonthExceedsCurrentTime(calendar)){
+        while (!Toolkit.doesMonthExceedsCurrentTime(calendar)){
             ArrayList<Bill> billsOfCurrentMonth = Toolkit.getBillsByMonth(calendar.getTimeInMillis());
             ArrayList<Bill> filteredBillsWhatSubcategoriesHaveGoals = filterBillsWithPrimaryCategoriesWhatHaveGoals(billsOfCurrentMonth);
 
@@ -289,7 +289,7 @@ public class GoalsStatisticsFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(firstBillCreationDate);
 
-        while (!doesMonthExceedsCurrentTime(calendar)){
+        while (!Toolkit.doesMonthExceedsCurrentTime(calendar)){
             ArrayList<Bill> listOfBillsOfCurrentMonth = filterBillsOfMonth(Toolkit.getAllBills(), calendar.getTimeInMillis());
             ArrayList<Bill> listOfBillsOfCurrentMonthWhatBelongToGoals = filterBillsWhatBelongToGoals(listOfBillsOfCurrentMonth);
 
@@ -301,16 +301,6 @@ public class GoalsStatisticsFragment extends Fragment {
         }
 
         return timeStamps;
-    }
-
-    private boolean doesMonthExceedsCurrentTime(Calendar calendar){
-        Calendar currentMonthCalendar = Calendar.getInstance();
-        currentMonthCalendar.setTimeInMillis(System.currentTimeMillis());
-
-        int currentYear = currentMonthCalendar.get(Calendar.YEAR);
-        int currentMonth = currentMonthCalendar.get(Calendar.MONTH);
-
-        return currentYear <= calendar.get(Calendar.YEAR) && currentMonth < calendar.get(Calendar.MONTH);
     }
 
     private ArrayList<Bill> filterBillsWhatBelongToGoals(ArrayList<Bill> billsToFilter){

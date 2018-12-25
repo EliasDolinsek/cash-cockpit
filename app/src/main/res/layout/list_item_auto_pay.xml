@@ -38,6 +38,7 @@
         android:layout_marginStart="16dp"
         android:fontFamily="sans-serif-medium"
         android:textSize="16sp"
+        android:textColor="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txv_item_auto_pay_name" />
 
