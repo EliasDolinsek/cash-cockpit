@@ -2,10 +2,8 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical">
-
-    <!--To avoid scroll view from scrolling to the bottom automatically-->
-    <View android:layout_width="match_parent" android:id="@+id/focus_view" android:layout_height="0dp" android:focusable="true" android:focusableInTouchMode="true"><requestFocus/></View>
+    android:orientation="vertical"
+    android:descendantFocusability="blocksDescendants">
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/sv_categories_statistics"
@@ -15,64 +13,57 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="4dp">
+            android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_categories_statistics_filters_container"
-                android:layout_width="match_parent"
+            <android.support.design.chip.ChipGroup
+                android:id="@+id/cg_categories_statistics_month_selection"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp">
+                app:singleLine="true"
+                app:singleSelection="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"/>
 
-                <LinearLayout
-                    android:id="@+id/ll_categories_statistics_select_date_fragment_container"
+            <android.support.design.chip.ChipGroup
+                android:id="@+id/cg_categories_statistics_bill_type_selection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:singleSelection="true"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp" >
+
+                <android.support.design.chip.Chip
+                    android:id="@+id/chip_categories_statistics_input"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/border_primary_light"
-                    android:padding="4dp"
-                    android:layout_marginEnd="4dp"/>
+                    android:text="@string/label_input"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-                <LinearLayout
+                <android.support.design.chip.Chip
+                    android:id="@+id/chip_categories_statistics_output"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@drawable/border_accent"
-                    android:padding="4dp">
+                    android:text="@string/label_output"
+                    style="@style/Widget.MaterialComponents.Chip.Choice" />
 
-                    <Spinner
-                        android:id="@+id/spn_categories_statistics_bill_type"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
-
-                </LinearLayout>
-            </LinearLayout>
+            </android.support.design.chip.ChipGroup>
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/pc_categories_statistics"
                 android:layout_width="match_parent"
-                android:layout_height="325dp"
-                android:layout_margin="4dp"/>
-
-        <fragment
-            android:id="@+id/fgm_categories_statistics_not_enough_data"
-            class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            app:text="@string/label_no_data_for_statistic"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_marginBottom="8dp"/>
+                android:layout_height="260dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/rv_categories_statistics"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:paddingBottom="8dp"/>
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </LinearLayout>

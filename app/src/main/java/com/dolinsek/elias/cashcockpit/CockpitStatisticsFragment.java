@@ -53,7 +53,6 @@ public class CockpitStatisticsFragment extends Fragment {
         pgbInstallment = inflatedView.findViewById(R.id.pgb_cockpit_statistics_installment);
         pgbDailyLimit = inflatedView.findViewById(R.id.pgb_cockpit_statistics_daily_limit);
 
-
         setupPieChart();
 
         return inflatedView;

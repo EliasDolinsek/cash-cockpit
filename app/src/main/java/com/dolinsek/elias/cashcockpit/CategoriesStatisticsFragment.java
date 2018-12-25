@@ -2,7 +2,10 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
@@ -21,6 +23,7 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -37,21 +40,39 @@ import java.util.Random;
 public class CategoriesStatisticsFragment extends Fragment {
 
     private static final String EXTRA_TIME_STAMP_OF_MONTH = "timeStampOfMonth";
+    private static final int[] COLORS = new int[]{
+            Color.parseColor("#e57373"),
+            Color.parseColor("#ffd54f"),
+            Color.parseColor("#ba68c8"),
+            Color.parseColor("#9575cd"),
+            Color.parseColor("#7986cb"),
+            Color.parseColor("#64b5f6"),
+            Color.parseColor("#4fc3f7"),
+            Color.parseColor("#4dd0e1"),
+            Color.parseColor("#4db6ac"),
+            Color.parseColor("#81c784"),
+            Color.parseColor("#aed581"),
+            Color.parseColor("#dce775"),
+            Color.parseColor("#fff176"),
+            Color.parseColor("#f06292"),
+            Color.parseColor("#ffb74d"),
+            Color.parseColor("#ff8a65"),
+            Color.parseColor("#a1887f"),
+            Color.parseColor("#e0e0e0"),
+            Color.parseColor("#90a4ae")
+    };
 
     private static final int STEP_ONE_MONTH_FORWARD = 1;
 
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
-    private LinearLayout llFilterFragmentsContainer;
-    private SelectMonthFragment mSelectMonthFragment;
-    private Spinner spnBillTypeFilter;
     private NestedScrollView scrollView;
-    private NotEnoughDataFragment fgmNotEnoughData;
+    private ChipGroup cgMonthSelection, cgBillTypeSelection;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private ArrayList<Bill> billsToUse;
     private long timestampOfCurrentDisplayedMonth;
-    private long[] timeStampsWithBills;
+    private ArrayList<Long> timeStampsWithBills;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,116 +83,50 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
         pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
-        llFilterFragmentsContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_categories_statistics_filters_container);
-        spnBillTypeFilter = (Spinner) inflatedView.findViewById(R.id.spn_categories_statistics_bill_type);
-        fgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_categories_statistics_not_enough_data);
-
         scrollView = inflatedView.findViewById(R.id.sv_categories_statistics);
-        scrollView.scrollTo(0,0);
 
-        timeStampsWithBills = arrayListToLongArray(getTimeStampsWithBills());
+        cgMonthSelection = inflatedView.findViewById(R.id.cg_categories_statistics_month_selection);
+        cgBillTypeSelection = inflatedView.findViewById(R.id.cg_categories_statistics_bill_type_selection);
+
+        timeStampsWithBills = getTimeStampsWithBills();
         billsToUse = getAllBillsInDatabase();
 
-        setupBillTypeFilter();
+        setupCgBillTypeSelection();
+        setupCgMonthSelection();
+
         setupChartStatistics();
         manageViews();
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvCategories.setNestedScrollingEnabled(false);
+
+        loadStatistics();
 
         return inflatedView;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //Removes Fragment because otherwise it would be added twice
-        getFragmentManager().beginTransaction().remove(mSelectMonthFragment).commit();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        setupSelectMonthFragment();
-    }
-
-    private void setupSelectMonthFragment(){
-        mSelectMonthFragment = new SelectMonthFragment();
-        getFragmentManager().beginTransaction().add(R.id.ll_categories_statistics_select_date_fragment_container, mSelectMonthFragment).commit();
-
-        mSelectMonthFragment.setSelectLastItemAfterCreate(true);
-        mSelectMonthFragment.setTimeStampsOfDates(timeStampsWithBills);
-        mSelectMonthFragment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                timestampOfCurrentDisplayedMonth = timeStampsWithBills[index];
-                loadRecyclerViewAdapter();
-                loadChartStatistics();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+    private void setupCgMonthSelection(){
+        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
+        cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
+            timestampOfCurrentDisplayedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
+            loadRecyclerViewAdapter();
+            loadChartStatistics();
         });
     }
 
-    private void setupBillTypeFilter(){
-        ArrayAdapter<String> filterItems = new ArrayAdapter<String>(getContext(), R.layout.costum_spinner_layout, getBillsTypesAsStringIncludingAll());
-        filterItems.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spnBillTypeFilter.getBackground().setColorFilter(getResources().getColor(android.R.color.white), PorterDuff.Mode.SRC_ATOP);
-        spnBillTypeFilter.setAdapter(filterItems);
-        spnBillTypeFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int index, long l) {
-                billsToUse = getAllBillsInDatabase();
-
-                if (index == 1){
-                    billsToUse = filterBillsBillType(billsToUse, Bill.TYPE_INPUT);
-                } else if (index == 2){
-                    billsToUse = filterBillsBillType(billsToUse, Bill.TYPE_OUTPUT);
-                } else if (index == 3){
-                    billsToUse = filterBillsBillType(billsToUse, Bill.TYPE_TRANSFER);
-                }
-
-                loadChartStatistics();
-                loadRecyclerViewAdapter();
+    private void setupCgBillTypeSelection(){
+        cgBillTypeSelection.setOnCheckedChangeListener((chipGroup, i) -> {
+            switch (cgBillTypeSelection.getCheckedChipId()){
+                case R.id.chip_categories_statistics_input: billsToUse = Toolkit.filterBillsByType(Toolkit.getAllBills(), Bill.TYPE_INPUT);
+                case R.id.chip_categories_statistics_output: billsToUse = Toolkit.filterBillsByType(Toolkit.getAllBills(), Bill.TYPE_OUTPUT);
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
+            loadStatistics();
         });
     }
 
-    private ArrayList<Bill> filterBillsBillType(ArrayList<Bill> billsToFilter, int billTypeToFilter){
-        ArrayList<Bill> filteredBills = new ArrayList<>();
-
-        for (Bill bill:billsToFilter){
-            if (bill.getType() == billTypeToFilter){
-                filteredBills.add(bill);
-            }
-        }
-
-        return filteredBills;
-    }
-
-    private String[] getBillsTypesAsStringIncludingAll(){
-        String[] billTypes = getResources().getStringArray(R.array.bill_types_array);
-        String[] billTypesIncludingAll = new String[billTypes.length + 1];
-
-        for (int i = 0; i<billTypesIncludingAll.length; i++){
-            if (i == 0){
-                billTypesIncludingAll[i] = getString(R.string.label_all_bill_types);
-            } else {
-                billTypesIncludingAll[i] = billTypes[i - 1];
-            }
-        }
-
-        return billTypesIncludingAll;
+    private void loadStatistics(){
+        loadRecyclerViewAdapter();
+        loadChartStatistics();
     }
 
     private void loadRecyclerViewAdapter(){
@@ -184,10 +139,8 @@ public class CategoriesStatisticsFragment extends Fragment {
         setupPieDataSet(pieDataSet);
 
         if (pieDataSet.getEntryCount() == 0){
-            fgmNotEnoughData.show();
             pcStatistics.setVisibility(View.GONE);
         } else {
-            fgmNotEnoughData.hide();
             pcStatistics.setVisibility(View.VISIBLE);
         }
 
@@ -199,43 +152,23 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColors(pieDataSet);
-        pieDataSet.setSliceSpace(3f);
+        pieDataSet.setColors(COLORS);
         pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
 
-    private void setupPieDataSetColors(PieDataSet pieDataSet){
-        ArrayList<Integer> colors = new ArrayList<>();
-        for (int i = 0; i<Database.getPrimaryCategories().size(); i++){
-            colors.add(getRandomColor());
-        }
-        pieDataSet.setColors(colors);
-    }
-
-    private int getRandomColor(){
-        Random random = new Random();
-        final int baseColor = Color.WHITE;
-
-        final int baseRed = Color.red(baseColor);
-        final int baseGreen = Color.green(baseColor);
-        final int baseBlue = Color.blue(baseColor);
-
-        final int red = (baseRed + random.nextInt(256)) / 3;
-        final int green = (baseGreen + random.nextInt(256)) / 3;
-        final int blue = (baseBlue + random.nextInt(256)) / 3;
-
-        return Color.rgb(red, green, blue);
-    }
-
     private void setupChartStatistics(){
         pcStatistics.setDescription(null);
-        pcStatistics.setUsePercentValues(true);
-        pcStatistics.setDrawEntryLabels(false);
         pcStatistics.setHoleRadius(70f);
-        pcStatistics.setExtraOffsets(0,0,0,-8f);
-        pcStatistics.invalidate(); //Refreshes data
+        pcStatistics.setDrawEntryLabels(false);
+        pcStatistics.getLegend().setEnabled(true);
+        pcStatistics.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        pcStatistics.getLegend().setTypeface(Typeface.create("sans-serif-medium", Typeface.NORMAL));
+        pcStatistics.getLegend().setTextSize(14f);
+        pcStatistics.setExtraOffsets(0,-4,0,-4);
+
+        pcStatistics.invalidate();
     }
 
     private ArrayList<PieEntry> getChartStatisticsData(){
@@ -255,11 +188,8 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private void manageViews(){
         if (getAllBillsInDatabase().size() == 0){
-            fgmNotEnoughData.show();
             pcStatistics.setVisibility(View.GONE);
-            llFilterFragmentsContainer.setVisibility(View.GONE);
         } else {
-            fgmNotEnoughData.hide();
             pcStatistics.setVisibility(View.VISIBLE);
         }
     }
@@ -295,16 +225,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         }
 
         return monthsWithBills;
-    }
-
-    private long[] arrayListToLongArray(ArrayList<Long> arrayList){
-        long[] longsToReturn = new long[arrayList.size()];
-
-        for (int i = 0; i<longsToReturn.length; i++){
-            longsToReturn[i] = arrayList.get(i);
-        }
-
-        return longsToReturn;
     }
 
     private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
