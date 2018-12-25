@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.os.Bundle;
+import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -36,9 +37,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private TextView mTxvMonth, mTxvAverage;
     private LinearLayout mLLContent;
     private long timeStampOfMonthToLoadStatistics;
-    private SelectMonthFragment mSelectMonthFragment;
-    private LinearLayout mLlSelectMonthFragmentContainer;
-    private NotEnoughDataFragment mFgmNotEnoughData;
+    private ChipGroup cgMonthSelection;
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getGoalsStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), System.currentTimeMillis());
 
     @Override
@@ -55,9 +54,8 @@ public class GoalsStatisticsFragment extends Fragment {
         mTxvMonth = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_month);
         mTxvAverage = (TextView) inflatedView.findViewById(R.id.txv_goals_statistics_average);
 
-        mFgmNotEnoughData = (NotEnoughDataFragment) getChildFragmentManager().findFragmentById(R.id.fgm_goals_statistics_not_enough_data);
         mLLContent = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_content);
-        mLlSelectMonthFragmentContainer = (LinearLayout) inflatedView.findViewById(R.id.ll_goals_statistics_select_month_container);
+        cgMonthSelection = inflatedView.findViewById(R.id.cg_goals_statistics_month_selection);
 
         manageViews();
         initTimestampOfMonthToLoadStatistics(savedInstanceState);
@@ -74,15 +72,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
         loadAverageStatistics();
         loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
-        setupSelectMonthFragment();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        //Removes Fragment because otherwise it would be added twice
-        getFragmentManager().beginTransaction().remove(mSelectMonthFragment).commit();
+        setupCgMonthSelection();
     }
 
     private void loadStatisticsOfMonth(long timeStampOfMonth) {
@@ -105,7 +95,7 @@ public class GoalsStatisticsFragment extends Fragment {
     private long getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase(){
         ArrayList<Goal> goals = new ArrayList<>();
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            return primaryCategory.getGoal().getAmount();
+            goals.add(primaryCategory.getGoal());
         }
 
         return getTotalAmountOfGoals(goals);
@@ -183,7 +173,7 @@ public class GoalsStatisticsFragment extends Fragment {
 
     private int getAveragePercentOfAllMonths(){
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(getTimeStampOfCreationDateOfFirstBillInDatabase());
+        calendar.setTimeInMillis(getTimeStampOfFirstMonthWithGoalStatistics());
 
         int months = 0;
         long totalAmount = 0;
@@ -215,19 +205,6 @@ public class GoalsStatisticsFragment extends Fragment {
         displayPercentCorrectly(mTxvAverage, percent);
     }
 
-    private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
-        long firstCreationDate = System.currentTimeMillis();
-
-        ArrayList<Bill> billsInDatabase = Toolkit.getAllBills();
-        for (Bill bill:billsInDatabase){
-            if (bill.getCreationDate() < firstCreationDate){
-                firstCreationDate = bill.getCreationDate();
-            }
-        }
-
-        return firstCreationDate;
-    }
-
     private void initTimestampOfMonthToLoadStatistics(Bundle savedInstanceState){
         if (savedInstanceState != null) {
             timeStampOfMonthToLoadStatistics = savedInstanceState.getLong(EXTRA_MONTH);
@@ -248,38 +225,28 @@ public class GoalsStatisticsFragment extends Fragment {
         ArrayList<Bill> billsWhatBelongToGoals = filterBillsWhatBelongToGoals(Toolkit.getAllBills());
         if (getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase() == 0 || billsWhatBelongToGoals.size() == 0){
             mLLContent.setVisibility(View.GONE);
-            mFgmNotEnoughData.show();
-            mLlSelectMonthFragmentContainer.setVisibility(View.GONE);
         } else {
             mLLContent.setVisibility(View.VISIBLE);
-            mFgmNotEnoughData.hide();
         }
     }
 
-    private void setupSelectMonthFragment(){
-        mSelectMonthFragment = new SelectMonthFragment();
-        getFragmentManager().beginTransaction().add(R.id.ll_goals_statistics_select_month_container, mSelectMonthFragment).commit();
+    private void setupCgMonthSelection(){
+        ArrayList<Long> timeStamps = getTimeStampsOfAllMonthsWithGoalStatistics();
+        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStamps, cgMonthSelection, getContext());
 
-        long[] timeStampsOfMonthsWithStatistics = arrayListToLongArray(getTimeStampsOfAllMonthsWithGoalStatistics());
-
-        mSelectMonthFragment.setTimeStampsOfDates(timeStampsOfMonthsWithStatistics);
-        mSelectMonthFragment.setOnItemSelectedListener(getOnMonthToLoadStatisticsSelectedOnSelectedListener());
-        mSelectMonthFragment.setSelectLastItemAfterCreate(true);
+        cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
+            timeStampOfMonthToLoadStatistics = timeStamps.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup));
+            loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
+        });
     }
 
-    private AdapterView.OnItemSelectedListener getOnMonthToLoadStatisticsSelectedOnSelectedListener(){
-        return new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                timeStampOfMonthToLoadStatistics = getTimeStampsOfAllMonthsWithGoalStatistics().get(i);
-                loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        };
+    private long getTimeStampOfFirstMonthWithGoalStatistics(){
+        ArrayList<Long> timeStamps = getTimeStampsOfAllMonthsWithGoalStatistics();
+        if (timeStamps.size() != 0){
+            return timeStamps.get(0);
+        } else {
+            return System.currentTimeMillis();
+        }
     }
 
     private ArrayList<Long> getTimeStampsOfAllMonthsWithGoalStatistics(){
@@ -303,6 +270,19 @@ public class GoalsStatisticsFragment extends Fragment {
         return timeStamps;
     }
 
+    private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
+        long firstCreationDate = System.currentTimeMillis();
+
+        ArrayList<Bill> billsInDatabase = Toolkit.getAllBills();
+        for (Bill bill:billsInDatabase){
+            if (bill.getCreationDate() < firstCreationDate){
+                firstCreationDate = bill.getCreationDate();
+            }
+        }
+
+        return firstCreationDate;
+    }
+
     private ArrayList<Bill> filterBillsWhatBelongToGoals(ArrayList<Bill> billsToFilter){
         ArrayList<Bill> filteredBills = new ArrayList<>();
 
@@ -313,15 +293,5 @@ public class GoalsStatisticsFragment extends Fragment {
         }
 
         return filteredBills;
-    }
-
-    private long[] arrayListToLongArray(ArrayList<Long> arrayList){
-        long[] longsToReturn = new long[arrayList.size()];
-
-        for (int i = 0; i<longsToReturn.length; i++){
-            longsToReturn[i] = arrayList.get(i);
-        }
-
-        return longsToReturn;
     }
 }

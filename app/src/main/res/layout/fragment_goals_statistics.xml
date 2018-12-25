@@ -16,27 +16,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
-                android:id="@+id/ll_goals_statistics_select_month_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:padding="4dp"
-                android:background="@drawable/border_primary_light"/>
-
-            <fragment
-                android:id="@+id/fgm_goals_statistics_not_enough_data"
-                class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                app:text="@string/label_no_data_for_statistic"/>
+                android:scrollbars="none"
+                android:overScrollMode="never"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp">
+
+                <android.support.design.chip.ChipGroup
+                    android:id="@+id/cg_goals_statistics_month_selection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:singleSelection="true"/>
+
+            </HorizontalScrollView>
 
             <LinearLayout
                 android:id="@+id/ll_goals_statistics_content"
@@ -55,7 +51,7 @@
                     <RelativeLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp">
+                        android:layout_marginEnd="8dp">
 
                         <TextView
                             android:id="@+id/txv_goals_statistics_month"
@@ -64,9 +60,9 @@
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="53dp"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                            android:textSize="30sp"
-                            android:textStyle="bold"/>
+                            android:fontFamily="sans-serif-regular"
+                            android:textSize="34sp"
+                            android:textColor="@android:color/black"/>
 
                         <ProgressBar
                             android:id="@+id/pgb_goals_statistics_month"
@@ -83,9 +79,9 @@
                             android:layout_below="@+id/txv_goals_statistics_month"
                             android:layout_centerHorizontal="true"
                             android:text="@string/label_selected_month"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                            android:textSize="15sp"
-                            android:textStyle="italic"/>
+                            android:fontFamily="sans-serif-medium"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black"/>
 
                     </RelativeLayout>
 
@@ -100,9 +96,9 @@
                             android:layout_alignParentTop="true"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="53dp"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-                            android:textSize="30sp"
-                            android:textStyle="bold"/>
+                            android:fontFamily="sans-serif-regular"
+                            android:textSize="34sp"
+                            android:textColor="@android:color/black"/>
 
                         <ProgressBar
                             android:id="@+id/pgb_goals_statistics_average"
@@ -119,23 +115,13 @@
                             android:layout_below="@+id/txv_goals_statistics_average"
                             android:layout_centerHorizontal="true"
                             android:text="@string/label_average"
-                            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
-                            android:textSize="15sp"
-                            android:textStyle="italic"/>
+                            android:fontFamily="sans-serif-medium"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black" />
 
                     </RelativeLayout>
 
                 </LinearLayout>
-
-                <TextView
-                    android:text="@string/label_goals_usage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
-                    android:textSize="14sp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:textColor="@color/colorAccentTextColor"/>
 
             </LinearLayout>
 
@@ -143,10 +129,7 @@
                 android:id="@+id/rv_goals_statistics_categories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"/>
+                android:layout_marginTop="16dp"/>
 
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>

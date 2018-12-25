@@ -100,7 +100,7 @@ BankAccountsStatisticsFragment extends Fragment {
             loadChartStatistics(selectedBankAccount);
             rvBills.setAdapter(HistoryItemAdapter.getBankAccountHistoryItemAdapter(selectedBankAccount));
         } else {
-            throw new IllegalStateException("No balanceChanges!");
+            //TODO display that not enough data is available for a statistic
         }
     }
 
@@ -160,6 +160,7 @@ BankAccountsStatisticsFragment extends Fragment {
         lcStatistics.getAxisLeft().setEnabled(false);
         lcStatistics.getAxisRight().setEnabled(false);
         lcStatistics.getData().setHighlightEnabled(false);
+        lcStatistics.getXAxis().setDrawAxisLine(false);
         lcStatistics.getDescription().setEnabled(false);
         lcStatistics.setExtraOffsets(40f,10f,40f,10f);
         lcStatistics.setTouchEnabled(false);

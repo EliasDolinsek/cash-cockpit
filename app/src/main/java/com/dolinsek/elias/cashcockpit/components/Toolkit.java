@@ -1,7 +1,6 @@
 package com.dolinsek.elias.cashcockpit.components;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -10,14 +9,12 @@ import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.widget.Toast;
 
-import com.dolinsek.elias.cashcockpit.DeleteBillDialogFragment;
 import com.dolinsek.elias.cashcockpit.R;
 import com.dolinsek.elias.cashcockpit.StartActivity;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * Created by Elias Dolinsek on 06.07.2018 for cash-cockpit.
@@ -268,7 +265,7 @@ public class Toolkit {
         if (currentYear < specifiedYear){
             return true;
         } else {
-            return currentMonth < specifiedMonth && currentYear < specifiedYear;
+            return currentMonth < specifiedMonth && currentYear == specifiedYear;
         }
     }
 
@@ -313,13 +310,49 @@ public class Toolkit {
         }
 
         public static BankAccount getSelectedBankAccountFromChipGroup(ChipGroup chipGroup){
+            return Database.getBankAccounts().get(getIndexOfSelectedChipInChipGroup(chipGroup));
+        }
+
+        public static int getIndexOfSelectedChipInChipGroup(ChipGroup chipGroup){
             for (int i = 0; i<chipGroup.getChildCount(); i++){
                 if (((Chip)chipGroup.getChildAt(i)).isChecked()){
-                    return Database.getBankAccounts().get(i);
+                    return i;
                 }
             }
 
-            return Database.getBankAccounts().get(0);
+            return 0;
+        }
+
+        public static void addTimeChipsToChipGroup(ArrayList<Long> timeMillis, ChipGroup chipGroup, Context context){
+            for (long currentTimeMilli:timeMillis){
+                boolean checked = timeMillis.indexOf(currentTimeMilli) == timeMillis.size() - 1;
+                addTimeChipToChipGroup(currentTimeMilli, chipGroup, checked, context);
+            }
+        }
+
+        public static void addTimeChipToChipGroup(long timeMillis, ChipGroup chipGroup, boolean checked, Context context){
+            Chip chip = new Chip(context);
+            String timeAsReadableString = getTimeStampsAsReadableString(timeMillis, context);
+
+            chip.setText(timeAsReadableString);
+            chip.setCheckable(true);
+            chip.setClickable(true);
+            chip.setCheckedIconVisible(false);
+
+            chipGroup.addView(chip);
+            if (checked){
+                chipGroup.check(chip.getId());
+            }
+        }
+
+        public static String getTimeStampsAsReadableString(long timeStamp, Context context){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(timeStamp);
+
+            int month = calendar.get(Calendar.MONTH);
+            String formattedMonth = context.getResources().getStringArray(R.array.months_array)[month];
+
+            return formattedMonth + " " + calendar.get(Calendar.YEAR);
         }
     }
 }
