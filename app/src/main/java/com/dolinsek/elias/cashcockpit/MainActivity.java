@@ -5,17 +5,8 @@ import android.support.v4.app.FragmentManager;
 import 	android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.google.firebase.auth.FirebaseAuth;
@@ -41,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
 
         initDatabase();
         setupFragments();
-
 
         if(savedInstanceState == null){
             replaceFragment(cockpitStatisticsFragment);
@@ -78,6 +68,15 @@ public class MainActivity extends AppCompatActivity {
         showSignInActivityIfUserIsNotSignedIn();
     }
 
+    @Override
+    public void onBackPressed() {
+        historyFragment.isHidingExpandedHistoryItemAdapterItemPossible();
+        if (historyFragment.getUserVisibleHint() && historyFragment.isHidingExpandedHistoryItemAdapterItemPossible()){
+            historyFragment.hideExpandedHistoryItemAdapterItem();
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     /**
      * Replaces current Fragment with new Fragment
@@ -115,6 +114,5 @@ public class MainActivity extends AppCompatActivity {
         statisticsFragment = new StatisticsFragment();
         databaseFragment = new DatabaseFragment();
         settingsFragment = new SettingsFragment();
-
     }
 }

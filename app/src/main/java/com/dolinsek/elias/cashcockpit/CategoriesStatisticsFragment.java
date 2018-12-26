@@ -153,7 +153,7 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private void setupPieDataSet(PieDataSet pieDataSet){
         pieDataSet.setColors(COLORS);
-        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.white));
+        pieDataSet.setValueTextColor(getResources().getColor(android.R.color.black));
         pieDataSet.setValueTextSize(15f);
         pieDataSet.setValueFormatter(new PercentFormatter());
     }
@@ -161,6 +161,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private void setupChartStatistics(){
         pcStatistics.setDescription(null);
         pcStatistics.setHoleRadius(70f);
+        pcStatistics.setUsePercentValues(true);
         pcStatistics.setDrawEntryLabels(false);
         pcStatistics.getLegend().setEnabled(true);
         pcStatistics.getLegend().setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);

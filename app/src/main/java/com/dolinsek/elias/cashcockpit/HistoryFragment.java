@@ -13,7 +13,6 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -35,6 +34,10 @@ public class HistoryFragment extends Fragment {
 
     private static final String EXTRA_SELECTED_ARRANGEMENT_FILTER = "selected_index_main_filter";
     private static final String EXTRA_SELECTED_INDEX_BILL_TYPE_FILTER = "selected_index_bill_type_filter";
+    private static final String EXTRA_FILTERS_VISIBLE = "filters_shown";
+    private static final String EXTRA_ITEM_ADAPTER_EXPANDED_ITEM_INDEX = "expanded_item_index";
+    private static final String EXTRA_ITEM_ADAPTER_EDIT_ITEM_INDEX = "edit_item_index";
+    private static final String EXTRA_ITEM_ADAPTER_EDIT_TYPE = "edit_type";
 
     private RecyclerView mRvHistory;
     private ArrayList<Bill> billsToDisplay;
@@ -46,14 +49,18 @@ public class HistoryFragment extends Fragment {
     private HorizontalScrollView svBillTypes, svArrangement;
     private ChipGroup chipGroupBillTypes, chipGroupArrangement;
     private Chip chipInput, chipOutput, chipTransfer, chipNewestFirst, chipOldestFirst, chipHighestFirst, chipLowestFirst;
-    private int preivousCheckedArrangementChip;
+    private int previousCheckedArrangementChip;
     private boolean filtersVisible;
+    private HistoryItemAdapter historyItemAdapter;
+
+    private Bundle savedInstanceState;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_history, container, false);
         displayHowManyBillsAreInDatabase(inflatedView);
+        this.savedInstanceState = savedInstanceState;
 
         mRvHistory = inflatedView.findViewById(R.id.rv_history);
         mRvHistory.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -83,30 +90,24 @@ public class HistoryFragment extends Fragment {
 
         billsToDisplay = Toolkit.getAllBills();
         if (savedInstanceState != null){
-            setupSelections(savedInstanceState);
-            setupChipsStates();
+            setupFiltersFromSavedInstanceState(savedInstanceState);
             applyBillsFilterOnBillsArrayList(selectedIndexBillTypeFilter);
+            setupChipsStates();
+
         }
 
         setupChips();
 
         btnFilters.setOnClickListener(view -> {
             if (filtersVisible){
-                svBillTypes.setVisibility(View.GONE);
-                svArrangement.setVisibility(View.GONE);
-
-                btnFilters.setText(R.string.btn_show_filters);
-                filtersVisible = false;
-                TransitionManager.beginDelayedTransition(llRoot);
+                hideFilters();
             } else {
-                svBillTypes.setVisibility(View.VISIBLE);
-                svArrangement.setVisibility(View.VISIBLE);
-
-                btnFilters.setText(R.string.btn_hide_filters);
-                filtersVisible = true;
-                TransitionManager.beginDelayedTransition(llRoot);
+                showFilters();
             }
         });
+
+        reloadRecyclerView(selectedArrangementFilter);
+        manageViews();
 
         return inflatedView;
     }
@@ -114,15 +115,79 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        reloadRecyclerView(selectedArrangementFilter);
-        manageViews();
+        setupRvHistoryStatesFromSavedInstanceState(savedInstanceState);
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putInt(EXTRA_SELECTED_ARRANGEMENT_FILTER, selectedArrangementFilter);
         outState.putInt(EXTRA_SELECTED_INDEX_BILL_TYPE_FILTER, selectedIndexBillTypeFilter);
+        outState.putBoolean(EXTRA_FILTERS_VISIBLE, filtersVisible);
+
+        if (historyItemAdapter != null){
+            outState.putInt(EXTRA_ITEM_ADAPTER_EXPANDED_ITEM_INDEX, historyItemAdapter.getExpandedPosition());
+            outState.putInt(EXTRA_ITEM_ADAPTER_EDIT_ITEM_INDEX, historyItemAdapter.getEditPosition());
+            outState.putInt(EXTRA_ITEM_ADAPTER_EDIT_TYPE, historyItemAdapter.getEditType());
+        }
+    }
+
+    private void setupFiltersFromSavedInstanceState(Bundle savedInstanceState){
+        setupFiltersVisibilityStateFromSavedInstanceState(savedInstanceState);
+        setupSelections(savedInstanceState);
+    }
+
+    private void setupFiltersVisibilityStateFromSavedInstanceState(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            if (savedInstanceState.getBoolean(EXTRA_FILTERS_VISIBLE)) {
+                showFilters();
+            } else {
+                hideFilters();
+            }
+        }
+    }
+
+    private void showFilters(){
+        svBillTypes.setVisibility(View.VISIBLE);
+        svArrangement.setVisibility(View.VISIBLE);
+
+        btnFilters.setText(R.string.btn_hide_filters);
+        filtersVisible = true;
+        TransitionManager.beginDelayedTransition(llRoot);
+    }
+
+    private void hideFilters(){
+        svBillTypes.setVisibility(View.GONE);
+        svArrangement.setVisibility(View.GONE);
+
+        btnFilters.setText(R.string.btn_show_filters);
+        filtersVisible = false;
+        TransitionManager.beginDelayedTransition(llRoot);
+    }
+
+    private void setupRvHistoryStatesFromSavedInstanceState(Bundle savedInstanceState){
+        if (savedInstanceState != null && historyItemAdapter != null){
+            int expandedPosition = savedInstanceState.getInt(EXTRA_ITEM_ADAPTER_EXPANDED_ITEM_INDEX);
+            int editPosition = savedInstanceState.getInt(EXTRA_ITEM_ADAPTER_EDIT_ITEM_INDEX);
+            int editType = savedInstanceState.getInt(EXTRA_ITEM_ADAPTER_EDIT_TYPE);
+
+            historyItemAdapter.setupStates(expandedPosition, editPosition, editType);
+        }
+    }
+
+    public void hideExpandedHistoryItemAdapterItem(){
+        if (historyItemAdapter != null){
+            historyItemAdapter.hide();
+        }
+    }
+
+    public boolean isHidingExpandedHistoryItemAdapterItemPossible(){
+        if (historyItemAdapter != null){
+            return historyItemAdapter.isHidingAnItemPossible();
+        } else {
+            return false;
+        }
     }
 
     private void setupSelections(Bundle savedInstanceState){
@@ -147,10 +212,10 @@ public class HistoryFragment extends Fragment {
                 case R.id.chip_history_oldest_first: selectedArrangementFilter = 1; break;
                 case R.id.chip_history_highest_first: selectedArrangementFilter = 2; break;
                 case R.id.chip_history_lowest_first: selectedArrangementFilter = 3; break;
-                default: ((Chip)chipGroup.getChildAt(preivousCheckedArrangementChip)).setChecked(true); break;
+                default: ((Chip)chipGroup.getChildAt(previousCheckedArrangementChip)).setChecked(true); break;
             }
 
-            preivousCheckedArrangementChip = selectedArrangementFilter;
+            previousCheckedArrangementChip = selectedArrangementFilter;
             reloadRecyclerView(selectedArrangementFilter);
         });
     }
@@ -176,13 +241,13 @@ public class HistoryFragment extends Fragment {
 
     private void reloadRecyclerView(int selectedIndexMainFilter){
         switch (selectedIndexMainFilter){
-            case HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST));
+            case HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST: mRvHistory.setAdapter((historyItemAdapter = HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_NEWEST_ITEM_FIRST)));
                 break;
-            case HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST));
+            case HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST: mRvHistory.setAdapter((historyItemAdapter = HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_OLDEST_ITEM_FIRST)));
                 break;
-            case HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST));
+            case HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST: mRvHistory.setAdapter((historyItemAdapter = HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_HIGHEST_PRICE_FIRST)));
                 break;
-            case HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST: mRvHistory.setAdapter(HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST));
+            case HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST: mRvHistory.setAdapter((historyItemAdapter = HistoryItemAdapter.getDefaultHistoryItemAdapter(mRvHistory, billsToDisplay, HistoryItemAdapter.FILTER_LOWEST_PRICE_FIRST)));
                 break;
                 default: throw new IllegalArgumentException("Couldn't resolve " + selectedIndexMainFilter + " as a valid selection");
         }

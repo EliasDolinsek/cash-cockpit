@@ -2,12 +2,10 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,7 +91,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
 
         if (editPosition == position && editType == EDIT_TYPE_DESCRIPTION){
             setupEdtEditForDescriptionEdit(holder, position);
-        } else if (editPosition == position && editPosition == EDIT_TYPE_AMOUNT){
+        } else if (editPosition == position && editType == EDIT_TYPE_AMOUNT){
             setupEdtEditForAmountEdit(holder, position);
         }
     }
@@ -134,6 +132,24 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         }
     }
 
+    public void setupStates(int expandedPosition, int editPosition, int editType){
+        this.expandedPosition = expandedPosition;
+        this.editPosition = editPosition;
+        this.editType = editType;
+    }
+
+    public int getExpandedPosition() {
+        return expandedPosition;
+    }
+
+    public int getEditPosition() {
+        return editPosition;
+    }
+
+    public int getEditType() {
+        return editType;
+    }
+
     private void cleanUpBillsToDisplay(){
         ArrayList<Bill> allBillsInDatabase = Toolkit.getAllBills();
         ArrayList<Bill> cleanedUpBillsToDisplay = new ArrayList<>();
@@ -150,7 +166,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         Context context = holder.itemView.getContext();
 
         if (bill.isAutoPayBill()){
-            holder.mTxvBillType.setText(context.getString(R.string.label_auto_pay) + "");
+            holder.mTxvBillType.setText(context.getString(R.string.label_auto_pay));
         } else {
             holder.mTxvBillType.setText("");
         }
@@ -230,7 +246,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         editType = EDIT_TYPE_DESCRIPTION;
 
         showKeyboardForEditInput(holder.mEdtEdit);
-        expand(holder);
+        expand();
     }
 
     private void setupForAmountEdit(HistoryViewHolder holder){
@@ -238,7 +254,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         editType = EDIT_TYPE_AMOUNT;
 
         showKeyboardForEditInput(holder.mEdtEdit);
-        expand(holder);
+        expand();
     }
 
     private void setupEdtEditForDescriptionEdit(HistoryViewHolder holder, int position){
@@ -250,7 +266,7 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
             String enteredDescription = holder.mEdtEdit.getText().toString();
             currentBill.setDescription(enteredDescription);
 
-            expand(holder);
+            expand();
             Database.save(holder.itemView.getContext());
 
             editPosition = -1;
@@ -260,12 +276,46 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         });
     }
 
-    private void expand(HistoryViewHolder holder){
+    private void setupEdtEditForAmountEdit(HistoryViewHolder holder, int position){
+        Bill currentBill = billsToDisplay.get(position);
+        Currency activeCurrency = Currency.getActiveCurrency(holder.itemView.getContext());
+        String formattedBillAmount = activeCurrency.formatAmountToReadableStringWithCurrencySymbol(currentBill.getAmount());
+
+        holder.mEdtEdit.setText(formattedBillAmount);
+        holder.mEdtEdit.setSelection(holder.mEdtEdit.length());
+        holder.mEdtEdit.addTextChangedListener(activeCurrency.getCurrencyTextWatcher(holder.mEdtEdit));
+        holder.mEdtEdit.setOnEditorActionListener((v, actionId, event) -> {
+            long enteredAmount = Toolkit.convertStringToLongAmount(holder.mEdtEdit.getText().toString());
+            currentBill.setAmount(enteredAmount);
+
+            expand();
+            Database.save(holder.itemView.getContext());
+
+            editPosition = -1;
+            editType = 0;
+
+            return true;
+        });
+    }
+
+    private void expand(){
         notifyItemChanged(expandedPosition);
     }
 
-    private void setupEdtEditForAmountEdit(HistoryViewHolder holder, int position){
-        holder.mEdtEdit.setHint("Not implemented yet!"); //TODO
+    public void hide(){
+        int previousExpandedPosition = expandedPosition;
+        if (editPosition != -1){
+            editPosition = -1;
+            editType = 0;
+        } else {
+            expandedPosition = -1;
+        }
+
+        notifyItemChanged(previousExpandedPosition);
+    }
+
+    public boolean isHidingAnItemPossible(){
+        return expandedPosition != -1;
     }
 
     private void showKeyboardForEditInput(View viewWhereKeyboardIsNeeded){

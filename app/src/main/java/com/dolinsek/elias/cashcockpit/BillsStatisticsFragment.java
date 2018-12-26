@@ -1,6 +1,7 @@
 package com.dolinsek.elias.cashcockpit;
 
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.chip.Chip;
@@ -158,7 +159,7 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void setupBarData(BarData barData){
         barData.setValueFormatter(new HistoryOfPaymentsValueFormatter());
-        barData.setValueTextSize(15f);
+        barData.setValueTextSize(14f);
     }
 
     private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
