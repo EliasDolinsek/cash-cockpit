@@ -214,7 +214,6 @@ public class Toolkit {
         switch (billType){
             case Bill.TYPE_INPUT: return context.getString(R.string.label_input);
             case Bill.TYPE_OUTPUT: return context.getString(R.string.label_output);
-            case Bill.TYPE_TRANSFER: return context.getString(R.string.label_transfer);
             default: throw new IllegalArgumentException("Couldn't resolve " + billType + " as a bill-type");
         }
     }

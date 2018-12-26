@@ -186,13 +186,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/label_output" />
-
-                <android.support.design.chip.Chip
-                    android:id="@+id/chip_bill_transfer"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/label_transfer" />
             </android.support.design.chip.ChipGroup>
 
         </android.support.constraint.ConstraintLayout>

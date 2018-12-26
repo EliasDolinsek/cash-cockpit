@@ -139,10 +139,9 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet, ArrayList<PieEntry> entries){
-        boolean areInputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_INPUT), areOutputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_OUTPUT),
-                areTransfersGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_TRANSFER);
+        boolean areInputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_INPUT), areOutputsGreaterThanNull = isUsageOfBillTypeGreaterThanNullFromEntries(entries, Bill.TYPE_OUTPUT);
 
-        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, areTransfersGreaterThanNull, areInputsGreaterThanNull, areOutputsGreaterThanNull);
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, areInputsGreaterThanNull, areOutputsGreaterThanNull);
         pieDataSet.setDrawValues(false);
     }
 
@@ -162,7 +161,7 @@ public class BillsStatisticsFragment extends Fragment {
         barData.setValueTextSize(15f);
     }
 
-    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfTransferGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
         ArrayList<Integer> colors = new ArrayList<>();
 
         if (amountOfInputsGreaterThanNull){
@@ -171,10 +170,6 @@ public class BillsStatisticsFragment extends Fragment {
 
         if (amountOfOutputGreaterThanNull){
             colors.add(getResources().getColor(R.color.colorBillTypeOutput));
-        }
-
-        if (amountOfTransferGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorBillTypeTransfer));
         }
 
         pieDataSet.setColors(colors);
@@ -323,8 +318,6 @@ public class BillsStatisticsFragment extends Fragment {
             return getResources().getString(R.string.label_input);
         } else if (billType == Bill.TYPE_OUTPUT){
             return getResources().getString(R.string.label_output);
-        } else if (billType == Bill.TYPE_TRANSFER){
-            return getResources().getString(R.string.label_transfer);
         } else {
             throw new IllegalArgumentException("Couldn't resolve " + billType + " as a bill type");
         }

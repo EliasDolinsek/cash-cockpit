@@ -124,21 +124,17 @@ public class CockpitStatisticsFragment extends Fragment {
     }
 
     private long getTotalOutputs(){
-        ArrayList<Bill> outputTransferBillsOfMonth = new ArrayList<>();
-        outputTransferBillsOfMonth.addAll(Toolkit.getBillsByTypeAndMonth(Bill.TYPE_OUTPUT, System.currentTimeMillis()));
-        outputTransferBillsOfMonth.addAll(Toolkit.getBillsByTypeAndMonth(Bill.TYPE_TRANSFER, System.currentTimeMillis()));
+        ArrayList<Bill> outputBillsOfMonth = new ArrayList<>(Toolkit.getBillsByTypeAndMonth(Bill.TYPE_OUTPUT, System.currentTimeMillis()));
 
-        long totalOutputs = getFixedCosts() + Toolkit.getBillsTotalAmount(outputTransferBillsOfMonth);
+        long totalOutputs = getFixedCosts() + Toolkit.getBillsTotalAmount(outputBillsOfMonth);
         return convertToNonNegativeAmountToDisplay(totalOutputs);
     }
 
     private long getFixedCosts(){
-        ArrayList<AutoPay> outputTransferAutoPays = new ArrayList<>();
-        outputTransferAutoPays.addAll(Toolkit.getAutoPaysByBillType(Bill.TYPE_OUTPUT));
-        outputTransferAutoPays.addAll(Toolkit.getAutoPaysByBillType(Bill.TYPE_TRANSFER));
+        ArrayList<AutoPay> outputAutoPays = new ArrayList<>(Toolkit.getAutoPaysByBillType(Bill.TYPE_OUTPUT));
 
-        outputTransferAutoPays = getAutoPaysOfMonth(outputTransferAutoPays);
-        return Toolkit.getAutoPaysAmount(outputTransferAutoPays);
+        outputAutoPays = getAutoPaysOfMonth(outputAutoPays);
+        return Toolkit.getAutoPaysAmount(outputAutoPays);
     }
 
     private long getAllInputs(){
@@ -226,11 +222,11 @@ public class CockpitStatisticsFragment extends Fragment {
     }
 
     private void setupPieDataSet(PieDataSet pieDataSet){
-        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull(), isAmountOfTransfersGreaterThanNull());
+        setupPieDataSetColorsDependingOnAvailableData(pieDataSet, isAmountOfFixCostsGreaterThanNull(), isAmountOfInputsGreaterThanNull(), isAmountOfOutputsGreaterThanNull());
         pieDataSet.setDrawValues(false);
     }
 
-    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull, boolean amountOfTransfersGreaterThanNull){
+    private void setupPieDataSetColorsDependingOnAvailableData(PieDataSet pieDataSet, boolean amountOfFixCostsGreaterThanNull, boolean amountOfInputsGreaterThanNull, boolean amountOfOutputGreaterThanNull){
         ArrayList<Integer> colors = new ArrayList<>();
 
         if (amountOfInputsGreaterThanNull){
@@ -239,10 +235,6 @@ public class CockpitStatisticsFragment extends Fragment {
 
         if (amountOfOutputGreaterThanNull){
             colors.add(getResources().getColor(R.color.colorCockpitChartEntriesOutput));
-        }
-
-        if (amountOfTransfersGreaterThanNull){
-            colors.add(getResources().getColor(R.color.colorCockpitChartEntriesTransfer));
         }
 
         if (amountOfFixCostsGreaterThanNull){
@@ -264,10 +256,6 @@ public class CockpitStatisticsFragment extends Fragment {
         return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) != 0;
     }
 
-    private boolean isAmountOfTransfersGreaterThanNull(){
-        return getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER) != 0;
-    }
-
     private long getAmountOfBillsOfBillTypeOfMonth(int billType){
         ArrayList<Bill> bills = Toolkit.getBillsByTypeAndMonth(billType, System.currentTimeMillis());
         return Toolkit.getBillsAmount(bills);
@@ -279,11 +267,9 @@ public class CockpitStatisticsFragment extends Fragment {
         long amountOfFixedCosts = getFixedCosts() / 100;
         long amountOfOutputs = Math.abs(getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_OUTPUT)) / 100;
         long amountOfInputs = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_INPUT) / 100;
-        long amountOfTransfers = getAmountOfBillsOfBillTypeOfMonth(Bill.TYPE_TRANSFER) / 100;
 
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfInputs, getString(R.string.label_inputs), pieEntries);
         addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfOutputs), getString(R.string.label_outputs), pieEntries);
-        addNewPieEntryToPieEntriesIfValueIsNotNull(Math.abs(amountOfTransfers), getString(R.string.label_transfers), pieEntries);
         addNewPieEntryToPieEntriesIfValueIsNotNull(amountOfFixedCosts, getString(R.string.label_fixed_costs), pieEntries);
 
         return pieEntries;

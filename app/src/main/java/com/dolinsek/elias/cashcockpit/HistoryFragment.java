@@ -135,7 +135,6 @@ public class HistoryFragment extends Fragment {
             switch (chipGroup.getCheckedChipId()){
                 case R.id.chip_history_input: applyBillsFilterOnBillsArrayList(Bill.TYPE_INPUT); break;
                 case R.id.chip_history_output: applyBillsFilterOnBillsArrayList(Bill.TYPE_OUTPUT); break;
-                case R.id.chip_history_transfer: applyBillsFilterOnBillsArrayList(Bill.TYPE_TRANSFER); break;
                 default: billsToDisplay = Toolkit.getAllBills(); break;
             }
 
@@ -160,7 +159,6 @@ public class HistoryFragment extends Fragment {
         switch (selectedIndexBillTypeFilter){
             case Bill.TYPE_INPUT: chipInput.setChecked(true); break;
             case Bill.TYPE_OUTPUT: chipOutput.setChecked(true); break;
-            case Bill.TYPE_TRANSFER: chipTransfer.setChecked(true); break;
         }
 
         switch (selectedArrangementFilter){

@@ -222,7 +222,6 @@ public class BillActivity extends AppCompatActivity {
     private int getSelectedBillType(){
         switch (cgBillType.getCheckedChipId()){
             case R.id.chip_auto_pay_bill_type_input: return Bill.TYPE_INPUT;
-            case R.id.chip_bill_transfer: return Bill.TYPE_TRANSFER;
             default: return Bill.TYPE_OUTPUT;
         }
     }

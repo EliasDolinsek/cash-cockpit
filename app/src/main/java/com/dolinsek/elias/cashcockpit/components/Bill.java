@@ -17,7 +17,6 @@ public class Bill {
      */
     public static final int TYPE_OUTPUT = 1;
     public static final int TYPE_INPUT = 0;
-    public static final int TYPE_TRANSFER = 2;
 
     /**
      * Amount what get removed or added in cents
