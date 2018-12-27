@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        historyFragment.isHidingExpandedHistoryItemAdapterItemPossible();
         if (historyFragment.getUserVisibleHint() && historyFragment.isHidingExpandedHistoryItemAdapterItemPossible()){
             historyFragment.hideExpandedHistoryItemAdapterItem();
         } else {

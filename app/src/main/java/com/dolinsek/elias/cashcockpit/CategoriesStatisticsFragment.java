@@ -1,10 +1,9 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.provider.CalendarContract;
+import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -13,9 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 
 import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
@@ -31,7 +27,6 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Random;
 
 
 /**
@@ -39,7 +34,8 @@ import java.util.Random;
  */
 public class CategoriesStatisticsFragment extends Fragment {
 
-    private static final String EXTRA_TIME_STAMP_OF_MONTH = "timeStampOfMonth";
+    private static final String EXTRA_SELECTED_MONTH_INDEX = "selected_month";
+
     private static final int[] COLORS = new int[]{
             Color.parseColor("#e57373"),
             Color.parseColor("#ffd54f"),
@@ -78,9 +74,6 @@ public class CategoriesStatisticsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_categories_statistics, container, false);
-
-        loadTimeStampOfMonth(savedInstanceState);
-
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
         pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
         scrollView = inflatedView.findViewById(R.id.sv_categories_statistics);
@@ -99,18 +92,34 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadStatistics();
+        if (savedInstanceState != null){
+            setupSelectedMonthFromSavedInstanceState(savedInstanceState);
+        }
 
         return inflatedView;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        loadStatistics();
+    }
+
     private void setupCgMonthSelection(){
+        cgMonthSelection.removeAllViews();
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
             timestampOfCurrentDisplayedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
             loadRecyclerViewAdapter();
             loadChartStatistics();
         });
+    }
+
+    private void setupSelectedMonthFromSavedInstanceState(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            int selectedMonthIndex = savedInstanceState.getInt(EXTRA_SELECTED_MONTH_INDEX,0);
+            ((Chip)cgMonthSelection.getChildAt(selectedMonthIndex)).setChecked(true);
+        }
     }
 
     private void setupCgBillTypeSelection(){
@@ -198,15 +207,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong(EXTRA_TIME_STAMP_OF_MONTH, timestampOfCurrentDisplayedMonth);
-    }
-
-    private void loadTimeStampOfMonth(Bundle savedInstanceState){
-        if (savedInstanceState != null){
-            timestampOfCurrentDisplayedMonth = savedInstanceState.getLong(EXTRA_TIME_STAMP_OF_MONTH);
-        } else {
-            timestampOfCurrentDisplayedMonth = System.currentTimeMillis();
-        }
+        outState.putInt(EXTRA_SELECTED_MONTH_INDEX, Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
     }
 
     private ArrayList<Long> getTimeStampsWithBills(){

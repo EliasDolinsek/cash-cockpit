@@ -231,6 +231,8 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private void setupCgMonthSelection(){
+        cgMonthSelection.removeAllViews();
+
         ArrayList<Long> timeStamps = getTimeStampsOfAllMonthsWithGoalStatistics();
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStamps, cgMonthSelection, getContext());
 

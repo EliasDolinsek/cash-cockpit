@@ -81,7 +81,7 @@ public class BankAccount {
     public void addBill(Bill bill) {
         if (bill.getType() == Bill.TYPE_INPUT){
             setBalance(getBalance() + bill.getAmount());
-    } else if(bill.getType() == Bill.TYPE_OUTPUT){
+        } else if(bill.getType() == Bill.TYPE_OUTPUT){
             setBalance(getBalance() - bill.getAmount());
         }
 

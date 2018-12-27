@@ -4,6 +4,7 @@ package com.dolinsek.elias.cashcockpit;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
@@ -41,6 +42,7 @@ public class BillsStatisticsFragment extends Fragment {
 
     private static final int DISPLAY_BILL_USAGE_TYPE_OVERALL = 172;
     private static final int DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH = 862;
+    private static final String EXTRA_SELECTED_MONTH = "selected_month";
 
     private PieChart pcUsageOfBillTypes;
     private BarChart bcHistoryOfPayments;
@@ -77,6 +79,7 @@ public class BillsStatisticsFragment extends Fragment {
         if (allBillsInDatabase.size() != 0){
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
+            setupCgMonthSelection();
 
             displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
             displayStatistics(timeStampsWithBills.get(timeStampsWithBills.size() - 1));
@@ -87,21 +90,34 @@ public class BillsStatisticsFragment extends Fragment {
             bcHistoryOfPayments.setVisibility(View.GONE);
         }
 
+        if (savedInstanceState != null){
+            setupSelectedMonthFromSavedInstanceState(savedInstanceState);
+        }
+
         return inflatedView;
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        setupCgMonthSelection();
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_SELECTED_MONTH, Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
     }
 
     private void setupCgMonthSelection(){
+        cgMonthSelection.removeAllViews();
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
+
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
             long timeStampOfSelectedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup));
             displayStatistics(timeStampOfSelectedMonth);
         });
+    }
+
+    private void setupSelectedMonthFromSavedInstanceState(Bundle savedInstanceState){
+        if (savedInstanceState != null){
+            int selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH, 0);
+            ((Chip)cgMonthSelection.getChildAt(selectedMonth)).setChecked(true);
+        }
     }
 
     private void displayStatistics(long timeStamp){

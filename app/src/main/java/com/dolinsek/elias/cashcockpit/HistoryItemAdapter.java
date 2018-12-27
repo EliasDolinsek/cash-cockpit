@@ -90,8 +90,10 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         }
 
         if (editPosition == position && editType == EDIT_TYPE_DESCRIPTION){
+            showKeyboardForEditInput(holder.mEdtEdit);
             setupEdtEditForDescriptionEdit(holder, position);
         } else if (editPosition == position && editType == EDIT_TYPE_AMOUNT){
+            showKeyboardForEditInput(holder.mEdtEdit);
             setupEdtEditForAmountEdit(holder, position);
         }
     }
@@ -211,8 +213,8 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         holder.btnEdit.setOnClickListener(view -> showEditDialogForSubcategory(bill, getBankAccountOfBill(bill), holder.itemView.getContext()));
         holder.btnDelete.setOnClickListener(view -> showDeleteBillDialogFragment(holder, bill));
         holder.btnDuplicate.setOnClickListener(view -> duplicateBill(holder, bill));
-        holder.btnEditAmount.setOnClickListener(view -> setupForAmountEdit(holder));
-        holder.btnEditDescription.setOnClickListener(view -> setupForDescriptionEdit(holder));
+        holder.btnEditAmount.setOnClickListener(view -> setupForAmountEdit());
+        holder.btnEditDescription.setOnClickListener(view -> setupForDescriptionEdit());
     }
 
     private void setupOnItemClickAction(HistoryViewHolder holder, int position){
@@ -241,19 +243,15 @@ public class HistoryItemAdapter extends RecyclerView.Adapter<HistoryItemAdapter.
         });
     }
 
-    private void setupForDescriptionEdit(HistoryViewHolder holder){
+    private void setupForDescriptionEdit(){
         editPosition = expandedPosition;
         editType = EDIT_TYPE_DESCRIPTION;
-
-        showKeyboardForEditInput(holder.mEdtEdit);
         expand();
     }
 
-    private void setupForAmountEdit(HistoryViewHolder holder){
+    private void setupForAmountEdit(){
         editPosition = expandedPosition;
         editType = EDIT_TYPE_AMOUNT;
-
-        showKeyboardForEditInput(holder.mEdtEdit);
         expand();
     }
 

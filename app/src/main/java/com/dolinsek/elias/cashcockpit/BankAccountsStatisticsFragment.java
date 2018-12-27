@@ -2,6 +2,7 @@ package com.dolinsek.elias.cashcockpit;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.chip.Chip;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -59,8 +60,6 @@ BankAccountsStatisticsFragment extends Fragment {
             loadSelectedBankAccount(savedInstanceState);
             setupBankAccountSelection();
             loadStatistics(selectedBankAccount);
-        } else {
-
         }
 
         return inflatedView;
@@ -79,7 +78,7 @@ BankAccountsStatisticsFragment extends Fragment {
             if (bankAccountIndex == ERROR_NO_BANK_ACCOUNT_INDEX){
                 throw new Exception();
             } else {
-                selectedBankAccount = Database.getBankAccounts().get(bankAccountIndex);
+                ((Chip)cgBankAccountSelection.getChildAt(bankAccountIndex)).setChecked(true);
             }
 
         } catch (Exception e){
@@ -88,6 +87,7 @@ BankAccountsStatisticsFragment extends Fragment {
     }
 
     private void setupBankAccountSelection(){
+        cgBankAccountSelection.removeAllViews();
         Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccountSelection, getContext());
         cgBankAccountSelection.setOnCheckedChangeListener((chipGroup, i) -> {
             selectedBankAccount = Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccountSelection);
