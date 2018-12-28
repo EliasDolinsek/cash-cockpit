@@ -1,7 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
@@ -30,7 +28,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
-import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 
@@ -53,12 +50,12 @@ public class BillsStatisticsFragment extends Fragment {
     private Chip chipInputOverall, chipOutputOverall, chipInputMonth, chipOutputMonth;
 
     private ArrayList<Long> timeStampsWithBills;
+    private int selectedMonth;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View inflatedView = inflater.inflate(R.layout.fragment_bills_statistics, container, false);
-        loadTimeStampsWithBills();
 
         cgMonthSelection = inflatedView.findViewById(R.id.cg_bills_statistics_month_selection);
         pcUsageOfBillTypes = inflatedView.findViewById(R.id.pc_bills_statistics_bill_type_usage);
@@ -75,23 +72,24 @@ public class BillsStatisticsFragment extends Fragment {
         chipInputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_input_usage_month);
         chipOutputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_output_usage_month);
 
-        ArrayList<Bill> allBillsInDatabase = Toolkit.getAllBills();
-        if (allBillsInDatabase.size() != 0){
+        if (enoughDataForStatistic()){
+            loadTimeStampsWithBills();
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
-            setupCgMonthSelection();
+            displayBillTypeUsage(Toolkit.getAllBills(), DISPLAY_BILL_USAGE_TYPE_OVERALL);
 
-            displayBillsTypeUsage(allBillsInDatabase, DISPLAY_BILL_USAGE_TYPE_OVERALL);
-            displayStatistics(timeStampsWithBills.get(timeStampsWithBills.size() - 1));
+            if (savedInstanceState != null){
+                cgMonthSelection.removeAllViews();
+                setupCgMonthSelection();
+                loadDataFromSavedInstanceState(savedInstanceState);
+            } else {
+                selectedMonth = timeStampsWithBills.size() -1;
+                displayStatistics(timeStampsWithBills.get(selectedMonth));
+                setupCgMonthSelection();
+                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, cgMonthSelection.getChildCount() - 1);
+            }
         } else {
-            vwSeparationOne.setVisibility(View.GONE);
-            vwSeparationTwo.setVisibility(View.GONE);
-            pcUsageOfBillTypes.setVisibility(View.GONE);
-            bcHistoryOfPayments.setVisibility(View.GONE);
-        }
 
-        if (savedInstanceState != null){
-            setupSelectedMonthFromSavedInstanceState(savedInstanceState);
         }
 
         return inflatedView;
@@ -100,30 +98,34 @@ public class BillsStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SELECTED_MONTH, Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
+        outState.putInt(EXTRA_SELECTED_MONTH, selectedMonth);
     }
+
+    private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null){
+            selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH);
+            displayStatistics(timeStampsWithBills.get(selectedMonth));
+            Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, selectedMonth);
+        }
+    }
+
+    private boolean enoughDataForStatistic() {
+        return Toolkit.getAllBills().size() != 0;
+    }
+
 
     private void setupCgMonthSelection(){
-        cgMonthSelection.removeAllViews();
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
-
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            long timeStampOfSelectedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup));
-            displayStatistics(timeStampOfSelectedMonth);
+            selectedMonth = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup);
+            displayStatistics(timeStampsWithBills.get(selectedMonth));
         });
-    }
-
-    private void setupSelectedMonthFromSavedInstanceState(Bundle savedInstanceState){
-        if (savedInstanceState != null){
-            int selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH, 0);
-            ((Chip)cgMonthSelection.getChildAt(selectedMonth)).setChecked(true);
-        }
     }
 
     private void displayStatistics(long timeStamp){
         loadBillTypeUsageStatistic(timeStamp);
         loadPaymentsHistory(timeStamp);
-        displayBillsTypeUsage(Toolkit.getBillsByMonth(timeStamp), DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH);
+        displayBillTypeUsage(Toolkit.getBillsByMonth(timeStamp), DISPLAY_BILL_USAGE_TYPE_SELECTED_MONTH);
     }
 
     private void setupBillTypeUsageChart(){
@@ -253,7 +255,7 @@ public class BillsStatisticsFragment extends Fragment {
         return new PieEntry(usageOfBillTypeInPercent, billTypeToString(billType));
     }
 
-    private void displayBillsTypeUsage(ArrayList<Bill> bills, int type){
+    private void displayBillTypeUsage(ArrayList<Bill> bills, int type){
         int billsTypeInputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_INPUT).size();
         int billsTypeOutputSize = Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT).size();
 

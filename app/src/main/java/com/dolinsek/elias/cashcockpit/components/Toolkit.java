@@ -324,8 +324,7 @@ public class Toolkit {
 
         public static void addTimeChipsToChipGroup(ArrayList<Long> timeMillis, ChipGroup chipGroup, Context context){
             for (long currentTimeMilli:timeMillis){
-                boolean checked = timeMillis.indexOf(currentTimeMilli) == timeMillis.size() - 1;
-                addTimeChipToChipGroup(currentTimeMilli, chipGroup, checked, context);
+                addTimeChipToChipGroup(currentTimeMilli, chipGroup, false, context);
             }
         }
 
@@ -352,6 +351,12 @@ public class Toolkit {
             String formattedMonth = context.getResources().getStringArray(R.array.months_array)[month];
 
             return formattedMonth + " " + calendar.get(Calendar.YEAR);
+        }
+
+        public static void checkChipOfChipGroup(ChipGroup chipGroup, int index){
+            if (chipGroup.getChildCount() > index){
+                ((Chip)chipGroup.getChildAt(index)).setChecked(true);
+            }
         }
     }
 }

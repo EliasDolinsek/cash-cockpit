@@ -57,8 +57,8 @@ BankAccountsStatisticsFragment extends Fragment {
         rvBills.setNestedScrollingEnabled(false);
 
         if (Database.getBankAccounts().size() != 0){
-            loadSelectedBankAccount(savedInstanceState);
             setupBankAccountSelection();
+            loadSelectedBankAccount(savedInstanceState);
             loadStatistics(selectedBankAccount);
         }
 
@@ -75,9 +75,10 @@ BankAccountsStatisticsFragment extends Fragment {
     private void loadSelectedBankAccount(Bundle savedInstanceState){
         try {
             int bankAccountIndex = savedInstanceState.getInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, ERROR_NO_BANK_ACCOUNT_INDEX);
-            if (bankAccountIndex == ERROR_NO_BANK_ACCOUNT_INDEX){
+            if (bankAccountIndex == ERROR_NO_BANK_ACCOUNT_INDEX && Database.getBankAccounts().size() > bankAccountIndex){
                 throw new Exception();
             } else {
+                selectedBankAccount = Database.getBankAccounts().get(bankAccountIndex);
                 ((Chip)cgBankAccountSelection.getChildAt(bankAccountIndex)).setChecked(true);
             }
 

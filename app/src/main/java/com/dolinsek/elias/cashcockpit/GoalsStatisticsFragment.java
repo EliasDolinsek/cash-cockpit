@@ -231,11 +231,10 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private void setupCgMonthSelection(){
-        cgMonthSelection.removeAllViews();
-
         ArrayList<Long> timeStamps = getTimeStampsOfAllMonthsWithGoalStatistics();
-        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStamps, cgMonthSelection, getContext());
 
+        cgMonthSelection.removeAllViews();
+        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStamps, cgMonthSelection, getContext());
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
             timeStampOfMonthToLoadStatistics = timeStamps.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup));
             loadStatisticsOfMonth(timeStampOfMonthToLoadStatistics);
