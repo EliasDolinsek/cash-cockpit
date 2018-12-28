@@ -130,6 +130,7 @@ public class BankAccountActivity extends AppCompatActivity implements DeleteBank
         boolean isAccountPrimaryAccount = isAccountSetToBePrimaryAccount();
 
         BankAccount newBankAccount = new BankAccount(enteredName, balance, isAccountPrimaryAccount);
+        bankAccount.addInitBalanceChange();
         Database.getBankAccounts().add(newBankAccount);
         Database.save(getApplicationContext());
     }

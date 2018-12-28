@@ -59,6 +59,7 @@ public class BankAccount {
         bills = new ArrayList<>();
         balanceChanges = new ArrayList<>();
     }
+
     /**
      * Creates a new bank account and sets creation date to the current date
      * @param name name of the bank account
@@ -132,5 +133,9 @@ public class BankAccount {
 
     public void setBalanceChanges(ArrayList<BalanceChange> balanceChanges) {
         this.balanceChanges = balanceChanges;
+    }
+
+    public void addInitBalanceChange() {
+        balanceChanges.add(new BalanceChange(getBalance(), System.currentTimeMillis()));
     }
 }

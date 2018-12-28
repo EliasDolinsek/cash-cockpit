@@ -326,7 +326,7 @@ public class PrimaryCategoryItemAdapter extends RecyclerView.Adapter<PrimaryCate
         ArrayList<Bill> filteredBills = filterBillsOfMonth(bills, timeStampOfMonthToLoadStatistics);
         long totalAmountOfBillsOfCategory = getTotalAmountOfBills(filteredBills);
 
-        long totalAmountOfAllBillsOfMonth = Toolkit.getBillsTotalAmount(billsToUseForPrimaryCategoryStatisticUsage);
+        long totalAmountOfAllBillsOfMonth = Toolkit.getBillsTotalAmount(Toolkit.filterBillsByMonth(billsToUseForPrimaryCategoryStatisticUsage, timeStampOfMonthToLoadStatistics));
         int usageOfPrimaryCategoryOfMonthInPercent = (int)Math.round(100 / (double)totalAmountOfAllBillsOfMonth * (double) totalAmountOfBillsOfCategory);
 
         String formattedTotalAmountOfBills = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfCategory);

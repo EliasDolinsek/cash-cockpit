@@ -27,6 +27,9 @@ import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.json.JSONException;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -81,7 +84,16 @@ public class StartActivity extends AppCompatActivity {
 
     private void login(){
         startMainActivity();
+        initDatabase();
         manageAutoPayPayments();
+    }
+
+    private void initDatabase(){
+        try {
+            Database.load(getApplicationContext());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private void resetPassword(){

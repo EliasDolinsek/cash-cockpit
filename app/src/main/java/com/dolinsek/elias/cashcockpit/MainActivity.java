@@ -30,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initDatabase();
         setupFragments();
 
         if(savedInstanceState == null){
@@ -94,16 +93,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, SignInActivity.class);
             intent.putExtra(SignInActivity.EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS, true);
             startActivity(intent);
-        }
-    }
-
-    private void initDatabase(){
-        try {
-            Database.load(getApplicationContext());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 

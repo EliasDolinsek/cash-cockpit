@@ -72,8 +72,8 @@ public class BillsStatisticsFragment extends Fragment {
         chipInputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_input_usage_month);
         chipOutputMonth = inflatedView.findViewById(R.id.chip_bills_statistics_output_usage_month);
 
+        loadTimeStampsWithBills();
         if (enoughDataForStatistic()){
-            loadTimeStampsWithBills();
             setupBillTypeUsageChart();
             setupHistoryOfPaymentsChart();
             displayBillTypeUsage(Toolkit.getAllBills(), DISPLAY_BILL_USAGE_TYPE_OVERALL);
@@ -110,7 +110,7 @@ public class BillsStatisticsFragment extends Fragment {
     }
 
     private boolean enoughDataForStatistic() {
-        return Toolkit.getAllBills().size() != 0;
+        return Toolkit.getAllBills().size() != 0 && timeStampsWithBills.size() != 0;
     }
 
 

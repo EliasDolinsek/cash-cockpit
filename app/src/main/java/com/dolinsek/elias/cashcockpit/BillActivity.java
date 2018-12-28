@@ -74,7 +74,7 @@ public class BillActivity extends AppCompatActivity {
         }
 
         setupButtons();
-        Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
+        setupBankAccountSelection();
     }
 
     @Override
@@ -83,6 +83,11 @@ public class BillActivity extends AppCompatActivity {
         if (editMode){
             setupForEditMode();
         }
+    }
+
+    private void setupBankAccountSelection() {
+        Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
+        ((Chip)cgBankAccount.getChildAt(cgBankAccount.getChildCount() - 1)).setChecked(true);
     }
 
     private void hideBankAccountSelection(){
