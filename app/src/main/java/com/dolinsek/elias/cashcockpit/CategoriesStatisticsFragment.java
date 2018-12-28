@@ -3,7 +3,7 @@ package com.dolinsek.elias.cashcockpit;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.design.chip.Chip;
+import android.support.annotation.NonNull;
 import android.support.design.chip.ChipGroup;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.NestedScrollView;
@@ -35,6 +35,9 @@ import java.util.Calendar;
 public class CategoriesStatisticsFragment extends Fragment {
 
     private static final String EXTRA_SELECTED_MONTH_INDEX = "selected_month";
+    private static final int STEP_ONE_MONTH_FORWARD = 1;
+    private static final int NO_BILL_TYPE_SELECTED = -1;
+    private static final String EXTRA_SELECTED_BILL_TYPE = "bill_type";
 
     private static final int[] COLORS = new int[]{
             Color.parseColor("#e57373"),
@@ -58,7 +61,6 @@ public class CategoriesStatisticsFragment extends Fragment {
             Color.parseColor("#90a4ae")
     };
 
-    private static final int STEP_ONE_MONTH_FORWARD = 1;
 
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
@@ -67,8 +69,8 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
     private ArrayList<Bill> billsToUse;
-    private long timestampOfCurrentDisplayedMonth;
     private ArrayList<Long> timeStampsWithBills;
+    private int selectedMonth, selectedBillType = NO_BILL_TYPE_SELECTED;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,18 +86,24 @@ public class CategoriesStatisticsFragment extends Fragment {
         timeStampsWithBills = getTimeStampsWithBills();
         billsToUse = getAllBillsInDatabase();
 
-        setupCgBillTypeSelection();
-        setupCgMonthSelection();
+        if (enoughDataForStatistic()){
+            setupCgBillTypeSelection();
+            setupChartStatistics();
 
-        setupChartStatistics();
-        manageViews();
+            if (savedInstanceState != null){
+                cgMonthSelection.removeAllViews();
+                setupCgMonthSelection();
+                loadDataFromSavedInstanceState(savedInstanceState);
+            } else {
+                cgMonthSelection.removeAllViews();
+                setupCgMonthSelection();
+                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, cgMonthSelection.getChildCount() - 1);
+            }
+        } else {
 
-        rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        if (savedInstanceState != null){
-            setupSelectedMonthFromSavedInstanceState(savedInstanceState);
         }
 
+        rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
         return inflatedView;
     }
 
@@ -105,28 +113,44 @@ public class CategoriesStatisticsFragment extends Fragment {
         loadStatistics();
     }
 
-    private void setupCgMonthSelection(){
-        cgMonthSelection.removeAllViews();
-        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
-        cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            timestampOfCurrentDisplayedMonth = timeStampsWithBills.get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
-            loadRecyclerViewAdapter();
-            loadChartStatistics();
-        });
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt(EXTRA_SELECTED_MONTH_INDEX, selectedMonth);
+        outState.putInt(EXTRA_SELECTED_BILL_TYPE, selectedBillType);
     }
 
-    private void setupSelectedMonthFromSavedInstanceState(Bundle savedInstanceState){
+    private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null){
-            int selectedMonthIndex = savedInstanceState.getInt(EXTRA_SELECTED_MONTH_INDEX,0);
-            ((Chip)cgMonthSelection.getChildAt(selectedMonthIndex)).setChecked(true);
+            selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH_INDEX, 0);
+            selectedBillType = savedInstanceState.getInt(EXTRA_SELECTED_BILL_TYPE, NO_BILL_TYPE_SELECTED);
+
+            Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, selectedMonth);
+            if (selectedBillType != NO_BILL_TYPE_SELECTED){
+                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBillTypeSelection, selectedBillType);
+            }
         }
+    }
+
+    private boolean enoughDataForStatistic() {
+        return Database.getPrimaryCategories().size() != 0 && Toolkit.getAllBills().size() != 0;
+    }
+
+    private void setupCgMonthSelection(){
+        Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
+        cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
+            selectedMonth = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection);
+            loadStatistics();
+        });
     }
 
     private void setupCgBillTypeSelection(){
         cgBillTypeSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            switch (cgBillTypeSelection.getCheckedChipId()){
-                case R.id.chip_categories_statistics_input: billsToUse = Toolkit.filterBillsByType(Toolkit.getAllBills(), Bill.TYPE_INPUT);
-                case R.id.chip_categories_statistics_output: billsToUse = Toolkit.filterBillsByType(Toolkit.getAllBills(), Bill.TYPE_OUTPUT);
+            switch (Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBillTypeSelection)){
+                case 0: selectedBillType = 0; billsToUse = Toolkit.getBillsByType(Bill.TYPE_INPUT); break;
+                case 1: selectedBillType = 1; billsToUse = Toolkit.getBillsByType(Bill.TYPE_OUTPUT); break;
+                default: selectedBillType = NO_BILL_TYPE_SELECTED; billsToUse = Toolkit.getAllBills(); break;
             }
 
             loadStatistics();
@@ -139,7 +163,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private void loadRecyclerViewAdapter(){
-        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getCategoriesStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), billsToUse, timestampOfCurrentDisplayedMonth);
+        primaryCategoryItemAdapter = PrimaryCategoryItemAdapter.getCategoriesStatisticsPrimaryCategoryItemAdapter(Database.getPrimaryCategories(), billsToUse, timeStampsWithBills.get(selectedMonth));
         rvCategories.setAdapter(primaryCategoryItemAdapter);
     }
 
@@ -184,7 +208,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private ArrayList<PieEntry> getChartStatisticsData(){
         ArrayList<PieEntry> entries = new ArrayList<>();
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
-            ArrayList<Bill> billsOfMonth = Toolkit.getBillsByMonth(timestampOfCurrentDisplayedMonth);
+            ArrayList<Bill> billsOfMonth = Toolkit.filterBillsByMonth(billsToUse, timeStampsWithBills.get(selectedMonth));
             ArrayList<Bill> billsOfCategoryAndMonth = Toolkit.filterBillsByCategory(billsOfMonth, primaryCategory);
 
             long amountOfBills = Toolkit.getBillsTotalAmount(billsOfCategoryAndMonth);
@@ -194,20 +218,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         }
 
         return entries;
-    }
-
-    private void manageViews(){
-        if (getAllBillsInDatabase().size() == 0){
-            pcStatistics.setVisibility(View.GONE);
-        } else {
-            pcStatistics.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SELECTED_MONTH_INDEX, 0);
     }
 
     private ArrayList<Long> getTimeStampsWithBills(){

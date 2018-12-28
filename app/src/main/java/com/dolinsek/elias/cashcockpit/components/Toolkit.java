@@ -48,14 +48,18 @@ public class Toolkit {
     }
 
     public static ArrayList<Bill> getBillsByMonth(long timeStamp){
-        ArrayList<Bill> bills = new ArrayList<>();
-        for (Bill bill:getAllBills()){
+        return filterBillsByMonth(getAllBills(), timeStamp);
+    }
+
+    public static ArrayList<Bill> filterBillsByMonth(ArrayList<Bill> billsToFilter, long timeStamp){
+        ArrayList<Bill> filteredBills = new ArrayList<>();
+        for (Bill bill:billsToFilter){
             if (wasBillCreatedDuringMonth(bill, timeStamp)){
-                bills.add(bill);
+                filteredBills.add(bill);
             }
         }
 
-        return bills;
+        return filteredBills;
     }
 
     private static boolean wasBillCreatedDuringMonth(Bill bill, long timeStampOfMonth){
@@ -289,6 +293,8 @@ public class Toolkit {
     }
 
     public static class ActivityToolkit {
+        public static final int NO_CHIP_SELECTED = -1;
+
         public static void addBankAccountChipsToChipGroup(ChipGroup chipGroup, Context context){
             for (BankAccount bankAccount:Database.getBankAccounts()){
                 addBankAccountChipToChipGroup(bankAccount, chipGroup, false, context);
@@ -315,7 +321,7 @@ public class Toolkit {
                 }
             }
 
-            return 0;
+            return NO_CHIP_SELECTED;
         }
 
         public static void addTimeChipsToChipGroup(ArrayList<Long> timeMillis, ChipGroup chipGroup, Context context){
