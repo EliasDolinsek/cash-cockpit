@@ -35,13 +35,13 @@ import java.util.Date;
 public class
 BankAccountsStatisticsFragment extends Fragment {
 
-    private static final String EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE = "bankAccountIndex";
+    private static final String EXTRA_BANK_ACCOUNT_INDEX = "bankAccountIndex";
     private static final int ERROR_NO_BANK_ACCOUNT_INDEX = -1;
 
     private RecyclerView rvBills;
     private LineChart lcStatistics;
     private ChipGroup cgBankAccountSelection;
-    private BankAccount selectedBankAccount;
+    int selectedBankAccountIndex;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -56,10 +56,17 @@ BankAccountsStatisticsFragment extends Fragment {
         rvBills.setLayoutManager(new LinearLayoutManager(getContext()));
         rvBills.setNestedScrollingEnabled(false);
 
-        if (Database.getBankAccounts().size() != 0){
-            setupBankAccountSelection();
-            loadSelectedBankAccount(savedInstanceState);
-            loadStatistics(selectedBankAccount);
+        if (enoughDataForStatistic()){
+            if (savedInstanceState != null){
+                cgBankAccountSelection.removeAllViews();
+                setupCgBankAccountSelection();
+                loadDataFromSavedInstanceState(savedInstanceState);
+            } else {
+                selectedBankAccountIndex = 0;
+                loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
+                setupCgBankAccountSelection();
+                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBankAccountSelection, cgBankAccountSelection.getChildCount() - 1);
+            }
         }
 
         return inflatedView;
@@ -67,42 +74,41 @@ BankAccountsStatisticsFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        if (selectedBankAccount != null){
-            outState.putInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, Toolkit.getIndexOfBankAccountInDatabase(selectedBankAccount));
+        outState.putInt(EXTRA_BANK_ACCOUNT_INDEX, selectedBankAccountIndex);
+    }
+
+    private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null){
+            selectedBankAccountIndex = savedInstanceState.getInt(EXTRA_BANK_ACCOUNT_INDEX, 0);
+            loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
+            Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBankAccountSelection, selectedBankAccountIndex);
         }
     }
 
-    private void loadSelectedBankAccount(Bundle savedInstanceState){
-        try {
-            int bankAccountIndex = savedInstanceState.getInt(EXTRA_BANK_ACCOUNT_INDEX_IN_DATABASE, ERROR_NO_BANK_ACCOUNT_INDEX);
-            if (bankAccountIndex == ERROR_NO_BANK_ACCOUNT_INDEX && Database.getBankAccounts().size() > bankAccountIndex){
-                throw new Exception();
-            } else {
-                selectedBankAccount = Database.getBankAccounts().get(bankAccountIndex);
-                ((Chip)cgBankAccountSelection.getChildAt(bankAccountIndex)).setChecked(true);
-            }
-
-        } catch (Exception e){
-            selectedBankAccount = Database.getBankAccounts().get(0);
-        }
+    private boolean enoughDataForStatistic() {
+        return Database.getBankAccounts().size() != 0 && getSizeOfAllBalanceChanges() != 0;
     }
 
-    private void setupBankAccountSelection(){
-        cgBankAccountSelection.removeAllViews();
+    private int getSizeOfAllBalanceChanges(){
+        int balanceChangesSize = 0;
+        for (BankAccount bankAccount:Database.getBankAccounts()){
+            balanceChangesSize += bankAccount.getBalanceChanges().size();
+        }
+
+        return balanceChangesSize;
+    }
+
+    private void setupCgBankAccountSelection(){
         Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccountSelection, getContext());
         cgBankAccountSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            selectedBankAccount = Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccountSelection);
-            loadStatistics(selectedBankAccount);
+            selectedBankAccountIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccountSelection);
+            loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
         });
     }
 
     private void loadStatistics(BankAccount selectedBankAccount){
-        if (selectedBankAccount.getBalanceChanges().size() != 0){
-            loadChartStatistics(selectedBankAccount);
-            rvBills.setAdapter(HistoryItemAdapter.getBankAccountHistoryItemAdapter(selectedBankAccount));
-        } else {
-            //TODO display that not enough data is available for a statistic
-        }
+        loadChartStatistics(selectedBankAccount);
+        rvBills.setAdapter(HistoryItemAdapter.getBankAccountHistoryItemAdapter(selectedBankAccount));
     }
 
     private void loadChartStatistics(BankAccount bankAccount){

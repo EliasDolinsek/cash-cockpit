@@ -168,7 +168,9 @@ public class BillActivity extends AppCompatActivity {
     private void addBillFromInputsIfFilledOut(){
         if (checkEverythingFilledOutAndDisplayErrorIfNot()){
             Bill bill = new Bill(getEnteredAmountAsLong(), getValidDescription(), selectedSubcategory.getName(), selectedSubcategory.getPrimaryCategory().getName(), getSelectedBillType(), false, System.currentTimeMillis());
-            Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccount).addBill(bill);
+            BankAccount bankAccount = Database.getBankAccounts().get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccount));
+            bankAccount.addBill(bill);
+
             Database.save(this);
             vibrateDevice();
             clearInputs();

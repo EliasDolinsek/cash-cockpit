@@ -136,7 +136,7 @@ public class AutoPayActivity extends AppCompatActivity {
     private void createOrSafeAutoPayIfPossible(){
         if (everythingFilledOutCorrectlyAndDisplayErrorIfNot()){
             long amount = Toolkit.convertStringToLongAmount(edtAmount.getText().toString());
-            BankAccount selectedBankAccount= Toolkit.ActivityToolkit.getSelectedBankAccountFromChipGroup(cgBankAccounts);
+            BankAccount selectedBankAccount = Database.getBankAccounts().get(Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccounts));
 
             autoPay.setName(edtDescription.getText().toString());
             autoPay.setType(selectedAutoPayType);

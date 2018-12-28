@@ -207,7 +207,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_SELECTED_MONTH_INDEX, Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection));
+        outState.putInt(EXTRA_SELECTED_MONTH_INDEX, 0);
     }
 
     private ArrayList<Long> getTimeStampsWithBills(){

@@ -103,7 +103,7 @@ public class BillsStatisticsFragment extends Fragment {
 
     private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null){
-            selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH);
+            selectedMonth = savedInstanceState.getInt(EXTRA_SELECTED_MONTH, 0);
             displayStatistics(timeStampsWithBills.get(selectedMonth));
             Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, selectedMonth);
         }

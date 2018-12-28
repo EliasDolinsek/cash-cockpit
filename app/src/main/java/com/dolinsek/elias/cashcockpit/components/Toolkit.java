@@ -291,7 +291,7 @@ public class Toolkit {
     public static class ActivityToolkit {
         public static void addBankAccountChipsToChipGroup(ChipGroup chipGroup, Context context){
             for (BankAccount bankAccount:Database.getBankAccounts()){
-                addBankAccountChipToChipGroup(bankAccount, chipGroup, bankAccount.isPrimaryAccount(), context);
+                addBankAccountChipToChipGroup(bankAccount, chipGroup, false, context);
             }
         }
 
@@ -306,10 +306,6 @@ public class Toolkit {
             if (checked){
                 chipGroup.check(chip.getId());
             }
-        }
-
-        public static BankAccount getSelectedBankAccountFromChipGroup(ChipGroup chipGroup){
-            return Database.getBankAccounts().get(getIndexOfSelectedChipInChipGroup(chipGroup));
         }
 
         public static int getIndexOfSelectedChipInChipGroup(ChipGroup chipGroup){
