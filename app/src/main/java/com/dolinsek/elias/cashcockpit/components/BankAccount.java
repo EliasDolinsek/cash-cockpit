@@ -139,6 +139,6 @@ public class BankAccount {
     }
 
     public void addBalanceChange() {
-        getBalanceChanges().add(new BalanceChange(getBalance(), System.currentTimeMillis()));
+        getBalanceChanges().add(new BalanceChange(System.currentTimeMillis(), getBalance()));
     }
 }

@@ -21,6 +21,7 @@ import com.dolinsek.elias.cashcockpit.components.Currency;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
 import com.dolinsek.elias.cashcockpit.components.Subcategory;
+import com.dolinsek.elias.cashcockpit.components.Toolkit;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -164,14 +165,14 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
             ArrayList<Bill> billsOfMonthAndSubcategory = getBillsOfSubcategoryAndMonth(subcategory, timeStampOfMonthToLoadStatistics);
             int percentOfUsedGoalAmount = getPercentOfUsedGoalAmount(subcategory, billsOfMonthAndSubcategory);
 
-            long usedGoalAmount = getTotalAmountOfBills(billsOfMonthAndSubcategory);
+            long usedGoalAmount = Toolkit.getBillsTotalAmount(billsOfMonthAndSubcategory);
             long subcategoryGoalAmount = subcategory.getGoal().getAmount();
 
             Currency activeCurrency = Currency.getActiveCurrency(holder.itemView.getContext());
             String formattedUsedGoalAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(Math.abs(usedGoalAmount));
             String formattedSubcategoryGoalAmount = activeCurrency.formatAmountToReadableStringWithoutCentsWithCurrencySymbol(subcategoryGoalAmount);
 
-            if (usedGoalAmount > 0){
+            if (usedGoalAmount < 0){
                 holder.mPgbGoalProgress.setProgress(0);
                 holder.mTxvGoal.setText("0/" + formattedSubcategoryGoalAmount);
             } else {
@@ -182,9 +183,11 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
     }
 
     private void loadSubcategoryStatistic(Subcategory subcategory, SubcategoryItemViewHolder holder){
-        ArrayList<Bill> billsOfSubcategory = filterBillsOfSubcategory(billsUsedForPrimaryCategoryStatistic, subcategory);
-        long totalAmountOfBillsOfPrimaryCategory = getTotalAmountOfBills(billsUsedForPrimaryCategoryStatistic);
-        long totalAmountOfBillsOfSubcategory = getTotalAmountOfBills(billsOfSubcategory);
+        ArrayList<Bill> billsToUseForStatistics = Toolkit.filterBillsByMonth(billsUsedForPrimaryCategoryStatistic, timeStampOfMonthToLoadStatistics);
+        ArrayList<Bill> billsOfSubcategory = Toolkit.filterBillsByCategory(billsToUseForStatistics, subcategory);
+
+        long totalAmountOfBillsOfPrimaryCategory = Toolkit.getBillsTotalAmount(billsToUseForStatistics);
+        long totalAmountOfBillsOfSubcategory = Toolkit.getBillsTotalAmount(billsOfSubcategory);
 
         int usageOfSubcategoryOfMonthInPercent = (int) Math.round(100 / (double)totalAmountOfBillsOfPrimaryCategory * (double)totalAmountOfBillsOfSubcategory);
         String formattedTotalAmountOfBillsOfSubcategory = Currency.getActiveCurrency(holder.itemView.getContext()).formatAmountToReadableStringWithCurrencySymbol(totalAmountOfBillsOfSubcategory);
@@ -297,35 +300,11 @@ public class SubcategoryItemAdapter extends RecyclerView.Adapter<SubcategoryItem
         holder.itemView.getContext().startActivity(intent);
     }
 
-    private ArrayList<Bill> filterBillsOfSubcategory(ArrayList<Bill> bills, Subcategory subcategory){
-        ArrayList<Bill> filteredBills = new ArrayList<>();
-        for (Bill bill:bills){
-            if (bill.getSubcategory().equals(subcategory)){
-                filteredBills.add(bill);
-            }
-        }
-
-        return filteredBills;
-    }
-
     private int getPercentOfUsedGoalAmount(Subcategory subcategory, ArrayList<Bill> bills){
         long subcategoryGoalAmount = subcategory.getGoal().getAmount();
-        long billsAmount = Math.abs(getTotalAmountOfBills(bills));
+        long billsAmount = Toolkit.getBillsTotalAmount(Toolkit.filterBillsByType(bills, Bill.TYPE_OUTPUT));
 
         return  (int)(100 / (double)subcategoryGoalAmount * (double)billsAmount);
-    }
-
-    private long getTotalAmountOfBills(ArrayList<Bill> bills){
-        long billsTotalAmount = 0;
-        for (Bill bill:bills){
-            if (bill.getType() == Bill.TYPE_INPUT){
-                billsTotalAmount += bill.getAmount();
-            } else {
-                billsTotalAmount -= bill.getAmount();
-            }
-        }
-
-        return billsTotalAmount;
     }
 
     private int getIndexOfPrimaryCategoryInDatabase(PrimaryCategory primaryCategory){
