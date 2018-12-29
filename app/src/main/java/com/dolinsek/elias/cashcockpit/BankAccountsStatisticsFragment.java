@@ -67,6 +67,8 @@ BankAccountsStatisticsFragment extends Fragment {
                 setupCgBankAccountSelection();
                 Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBankAccountSelection, cgBankAccountSelection.getChildCount() - 1);
             }
+        } else {
+
         }
 
         return inflatedView;
@@ -115,14 +117,16 @@ BankAccountsStatisticsFragment extends Fragment {
         LineData lineData = new LineData();
 
         ArrayList<BalanceChange> balanceChanges = getLastBalanceChangesOfMonthsOfBankAccount(bankAccount);
-        LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
-        lineData.addDataSet(lineDataSet);
-        setupLineDataSet(lineDataSet);
+        if (balanceChanges.size() != 0){
+            LineDataSet lineDataSet = getBalanceChangesAsLineDataSet(balanceChanges);
+            lineData.addDataSet(lineDataSet);
+            setupLineDataSet(lineDataSet);
 
-        displayTimeStampsOfBalanceChangesOnChart(getTimeStampsOfBalanceChanges(balanceChanges));
-        lcStatistics.setData(lineData);
-        setupChartStyle();
-        lcStatistics.invalidate();
+            displayTimeStampsOfBalanceChangesOnChart(getTimeStampsOfBalanceChanges(balanceChanges));
+            lcStatistics.setData(lineData);
+            setupChartStyle();
+            lcStatistics.invalidate();
+        }
     }
 
     private ArrayList<Long> getTimeStampsOfBalanceChanges(ArrayList<BalanceChange> balanceChanges){

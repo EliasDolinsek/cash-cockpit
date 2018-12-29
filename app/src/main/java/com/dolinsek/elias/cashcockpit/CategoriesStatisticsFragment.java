@@ -84,7 +84,7 @@ public class CategoriesStatisticsFragment extends Fragment {
         cgBillTypeSelection = inflatedView.findViewById(R.id.cg_categories_statistics_bill_type_selection);
 
         timeStampsWithBills = getTimeStampsWithBills();
-        billsToUse = getAllBillsInDatabase();
+        billsToUse = Toolkit.getAllBills();
 
         if (enoughDataForStatistic()){
             setupCgBillTypeSelection();
@@ -108,12 +108,6 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        loadStatistics();
-    }
-
-    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -134,7 +128,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     }
 
     private boolean enoughDataForStatistic() {
-        return Database.getPrimaryCategories().size() != 0 && Toolkit.getAllBills().size() != 0;
+        return Database.getPrimaryCategories().size() != 0 && Toolkit.getAllBills().size() != 0 && Toolkit.getBillsByMonth(System.currentTimeMillis()).size() != 0;
     }
 
     private void setupCgMonthSelection(){
@@ -227,7 +221,7 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         while (!Toolkit.doesMonthExceedsCurrentTime(calendar)){
             long currentMonthTimesStamp = calendar.getTimeInMillis();
-            ArrayList<Bill> billsOfMonth = getBillsOfMonth(currentMonthTimesStamp);
+            ArrayList<Bill> billsOfMonth = Toolkit.getBillsByMonth(currentMonthTimesStamp);
 
             if (billsOfMonth.size() != 0){
                 monthsWithBills.add(currentMonthTimesStamp);
@@ -242,7 +236,7 @@ public class CategoriesStatisticsFragment extends Fragment {
     private long getTimeStampOfCreationDateOfFirstBillInDatabase(){
         long firstCreationDate = System.currentTimeMillis();
 
-        ArrayList<Bill> billsInDatabase = getAllBillsInDatabase();
+        ArrayList<Bill> billsInDatabase = Toolkit.getAllBills();
         for (Bill bill:billsInDatabase){
             if (bill.getCreationDate() < firstCreationDate){
                 firstCreationDate = bill.getCreationDate();
@@ -250,40 +244,5 @@ public class CategoriesStatisticsFragment extends Fragment {
         }
 
         return firstCreationDate;
-    }
-
-    private ArrayList<Bill> getAllBillsInDatabase(){
-        ArrayList<Bill> allBillsInDatabase = new ArrayList<>();
-
-        for (BankAccount bankAccount:Database.getBankAccounts()){
-            for (Bill bill:bankAccount.getBills()){
-                allBillsInDatabase.add(bill);
-            }
-        }
-
-        return allBillsInDatabase;
-    }
-
-    private ArrayList<Bill> getBillsOfMonth(long timeStampOfMonth){
-        ArrayList<Bill> billsOfMonth = new ArrayList<>();
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(timeStampOfMonth);
-
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-
-        for (Bill bill:getAllBillsInDatabase()){
-            calendar.setTimeInMillis(bill.getCreationDate());
-
-            int billYear = calendar.get(Calendar.YEAR);
-            int billMonth = calendar.get(Calendar.MONTH);
-
-            if (year == billYear && month == billMonth){
-                billsOfMonth.add(bill);
-            }
-        }
-
-        return  billsOfMonth;
     }
 }

@@ -41,7 +41,7 @@ public class BankAccount {
     private ArrayList<BalanceChange> balanceChanges;
 
     public BankAccount(){
-
+        addBalanceChange();
     }
 
     /**
@@ -58,6 +58,7 @@ public class BankAccount {
         this.creationDate = creationDate;
         bills = new ArrayList<>();
         balanceChanges = new ArrayList<>();
+        addBalanceChange();
     }
 
     /**
@@ -73,6 +74,8 @@ public class BankAccount {
         creationDate = System.currentTimeMillis();
         bills = new ArrayList<>();
         balanceChanges = new ArrayList<>();
+
+        addBalanceChange();
     }
 
     public String getName() {
@@ -135,7 +138,7 @@ public class BankAccount {
         this.balanceChanges = balanceChanges;
     }
 
-    public void addInitBalanceChange() {
-        balanceChanges.add(new BalanceChange(getBalance(), System.currentTimeMillis()));
+    public void addBalanceChange() {
+        getBalanceChanges().add(new BalanceChange(getBalance(), System.currentTimeMillis()));
     }
 }
