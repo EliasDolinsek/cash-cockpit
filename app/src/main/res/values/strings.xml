@@ -87,7 +87,7 @@
     <string name="label_currency">Currency</string>
     <string name="label_cash">Cash</string>
     <string name="label_cockpit">Cockpit</string>
-    <string name="label_no_data_for_statistic">No data for statistic</string>
+    <string name="label_no_data_for_statistics">No data for statistics</string>
     <string name="label_summary">Summary</string>
     <string name="label_selected_month">Selected Month</string>
     <string name="label_average">Average</string>

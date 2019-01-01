@@ -68,12 +68,19 @@ public class GoalsStatisticsFragment extends Fragment {
                 setupCgMonthSelection();
                 Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, cgMonthSelection.getChildCount() - 1);
             }
+        } else {
+            setupForNoData(inflatedView);
         }
 
         mRvCategories.setAdapter(primaryCategoryItemAdapter);
         mRvCategories.setNestedScrollingEnabled(false);
 
         return inflatedView;
+    }
+
+    private void setupForNoData(View inflatedView){
+        inflatedView.findViewById(R.id.txv_goals_statistics_no_data).setVisibility(View.VISIBLE);
+        inflatedView.findViewById(R.id.sv_goals_statistics_content).setVisibility(View.GONE);
     }
 
     private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
@@ -86,7 +93,7 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private boolean enoughDataForStatistic() {
-        return timeStampsWithStatistics.size() != 0;
+        return timeStampsWithStatistics.size() != 0 && getPrimaryCategoryGoals().size() != 0;
     }
 
     private void loadTimeStampsWithStatistics() {
@@ -118,12 +125,16 @@ public class GoalsStatisticsFragment extends Fragment {
     }
 
     private long getTotalAmountOfAllGoalsOfPrimaryCategoriesInDatabase(){
+        return getTotalAmountOfGoals(getPrimaryCategoryGoals());
+    }
+
+    private ArrayList<Goal> getPrimaryCategoryGoals(){
         ArrayList<Goal> goals = new ArrayList<>();
         for (PrimaryCategory primaryCategory:Database.getPrimaryCategories()){
             goals.add(primaryCategory.getGoal());
         }
 
-        return getTotalAmountOfGoals(goals);
+        return goals;
     }
 
     private long getTotalAmountOfGoals(ArrayList<Goal> goals){
@@ -205,8 +216,13 @@ public class GoalsStatisticsFragment extends Fragment {
     private void setupCgMonthSelection(){
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithStatistics, cgMonthSelection, getContext());
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            selectedMonth = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup);
-            loadStatisticsOfMonth(timeStampsWithStatistics.get(selectedMonth));
+            int selectedChipIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection);
+            if (selectedChipIndex != Toolkit.ActivityToolkit.NO_CHIP_SELECTED){
+                selectedMonth = selectedChipIndex;
+                loadStatisticsOfMonth(timeStampsWithStatistics.get(selectedMonth));
+            } else {
+                cgMonthSelection.getChildAt(selectedMonth).performClick();
+            }
         });
     }
 

@@ -144,7 +144,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         class="com.dolinsek.elias.cashcockpit.NotEnoughDataFragment"
-        app:text="@string/label_no_data_for_statistic"/>
+        app:text="@string/label_no_data_for_statistics"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_history"

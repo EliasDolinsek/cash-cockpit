@@ -65,10 +65,10 @@ BankAccountsStatisticsFragment extends Fragment {
                 selectedBankAccountIndex = 0;
                 loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
                 setupCgBankAccountSelection();
-                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBankAccountSelection, cgBankAccountSelection.getChildCount() - 1);
+                Toolkit.ActivityToolkit.checkChipOfChipGroup(cgBankAccountSelection, 0);
             }
         } else {
-
+            setupForNotEnoughData(inflatedView);
         }
 
         return inflatedView;
@@ -77,6 +77,11 @@ BankAccountsStatisticsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putInt(EXTRA_BANK_ACCOUNT_INDEX, selectedBankAccountIndex);
+    }
+
+    private void setupForNotEnoughData(View inflatedView){
+        inflatedView.findViewById(R.id.sv_bank_accounts_statistics_content).setVisibility(View.GONE);
+        inflatedView.findViewById(R.id.txv_bank_accounts_statistics_no_data).setVisibility(View.VISIBLE);
     }
 
     private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
@@ -103,8 +108,13 @@ BankAccountsStatisticsFragment extends Fragment {
     private void setupCgBankAccountSelection(){
         Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccountSelection, getContext());
         cgBankAccountSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            selectedBankAccountIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccountSelection);
-            loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
+            int selectedChipIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccountSelection);
+            if(selectedChipIndex != Toolkit.ActivityToolkit.NO_CHIP_SELECTED){
+                selectedBankAccountIndex = selectedChipIndex;
+                loadStatistics(Database.getBankAccounts().get(selectedBankAccountIndex));
+            } else {
+               chipGroup.getChildAt(selectedBankAccountIndex).performClick();
+            }
         });
     }
 

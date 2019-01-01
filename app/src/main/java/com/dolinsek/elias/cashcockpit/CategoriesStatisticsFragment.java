@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.dolinsek.elias.cashcockpit.components.BankAccount;
 import com.dolinsek.elias.cashcockpit.components.Bill;
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.dolinsek.elias.cashcockpit.components.PrimaryCategory;
@@ -64,7 +63,6 @@ public class CategoriesStatisticsFragment extends Fragment {
 
     private RecyclerView rvCategories;
     private PieChart pcStatistics;
-    private NestedScrollView scrollView;
     private ChipGroup cgMonthSelection, cgBillTypeSelection;
 
     private PrimaryCategoryItemAdapter primaryCategoryItemAdapter;
@@ -78,7 +76,6 @@ public class CategoriesStatisticsFragment extends Fragment {
         View inflatedView = inflater.inflate(R.layout.fragment_categories_statistics, container, false);
         rvCategories = (RecyclerView) inflatedView.findViewById(R.id.rv_categories_statistics);
         pcStatistics = (PieChart) inflatedView.findViewById(R.id.pc_categories_statistics);
-        scrollView = inflatedView.findViewById(R.id.sv_categories_statistics);
 
         cgMonthSelection = inflatedView.findViewById(R.id.cg_categories_statistics_month_selection);
         cgBillTypeSelection = inflatedView.findViewById(R.id.cg_categories_statistics_bill_type_selection);
@@ -100,7 +97,7 @@ public class CategoriesStatisticsFragment extends Fragment {
                 Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, cgMonthSelection.getChildCount() - 1);
             }
         } else {
-
+            setupForNotEnoughData(inflatedView);
         }
 
         rvCategories.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -113,6 +110,11 @@ public class CategoriesStatisticsFragment extends Fragment {
 
         outState.putInt(EXTRA_SELECTED_MONTH_INDEX, selectedMonth);
         outState.putInt(EXTRA_SELECTED_BILL_TYPE, selectedBillType);
+    }
+
+    private void setupForNotEnoughData(View inflatedView){
+        inflatedView.findViewById(R.id.txv_categories_statistics_no_data).setVisibility(View.VISIBLE);
+        inflatedView.findViewById(R.id.sv_categories_statistics_content).setVisibility(View.GONE);
     }
 
     private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
@@ -134,8 +136,13 @@ public class CategoriesStatisticsFragment extends Fragment {
     private void setupCgMonthSelection(){
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            selectedMonth = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection);
-            loadStatistics();
+            int selectedChipIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgMonthSelection);
+            if (selectedChipIndex != Toolkit.ActivityToolkit.NO_CHIP_SELECTED){
+                selectedMonth = selectedChipIndex;
+                loadStatistics();
+            } else {
+                chipGroup.getChildAt(selectedMonth).performClick();
+            }
         });
     }
 

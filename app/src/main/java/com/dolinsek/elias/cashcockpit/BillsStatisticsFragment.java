@@ -89,7 +89,7 @@ public class BillsStatisticsFragment extends Fragment {
                 Toolkit.ActivityToolkit.checkChipOfChipGroup(cgMonthSelection, cgMonthSelection.getChildCount() - 1);
             }
         } else {
-
+            setupForNotEnoughData(inflatedView);
         }
 
         return inflatedView;
@@ -99,6 +99,11 @@ public class BillsStatisticsFragment extends Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(EXTRA_SELECTED_MONTH, selectedMonth);
+    }
+
+    private void setupForNotEnoughData(View inflatedView) {
+        inflatedView.findViewById(R.id.sv_bills_statistics_content).setVisibility(View.GONE);
+        inflatedView.findViewById(R.id.txv_bills_statistics_no_data).setVisibility(View.VISIBLE);
     }
 
     private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
@@ -117,8 +122,13 @@ public class BillsStatisticsFragment extends Fragment {
     private void setupCgMonthSelection(){
         Toolkit.ActivityToolkit.addTimeChipsToChipGroup(timeStampsWithBills, cgMonthSelection, getContext());
         cgMonthSelection.setOnCheckedChangeListener((chipGroup, i) -> {
-            selectedMonth = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup);
-            displayStatistics(timeStampsWithBills.get(selectedMonth));
+            int selectedChipIndex = Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(chipGroup);;
+            if (selectedChipIndex != Toolkit.ActivityToolkit.NO_CHIP_SELECTED){
+                selectedMonth = selectedChipIndex;
+                displayStatistics(timeStampsWithBills.get(selectedMonth));
+            } else {
+                chipGroup.getChildAt(selectedMonth).performClick();
+            }
         });
     }
 

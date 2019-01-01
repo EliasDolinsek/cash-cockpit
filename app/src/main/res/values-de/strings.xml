@@ -51,7 +51,7 @@
     <string name="label_currency">Währung</string>
     <string name="label_cash">Cash</string>
     <string name="label_cockpit">Cockpit</string>
-    <string name="label_no_data_for_statistic">Keine Daten für eine Statistik</string>
+    <string name="label_no_data_for_statistics">Keine Daten für eine Statistik</string>
     <string name="label_summary">Zusammenfassung</string>
     <string name="label_selected_month">Monat auswählen</string>
     <string name="label_average">Durchschnitt</string>
