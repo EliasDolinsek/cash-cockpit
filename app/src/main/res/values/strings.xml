@@ -175,6 +175,7 @@
     <string name="label_security_settings">Security Settings</string>
     <string name="label_anonymously">Anonymously</string>
     <string name="label_help_description">If you need help or change your Sign In password contact us by pressing help</string>
+    <string name="label_add_bill">Add Bill</string>
 
     <string name="label_six_hours">6 Hours</string>
     <string name="label_twelve_hours">12 Hours</string>
@@ -200,6 +201,7 @@
     <string name="toast_started_uploading_data_to_servers">Started uploading data to servers in background</string>
     <string name="toast_sing_in_required_to_use_feature">You need to Sing In to use this feature!</string>
     <string name="toast_no_category_selected">No Category selected!</string>
+    <string name="toast_please_create_bank_account_first">Please create an bank account first!</string>
 
     <!-- Dialog actions -->
     <string name="dialog_action_delete">Delete</string>

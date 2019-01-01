@@ -1,12 +1,15 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.support.design.bottomappbar.BottomAppBar;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import 	android.support.v4.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import org.json.JSONException;
 
 import java.io.IOException;
+
+import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,9 +42,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         findViewById(R.id.fab_main).setOnClickListener(v -> {
-            Intent intent = new Intent(this, BillActivity.class);
-            startActivity(intent);
+            if (Database.getBankAccounts().size() != 0){
+                startActivity(new Intent(MainActivity.this, BillActivity.class));
+            } else {
+                Toast.makeText(MainActivity.this, R.string.toast_please_create_bank_account_first, Toast.LENGTH_LONG).show();
+            }
         });
+
 
         bottomAppBar = findViewById(R.id.bab_main);
         bottomAppBar.replaceMenu(R.menu.navigation);
@@ -64,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
+
         showSignInActivityIfUserIsNotSignedIn();
     }
 

@@ -1,7 +1,6 @@
 package com.dolinsek.elias.cashcockpit;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.VibrationEffect;
@@ -31,6 +30,13 @@ public class BillActivity extends AppCompatActivity {
 
     public static final String EXTRA_BILL_TO_EDIT = "extraBillToEditIndex";
     public static final String EXTRA_BILL_TO_EDIT_BANK_ACCOUNT = "extraBillBankAccountIndex";
+
+    private static final String EXTRA_SELECTED_PRIMARY_CATEGORY_INDEX = "selectedPrimaryCategoryIndex";
+    private static final String EXTRA_SELECTED_SUBCATEGORY_INDEX = "selectedSubcategoryIndex";
+    private static final String EXTRA_SELECTED_BILL_TYPE = "selectedBillType";
+    private static final String EXTRA_SELECTED_BANK_ACCOUNT_INDEX = "selectedBankAccountIndex";
+
+    private static final int NO_CATEGORY = -1;
 
     private TextInputLayout tilAmount, tilDescription;
     private TextInputEditText edtAmount, edtDescription;
@@ -75,6 +81,10 @@ public class BillActivity extends AppCompatActivity {
 
         setupButtons();
         setupBankAccountSelection();
+
+        if (savedInstanceState != null){
+            loadDataFromSavedInstanceState(savedInstanceState);
+        }
     }
 
     @Override
@@ -85,9 +95,51 @@ public class BillActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (selectedSubcategory != null){
+            outState.putInt(EXTRA_SELECTED_PRIMARY_CATEGORY_INDEX, Toolkit.getIndexOfPrimaryCategoryInDatabase(selectedSubcategory.getPrimaryCategory()));
+            outState.putInt(EXTRA_SELECTED_SUBCATEGORY_INDEX, Toolkit.getIndexOfSubcategoryInPrimaryCategory(selectedSubcategory));
+
+            outState.putInt(EXTRA_SELECTED_BILL_TYPE, getSelectedBillType());
+            outState.putInt(EXTRA_SELECTED_BANK_ACCOUNT_INDEX, Toolkit.ActivityToolkit.getIndexOfSelectedChipInChipGroup(cgBankAccount));
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == RC_SELECT_CATEGORY && resultCode == RESULT_OK){
+            selectedSubcategory = getSubcategoryFromIntentExtras(data);
+            displaySelectedSubcategoryName();
+        }
+    }
+
+    private void loadDataFromSavedInstanceState(Bundle savedInstanceState) {
+        if (savedInstanceState != null){
+            loadSelectedSubcategoryFromSavedInstanceState(savedInstanceState);
+            loadChipSelectionsFromSavedInstanceState(savedInstanceState);
+        }
+    }
+
+    private void loadChipSelectionsFromSavedInstanceState(Bundle savedInstanceState) {
+        ((Chip)cgBankAccount.getChildAt(savedInstanceState.getInt(EXTRA_SELECTED_BANK_ACCOUNT_INDEX))).setChecked(true);
+        ((Chip)cgBillType.getChildAt(savedInstanceState.getInt(EXTRA_SELECTED_BILL_TYPE))).setChecked(true);
+    }
+
+    private void loadSelectedSubcategoryFromSavedInstanceState(Bundle savedInstanceState) {
+        int primaryCategoryIndex = savedInstanceState.getInt(EXTRA_SELECTED_PRIMARY_CATEGORY_INDEX, NO_CATEGORY);
+        int selectedSubcategoryIndex = savedInstanceState.getInt(EXTRA_SELECTED_SUBCATEGORY_INDEX, NO_CATEGORY);
+
+        if (primaryCategoryIndex != NO_CATEGORY && selectedSubcategoryIndex != NO_CATEGORY){
+            selectedSubcategory = Database.getPrimaryCategories().get(primaryCategoryIndex).getSubcategories().get(selectedSubcategoryIndex);
+            btnSelectCategory.setText(selectedSubcategory.getName());
+        }
+    }
+
     private void setupBankAccountSelection() {
         Toolkit.ActivityToolkit.addBankAccountChipsToChipGroup(cgBankAccount, this);
-        ((Chip)cgBankAccount.getChildAt(cgBankAccount.getChildCount() - 1)).setChecked(true);
+        ((Chip)cgBankAccount.getChildAt(0)).setChecked(true);
     }
 
     private void hideBankAccountSelection(){
@@ -125,18 +177,13 @@ public class BillActivity extends AppCompatActivity {
         deleteBillDialogFragment.show(getSupportFragmentManager(), "delete_bill");
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == RC_SELECT_CATEGORY && resultCode == RESULT_OK){
-            selectedSubcategory = getSubcategoryFromIntentExtras(data);
-            displaySelectedSubcategoryName();
-        }
-    }
-
     private void setupForEditMode(){
         String formattedAmount = Currency.getActiveCurrency(this).formatAmountToReadableStringWithCurrencySymbol(billToEdit.getAmount());
         edtAmount.setText(formattedAmount);
+        edtAmount.setSelection(edtAmount.getText().length());
+
         edtDescription.setText(billToEdit.getDescription());
+        edtDescription.setSelection(edtDescription.getText().length());
 
         ((Chip)cgBillType.getChildAt(billToEdit.getType())).setChecked(true);
         ((Chip)cgBankAccount.getChildAt(bankAccountOfBillToEditIndex)).setChecked(true);
