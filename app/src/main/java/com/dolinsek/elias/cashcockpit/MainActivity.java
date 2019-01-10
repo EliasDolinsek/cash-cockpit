@@ -8,17 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.view.View;
 import android.widget.Toast;
 
 import com.dolinsek.elias.cashcockpit.components.Database;
 import com.google.firebase.auth.FirebaseAuth;
-
-import org.json.JSONException;
-
-import java.io.IOException;
-
-import static android.view.View.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        showSignInActivityIfUserIsNotSignedIn();
+        showSignInActivityAndCreateDefaultCategoriesIfUserIsNotSignedIn();
     }
 
     @Override
@@ -98,12 +91,22 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void showSignInActivityIfUserIsNotSignedIn(){
+    private void showSignInActivityAndCreateDefaultCategoriesIfUserIsNotSignedIn(){
         if (FirebaseAuth.getInstance().getCurrentUser() == null){
-            Intent intent = new Intent(this, SignInActivity.class);
-            intent.putExtra(SignInActivity.EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS, true);
-            startActivity(intent);
+            showSingInActivity();
+            createDefaultCategories();
         }
+    }
+
+    private void showSingInActivity(){
+        Intent intent = new Intent(this, SignInActivity.class);
+        intent.putExtra(SignInActivity.EXTRA_SHOW_TUTORIAL_ACTIVITY_AFTERWADS, true);
+        startActivity(intent);
+    }
+
+    private void createDefaultCategories(){
+        Database.setPrimaryCategories(Database.getDefaultPrimaryCategories());
+        Database.save(this);
     }
 
     private void setupFragments(){

@@ -21,6 +21,8 @@ import com.dolinsek.elias.cashcockpit.components.Toolkit;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import static java.security.AccessController.getContext;
+
 
 /**
  * A simple {@link Fragment} subclass.
